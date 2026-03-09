@@ -1,0 +1,162 @@
+export const UNIVERSITIES = [
+    'Addis Ababa University',
+    'Jimma University',
+    'Bahir Dar University',
+    'Haramaya University',
+    'Hawassa University',
+]
+
+export const DEPARTMENTS = {
+    Health: [
+        'Medicine',
+        'Nursing',
+        'Pharmacy',
+        'Public Health',
+        'Midwifery',
+        'Medical Laboratory Science',
+        'Anesthesia',
+    ],
+    Engineering: [
+        'Civil Engineering',
+        'Mechanical Engineering',
+        'Electrical Engineering',
+        'Software Engineering',
+        'Computer Science',
+        'Information Technology',
+        'Chemical Engineering',
+        'Industrial Engineering',
+    ],
+    Agriculture: [
+        'Agricultural Economics',
+        'Plant Science',
+        'Animal Science',
+        'Natural Resource Management',
+        'Forestry',
+        'Agricultural Engineering',
+    ],
+    Business: [
+        'Accounting',
+        'Management',
+        'Marketing',
+        'Economics',
+        'Finance',
+        'Business Administration',
+    ],
+    Social_Sciences: [
+        'Law',
+        'Political Science',
+        'Sociology',
+        'International Relations',
+        'Psychology',
+        'Social Work',
+    ],
+    Education: [
+        'Education Planning & Management',
+        'Curriculum Studies',
+        'Educational Psychology',
+        'Special Needs Education',
+    ],
+    Natural_Science: [
+        'Mathematics',
+        'Physics',
+        'Chemistry',
+        'Biology',
+        'Statistics',
+    ],
+    Architecture: [
+        'Architecture',
+        'Urban & Regional Planning',
+        'Construction Technology & Management',
+    ],
+}
+
+export const HIGH_SCHOOL = {
+    GRADES_9_10: {
+        subjects: [
+            'Math',
+            'Physics',
+            'Chemistry',
+            'Biology',
+            'English',
+            'History',
+            'Geography',
+            'Civics',
+            'ICT',
+        ],
+        resources: [
+            'Textbooks',
+            'Reference books',
+            'Practice questions',
+            'Past exams',
+            'Educational videos',
+            'Study guides',
+        ],
+    },
+    GRADES_11_12: {
+        natural: {
+            subjects: ['Math', 'Physics', 'Chemistry', 'Biology', 'English', 'ICT'],
+            resources: [
+                'Textbooks',
+                'Reference books',
+                'Practice questions',
+                'Past exams',
+                'Videos',
+                'Study guides',
+                'Formula sheets',
+                'Entrance exam preparation',
+                'Interactive quizzes',
+            ],
+        },
+        social: {
+            subjects: ['History', 'Geography', 'Economics', 'English', 'ICT'],
+            resources: [
+                'Textbooks',
+                'Reference books',
+                'Practice questions',
+                'Past exams',
+                'Videos',
+                'Study guides',
+            ],
+        },
+    },
+}
+
+export const UNIVERSITY_CATEGORIES = {
+    remedial: {
+        label: 'Remedial Students',
+        resources: [
+            'Modules',
+            'Last year exams',
+            'Video tutorials',
+            'Reference books',
+            'Worksheets',
+            'Remedial quizzes',
+            'Recommendations',
+        ],
+    },
+    freshman: {
+        label: 'Freshman Students',
+        resources: [
+            'Modules',
+            'Last year exams',
+            'Video tutorials',
+            'Reference books',
+            'Worksheets',
+            'Interactive quizzes',
+            'Recommendations',
+        ],
+    },
+    senior: {
+        label: 'Senior Students',
+        resources: ['Textbooks', 'Past exams', 'Project guides', 'Assignments'],
+    },
+    gc: {
+        label: 'GC Students (Graduated)',
+        resources: [
+            'Research papers',
+            'Career guidance',
+            'Professional skill modules',
+            'Projects',
+        ],
+    },
+}
