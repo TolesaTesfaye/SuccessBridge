@@ -7,6 +7,7 @@
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
@@ -14,6 +15,8 @@
     "declarationMap": true,
     "sourceMap": true,
     "moduleResolution": "node",
+    "allowImportingTsExtensions": false,
+    "noEmit": false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
@@ -27,6 +30,6 @@
       "@types/*": ["src/types/*"]
     }
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }
