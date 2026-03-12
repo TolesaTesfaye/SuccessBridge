@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "dist/index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "dist/index.js"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "DATABASE_URL": "postgresql://postgres:702512@Tol_Database@db.oxnntnvtkngfoorkleay.supabase.co:5432/postgres",
+    "JWT_SECRET": "your-super-secret-jwt-key-minimum-32-characters-long-for-production-use",
+    "SUPABASE_URL": "https://oxnntnvtkngfoorkleay.supabase.co",
+    "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94bm50bnZ0a25nZm9vcmtsZWF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY2NzU5NzQsImV4cCI6MjA1MjI1MTk3NH0.sb_publishable_7cmmPTJwl0Nj7-nQWpWrvA_YgvBKTum",
+    "SUPABASE_SERVICE_KEY": "sb_secret_BnVbahCrOQufviYpHZewjw_6p9ykmQl"
+  }
+}
