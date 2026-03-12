@@ -10,7 +10,7 @@ PORT=5000
 FRONTEND_URL=https://successbridge.vercel.app
 SUPABASE_URL=https://oxnntnvtkngfoorkleay.supabase.co
 SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94bm50bnZ0a25nZm9vcmtsZWF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY2NzU5NzQsImV4cCI6MjA1MjI1MTk3NH0.sb_publishable_7cmmPTJwl0Nj7-nQWpWrvA_YgvBKTum
-SUPABASE_SERVICE_KEY=sb_secret_BnVbahCrOQufviYpHZewjw_6p9ykmQl
+SUPABASE_SERVICE_KEY=[YOUR-SECRET-KEY-HERE]
 UPLOAD_DIR=uploads
 MAX_FILE_SIZE=10485760
 ```
