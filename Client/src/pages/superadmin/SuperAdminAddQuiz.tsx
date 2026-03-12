@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { DashboardLayout } from '@components/dashboards/DashboardLayout'
 import { Card, CardBody, CardHeader } from '@components/common/Card'
 import { Button } from '@components/common/Button'
 import { FormInput } from '@components/forms/FormInput'
@@ -10,11 +9,12 @@ import { Plus, Trash2 } from 'lucide-react'
 import { Spinner } from '@components/common/Spinner'
 import { ErrorMessage } from '@components/common/ErrorMessage'
 import { useToast } from '@components/common/Toast'
+import { subjectService, type Subject } from '@services/subjectService'
 
 interface Question {
   id: string
   questionText: string
-  questionType: 'multiple_choice' | 'true_false' | 'short_answer'
+  questionType: 'multiple_choice' | 'short_answer' | 'essay'
   options: string[]
   correctAnswer: string
   points: number
@@ -25,6 +25,9 @@ export const SuperAdminAddQuiz: React.FC = () => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
+    educationLevel: 'high_school' as 'high_school' | 'university',
+    grade: '',
+    stream: '',
     subjectId: '',
     difficultyLevel: 'medium',
     passingScore: 70,
@@ -40,6 +43,19 @@ export const SuperAdminAddQuiz: React.FC = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [subjects, setSubjects] = useState<Subject[]>([])
+
+  React.useEffect(() => {
+    const fetchDependencies = async () => {
+      try {
+        const fetchedSubjects = await subjectService.getAll()
+        setSubjects(fetchedSubjects)
+      } catch (err) {
+        console.error('Failed to load subjects:', err)
+      }
+    }
+    fetchDependencies()
+  }, [])
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -106,11 +122,18 @@ export const SuperAdminAddQuiz: React.FC = () => {
     try {
       setLoading(true)
       const quizData = {
-        ...formData,
-        totalQuestions: questions.length,
+        title: formData.title,
+        description: formData.description,
+        educationLevel: formData.educationLevel,
+        grade: formData.grade,
+        stream: formData.stream,
+        subjectId: formData.subjectId,
+        timeLimit: formData.timeLimitMinutes,
+        passingScore: formData.passingScore,
         questions: questions.map(q => ({
-          questionText: q.questionText,
-          questionType: q.questionType,
+          id: q.id,
+          text: q.questionText,
+          type: q.questionType,
           options: q.options,
           correctAnswer: q.correctAnswer,
           points: q.points,
@@ -126,6 +149,9 @@ export const SuperAdminAddQuiz: React.FC = () => {
         setFormData({
           title: '',
           description: '',
+          educationLevel: 'high_school',
+          grade: '',
+          stream: '',
           subjectId: '',
           difficultyLevel: 'medium',
           passingScore: 70,
@@ -145,11 +171,9 @@ export const SuperAdminAddQuiz: React.FC = () => {
   }
 
   return (
-    <DashboardLayout title="Add Quiz" subtitle="Create a new quiz for students">
-      <div className="space-y-6">
-      <Card>
-        <CardHeader>📝 Create New Quiz</CardHeader>
-        <CardBody>
+    <Card>
+      <CardHeader>📝 Create New Quiz</CardHeader>
+      <CardBody>
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <ErrorMessage
@@ -180,6 +204,62 @@ export const SuperAdminAddQuiz: React.FC = () => {
               />
 
               <FormSelect
+                label="Education Level"
+                name="educationLevel"
+                value={formData.educationLevel}
+                onChange={handleFormChange}
+                required
+                options={[
+                  { value: 'high_school', label: 'High School' },
+                  { value: 'university', label: 'University' },
+                ]}
+              />
+
+              {formData.educationLevel === 'high_school' ? (
+                <FormSelect
+                  label="Grade"
+                  name="grade"
+                  value={formData.grade}
+                  onChange={handleFormChange}
+                  options={[
+                    { value: '', label: 'All Grades' },
+                    { value: 'grade_9', label: 'Grade 9' },
+                    { value: 'grade_10', label: 'Grade 10' },
+                    { value: 'grade_11', label: 'Grade 11' },
+                    { value: 'grade_12', label: 'Grade 12' },
+                  ]}
+                />
+              ) : (
+                <FormSelect
+                  label="University Category"
+                  name="grade"
+                  value={formData.grade}
+                  onChange={handleFormChange}
+                  options={[
+                    { value: '', label: 'All Categories' },
+                    { value: 'remedial', label: 'Remedial' },
+                    { value: 'freshman', label: 'Freshman' },
+                  ]}
+                />
+              )}
+
+              {((formData.educationLevel === 'high_school' && ['grade_11', 'grade_12'].includes(formData.grade)) ||
+                (formData.educationLevel === 'university' && ['remedial', 'freshman'].includes(formData.grade))) && (
+                  <FormSelect
+                    label="Stream"
+                    name="stream"
+                    value={formData.stream}
+                    onChange={handleFormChange}
+                    options={[
+                      { value: '', label: 'All Streams' },
+                      { value: 'natural', label: 'Natural Science' },
+                      { value: 'social', label: 'Social Science' },
+                    ]}
+                  />
+                )}
+
+
+              <FormSelect
                 label="Subject"
                 name="subjectId"
                 value={formData.subjectId}
@@ -187,9 +267,7 @@ export const SuperAdminAddQuiz: React.FC = () => {
                 required
                 options={[
                   { value: '', label: 'Select a subject' },
-                  { value: 'subject1', label: 'Data Structures' },
-                  { value: 'subject2', label: 'Algorithms' },
-                  { value: 'subject3', label: 'Web Development' },
+                  ...subjects.map(s => ({ value: s.id, label: s.name }))
                 ]}
               />
 
@@ -252,8 +330,8 @@ export const SuperAdminAddQuiz: React.FC = () => {
                   onChange={(e) => handleQuestionChange('questionType', e.target.value)}
                   options={[
                     { value: 'multiple_choice', label: 'Multiple Choice' },
-                    { value: 'true_false', label: 'True/False' },
                     { value: 'short_answer', label: 'Short Answer' },
+                    { value: 'essay', label: 'Essay' },
                   ]}
                 />
 
@@ -335,7 +413,5 @@ export const SuperAdminAddQuiz: React.FC = () => {
           </form>
         </CardBody>
       </Card>
-      </div>
-    </DashboardLayout>
   )
 }

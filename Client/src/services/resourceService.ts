@@ -7,6 +7,25 @@ export const resourceService = {
     return response.data
   },
 
+  getFreshmanResources: async (filters?: {
+    page?: number
+    limit?: number
+    university?: string
+    universityId?: string
+    department?: string
+    subject?: string
+    type?: string
+  }): Promise<ApiResponse<PaginatedResponse<Resource>>> => {
+    // Use the main resources endpoint with freshman-specific filters
+    const freshmanFilters = {
+      ...filters,
+      educationLevel: 'university',
+      grade: 'freshman' // This maps to category in backend
+    }
+    const response = await api.get('/resources', { params: freshmanFilters })
+    return response.data
+  },
+
   getResourceById: async (id: string): Promise<ApiResponse<Resource>> => {
     const response = await api.get(`/resources/${id}`)
     return response.data
@@ -26,11 +45,6 @@ export const resourceService = {
 
   deleteResource: async (id: string): Promise<ApiResponse<void>> => {
     const response = await api.delete(`/resources/${id}`)
-    return response.data
-  },
-
-  searchResources: async (query: string): Promise<ApiResponse<Resource[]>> => {
-    const response = await api.get('/resources/search', { params: { q: query } })
     return response.data
   },
 }

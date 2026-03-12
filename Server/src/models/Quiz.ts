@@ -15,6 +15,9 @@ interface IQuiz {
   title: string
   description: string
   subjectId: string
+  educationLevel: 'high_school' | 'university'
+  grade?: string
+  stream?: string
   questions: IQuestion[]
   timeLimit: number
   passingScore: number
@@ -26,6 +29,9 @@ class Quiz extends Model<IQuiz> implements IQuiz {
   public title!: string
   public description!: string
   public subjectId!: string
+  public educationLevel!: 'high_school' | 'university'
+  public grade?: string
+  public stream?: string
   public questions!: IQuestion[]
   public timeLimit!: number
   public passingScore!: number
@@ -51,6 +57,19 @@ Quiz.init(
     subjectId: {
       type: DataTypes.UUID,
       allowNull: false,
+    },
+    educationLevel: {
+      type: DataTypes.ENUM('high_school', 'university'),
+      defaultValue: 'high_school',
+      allowNull: false,
+    },
+    grade: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    stream: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     questions: {
       type: DataTypes.JSON,

@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import { DashboardLayout } from '@components/dashboards/DashboardLayout'
 import { ResourceList } from '@components/resources/ResourceList'
 import { ResourceFilter } from '@components/resources/ResourceFilter'
-import { ResourceUpload } from '@components/resources/ResourceUpload'
+import { ResourceUploadForm } from '@/components/resources/ResourceUploadForm'
 import { Button } from '@components/common/Button'
+import { Modal } from '@components/common/Modal'
 
 export const AdminResources: React.FC = () => {
   const [showUpload, setShowUpload] = useState(false)
@@ -43,11 +44,9 @@ export const AdminResources: React.FC = () => {
           showActions={true}
         />
 
-        <ResourceUpload
-          isOpen={showUpload}
-          onClose={() => setShowUpload(false)}
-          onSubmit={handleUploadSubmit}
-        />
+        <Modal isOpen={showUpload} onClose={() => setShowUpload(false)} title="Upload New Resource" size="lg">
+          <ResourceUploadForm onSubmit={handleUploadSubmit} />
+        </Modal>
       </div>
     </DashboardLayout>
   )

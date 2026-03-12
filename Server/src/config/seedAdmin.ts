@@ -1,5 +1,5 @@
-import bcrypt from 'bcryptjs'
-import User from '../models/User'
+import * as bcrypt from 'bcryptjs'
+import User from '../models/User.js'
 
 export const seedSuperAdmin = async () => {
   try {
@@ -12,22 +12,44 @@ export const seedSuperAdmin = async () => {
     
     if (existingAdmin) {
       console.log('Super admin already exists')
-      return
+    } else {
+      // Hash password
+      const hashedPassword = await bcrypt.hash(superAdminPassword, 10)
+
+      // Create super admin
+      await User.create({
+        email: superAdminEmail,
+        name: superAdminName,
+        password: hashedPassword,
+        role: 'super_admin',
+      } as any)
+
+      console.log(`✅ Super admin created: ${superAdminEmail}`)
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(superAdminPassword, 10)
+    // Also seed a test admin user
+    const adminEmail = 'admin@successbridge.com'
+    const adminPassword = 'Admin123!'
+    const adminName = 'Test Admin'
 
-    // Create super admin
-    await User.create({
-      email: superAdminEmail,
-      name: superAdminName,
-      password: hashedPassword,
-      role: 'super_admin',
-    } as any)
+    const existingTestAdmin = await User.findOne({ where: { email: adminEmail } })
+    
+    if (existingTestAdmin) {
+      console.log('Test admin already exists')
+    } else {
+      const hashedAdminPassword = await bcrypt.hash(adminPassword, 10)
 
-    console.log(`✅ Super admin created: ${superAdminEmail}`)
+      await User.create({
+        email: adminEmail,
+        name: adminName,
+        password: hashedAdminPassword,
+        role: 'admin',
+      } as any)
+
+      console.log(`✅ Test admin created: ${adminEmail}`)
+      console.log(`   Password: ${adminPassword}`)
+    }
   } catch (error) {
-    console.error('Error seeding super admin:', error)
+    console.error('Error seeding admins:', error)
   }
 }

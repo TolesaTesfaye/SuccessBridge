@@ -34,7 +34,7 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
     const [formData, setFormData] = useState<UploadFormData>({
         title: initialData?.title || '',
         description: initialData?.description || '',
-        educationLevel: initialData?.educationLevel || 'high_school',
+        educationLevel: initialData?.educationLevel || 'university',
         grade: initialData?.grade || '',
         stream: initialData?.stream || '',
         universityId: initialData?.universityId || '',
@@ -67,6 +67,33 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
             return
         }
 
+        // Validate student targeting
+        if (formData.educationLevel === 'high_school') {
+            if (!formData.grade) {
+                setError('Please select a grade for high school students')
+                return
+            }
+            if ((formData.grade === 'grade_11' || formData.grade === 'grade_12') && !formData.stream) {
+                setError('Please select a stream for grades 11-12')
+                return
+            }
+        } else {
+            if (!formData.universityId) {
+                setError('Please select a university')
+                return
+            }
+            if (!formData.category) {
+                setError('Please select a student category')
+                return
+            }
+            if (formData.category === 'senior' || formData.category === 'gc') {
+                if (!formData.departmentId) {
+                    setError('Please select a department for senior/GC students')
+                    return
+                }
+            }
+        }
+
         onSubmit(formData)
     }
 
@@ -81,25 +108,29 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
         } else {
             const subjects: { value: string; label: string }[] = []
 
-            // Add Common Course for all university students, or specifically for freshman/remedial
+            // Add Common Course for all university students
             subjects.push({ value: 'Common Course', label: 'Common Course' })
 
             if (formData.category === 'remedial') {
                 if (formData.stream === 'natural') subjects.push({ value: 'Natural Science', label: 'Natural Science' })
                 else if (formData.stream === 'social') subjects.push({ value: 'Social Science', label: 'Social Science' })
-                else subjects.push({ value: 'Natural Science', label: 'Natural Science' }, { value: 'Social Science', label: 'Social Science' })
+                else {
+                    subjects.push({ value: 'Natural Science', label: 'Natural Science' })
+                    subjects.push({ value: 'Social Science', label: 'Social Science' })
+                }
             }
 
             if (formData.category === 'freshman') {
-                // Freshman subjects as requested: Math, logic, psychology, phisicse, engiish
                 const freshmanSubjects = ['Math', 'Logic', 'Psychology', 'Physics', 'English']
                 freshmanSubjects.forEach(s => subjects.push({ value: s, label: s }))
             }
 
-            if (formData.departmentId) {
-                const depts: string[] = (DEPARTMENTS as any)[formData.departmentId] || []
-                depts.forEach(s => subjects.push({ value: s, label: s }))
+            // For senior and GC students, add department-specific subjects
+            if ((formData.category === 'senior' || formData.category === 'gc') && formData.departmentId) {
+                const departments: string[] = (DEPARTMENTS as any)[formData.departmentId] || []
+                departments.forEach(s => subjects.push({ value: s, label: s }))
             }
+            
             return subjects
         }
     }
@@ -113,14 +144,52 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
             if (formData.stream === 'social') return HIGH_SCHOOL.GRADES_11_12.social.resources.map(r => ({ value: r.toLowerCase().replace(/ /g, '_'), label: r }))
             return []
         } else {
-            const res: string[] = formData.category ? ((UNIVERSITY_CATEGORIES as any)[formData.category]?.resources || []) : []
-            return res.map(r => ({ value: r.toLowerCase().replace(/ /g, '_'), label: r }))
+            // University resource types depend on student category
+            if (!formData.category) return []
+            
+            const categoryData = (UNIVERSITY_CATEGORIES as any)[formData.category]
+            if (!categoryData || !categoryData.resources) return []
+            
+            return categoryData.resources.map((r: string) => ({ 
+                value: r.toLowerCase().replace(/ /g, '_'), 
+                label: r 
+            }))
         }
     }
+
+    const getTargetStudentInfo = () => {
+        if (formData.educationLevel === 'high_school') {
+            let info = `High School - ${formData.grade?.replace('grade_', 'Grade ')}`
+            if (formData.stream) info += ` (${formData.stream === 'natural' ? 'Natural Science' : 'Social Science'})`
+            return info
+        } else {
+            let info = `University - ${formData.universityId}`
+            if (formData.category) info += ` - ${(UNIVERSITY_CATEGORIES as any)[formData.category]?.label}`
+            if (formData.departmentId) info += ` - ${formData.departmentId}`
+            if (formData.stream && (formData.category === 'remedial' || formData.category === 'freshman')) {
+                info += ` (${formData.stream === 'natural' ? 'Natural Science' : 'Social Science'})`
+            }
+            return info
+        }
+    }
+
+    const isIntroductory = formData.category === 'remedial' || formData.category === 'freshman'
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             {error && <div className="p-3 bg-red-100 text-red-700 rounded-lg text-sm">{error}</div>}
+
+            {/* Target Student Information Display */}
+            {(formData.educationLevel && (formData.grade || formData.universityId)) && (
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">
+                        📚 This resource will be available to:
+                    </h3>
+                    <p className="text-sm text-blue-700 dark:text-blue-300 font-medium">
+                        {getTargetStudentInfo()}
+                    </p>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-6">
@@ -156,105 +225,142 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
                 </div>
 
                 <div className="space-y-6">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <FormSelect
-                            label="Education Level *"
-                            name="educationLevel"
-                            value={formData.educationLevel}
-                            onChange={handleChange}
-                            options={[
-                                { value: 'high_school', label: 'High School' },
-                                { value: 'university', label: 'University' },
-                            ]}
-                        />
+                    {/* Student Targeting Section */}
+                    <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">
+                            🎯 Target Student Information
+                        </h3>
 
-                        {formData.educationLevel === 'high_school' ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <FormSelect
-                                label="Grade *"
-                                name="grade"
-                                value={formData.grade || ''}
+                                label="Education Level *"
+                                name="educationLevel"
+                                value={formData.educationLevel}
                                 onChange={handleChange}
                                 options={[
-                                    { value: 'grade_9', label: 'Grade 9' },
-                                    { value: 'grade_10', label: 'Grade 10' },
-                                    { value: 'grade_11', label: 'Grade 11' },
-                                    { value: 'grade_12', label: 'Grade 12' },
+                                    { value: 'high_school', label: 'High School' },
+                                    { value: 'university', label: 'University' },
                                 ]}
                             />
-                        ) : (
-                            <FormSelect
-                                label="University *"
-                                name="universityId"
-                                value={formData.universityId || ''}
-                                onChange={handleChange}
-                                options={UNIVERSITIES.map(u => ({ value: u, label: u }))}
-                            />
-                        )}
-                    </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {formData.educationLevel === 'high_school' ? (
-                            (formData.grade === 'grade_11' || formData.grade === 'grade_12') && (
+                            {formData.educationLevel === 'high_school' ? (
                                 <FormSelect
-                                    label="Stream *"
-                                    name="stream"
-                                    value={formData.stream || ''}
+                                    label="Grade *"
+                                    name="grade"
+                                    value={formData.grade || ''}
                                     onChange={handleChange}
                                     options={[
-                                        { value: 'natural', label: 'Natural Science' },
-                                        { value: 'social', label: 'Social Science' },
+                                        { value: '', label: 'Select Grade' },
+                                        { value: 'grade_9', label: 'Grade 9' },
+                                        { value: 'grade_10', label: 'Grade 10' },
+                                        { value: 'grade_11', label: 'Grade 11' },
+                                        { value: 'grade_12', label: 'Grade 12' },
                                     ]}
                                 />
-                            )
-                        ) : (
-                            <>
+                            ) : (
                                 <FormSelect
-                                    label="Student Category *"
-                                    name="category"
-                                    value={formData.category || ''}
+                                    label="University *"
+                                    name="universityId"
+                                    value={formData.universityId || ''}
                                     onChange={handleChange}
-                                    options={Object.keys(UNIVERSITY_CATEGORIES).map(c => ({ value: c, label: (UNIVERSITY_CATEGORIES as any)[c].label }))}
+                                    options={[
+                                        { value: '', label: 'Select University' },
+                                        ...UNIVERSITIES.map(u => ({ value: u, label: u }))
+                                    ]}
                                 />
-                                {(formData.category !== 'remedial' && formData.category !== 'freshman') ? (
+                            )}
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                            {formData.educationLevel === 'high_school' ? (
+                                (formData.grade === 'grade_11' || formData.grade === 'grade_12') && (
                                     <FormSelect
-                                        label="Department Group *"
-                                        name="departmentId"
-                                        value={formData.departmentId || ''}
-                                        onChange={handleChange}
-                                        options={Object.keys(DEPARTMENTS).map(d => ({ value: d, label: d }))}
-                                    />
-                                ) : (
-                                    <FormSelect
-                                        label="Stream (Optional for Univ)"
+                                        label="Stream *"
                                         name="stream"
                                         value={formData.stream || ''}
                                         onChange={handleChange}
                                         options={[
+                                            { value: '', label: 'Select Stream' },
                                             { value: 'natural', label: 'Natural Science' },
                                             { value: 'social', label: 'Social Science' },
                                         ]}
                                     />
-                                )}
-                            </>
-                        )}
+                                )
+                            ) : (
+                                <>
+                                    <FormSelect
+                                        label="Student Category *"
+                                        name="category"
+                                        value={formData.category || ''}
+                                        onChange={handleChange}
+                                        options={[
+                                            { value: '', label: 'Select Category' },
+                                            ...Object.keys(UNIVERSITY_CATEGORIES).map(c => ({ 
+                                                value: c, 
+                                                label: (UNIVERSITY_CATEGORIES as any)[c].label 
+                                            }))
+                                        ]}
+                                    />
+                                    {(formData.category === 'senior' || formData.category === 'gc') ? (
+                                        <FormSelect
+                                            label="Department Group *"
+                                            name="departmentId"
+                                            value={formData.departmentId || ''}
+                                            onChange={handleChange}
+                                            options={[
+                                                { value: '', label: 'Select Department' },
+                                                ...Object.keys(DEPARTMENTS).map(d => ({ value: d, label: d }))
+                                            ]}
+                                        />
+                                    ) : isIntroductory ? (
+                                        <FormSelect
+                                            label="Stream (Optional)"
+                                            name="stream"
+                                            value={formData.stream || ''}
+                                            onChange={handleChange}
+                                            options={[
+                                                { value: '', label: 'All Streams' },
+                                                { value: 'natural', label: 'Natural Science' },
+                                                { value: 'social', label: 'Social Science' },
+                                            ]}
+                                        />
+                                    ) : null}
+                                </>
+                            )}
+                        </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <FormSelect
-                            label="Resource Type *"
-                            name="type"
-                            value={formData.type}
-                            onChange={handleChange}
-                            options={getDynamicResourceTypes()}
-                        />
+                    {/* Resource Details Section */}
+                    <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">
+                            📄 Resource Details
+                        </h3>
 
-                        <FormSelect
-                            label="Subject / Module *"
-                            name="subject"
-                            value={formData.subject}
-                            onChange={handleChange}
-                            options={getDynamicSubjects()}
-                        />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <FormSelect
+                                label="Resource Type *"
+                                name="type"
+                                value={formData.type}
+                                onChange={handleChange}
+                                options={[
+                                    { value: '', label: 'Select Type' },
+                                    ...getDynamicResourceTypes()
+                                ]}
+                                helperText={formData.category ? `Available for ${(UNIVERSITY_CATEGORIES as any)[formData.category]?.label || formData.category}` : ''}
+                            />
+
+                            <FormSelect
+                                label="Subject / Module *"
+                                name="subject"
+                                value={formData.subject}
+                                onChange={handleChange}
+                                options={[
+                                    { value: '', label: 'Select Subject' },
+                                    ...getDynamicSubjects()
+                                ]}
+                                helperText={formData.category === 'freshman' ? 'Freshman subjects + Common Course' : formData.category === 'remedial' ? 'Stream-based subjects + Common Course' : ''}
+                            />
+                        </div>
                     </div>
 
                     <div className="space-y-2">

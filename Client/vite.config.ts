@@ -44,16 +44,20 @@ export default defineConfig({
     },
   },
   build: {
-    // Optimize build
-    sourcemap: true,
+    // Optimize build for production
+    sourcemap: false, // Disable sourcemaps for production
+    minify: 'terser',
     rollupOptions: {
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'ui-vendor': ['lucide-react'],
+          'chart-vendor': ['recharts'], // If you're using charts
         },
       },
     },
+    // Increase chunk size warning limit
+    chunkSizeWarningLimit: 1000,
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],

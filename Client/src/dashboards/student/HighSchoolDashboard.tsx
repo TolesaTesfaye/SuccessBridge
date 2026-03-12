@@ -28,6 +28,15 @@ export const HighSchoolDashboard: React.FC = () => {
     if (activeGrade === 'grade_9' || activeGrade === 'grade_10') {
       return HIGH_SCHOOL.GRADES_9_10.subjects
     }
+    
+    // For grades 11 & 12, show all subjects from both streams if no stream is selected
+    if (!selectedStream) {
+      const naturalSubjects = HIGH_SCHOOL.GRADES_11_12.natural.subjects
+      const socialSubjects = HIGH_SCHOOL.GRADES_11_12.social.subjects
+      // Combine and remove duplicates
+      return [...new Set([...naturalSubjects, ...socialSubjects])]
+    }
+    
     if (selectedStream === 'natural') {
       return HIGH_SCHOOL.GRADES_11_12.natural.subjects
     }
@@ -41,6 +50,15 @@ export const HighSchoolDashboard: React.FC = () => {
     if (activeGrade === 'grade_9' || activeGrade === 'grade_10') {
       return HIGH_SCHOOL.GRADES_9_10.resources
     }
+    
+    // For grades 11 & 12, show all resource types from both streams if no stream is selected
+    if (!selectedStream) {
+      const naturalResources = HIGH_SCHOOL.GRADES_11_12.natural.resources
+      const socialResources = HIGH_SCHOOL.GRADES_11_12.social.resources
+      // Combine and remove duplicates
+      return [...new Set([...naturalResources, ...socialResources])]
+    }
+    
     if (selectedStream === 'natural') {
       return HIGH_SCHOOL.GRADES_11_12.natural.resources
     }
@@ -54,10 +72,11 @@ export const HighSchoolDashboard: React.FC = () => {
     setLoading(true)
     try {
       const response = await resourceService.getResources({
+        educationLevel: 'high_school',
         grade: activeGrade,
-        stream: selectedStream as any,
-        subject: selectedSubject as any,
-        resourceType: selectedResourceType as any,
+        stream: selectedStream || undefined,
+        subject: selectedSubject || undefined,
+        type: selectedResourceType as any || undefined,
       })
       setResources(response.data?.data || [])
     } catch (err) {
@@ -95,8 +114,9 @@ export const HighSchoolDashboard: React.FC = () => {
 
   const handleStreamChange = (stream: Stream | null) => {
     setSelectedStream(stream)
-    setSelectedSubject(null)
-    setSelectedResourceType(null)
+    // Don't reset subject and resource type - allow independent filtering
+    // setSelectedSubject(null)
+    // setSelectedResourceType(null)
     setResources([])
   }
 
@@ -265,7 +285,7 @@ export const HighSchoolDashboard: React.FC = () => {
                   onChange={(e) => setSelectedSubject(e.target.value || null)}
                   className="w-full pl-4 pr-10 py-2.5 appearance-none border border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-sm font-medium text-sm"
                 >
-                  <option value="">{((activeGrade === 'grade_11' || activeGrade === 'grade_12') && !selectedStream) ? 'Select Dept First' : 'All Subjects'}</option>
+                  <option value="">All Subjects</option>
                   {subjects.map(subject => (
                     <option key={subject} value={subject}>
                       {subject}
@@ -292,52 +312,41 @@ export const HighSchoolDashboard: React.FC = () => {
             </div>
 
             {/* Resources Gallery */}
-            {(selectedStream || activeGrade === 'grade_9' || activeGrade === 'grade_10') && (
-              <div className="bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden flex flex-col transition-colors">
-                <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800/60 flex justify-between items-center bg-slate-50 dark:bg-slate-800/30">
-                  <div className="flex items-center gap-3">
-                    <BookOpen className="w-6 h-6 text-blue-500" />
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">Curated Hub: {selectedSubject || 'All Subjects'}</h3>
+            <div className="bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-700/50 shadow-sm overflow-hidden flex flex-col transition-colors">
+              <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-800/60 flex justify-between items-center bg-slate-50 dark:bg-slate-800/30">
+                <div className="flex items-center gap-3">
+                  <BookOpen className="w-6 h-6 text-blue-500" />
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">Curated Hub: {selectedSubject || 'All Subjects'}</h3>
+                </div>
+                <button
+                  onClick={fetchResources}
+                  className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
+                >
+                  Refresh Library
+                </button>
+              </div>
+
+              <div className="p-6">
+                {loading ? (
+                  <div className="text-center py-16 animate-pulse">
+                    <BookOpen className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+                    <p className="text-slate-600 dark:text-slate-400 font-medium">Fetching the latest materials...</p>
                   </div>
-                  <button
-                    onClick={fetchResources}
-                    className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition"
-                  >
-                    Refresh Library
-                  </button>
-                </div>
-
-                <div className="p-6">
-                  {loading ? (
-                    <div className="text-center py-16 animate-pulse">
-                      <BookOpen className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-                      <p className="text-slate-600 dark:text-slate-400 font-medium">Fetching the latest materials...</p>
-                    </div>
-                  ) : resources.length === 0 ? (
-                    <div className="text-center py-16 bg-slate-50 dark:bg-slate-800/20 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
-                      <FileText className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-                      <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-1">No resources found</h4>
-                      <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto">Try adjusting your filters or selecting a different subject or resource type.</p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                      {resources.map(resource => (
-                        <ResourceCard key={resource.id} resource={resource} />
-                      ))}
-                    </div>
-                  )}
-                </div>
+                ) : resources.length === 0 ? (
+                  <div className="text-center py-16 bg-slate-50 dark:bg-slate-800/20 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
+                    <FileText className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+                    <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-1">No resources found</h4>
+                    <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto">Try adjusting your filters or selecting a different subject or resource type.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {resources.map(resource => (
+                      <ResourceCard key={resource.id} resource={resource} />
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-
-            {/* Empty State when Stream not selected and grade requires it */}
-            {!selectedStream && (activeGrade === 'grade_11' || activeGrade === 'grade_12') && (
-              <div className="text-center py-20 bg-white dark:bg-slate-900/50 rounded-3xl border border-dashed border-slate-300 dark:border-slate-700/80">
-                <BrainCircuit className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-                <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-2">Awaiting Stream Selection</h3>
-                <p className="text-slate-500 dark:text-slate-400 max-w-md mx-auto">Please choose between Natural Sciences and Social Sciences above to unlock your personalized curriculum resources.</p>
-              </div>
-            )}
+            </div>
           </div>
         )}
       </div>

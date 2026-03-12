@@ -2,14 +2,45 @@ import React, { useState } from 'react'
 import { DashboardLayout } from '@components/dashboards/DashboardLayout'
 import { Card, CardBody, CardHeader } from '@components/common/Card'
 import { Button } from '@components/common/Button'
-import { ResourceUpload, UploadFormData } from '@components/resources/ResourceUpload'
-import { ResourceUploadForm } from '@components/resources/ResourceUploadForm'
+import { Modal } from '@components/common/Modal'
+import { ResourceUploadForm, UploadFormData } from '@/components/resources/ResourceUploadForm'
 import { resourceService } from '@services/resourceService'
 
 export const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState('overview')
   const [showUploadModal, setShowUploadModal] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
+  
+  // Real data from database
+  const [stats, setStats] = useState({
+    totalResources: 0,
+    activeStudents: 0,
+    quizzesCreated: 0,
+    pendingApprovals: 0,
+    loading: true
+  })
+
+  // Fetch dashboard statistics
+  React.useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const resourcesRes = await resourceService.getResources({ limit: 1 })
+        
+        setStats({
+          totalResources: resourcesRes.data?.total || 0,
+          activeStudents: 0, // TODO: Add student count API
+          quizzesCreated: 0, // TODO: Add quiz count API
+          pendingApprovals: 0, // TODO: Add approval system
+          loading: false
+        })
+      } catch (error) {
+        console.error('Failed to fetch stats:', error)
+        setStats(prev => ({ ...prev, loading: false }))
+      }
+    }
+
+    fetchStats()
+  }, [])
 
   const handleUploadSubmit = async (data: UploadFormData) => {
     try {
@@ -42,136 +73,85 @@ export const AdminDashboard: React.FC = () => {
 
   return (
     <DashboardLayout title="Admin Dashboard" subtitle="Manage your department resources and students">
-      <div className="space-y-8">
-        {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card>
-            <CardBody>
-              <div className="flex items-center gap-6">
-                <div className="text-4xl">📚</div>
-                <div className="flex-1">
-                  <p className="text-gray-600 text-sm font-medium m-0">Total Resources</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2 m-0">156</p>
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody>
-              <div className="flex items-center gap-6">
-                <div className="text-4xl">👥</div>
-                <div className="flex-1">
-                  <p className="text-gray-600 text-sm font-medium m-0">Active Students</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2 m-0">342</p>
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody>
-              <div className="flex items-center gap-6">
-                <div className="text-4xl">✏️</div>
-                <div className="flex-1">
-                  <p className="text-gray-600 text-sm font-medium m-0">Quizzes Created</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2 m-0">28</p>
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody>
-              <div className="flex items-center gap-6">
-                <div className="text-4xl">⏳</div>
-                <div className="flex-1">
-                  <p className="text-gray-600 text-sm font-medium m-0">Pending Approvals</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2 m-0">5</p>
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-        </div>
-
-        {/* Tabs */}
-        <div className="border-b-2 border-gray-200 flex gap-0 overflow-x-auto">
+      <div className="space-y-0">
+        {/* Tabs - Compact & Scrollable */}
+        <div className="border-b-2 border-gray-200 dark:border-slate-700 flex gap-0 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent -mx-6 px-6">
           <button
-            className={`px-6 py-3 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 ${activeTab === 'overview'
-              ? 'text-purple-600 border-purple-600 -mb-0.5'
-              : 'text-gray-600 border-transparent hover:text-gray-900'
+            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${activeTab === 'overview'
+              ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5'
+              : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
               }`}
             onClick={() => setActiveTab('overview')}
           >
             Overview
           </button>
           <button
-            className={`px-6 py-3 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 ${activeTab === 'resources'
-              ? 'text-purple-600 border-purple-600 -mb-0.5'
-              : 'text-gray-600 border-transparent hover:text-gray-900'
+            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${activeTab === 'resources'
+              ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5'
+              : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
               }`}
             onClick={() => setActiveTab('resources')}
           >
-            Resource Management
+            Resources
           </button>
           <button
-            className={`px-6 py-3 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 ${activeTab === 'students'
-              ? 'text-purple-600 border-purple-600 -mb-0.5'
-              : 'text-gray-600 border-transparent hover:text-gray-900'
+            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${activeTab === 'students'
+              ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5'
+              : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
               }`}
             onClick={() => setActiveTab('students')}
           >
-            Student Management
+            Students
           </button>
           <button
-            className={`px-6 py-3 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 ${activeTab === 'subjects'
-              ? 'text-purple-600 border-purple-600 -mb-0.5'
-              : 'text-gray-600 border-transparent hover:text-gray-900'
+            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${activeTab === 'subjects'
+              ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5'
+              : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
               }`}
             onClick={() => setActiveTab('subjects')}
           >
-            Subject Management
+            Subjects
           </button>
           <button
-            className={`px-6 py-3 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 ${activeTab === 'departments'
-              ? 'text-purple-600 border-purple-600 -mb-0.5'
-              : 'text-gray-600 border-transparent hover:text-gray-900'
+            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${activeTab === 'departments'
+              ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5'
+              : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
               }`}
             onClick={() => setActiveTab('departments')}
           >
-            Department Management
+            Departments
           </button>
           <button
-            className={`px-6 py-3 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 ${activeTab === 'universities'
-              ? 'text-purple-600 border-purple-600 -mb-0.5'
-              : 'text-gray-600 border-transparent hover:text-gray-900'
+            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${activeTab === 'universities'
+              ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5'
+              : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
               }`}
             onClick={() => setActiveTab('universities')}
           >
-            University Management
+            Universities
           </button>
           <button
-            className={`px-6 py-3 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 ${activeTab === 'quizzes'
-              ? 'text-purple-600 border-purple-600 -mb-0.5'
-              : 'text-gray-600 border-transparent hover:text-gray-900'
+            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${activeTab === 'quizzes'
+              ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5'
+              : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
               }`}
             onClick={() => setActiveTab('quizzes')}
           >
-            Quiz Management
+            Quizzes
           </button>
           <button
-            className={`px-6 py-3 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 ${activeTab === 'upload'
-              ? 'text-purple-600 border-purple-600 -mb-0.5'
-              : 'text-gray-600 border-transparent hover:text-gray-900'
+            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${activeTab === 'upload'
+              ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5'
+              : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
               }`}
             onClick={() => setActiveTab('upload')}
           >
-            📤 Upload Resource
+            📤 Upload
           </button>
           <button
-            className={`px-6 py-3 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 ${activeTab === 'analytics'
-              ? 'text-purple-600 border-purple-600 -mb-0.5'
-              : 'text-gray-600 border-transparent hover:text-gray-900'
+            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${activeTab === 'analytics'
+              ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5'
+              : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
               }`}
             onClick={() => setActiveTab('analytics')}
           >
@@ -180,7 +160,7 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Tab Content */}
-        <div className="animate-fadeIn">
+        <div className="animate-fadeIn pt-6">
           {activeTab === 'overview' && <OverviewTab onUpload={() => setShowUploadModal(true)} />}
           {activeTab === 'upload' && (
             <Card>
@@ -199,12 +179,9 @@ export const AdminDashboard: React.FC = () => {
           {activeTab === 'analytics' && <AnalyticsTab />}
         </div>
 
-        <ResourceUpload
-          isOpen={showUploadModal}
-          onClose={() => setShowUploadModal(false)}
-          onSubmit={handleUploadSubmit}
-          loading={isUploading}
-        />
+        <Modal isOpen={showUploadModal} onClose={() => setShowUploadModal(false)} title="Upload New Resource" size="lg">
+          <ResourceUploadForm onSubmit={handleUploadSubmit} loading={isUploading} />
+        </Modal>
       </div>
     </DashboardLayout>
   )

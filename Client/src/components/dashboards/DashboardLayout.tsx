@@ -3,7 +3,7 @@ import { useAuthStore } from '@store/authStore'
 import { useNavigate } from 'react-router-dom'
 import { ThemeToggle } from '@components/common/ThemeToggle'
 import { Footer } from '@components/common/Footer'
-import { Menu, PanelLeftClose, PanelLeft, LogOut, ChevronDown, School, GraduationCap, LayoutDashboard } from 'lucide-react'
+import { Menu, PanelLeftClose, PanelLeft, LogOut } from 'lucide-react'
 import { AppLogo } from '@components/common/AppLogo'
 import { Sidebar } from './Sidebar'
 
@@ -21,16 +21,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const { user, logout } = useAuthStore()
   const navigate = useNavigate()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
-  const [highSchoolDropdown, setHighSchoolDropdown] = useState(false)
-  const [universityDropdown, setUniversityDropdown] = useState(false)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true) // Changed to true - collapsed by default
 
   const handleLogout = () => {
     logout()
     navigate('/login')
   }
-
-  const isSuperAdmin = user?.role === 'super_admin'
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f1c] flex flex-col transition-colors duration-300 overflow-hidden h-screen">
@@ -64,137 +60,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <AppLogo size="lg" />
           </div>
 
-          {/* Super Admin Navigation Menu */}
-          {isSuperAdmin && (
-            <nav className="hidden lg:flex items-center gap-1">
-              {/* Admin Dashboard Link */}
-              <button
-                onClick={() => navigate('/admin/dashboard')}
-                className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-              >
-                <LayoutDashboard className="w-4 h-4" />
-                <span>Admin Dashboard</span>
-              </button>
-
-              {/* High School Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setHighSchoolDropdown(!highSchoolDropdown)
-                    setUniversityDropdown(false)
-                  }}
-                  className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-                >
-                  <School className="w-4 h-4" />
-                  <span>High School</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${highSchoolDropdown ? 'rotate-180' : ''}`} />
-                </button>
-
-                {highSchoolDropdown && (
-                  <>
-                    <div className="fixed inset-0 z-10" onClick={() => setHighSchoolDropdown(false)} />
-                    <div className="absolute top-full left-0 mt-1 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 py-2 z-20">
-                      <button
-                        onClick={() => {
-                          navigate('/highschool/dashboard')
-                          setHighSchoolDropdown(false)
-                        }}
-                        className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                      >
-                        Grade 9
-                      </button>
-                      <button
-                        onClick={() => {
-                          navigate('/highschool/dashboard')
-                          setHighSchoolDropdown(false)
-                        }}
-                        className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                      >
-                        Grade 10
-                      </button>
-                      <button
-                        onClick={() => {
-                          navigate('/highschool/dashboard')
-                          setHighSchoolDropdown(false)
-                        }}
-                        className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                      >
-                        Grade 11
-                      </button>
-                      <button
-                        onClick={() => {
-                          navigate('/highschool/dashboard')
-                          setHighSchoolDropdown(false)
-                        }}
-                        className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                      >
-                        Grade 12
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {/* University Dropdown */}
-              <div className="relative">
-                <button
-                  onClick={() => {
-                    setUniversityDropdown(!universityDropdown)
-                    setHighSchoolDropdown(false)
-                  }}
-                  className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-                >
-                  <GraduationCap className="w-4 h-4" />
-                  <span>University</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${universityDropdown ? 'rotate-180' : ''}`} />
-                </button>
-
-                {universityDropdown && (
-                  <>
-                    <div className="fixed inset-0 z-10" onClick={() => setUniversityDropdown(false)} />
-                    <div className="absolute top-full left-0 mt-1 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 py-2 z-20">
-                      <button
-                        onClick={() => {
-                          navigate('/university/dashboard')
-                          setUniversityDropdown(false)
-                        }}
-                        className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                      >
-                        Remedial
-                      </button>
-                      <button
-                        onClick={() => {
-                          navigate('/university/dashboard')
-                          setUniversityDropdown(false)
-                        }}
-                        className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                      >
-                        Freshman
-                      </button>
-                      <button
-                        onClick={() => {
-                          navigate('/university/dashboard')
-                          setUniversityDropdown(false)
-                        }}
-                        className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                      >
-                        Senior
-                      </button>
-                      <button
-                        onClick={() => {
-                          navigate('/university/dashboard')
-                          setUniversityDropdown(false)
-                        }}
-                        className="w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                      >
-                        GC (Graduated)
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            </nav>
-          )}
+          {/* Super Admin Navigation Menu - REMOVED */}
+          {/* Navigation items removed as requested */}
 
         </div>
 
@@ -234,10 +101,20 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       {/* 2. Container for Sidebar and Main Content */}
       <div className="flex flex-1 overflow-hidden">
 
-        {/* Sidebar - Desktop */}
-        <aside className={`hidden lg:block h-full flex-shrink-0 transition-all duration-300 ${isSidebarCollapsed ? 'w-0' : 'w-48'}`}>
-          <Sidebar collapsed={isSidebarCollapsed} />
-        </aside>
+        {/* Sidebar - Desktop Popup Overlay */}
+        {!isSidebarCollapsed && (
+          <>
+            {/* Backdrop */}
+            <div 
+              className="hidden lg:block fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-30 transition-opacity duration-300"
+              onClick={() => setIsSidebarCollapsed(true)}
+            />
+            {/* Sidebar Popup */}
+            <aside className="hidden lg:block fixed left-0 top-16 bottom-0 w-48 z-40 shadow-2xl animate-slideInLeft">
+              <Sidebar collapsed={false} />
+            </aside>
+          </>
+        )}
 
         {/* Sidebar - Mobile Drawer */}
         <div
@@ -253,8 +130,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           </aside>
         </div>
 
-        {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto custom-scrollbar">
+        {/* Main Content Area - Full Width */}
+        <main className="flex-1 overflow-y-auto custom-scrollbar w-full">
           <div className="w-full p-4 pb-0">
             {children}
           </div>

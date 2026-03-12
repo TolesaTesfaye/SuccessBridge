@@ -1,37 +1,77 @@
 import api from './api'
+import { ApiResponse } from '@types'
 
-export interface University {
+interface University {
   id: string
   name: string
   location: string
   email?: string
-  phone?: string
-  createdAt: string
-  updatedAt: string
+}
+
+interface UniversityWithResources extends University {
+  resourceCount?: number
 }
 
 export const universityService = {
-  getAll: async (): Promise<University[]> => {
+  getUniversities: async (): Promise<ApiResponse<University[]>> => {
     const response = await api.get('/universities')
     return response.data
   },
 
-  getById: async (id: string): Promise<University> => {
-    const response = await api.get(`/universities/${id}`)
-    return response.data
-  },
-
-  create: async (data: Omit<University, 'id' | 'createdAt' | 'updatedAt'>): Promise<University> => {
-    const response = await api.post('/universities', data)
-    return response.data
-  },
-
-  update: async (id: string, data: Partial<University>): Promise<University> => {
-    const response = await api.put(`/universities/${id}`, data)
-    return response.data
-  },
-
-  delete: async (id: string): Promise<void> => {
-    await api.delete(`/universities/${id}`)
+  getUniversitiesWithFreshmanResources: async (): Promise<ApiResponse<UniversityWithResources[]>> => {
+    try {
+      // Get universities that have freshman resources
+      const response = await api.get('/resources', {
+        params: {
+          educationLevel: 'university',
+          grade: 'freshman',
+          limit: 1000 // Get a large number to see all universities
+        }
+      })
+      
+      if (response.data.success && response.data.data) {
+        const resources = response.data.data.data || []
+        
+        // Extract unique universities from resources
+        const universityMap = new Map<string, UniversityWithResources>()
+        
+        resources.forEach((resource: any) => {
+          if (resource.university && resource.university.id) {
+            const uni = resource.university
+            const existing = universityMap.get(uni.id)
+            if (existing) {
+              existing.resourceCount = (existing.resourceCount || 0) + 1
+            } else {
+              universityMap.set(uni.id, {
+                id: uni.id,
+                name: uni.name,
+                location: uni.location || '',
+                resourceCount: 1
+              })
+            }
+          }
+        })
+        
+        const universities = Array.from(universityMap.values()).sort((a, b) => a.name.localeCompare(b.name))
+        
+        return {
+          success: true,
+          data: universities
+        }
+      }
+      
+      return {
+        success: false,
+        error: 'Failed to fetch universities with freshman resources',
+        data: []
+      }
+    } catch (error) {
+      console.error('Error fetching universities with freshman resources:', error)
+      return {
+        success: false,
+        error: 'Network error while fetching universities',
+        data: []
+      }
+    }
   },
 }

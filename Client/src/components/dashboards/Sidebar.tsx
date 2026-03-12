@@ -13,10 +13,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ onClose, collapsed = false }) 
     const location = useLocation()
     const { user } = useAuthStore()
 
+    // Determine if the user should see the Quizzes nav item
+    const shouldShowQuizzes = !(user?.studentType === 'university' && (user?.universityLevel === 'senior' || user?.universityLevel === 'gc'))
+
     // Student navigation items
     const studentNavItems = [
         { label: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard className="w-5 h-5" />, emoji: '📊' },
-        { label: 'My Quizzes', path: '/student/quizzes', icon: <PenTool className="w-5 h-5" />, emoji: '✏️' },
+        ...(shouldShowQuizzes ? [{ label: 'My Quizzes', path: '/student/quizzes', icon: <PenTool className="w-5 h-5" />, emoji: '✏️' }] : []),
         { label: 'Progress', path: '/student/progress', icon: <BarChart3 className="w-5 h-5" />, emoji: '📈' },
         { label: 'Profile', path: '/student/profile', icon: <User className="w-5 h-5" />, emoji: '👤' },
     ]

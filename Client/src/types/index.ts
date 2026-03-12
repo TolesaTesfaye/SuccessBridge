@@ -5,9 +5,9 @@ export interface User {
   name: string
   role: 'student' | 'admin' | 'super_admin'
   studentType?: 'high_school' | 'university'
-  highSchoolGrade?: 'grade_9' | 'grade_10' | 'grade_11' | 'grade_12'
-  highSchoolStream?: 'natural' | 'social'
-  universityLevel?: 'remedial' | 'freshman' | 'senior' | 'gc'
+  highSchoolGrade?: string
+  highSchoolStream?: string
+  universityLevel?: string // 'remedial' | 'freshman' | 'senior' | 'gc'
   university?: string
   department?: string
   createdAt: string | Date
@@ -89,7 +89,7 @@ export interface Resource {
   type: ResourceType
   fileUrl: string
   educationLevel: 'high_school' | 'university'
-  grade?: string
+  grade?: string // Can be high school grade or university category
   stream?: string
   subjectId: string
   universityId?: string
@@ -125,11 +125,13 @@ export interface Question {
 // Filter Types
 export interface HighSchoolFilter {
   educationLevel?: 'high_school'
-  grade?: string
-  stream?: string
+  grade?: string // 'grade_9', 'grade_10', 'grade_11', 'grade_12'
+  stream?: string // 'natural', 'social'
   subject?: string
   resourceType?: ResourceType
+  type?: ResourceType // Backend uses 'type' parameter
   limit?: number
+  page?: number
 }
 
 export interface UniversityFilter {
@@ -138,11 +140,14 @@ export interface UniversityFilter {
   universityId?: string
   department?: string
   departmentId?: string
+  category?: string // 'remedial', 'freshman', 'senior', 'gc'
+  grade?: string // Backend stores category in grade field
   stream?: string
-  grade?: string
   subject?: string
   resourceType?: ResourceType
+  type?: ResourceType // Backend uses 'type' parameter
   limit?: number
+  page?: number
 }
 
 // API Response Types

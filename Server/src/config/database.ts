@@ -10,7 +10,7 @@ const sequelize = new Sequelize({
   database: process.env.DB_NAME || 'learning_platform',
   username: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'password',
-  logging: process.env.NODE_ENV === 'development' ? console.log : false,
+  logging: true, // Temporarily enabled for debugging
   pool: {
     max: 5,
     min: 0,

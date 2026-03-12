@@ -10,14 +10,25 @@ const redisClient = createClient({
   },
 })
 
-redisClient.on('error', (err) => console.error('Redis Client Error', err))
-redisClient.on('connect', () => console.log('Redis Client Connected'))
+redisClient.on('error', (err) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.warn('⚠️  Redis Client Error (optional):', err.message)
+  }
+})
+
+redisClient.on('connect', () => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔗 Redis Client Connected')
+  }
+})
 
 export const connectRedis = async () => {
   try {
     await redisClient.connect()
   } catch (error) {
-    console.error('Failed to connect to Redis:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('⚠️  Redis not available (optional):', (error as Error).message)
+    }
   }
 }
 

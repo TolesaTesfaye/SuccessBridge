@@ -1,85 +1,97 @@
 import { Router, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import bcrypt from 'bcryptjs'
-import User from '@models/User'
-import type { ILoginRequest, IRegisterRequest } from '../types/index'
 import { AppError } from '@middleware/errorHandler'
+import { authMiddleware } from '@middleware/auth'
+import { AuthService } from '../services/authService'
 
 const router = Router()
+
+/**
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - name
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: student@example.com
+ *               name:
+ *                 type: string
+ *                 example: John Doe
+ *               password:
+ *                 type: string
+ *                 minLength: 6
+ *                 example: password123
+ *               role:
+ *                 type: string
+ *                 enum: [student, admin, super_admin]
+ *                 default: student
+ *               studentType:
+ *                 type: string
+ *                 enum: [high_school, university]
+ *               highSchoolGrade:
+ *                 type: string
+ *                 example: grade_12
+ *               highSchoolStream:
+ *                 type: string
+ *                 example: natural
+ *               universityLevel:
+ *                 type: string
+ *                 example: freshman
+ *               university:
+ *                 type: string
+ *                 example: Addis Ababa University
+ *               department:
+ *                 type: string
+ *                 example: Computer Science
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *                     token:
+ *                       type: string
+ *                       example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 
 // Register
 router.post('/register', async (req: Request, res: Response) => {
   try {
     console.log('Registering request body:', req.body)
-    const {
-      email,
-      name,
-      password,
-      role = 'student',
-      studentType,
-      highSchoolGrade,
-      highSchoolStream,
-      universityLevel,
-      university,
-      department,
-    } = req.body as IRegisterRequest & {
-      studentType?: string
-      highSchoolGrade?: string
-      highSchoolStream?: string
-      universityLevel?: string
-      university?: string
-      department?: string
-    }
-
-    if (!email || !name || !password) {
-      throw new AppError(400, 'Email, name, and password are required')
-    }
-
-    const existingUser = await User.findOne({ where: { email } })
-    if (existingUser) {
-      throw new AppError(400, 'User already exists')
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10)
-
-    const userData = {
-      email,
-      name,
-      password: hashedPassword,
-      role,
-      studentType: studentType || null,
-      highSchoolGrade: highSchoolGrade || null,
-      highSchoolStream: highSchoolStream || null,
-      universityLevel: universityLevel || null,
-      university: university || null,
-      department: department || null,
-    }
-
-    const user = await User.create(userData as any)
-
-    const token = jwt.sign(
-      { userId: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET || 'secret',
-      { expiresIn: process.env.JWT_EXPIRE || '7d' } as any,
-    )
+    const result = await AuthService.register(req.body)
 
     res.status(201).json({
       success: true,
-      data: {
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          studentType,
-          highSchoolGrade,
-          highSchoolStream,
-          universityLevel,
-          university,
-          department,
-        },
-        token,
-      },
+      data: result,
     })
   } catch (error: any) {
     console.error('Registration error:', error)
@@ -94,83 +106,63 @@ router.post('/register', async (req: Request, res: Response) => {
   }
 })
 
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Login user
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: student@example.com
+ *               password:
+ *                 type: string
+ *                 example: password123
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/User'
+ *                     token:
+ *                       type: string
+ *                       example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *       401:
+ *         description: Invalid credentials
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // Login
 router.post('/login', async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body as ILoginRequest
-
-    if (!email || !password) {
-      throw new AppError(400, 'Email and password are required')
-    }
-
-    const user = await User.findOne({ where: { email } })
-
-    // If user not found, check if it's the super admin credentials for demo
-    if (!user) {
-      const superAdminEmail = process.env.SUPER_ADMIN_EMAIL || 'tolesatesfaye273@gmail.com'
-      const superAdminPassword = process.env.SUPER_ADMIN_PASSWORD || '702512@Tol'
-
-      if (email === superAdminEmail && password === superAdminPassword) {
-        // Create super admin in database if it doesn't exist
-        const hashedPassword = await bcrypt.hash(superAdminPassword, 10)
-        const newUser = await User.create({
-          email: superAdminEmail,
-          name: 'Super Admin',
-          password: hashedPassword,
-          role: 'super_admin',
-        } as any)
-
-        const token = jwt.sign(
-          { userId: newUser.id, email: newUser.email, role: newUser.role },
-          process.env.JWT_SECRET || 'secret',
-          { expiresIn: process.env.JWT_EXPIRE || '7d' } as any,
-        )
-
-        return res.json({
-          success: true,
-          data: {
-            user: {
-              id: newUser.id,
-              email: newUser.email,
-              name: newUser.name,
-              role: newUser.role,
-            },
-            token,
-          },
-        })
-      }
-
-      throw new AppError(401, 'Invalid credentials')
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password)
-    if (!isPasswordValid) {
-      throw new AppError(401, 'Invalid credentials')
-    }
-
-    const token = jwt.sign(
-      { userId: user.id, email: user.email, role: user.role },
-      process.env.JWT_SECRET || 'secret',
-      { expiresIn: process.env.JWT_EXPIRE || '7d' } as any,
-    )
+    const result = await AuthService.login(req.body)
 
     res.json({
       success: true,
-      data: {
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          studentType: user.studentType,
-          highSchoolGrade: user.highSchoolGrade,
-          highSchoolStream: user.highSchoolStream,
-          universityLevel: user.universityLevel,
-          university: user.university,
-          department: user.department,
-        },
-        token,
-      },
+      data: result,
     })
   } catch (error) {
     if (error instanceof AppError) {
@@ -181,6 +173,34 @@ router.post('/login', async (req: Request, res: Response) => {
   }
 })
 
+/**
+ * @swagger
+ * /auth/me:
+ *   get:
+ *     summary: Get current user information
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Current user information
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // Get current user
 router.get('/me', async (req: Request, res: Response) => {
   try {
@@ -190,32 +210,69 @@ router.get('/me', async (req: Request, res: Response) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as any
-    const user = await User.findByPk(decoded.userId)
-
-    if (!user) {
-      throw new AppError(404, 'User not found')
-    }
+    const userData = await AuthService.getCurrentUser(decoded.userId)
 
     res.json({
       success: true,
-      data: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-        studentType: user.studentType,
-        highSchoolGrade: user.highSchoolGrade,
-        highSchoolStream: user.highSchoolStream,
-        universityLevel: user.universityLevel,
-        university: user.university,
-        department: user.department,
-      },
+      data: userData,
     })
   } catch (error) {
     if (error instanceof AppError) {
       res.status(error.statusCode).json({ success: false, error: error.message })
     } else {
       res.status(500).json({ success: false, error: 'Failed to get user' })
+    }
+  }
+})
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Logout user
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Logged out successfully
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+// Logout
+router.post('/logout', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1]
+    
+    if (token) {
+      await AuthService.logout(token)
+    }
+
+    res.json({
+      success: true,
+      message: 'Logged out successfully'
+    })
+  } catch (error) {
+    console.error('Logout error:', error)
+    if (error instanceof AppError) {
+      res.status(error.statusCode).json({ success: false, error: error.message })
+    } else {
+      res.status(500).json({ success: false, error: 'Logout failed' })
     }
   }
 })

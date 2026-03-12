@@ -25,7 +25,8 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
     location.pathname.includes('/university')
   const isHome = location.pathname === '/'
 
-  if (isDashboard || (isAuthPage && !isAuthenticated)) {
+  // Skip layout for dashboards and auth pages (regardless of auth status)
+  if (isDashboard || isAuthPage) {
     return <>{children}</>
   }
 

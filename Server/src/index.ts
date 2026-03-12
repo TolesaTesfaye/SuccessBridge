@@ -4,7 +4,9 @@ import dotenv from 'dotenv'
 import sequelize from './config/database.js'
 import { initializeDatabase } from './config/initDb.js'
 import { seedSuperAdmin } from './config/seedAdmin.js'
+import { setupSwagger } from './config/swagger.js'
 import { errorHandler } from './middleware/errorHandler.js'
+import { logger } from './utils/logger.js'
 import authRoutes from './routes/auth.js'
 import resourceRoutes from './routes/resources.js'
 import userRoutes from './routes/users.js'
@@ -38,6 +40,9 @@ app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
+// Setup Swagger documentation
+setupSwagger(app)
+
 // Static files
 app.use('/uploads', express.static(process.env.UPLOAD_DIR || './uploads'))
 
@@ -62,26 +67,36 @@ app.use(errorHandler)
 // Database connection and server start
 const startServer = async () => {
   try {
+    logger.info('Starting SuccessBridge server...')
+    
     // Initialize database (create if not exists)
     await initializeDatabase()
+    logger.database('Database initialized')
 
     // Setup model associations
     setupAssociations()
 
     await sequelize.authenticate()
-    console.log('Database connected successfully')
+    logger.database('Connected successfully')
 
-    await sequelize.sync({ alter: process.env.NODE_ENV === 'development' })
-    console.log('Database models synced')
+    await sequelize.sync({ 
+      alter: process.env.NODE_ENV === 'development',
+      logging: false // Disable sync logging
+    })
+    logger.database('Models synced')
 
     // Seed super admin
     await seedSuperAdmin()
+    logger.info('Super admin seeded')
 
     app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`)
+      logger.server(`Server running on port ${PORT}`)
+      logger.info(`📚 API Documentation: http://localhost:${PORT}/api-docs`)
+      logger.info(`🔍 Health check: http://localhost:${PORT}/health`)
+      logger.success('SuccessBridge server started successfully!')
     })
   } catch (error) {
-    console.error('Failed to start server:', error)
+    logger.error('Failed to start server:', error)
     process.exit(1)
   }
 }

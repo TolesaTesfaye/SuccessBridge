@@ -22,7 +22,13 @@ export const subjectService = {
     return response.data
   },
 
-  create: async (data: Omit<Subject, 'id' | 'createdAt' | 'updatedAt'>): Promise<Subject> => {
+  create: async (data: {
+    name: string
+    code: string
+    departmentId?: string
+    gradeId?: string
+    streamId?: string
+  }): Promise<Subject> => {
     const response = await api.post('/subjects', data)
     return response.data
   },

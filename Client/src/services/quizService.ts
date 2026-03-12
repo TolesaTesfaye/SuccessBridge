@@ -17,8 +17,8 @@ export interface QuizResult {
 }
 
 export const quizService = {
-  getAll: async (): Promise<Quiz[]> => {
-    const response = await api.get('/quizzes')
+  getAll: async (params?: any): Promise<Quiz[]> => {
+    const response = await api.get('/quizzes', { params })
     return response.data
   },
 
@@ -27,7 +27,17 @@ export const quizService = {
     return response.data
   },
 
-  create: async (data: any): Promise<Quiz> => {
+  create: async (data: {
+    title: string
+    description: string
+    educationLevel: 'high_school' | 'university'
+    grade?: string
+    stream?: string
+    subjectId: string
+    questions: Question[]
+    timeLimit: number
+    passingScore: number
+  }): Promise<Quiz> => {
     const response = await api.post('/quizzes', data)
     return response.data
   },
@@ -41,7 +51,12 @@ export const quizService = {
     await api.delete(`/quizzes/${id}`)
   },
 
-  submitResult: async (quizId: string, result: Omit<QuizResult, 'id' | 'quizId' | 'studentId' | 'createdAt' | 'updatedAt'>): Promise<QuizResult> => {
+  submitResult: async (quizId: string, result: {
+    score: number
+    totalPoints: number
+    timeSpent: number
+    answers: Record<string, string>
+  }): Promise<QuizResult> => {
     const response = await api.post(`/quizzes/${quizId}/submit`, result)
     return response.data
   },

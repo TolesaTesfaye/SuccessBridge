@@ -4,7 +4,7 @@ import { useAuth } from '../hooks/useAuth'
 import { FormInput } from '@components/forms/FormInput'
 import { FormSelect } from '@components/forms/FormSelect'
 import { AppLogo } from '@components/common/AppLogo'
-import { Footer } from '@components/common/Footer'
+import { ThemeToggle } from '@components/common/ThemeToggle'
 import { UserPlus, AlertCircle, ArrowLeft, ArrowRight, GraduationCap, School } from 'lucide-react'
 
 type StudentType = 'high_school' | 'university' | null
@@ -25,13 +25,7 @@ interface FormDataType {
   department?: string
 }
 
-const UNIVERSITIES = [
-  'Addis Ababa University',
-  'Jimma University',
-  'Bahir Dar University',
-  'Haramaya University',
-  'Hawassa University',
-]
+import { UNIVERSITIES } from '@utils/constants'
 
 const DEPARTMENTS: Record<string, string[]> = {
   'Health': ['Medicine', 'Nursing', 'Pharmacy', 'Public Health', 'Midwifery', 'Medical Laboratory Science', 'Anesthesia'],
@@ -187,6 +181,11 @@ export const Register: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0a0f1c] flex flex-col justify-center py-12 sm:px-6 lg:px-8 transition-colors duration-300 relative overflow-hidden">
+
+      {/* Theme Toggle - Top Right */}
+      <div className="absolute top-4 right-4 z-20">
+        <ThemeToggle />
+      </div>
 
       {/* Background Decorative Elements */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] opacity-30 pointer-events-none">
@@ -597,8 +596,6 @@ export const Register: React.FC = () => {
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   )
 }

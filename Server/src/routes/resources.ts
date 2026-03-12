@@ -2,15 +2,18 @@ import { Router, Request, Response } from 'express'
 import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
-import Resource from '@models/Resource'
-import Subject from '@models/Subject'
-import University from '@models/University'
-import Department from '@models/Department'
-import Grade from '@models/Grade'
 import { authMiddleware, requireRole } from '@middleware/auth'
 import { AppError } from '@middleware/errorHandler'
+import { ResourceService } from '../services/resourceService'
 
 const router = Router()
+
+/**
+ * @swagger
+ * tags:
+ *   name: Resources
+ *   description: Resource management endpoints
+ */
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -34,100 +37,88 @@ const upload = multer({
   },
 })
 
+/**
+ * @swagger
+ * /resources:
+ *   get:
+ *     summary: Get all resources with filtering
+ *     tags: [Resources]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of items per page
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *         description: Resource type filter
+ *       - in: query
+ *         name: educationLevel
+ *         schema:
+ *           type: string
+ *           enum: [high_school, university]
+ *         description: Education level filter
+ *       - in: query
+ *         name: grade
+ *         schema:
+ *           type: string
+ *         description: Grade or category filter
+ *       - in: query
+ *         name: stream
+ *         schema:
+ *           type: string
+ *         description: Stream filter
+ *       - in: query
+ *         name: subject
+ *         schema:
+ *           type: string
+ *         description: Subject name filter
+ *       - in: query
+ *         name: university
+ *         schema:
+ *           type: string
+ *         description: University name filter
+ *       - in: query
+ *         name: department
+ *         schema:
+ *           type: string
+ *         description: Department name filter
+ *     responses:
+ *       200:
+ *         description: List of resources
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaginatedResponse'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // Get all resources
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const {
-      page = 1,
-      limit = 10,
-      type,
-      resourceType,
-      educationLevel,
-      subjectId,
-      subject: subjectName,
-      grade,
-      stream,
-      universityId,
-      departmentId,
-      university: universityName,
-      department: departmentName
-    } = req.query
+    const filters = req.query as any
+    const result = await ResourceService.getResources(filters)
 
-    const where: any = {}
-
-    // Map resourceType (frontend labels) to type (backend keys)
-    const rawType = type || resourceType
-    if (rawType) {
-      where.type = (rawType as string).toLowerCase().trim().replace(/\s+/g, '_')
+    if (process.env.DEBUG === 'true') {
+      console.log('📦 Backend: Found resources count:', result.total)
     }
-
-    if (educationLevel) where.educationLevel = (educationLevel as string).toLowerCase()
-    if (grade) where.grade = (grade as string).toLowerCase()
-    if (stream) where.stream = (stream as string).toLowerCase()
-
-    // Handle University Filtering (by ID or Name)
-    if (universityId) {
-      where.universityId = universityId
-    } else if (universityName) {
-      const uni = await University.findOne({ where: { name: universityName as string } })
-      if (uni) {
-        where.universityId = uni.id
-      } else {
-        return res.json({ success: true, data: { data: [], total: 0, page: Number(page), limit: Number(limit) } })
-      }
-    }
-
-    // Handle Department Filtering (by ID or Name)
-    if (departmentId) {
-      where.departmentId = departmentId
-    } else if (departmentName) {
-      const dept = await Department.findOne({ where: { name: departmentName as string } })
-      if (dept) {
-        where.departmentId = dept.id
-      } else {
-        // Only return empty if they specifically searched for a department that doesn't exist
-        // (Freshman don't have depts, so we don't return early if name is missing but req didn't require it)
-      }
-    }
-
-    // Handle subject filtering (by ID or Name)
-    if (subjectId) {
-      where.subjectId = subjectId
-    } else if (subjectName) {
-      const subj = await Subject.findOne({ where: { name: subjectName as string } })
-      if (subj) {
-        where.subjectId = subj.id
-      } else {
-        // If subject name provided but not found, return empty results early
-        return res.json({
-          success: true,
-          data: {
-            data: [],
-            total: 0,
-            page: Number(page),
-            limit: Number(limit),
-          },
-        })
-      }
-    }
-
-    const offset = (Number(page) - 1) * Number(limit)
-
-    const { count, rows } = await Resource.findAndCountAll({
-      where,
-      offset,
-      limit: Number(limit),
-      order: [['createdAt', 'DESC']],
-    })
 
     res.json({
       success: true,
-      data: {
-        data: rows,
-        total: count,
-        page: Number(page),
-        limit: Number(limit),
-      },
+      data: result,
     })
   } catch (error) {
     console.error('Fetch resources error:', error)
@@ -135,15 +126,44 @@ router.get('/', async (req: Request, res: Response) => {
   }
 })
 
+/**
+ * @swagger
+ * /resources/{id}:
+ *   get:
+ *     summary: Get a single resource by ID
+ *     tags: [Resources]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *         description: Resource ID
+ *     responses:
+ *       200:
+ *         description: Resource details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/Resource'
+ *       404:
+ *         description: Resource not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // Get single resource
 router.get('/:id', async (req: Request, res: Response) => {
   try {
-    const resource = await Resource.findByPk(req.params.id)
-
-    if (!resource) {
-      throw new AppError(404, 'Resource not found')
-    }
-
+    const resource = await ResourceService.getResourceById(req.params.id)
     res.json({ success: true, data: resource })
   } catch (error) {
     if (error instanceof AppError) {
@@ -154,103 +174,94 @@ router.get('/:id', async (req: Request, res: Response) => {
   }
 })
 
+/**
+ * @swagger
+ * /resources:
+ *   post:
+ *     summary: Upload a new resource
+ *     tags: [Resources]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - type
+ *               - educationLevel
+ *               - subject
+ *               - file
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: Mathematics Textbook
+ *               description:
+ *                 type: string
+ *                 example: Comprehensive mathematics textbook for grade 12
+ *               type:
+ *                 type: string
+ *                 example: textbook
+ *               educationLevel:
+ *                 type: string
+ *                 enum: [high_school, university]
+ *               gradeId:
+ *                 type: string
+ *                 example: grade_12
+ *               category:
+ *                 type: string
+ *                 example: freshman
+ *               stream:
+ *                 type: string
+ *                 example: natural
+ *               subject:
+ *                 type: string
+ *                 example: Mathematics
+ *               universityId:
+ *                 type: string
+ *                 example: Addis Ababa University
+ *               departmentId:
+ *                 type: string
+ *                 example: Computer Science
+ *               tags:
+ *                 type: string
+ *                 example: math,algebra,calculus
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Resource uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/Resource'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // Create resource (admin only)
 router.post('/', authMiddleware, requireRole('admin', 'super_admin'), upload.single('file'), async (req: Request, res: Response) => {
   try {
-    const {
-      title,
-      description,
-      type,
-      educationLevel,
-      gradeId,
-      category,
-      stream,
-      subject,
-      universityId: universityName,
-      departmentId: departmentName,
-      tags
-    } = req.body
-    const file = req.file
-
-    if (!title || !type || !educationLevel || !subject) {
-      throw new AppError(400, 'Missing required fields (title, type, educationLevel, subject)')
-    }
-
-    if (!file && !req.body.fileUrl) {
-      throw new AppError(400, 'File or File URL is required')
-    }
-
-    // Try to find subjectId or create a placeholder if it doesn't exist
-    let subjectId: string
-    const existingSubject = await Subject.findOne({ where: { name: subject } })
-
-    if (existingSubject) {
-      subjectId = existingSubject.id
-    } else {
-      // For high school, we might have a string like 'grade_12'
-      // The Subject model expects gradeId to be a UUID. 
-      const subjectData: any = {
-        name: subject,
-        code: subject.toUpperCase().replace(/\s+/g, '_') + '_' + Math.random().toString(36).substring(2, 7) + '_' + Date.now().toString().slice(-4),
-      }
-
-      // Only attempt to add gradeId if it looks like a UUID or resolve if its a name
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-      if (gradeId) {
-        if (uuidRegex.test(gradeId)) {
-          subjectData.gradeId = gradeId
-        } else {
-          // Try to look up by name: 'grade_12' -> 'Grade 12'
-          const gradeName = gradeId.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())
-          const g = await Grade.findOne({ where: { name: gradeName } })
-          if (g) subjectData.gradeId = g.id
-        }
-      }
-
-      const newSubject = await Subject.create(subjectData)
-      subjectId = newSubject.id
-    }
-
-    const fileUrl = file ? `/uploads/${file.filename}` : req.body.fileUrl
-
-    // Resolve University and Department IDs if names were provided
-    let finalUniversityId = null
-    let finalDepartmentId = null
-
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-
-    if (universityName) {
-      if (uuidRegex.test(universityName)) {
-        finalUniversityId = universityName
-      } else {
-        const uni = await University.findOne({ where: { name: universityName } })
-        if (uni) finalUniversityId = uni.id
-      }
-    }
-
-    if (departmentName) {
-      if (uuidRegex.test(departmentName)) {
-        finalDepartmentId = departmentName
-      } else {
-        const dept = await Department.findOne({ where: { name: departmentName } })
-        if (dept) finalDepartmentId = dept.id
-      }
-    }
-
-    const resource = await Resource.create({
-      title,
-      description,
-      type: type.toLowerCase().replace(/\s+/g, '_'),
-      fileUrl,
-      educationLevel: educationLevel.toLowerCase() === 'university' ? 'university' : 'high_school',
-      grade: (gradeId || category || '').toLowerCase(),
-      stream: stream ? stream.toLowerCase() : undefined,
-      subjectId,
-      universityId: finalUniversityId,
-      departmentId: finalDepartmentId,
-      tags: typeof tags === 'string' ? tags.split(',').map(t => t.trim()) : (tags || []),
-      uploadedBy: req.user!.userId,
-    } as any)
+    const createdBy = req.user!.userId
+    const resource = await ResourceService.createResource(req.body, req.file, createdBy)
 
     res.status(201).json({ success: true, data: resource })
   } catch (error) {
@@ -258,7 +269,7 @@ router.post('/', authMiddleware, requireRole('admin', 'super_admin'), upload.sin
     if (error instanceof AppError) {
       res.status(error.statusCode).json({ success: false, error: error.message })
     } else {
-      res.status(500).json({ success: false, error: (error as Error).message || 'Failed to create resource' })
+      res.status(400).json({ success: false, error: (error as Error).message || 'Failed to create resource' })
     }
   }
 })
@@ -266,14 +277,7 @@ router.post('/', authMiddleware, requireRole('admin', 'super_admin'), upload.sin
 // Update resource (admin only)
 router.put('/:id', authMiddleware, requireRole('admin', 'super_admin'), async (req: Request, res: Response) => {
   try {
-    const resource = await Resource.findByPk(req.params.id)
-
-    if (!resource) {
-      throw new AppError(404, 'Resource not found')
-    }
-
-    await resource.update(req.body)
-
+    const resource = await ResourceService.updateResource(req.params.id, req.body)
     res.json({ success: true, data: resource })
   } catch (error) {
     if (error instanceof AppError) {
@@ -287,15 +291,8 @@ router.put('/:id', authMiddleware, requireRole('admin', 'super_admin'), async (r
 // Delete resource (admin only)
 router.delete('/:id', authMiddleware, requireRole('admin', 'super_admin'), async (req: Request, res: Response) => {
   try {
-    const resource = await Resource.findByPk(req.params.id)
-
-    if (!resource) {
-      throw new AppError(404, 'Resource not found')
-    }
-
-    await resource.destroy()
-
-    res.json({ success: true, message: 'Resource deleted' })
+    const result = await ResourceService.deleteResource(req.params.id)
+    res.json(result)
   } catch (error) {
     if (error instanceof AppError) {
       res.status(error.statusCode).json({ success: false, error: error.message })

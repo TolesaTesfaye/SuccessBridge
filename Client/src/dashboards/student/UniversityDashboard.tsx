@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from 'react'
 import { DashboardLayout } from '@components/dashboards/DashboardLayout'
 import { resourceService } from '@services/resourceService'
+import { universityService } from '@services/universityService'
 import { useAuthStore } from '@store/authStore'
 import { BookOpen, GraduationCap, Library, Filter, FileText, BrainCircuit, ArrowRight, Sparkles, Trophy } from 'lucide-react'
 import { ResourceCard } from '@components/resources/ResourceCard'
 
-import { DEPARTMENTS, UNIVERSITY_CATEGORIES } from '@utils/constants'
+import { DEPARTMENTS, UNIVERSITY_CATEGORIES, UNIVERSITIES } from '@utils/constants'
 
 type StudentCategory = 'remedial' | 'freshman' | 'senior' | 'gc'
+
+interface UniversityWithResources {
+  id: string
+  name: string
+  location?: string
+  resourceCount?: number
+}
 
 export const UniversityDashboard: React.FC = () => {
   const { user } = useAuthStore()
@@ -15,12 +23,22 @@ export const UniversityDashboard: React.FC = () => {
   const userUni = user?.university || ''
   const userDept = user?.department || ''
 
+  console.log('🎓 [DASHBOARD INIT] User profile:', {
+    name: user?.name,
+    university: userUni,
+    level: userLevel,
+    department: userDept,
+    studentType: user?.studentType
+  })
+
   const [activeTab, setActiveTab] = useState<'home' | 'level'>('home')
   const activeCategory = userLevel
   const selectedDepartment = userDept
   const [selectedSubject, setSelectedSubject] = useState<string>('')
   const [selectedResourceType, setSelectedResourceType] = useState<string>('')
   const [selectedStream, setSelectedStream] = useState<'natural' | 'social' | ''>('')
+  const [selectedUniversity, setSelectedUniversity] = useState<string>('')
+  const [availableUniversities, setAvailableUniversities] = useState<UniversityWithResources[]>([])
   const [resources, setResources] = useState<any[]>([])
   const [homeResources, setHomeResources] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
@@ -33,6 +51,14 @@ export const UniversityDashboard: React.FC = () => {
       return ['Common Course', 'Math', 'Logic', 'Psychology', 'Physics', 'English']
     }
     if (activeCategory === 'remedial') {
+      // For remedial, subjects depend on stream selection
+      if (selectedStream === 'natural') {
+        return ['Common Course', 'Math', 'Physics', 'Chemistry', 'Biology']
+      }
+      if (selectedStream === 'social') {
+        return ['Common Course', 'History', 'Geography', 'Economics', 'Civics']
+      }
+      // If no stream selected, show general subjects
       return ['Common Course', 'Natural Science', 'Social Science']
     }
     if (selectedDepartment && (DEPARTMENTS as any)[selectedDepartment]) {
@@ -57,22 +83,32 @@ export const UniversityDashboard: React.FC = () => {
         grade: activeCategory, // Backend stores category in 'grade' field
       }
       
-      // Only add filters if they are selected
-      if (userUni) params.university = userUni
+      // Only add filters if they are specifically selected (not "All")
+      if (selectedUniversity) {
+        params.university = selectedUniversity
+      }
+      // Note: Don't add userUni automatically - let user choose "All Universities" or specific one
+      
       if (!isIntroductory && selectedDepartment) params.department = selectedDepartment
       if (selectedSubject) params.subject = selectedSubject
-      if (isIntroductory && selectedStream) params.stream = selectedStream
-      if (selectedResourceType) params.resourceType = selectedResourceType
+      if (selectedStream) params.stream = selectedStream // Stream for all levels now
+      if (selectedResourceType) params.type = selectedResourceType
       
-      console.log('🔍 Fetching resources with params:', params)
-      console.log('🔍 User university:', userUni)
-      console.log('🔍 Active category:', activeCategory)
+      console.log('🔍 [LEVEL TAB] Fetching resources with params:', params)
+      console.log('🔍 [LEVEL TAB] Selected university:', selectedUniversity)
+      console.log('🔍 [LEVEL TAB] User university:', userUni)
+      console.log('🔍 [LEVEL TAB] Active category:', activeCategory)
+      console.log('🔍 [LEVEL TAB] Active tab:', activeTab)
+      console.log('🔍 [LEVEL TAB] Is introductory:', isIntroductory)
+      console.log('🔍 [LEVEL TAB] Available universities count:', availableUniversities.length)
+      
       const response = await resourceService.getResources(params)
-      console.log('📦 Resources received:', response.data?.data)
-      console.log('📦 Total resources:', response.data?.total)
+      console.log('📦 [LEVEL TAB] Resources received:', response.data?.data)
+      console.log('📦 [LEVEL TAB] Total resources:', response.data?.total)
+      console.log('📦 [LEVEL TAB] API Response:', response)
       setResources(response.data?.data || [])
     } catch (err) {
-      console.error('❌ Failed to fetch resources:', err)
+      console.error('❌ [LEVEL TAB] Failed to fetch resources:', err)
       setResources([])
     } finally {
       setLoading(false)
@@ -94,29 +130,63 @@ export const UniversityDashboard: React.FC = () => {
         params.department = userDept
       }
       
-      console.log('🏠 Fetching home resources with params:', params)
-      console.log('🏠 User level:', userLevel)
-      console.log('🏠 User university:', userUni)
-      console.log('🏠 User department:', userDept)
+      console.log('🏠 [HOME TAB] Fetching home resources with params:', params)
+      console.log('🏠 [HOME TAB] User level:', userLevel)
+      console.log('🏠 [HOME TAB] User university:', userUni)
+      console.log('🏠 [HOME TAB] User department:', userDept)
+      console.log('🏠 [HOME TAB] Active tab:', activeTab)
       const response = await resourceService.getResources(params)
-      console.log('📦 Home resources received:', response.data?.data)
-      console.log('📦 Total home resources:', response.data?.total)
+      console.log('📦 [HOME TAB] Resources received:', response.data?.data)
+      console.log('📦 [HOME TAB] Total resources:', response.data?.total)
       setHomeResources(response.data?.data || [])
     } catch (err) {
-      console.error('❌ Failed to fetch home resources:', err)
+      console.error('❌ [HOME TAB] Failed to fetch home resources:', err)
       setHomeResources([])
     } finally {
       setHomeLoading(false)
     }
   }
 
+  const fetchAvailableUniversities = async () => {
+    try {
+      console.log('🏛️ Fetching universities with freshman resources...')
+      console.log('🏛️ Current activeCategory:', activeCategory)
+      console.log('🏛️ Current userLevel:', userLevel)
+      
+      const response = await universityService.getUniversitiesWithFreshmanResources()
+      console.log('🏛️ University service response:', response)
+      
+      if (response.success && response.data) {
+        setAvailableUniversities(response.data)
+        console.log('🏛️ Universities with freshman resources loaded:', response.data.length)
+        console.log('🏛️ Universities:', response.data.map(u => `${u.name} (${u.resourceCount} resources)`))
+      } else {
+        console.error('❌ Failed to fetch universities with freshman resources:', response.error)
+        setAvailableUniversities([])
+      }
+    } catch (err) {
+      console.error('❌ Failed to fetch available universities:', err)
+      setAvailableUniversities([])
+    }
+  }
+
   useEffect(() => {
     fetchResources()
-  }, [userUni, selectedDepartment, selectedSubject, selectedResourceType, selectedStream, activeCategory])
+  }, [userUni, selectedDepartment, selectedSubject, selectedResourceType, selectedStream, selectedUniversity, activeCategory])
 
   useEffect(() => {
     if (userUni) fetchHomeResources()
   }, [userUni, userDept, userLevel])
+
+  useEffect(() => {
+    // Fetch available universities for all levels
+    fetchAvailableUniversities()
+  }, [activeCategory])
+
+  // Also fetch universities on component mount for all users
+  useEffect(() => {
+    fetchAvailableUniversities()
+  }, [])
 
   return (
     <DashboardLayout title="University Dashboard" subtitle="Strategic academic resources for your higher education journey">
@@ -235,7 +305,10 @@ export const UniversityDashboard: React.FC = () => {
                 <div className="text-center py-20 bg-slate-50 dark:bg-slate-800/20 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
                   <div className="text-4xl mb-4">🔍</div>
                   <h4 className="font-bold text-slate-700 dark:text-slate-300">Nothing New Yet</h4>
-                  <p className="text-sm text-slate-500">Admins haven't added new resources for {userLevel} recently. Check back soon!</p>
+                  <p className="text-sm text-slate-500 mb-4">Admins haven't added new resources for {userLevel} recently. Check back soon!</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
+                    💡 Tip: Click on "{userLevel.toUpperCase()} Hub" tab above to see all available resources with filters
+                  </p>
                 </div>
               )}
             </div>
@@ -249,7 +322,60 @@ export const UniversityDashboard: React.FC = () => {
                 <span className="text-sm font-bold uppercase tracking-wider">Strategic Filters</span>
               </div>
 
-              {/* Dynamic Resource Type Selector - Primary Filter */}
+              {/* University Filter (For all levels) */}
+              <div className="flex-1 min-w-[200px]">
+                  <select
+                    value={selectedUniversity}
+                    onChange={(e) => {
+                      console.log('🏛️ University selected:', e.target.value)
+                      setSelectedUniversity(e.target.value)
+                    }}
+                    className="w-full pl-4 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer appearance-none"
+                  >
+                    <option value="">All Universities (43 total)</option>
+                    {UNIVERSITIES.map(uni => {
+                      const resourceCount = availableUniversities.find(u => u.name === uni)?.resourceCount || 0
+                      return (
+                        <option key={uni} value={uni}>
+                          {uni} {resourceCount > 0 ? `(${resourceCount} resources)` : '(0 resources)'}
+                        </option>
+                      )
+                    })}
+                  </select>
+                </div>
+
+              {/* Stream Selector (For all levels) */}
+              <div className="flex-1 min-w-[180px]">
+                <select
+                  value={selectedStream}
+                  onChange={(e) => setSelectedStream(e.target.value as any)}
+                  className="w-full pl-4 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer appearance-none"
+                >
+                  <option value="">All Academic Streams</option>
+                  <option value="natural">Natural Science</option>
+                  <option value="social">Social Science</option>
+                </select>
+              </div>
+
+              {/* Department Selector (Only for Senior/GC) */}
+              {!isIntroductory && (
+                <div className="flex-1 min-w-[180px]">
+                  <select
+                    value={selectedDepartment}
+                    onChange={(e) => setSelectedDepartment(e.target.value)}
+                    className="w-full pl-4 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer appearance-none"
+                  >
+                    <option value="">All Departments</option>
+                    {Object.keys(DEPARTMENTS).map(dept => (
+                      <option key={dept} value={dept}>
+                        {dept.replace(/_/g, ' ')}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Dynamic Resource Type Selector */}
               <div className="flex-1 min-w-[180px]">
                 <select
                   value={selectedResourceType}
@@ -262,21 +388,6 @@ export const UniversityDashboard: React.FC = () => {
                   ))}
                 </select>
               </div>
-
-              {/* Stream Selector (Only for Remedial/Freshman) */}
-              {isIntroductory && (
-                <div className="flex-1 min-w-[180px]">
-                  <select
-                    value={selectedStream}
-                    onChange={(e) => setSelectedStream(e.target.value as any)}
-                    className="w-full pl-4 pr-10 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-xl text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer appearance-none"
-                  >
-                    <option value="">All Academic Streams</option>
-                    <option value="natural">Natural Science</option>
-                    <option value="social">Social Science</option>
-                  </select>
-                </div>
-              )}
 
               {/* Subject Filter */}
               <div className="flex-1 min-w-[200px]">
@@ -303,8 +414,43 @@ export const UniversityDashboard: React.FC = () => {
               ) : resources.length === 0 ? (
                 <div className="text-center py-24 bg-slate-50/50 dark:bg-slate-800/20 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800">
                   <div className="text-6xl mb-6">🏜️</div>
-                  <h4 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-2">No matches for this configuration</h4>
-                  <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto font-medium">Try broadening your search or selecting a different subject.</p>
+                  <h4 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-2">No resources found for this configuration</h4>
+                  <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto font-medium mb-4">
+                    {selectedUniversity 
+                      ? `No freshman resources found for ${selectedUniversity}. Try selecting a different university or contact your admin to upload resources.`
+                      : 'Try selecting specific filters or contact your admin to upload more resources.'
+                    }
+                  </p>
+                  {availableUniversities.length > 0 && (
+                    <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl max-w-md mx-auto">
+                      <p className="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2">
+                        Universities with freshman resources ({availableUniversities.length} of 43):
+                      </p>
+                      <div className="space-y-1">
+                        {availableUniversities.slice(0, 5).map(uni => (
+                          <p key={uni.id} className="text-xs text-blue-700 dark:text-blue-300">
+                            • {uni.name} ({uni.resourceCount} resources)
+                          </p>
+                        ))}
+                        {availableUniversities.length > 5 && (
+                          <p className="text-xs text-blue-600 dark:text-blue-400">
+                            ...and {availableUniversities.length - 5} more
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  <div className="mt-6 p-4 bg-slate-100 dark:bg-slate-800/40 rounded-xl max-w-md mx-auto">
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                      <strong>Debug Info:</strong><br/>
+                      University: {selectedUniversity || userUni || 'Not set'}<br/>
+                      Level: {activeCategory}<br/>
+                      Subject: {selectedSubject || 'All'}<br/>
+                      Stream: {selectedStream || 'All'}<br/>
+                      Type: {selectedResourceType || 'All'}<br/>
+                      Available Universities: {availableUniversities.length}
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '@hooks/useAuth'
 import { FormInput } from '@components/forms/FormInput'
 import { AppLogo } from '@components/common/AppLogo'
-import { Footer } from '@components/common/Footer'
+import { ThemeToggle } from '@components/common/ThemeToggle'
 import { LogIn, AlertCircle } from 'lucide-react'
 
 export const Login: React.FC = () => {
@@ -39,6 +39,11 @@ export const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0a0f1c] flex flex-col justify-center py-12 sm:px-6 lg:px-8 transition-colors duration-300 relative overflow-hidden">
+
+      {/* Theme Toggle - Top Right */}
+      <div className="absolute top-4 right-4 z-20">
+        <ThemeToggle />
+      </div>
 
       {/* Background Decorative Elements */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] opacity-30 pointer-events-none">
@@ -118,8 +123,6 @@ export const Login: React.FC = () => {
         </div>
 
       </div>
-
-      <Footer />
     </div>
   )
 }

@@ -3,7 +3,6 @@ import api from './api'
 export interface Department {
   id: string
   name: string
-  code: string
   universityId: string
   createdAt: string
   updatedAt: string
@@ -20,7 +19,10 @@ export const departmentService = {
     return response.data
   },
 
-  create: async (data: Omit<Department, 'id' | 'createdAt' | 'updatedAt'>): Promise<Department> => {
+  create: async (data: {
+    name: string
+    universityId: string
+  }): Promise<Department> => {
     const response = await api.post('/departments', data)
     return response.data
   },
