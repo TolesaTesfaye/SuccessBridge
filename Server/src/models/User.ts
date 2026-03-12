@@ -1,6 +1,6 @@
 import { DataTypes, Model } from 'sequelize'
-import sequelize from '@config/database'
-import { IUser } from '../types/index'
+import sequelize from '../config/database.js'
+import { IUser } from '../types/index.js'
 
 class User extends Model<IUser> implements IUser {
   public id!: string

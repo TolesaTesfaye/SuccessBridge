@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
-import { IAuthPayload } from '../types/index'
-import redisClient from '@config/redis'
+import { IAuthPayload } from '../types/index.js'
+import redisClient from '../config/redis.js'
 
 declare global {
   namespace Express {

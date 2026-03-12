@@ -2,9 +2,9 @@ import { Router, Request, Response } from 'express'
 import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
-import { authMiddleware, requireRole } from '@middleware/auth'
-import { AppError } from '@middleware/errorHandler'
-import { ResourceService } from '../services/resourceService'
+import { authMiddleware, requireRole } from '../middleware/auth.js'
+import { AppError } from '../middleware/errorHandler.js'
+import { ResourceService } from '../services/resourceService.js'
 
 const router = Router()
 
@@ -120,7 +120,7 @@ router.get('/', async (req: Request, res: Response) => {
       success: true,
       data: result,
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Fetch resources error:', error)
     res.status(500).json({ success: false, error: 'Failed to fetch resources' })
   }
@@ -165,7 +165,7 @@ router.get('/:id', async (req: Request, res: Response) => {
   try {
     const resource = await ResourceService.getResourceById(req.params.id)
     res.json({ success: true, data: resource })
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof AppError) {
       res.status(error.statusCode).json({ success: false, error: error.message })
     } else {
@@ -264,7 +264,7 @@ router.post('/', authMiddleware, requireRole('admin', 'super_admin'), upload.sin
     const resource = await ResourceService.createResource(req.body, req.file, createdBy)
 
     res.status(201).json({ success: true, data: resource })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Resource creation error details:', error)
     if (error instanceof AppError) {
       res.status(error.statusCode).json({ success: false, error: error.message })
@@ -279,7 +279,7 @@ router.put('/:id', authMiddleware, requireRole('admin', 'super_admin'), async (r
   try {
     const resource = await ResourceService.updateResource(req.params.id, req.body)
     res.json({ success: true, data: resource })
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof AppError) {
       res.status(error.statusCode).json({ success: false, error: error.message })
     } else {
@@ -293,7 +293,7 @@ router.delete('/:id', authMiddleware, requireRole('admin', 'super_admin'), async
   try {
     const result = await ResourceService.deleteResource(req.params.id)
     res.json(result)
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof AppError) {
       res.status(error.statusCode).json({ success: false, error: error.message })
     } else {

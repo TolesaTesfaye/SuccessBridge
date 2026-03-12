@@ -1,8 +1,8 @@
 import { Router, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { AppError } from '@middleware/errorHandler'
-import { authMiddleware } from '@middleware/auth'
-import { AuthService } from '../services/authService'
+import { AppError } from '../middleware/errorHandler.js'
+import { authMiddleware } from '../middleware/auth.js'
+import { AuthService } from '../services/authService.js'
 
 const router = Router()
 
@@ -164,7 +164,7 @@ router.post('/login', async (req: Request, res: Response) => {
       success: true,
       data: result,
     })
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof AppError) {
       res.status(error.statusCode).json({ success: false, error: error.message })
     } else {
@@ -216,7 +216,7 @@ router.get('/me', async (req: Request, res: Response) => {
       success: true,
       data: userData,
     })
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof AppError) {
       res.status(error.statusCode).json({ success: false, error: error.message })
     } else {
@@ -267,7 +267,7 @@ router.post('/logout', authMiddleware, async (req: Request, res: Response) => {
       success: true,
       message: 'Logged out successfully'
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Logout error:', error)
     if (error instanceof AppError) {
       res.status(error.statusCode).json({ success: false, error: error.message })
