@@ -1,122 +1,127 @@
-import React, { useState, useEffect } from 'react'
-import { BookOpen, FileText, Plus, X } from 'lucide-react'
-import { resourceService } from '@services/resourceService'
-import { HIGH_SCHOOL } from '@utils/constants'
-import { ResourceCard } from '@components/resources/ResourceCard'
-import { Card, CardBody, CardHeader } from '@components/common/Card'
-import { Button } from '@components/common/Button'
+import React, { useState, useEffect } from "react";
+import { BookOpen, FileText, Plus, X } from "lucide-react";
+import { resourceService } from "@services/resourceService";
+import { HIGH_SCHOOL } from "@utils/constants";
+import { ResourceCard } from "@components/resources/ResourceCard";
+import { Card, CardBody, CardHeader } from "@components/common/Card";
+import { Button } from "@components/common/Button";
 
-type Grade = 'grade_9' | 'grade_10' | 'grade_11' | 'grade_12'
-type Stream = 'natural' | 'social'
+type Grade = "grade_9" | "grade_10" | "grade_11" | "grade_12";
+type Stream = "natural" | "social";
 
 interface HighSchoolGradeViewProps {
-  grade: Grade
+  grade: Grade;
 }
 
-export const HighSchoolGradeView: React.FC<HighSchoolGradeViewProps> = ({ grade }) => {
-  const [selectedStream, setSelectedStream] = useState<Stream | null>(null)
-  const [selectedSubject, setSelectedSubject] = useState<string | null>(null)
-  const [selectedResourceType, setSelectedResourceType] = useState<string | null>(null)
-  const [resources, setResources] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
+export const HighSchoolGradeView: React.FC<HighSchoolGradeViewProps> = ({
+  grade,
+}) => {
+  const [selectedStream, setSelectedStream] = useState<Stream | null>(null);
+  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
+  const [selectedResourceType, setSelectedResourceType] = useState<
+    string | null
+  >(null);
+  const [resources, setResources] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const gradeLabels = {
-    grade_9: 'Grade 9',
-    grade_10: 'Grade 10', 
-    grade_11: 'Grade 11',
-    grade_12: 'Grade 12'
-  }
+    grade_9: "Grade 9",
+    grade_10: "Grade 10",
+    grade_11: "Grade 11",
+    grade_12: "Grade 12",
+  };
 
   const getSubjects = (): string[] => {
-    if (grade === 'grade_9' || grade === 'grade_10') {
-      return HIGH_SCHOOL.GRADES_9_10.subjects
+    if (grade === "grade_9" || grade === "grade_10") {
+      return HIGH_SCHOOL.GRADES_9_10.subjects;
     }
-    
+
     // For grades 11 & 12, show all subjects from both streams if no stream is selected
     if (!selectedStream) {
-      const naturalSubjects = HIGH_SCHOOL.GRADES_11_12.natural.subjects
-      const socialSubjects = HIGH_SCHOOL.GRADES_11_12.social.subjects
+      const naturalSubjects = HIGH_SCHOOL.GRADES_11_12.natural.subjects;
+      const socialSubjects = HIGH_SCHOOL.GRADES_11_12.social.subjects;
       // Combine and remove duplicates
-      return [...new Set([...naturalSubjects, ...socialSubjects])]
+      return [...new Set([...naturalSubjects, ...socialSubjects])];
     }
-    
-    if (selectedStream === 'natural') {
-      return HIGH_SCHOOL.GRADES_11_12.natural.subjects
+
+    if (selectedStream === "natural") {
+      return HIGH_SCHOOL.GRADES_11_12.natural.subjects;
     }
-    if (selectedStream === 'social') {
-      return HIGH_SCHOOL.GRADES_11_12.social.subjects
+    if (selectedStream === "social") {
+      return HIGH_SCHOOL.GRADES_11_12.social.subjects;
     }
-    return []
-  }
+    return [];
+  };
 
   const getResourceTypes = (): string[] => {
-    if (grade === 'grade_9' || grade === 'grade_10') {
-      return HIGH_SCHOOL.GRADES_9_10.resources
+    if (grade === "grade_9" || grade === "grade_10") {
+      return HIGH_SCHOOL.GRADES_9_10.resources;
     }
-    
+
     // For grades 11 & 12, show all resource types from both streams if no stream is selected
     if (!selectedStream) {
-      const naturalResources = HIGH_SCHOOL.GRADES_11_12.natural.resources
-      const socialResources = HIGH_SCHOOL.GRADES_11_12.social.resources
+      const naturalResources = HIGH_SCHOOL.GRADES_11_12.natural.resources;
+      const socialResources = HIGH_SCHOOL.GRADES_11_12.social.resources;
       // Combine and remove duplicates
-      return [...new Set([...naturalResources, ...socialResources])]
+      return [...new Set([...naturalResources, ...socialResources])];
     }
-    
-    if (selectedStream === 'natural') {
-      return HIGH_SCHOOL.GRADES_11_12.natural.resources
+
+    if (selectedStream === "natural") {
+      return HIGH_SCHOOL.GRADES_11_12.natural.resources;
     }
-    if (selectedStream === 'social') {
-      return HIGH_SCHOOL.GRADES_11_12.social.resources
+    if (selectedStream === "social") {
+      return HIGH_SCHOOL.GRADES_11_12.social.resources;
     }
-    return []
-  }
+    return [];
+  };
 
   const fetchResources = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await resourceService.getResources({
-        educationLevel: 'high_school',
+        educationLevel: "high_school",
         grade: grade,
         stream: selectedStream || undefined,
         subject: selectedSubject || undefined,
-        type: selectedResourceType as any || undefined, // Backend uses 'type' parameter
-      })
-      const resourceData = response.data?.data || []
-      setResources(resourceData)
+        type: (selectedResourceType as any) || undefined, // Backend uses 'type' parameter
+      });
+      const resourceData = response.data?.data || [];
+      setResources(resourceData);
     } catch (err) {
-      console.error('Failed to fetch resources:', err)
-      setResources([])
+      console.error("Failed to fetch resources:", err);
+      setResources([]);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchResources()
-  }, [grade, selectedStream, selectedSubject, selectedResourceType])
+    fetchResources();
+  }, [grade, selectedStream, selectedSubject, selectedResourceType]);
 
   const clearAllFilters = () => {
-    setSelectedStream(null)
-    setSelectedSubject(null)
-    setSelectedResourceType(null)
-  }
+    setSelectedStream(null);
+    setSelectedSubject(null);
+    setSelectedResourceType(null);
+  };
 
   const handleStreamChange = (stream: Stream | null) => {
-    setSelectedStream(stream)
+    setSelectedStream(stream);
     // Don't reset subject and resource type - allow independent filtering
     // setSelectedSubject(null)
     // setSelectedResourceType(null)
-  }
+  };
 
-  const subjects = getSubjects()
-  const resourceTypes = getResourceTypes()
-  const requiresStream = grade === 'grade_11' || grade === 'grade_12'
+  const subjects = getSubjects();
+  const resourceTypes = getResourceTypes();
+  const requiresStream = grade === "grade_11" || grade === "grade_12";
 
   return (
     <div className="space-y-6">
-
       {/* Filters */}
-      <div className={`grid gap-4 mb-6 ${requiresStream ? 'grid-cols-1 md:grid-cols-4' : 'grid-cols-1 md:grid-cols-3'}`}>
+      <div
+        className={`grid gap-4 mb-6 ${requiresStream ? "grid-cols-1 md:grid-cols-4" : "grid-cols-1 md:grid-cols-3"}`}
+      >
         {/* Stream Selector (Only for 11 & 12) */}
         {requiresStream && (
           <div>
@@ -124,8 +129,10 @@ export const HighSchoolGradeView: React.FC<HighSchoolGradeViewProps> = ({ grade 
               Stream
             </label>
             <select
-              value={selectedStream || ''}
-              onChange={(e) => handleStreamChange(e.target.value as Stream || null)}
+              value={selectedStream || ""}
+              onChange={(e) =>
+                handleStreamChange((e.target.value as Stream) || null)
+              }
               className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">All Streams</option>
@@ -141,12 +148,12 @@ export const HighSchoolGradeView: React.FC<HighSchoolGradeViewProps> = ({ grade 
             Subject
           </label>
           <select
-            value={selectedSubject || ''}
+            value={selectedSubject || ""}
             onChange={(e) => setSelectedSubject(e.target.value || null)}
             className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Subjects</option>
-            {subjects.map(subject => (
+            {subjects.map((subject) => (
               <option key={subject} value={subject}>
                 {subject}
               </option>
@@ -160,7 +167,7 @@ export const HighSchoolGradeView: React.FC<HighSchoolGradeViewProps> = ({ grade 
             Resource Type
           </label>
           <select
-            value={selectedResourceType || ''}
+            value={selectedResourceType || ""}
             onChange={(e) => setSelectedResourceType(e.target.value || null)}
             className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
@@ -175,7 +182,7 @@ export const HighSchoolGradeView: React.FC<HighSchoolGradeViewProps> = ({ grade 
 
         {/* Action Button */}
         <div className="flex items-end">
-          <Button 
+          <Button
             onClick={clearAllFilters}
             className="w-full"
             variant="secondary"
@@ -203,7 +210,9 @@ export const HighSchoolGradeView: React.FC<HighSchoolGradeViewProps> = ({ grade 
           {loading ? (
             <div className="text-center py-12">
               <div className="animate-spin w-8 h-8 border-4 border-blue-600/20 border-t-blue-600 rounded-full mx-auto mb-4"></div>
-              <p className="text-slate-600 dark:text-slate-400">Loading resources...</p>
+              <p className="text-slate-600 dark:text-slate-400">
+                Loading resources...
+              </p>
             </div>
           ) : resources.length === 0 ? (
             <div className="text-center py-12 bg-slate-50 dark:bg-slate-800/20 rounded-xl">
@@ -212,12 +221,13 @@ export const HighSchoolGradeView: React.FC<HighSchoolGradeViewProps> = ({ grade 
                 No Resources Found
               </h3>
               <p className="text-slate-600 dark:text-slate-400">
-                No resources match your current filters. Try adjusting the filters or add new resources.
+                No resources match your current filters. Try adjusting the
+                filters or add new resources.
               </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {resources.map(resource => (
+              {resources.map((resource) => (
                 <ResourceCard key={resource.id} resource={resource} />
               ))}
             </div>
@@ -225,5 +235,5 @@ export const HighSchoolGradeView: React.FC<HighSchoolGradeViewProps> = ({ grade 
         </CardBody>
       </Card>
     </div>
-  )
-}
+  );
+};

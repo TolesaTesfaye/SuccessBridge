@@ -18,51 +18,59 @@ export const universityService = {
     return response.data
   },
 
+  createUniversity: async (data: { name: string; location: string; email?: string }): Promise<ApiResponse<University>> => {
+    const response = await api.post('/universities', data)
+    return response.data
+  },
+
   getUniversitiesWithFreshmanResources: async (): Promise<ApiResponse<UniversityWithResources[]>> => {
     try {
-      // Get universities that have freshman resources
-      const response = await api.get('/resources', {
-        params: {
-          educationLevel: 'university',
-          grade: 'freshman',
-          limit: 1000 // Get a large number to see all universities
-        }
-      })
+      // Get universities directly from universities endpoint (more efficient)
+      const universitiesResponse = await api.get('/universities')
       
-      if (response.data.success && response.data.data) {
-        const resources = response.data.data.data || []
+      if (universitiesResponse.data.success && universitiesResponse.data.data) {
+        const universities = universitiesResponse.data.data
         
-        // Extract unique universities from resources
-        const universityMap = new Map<string, UniversityWithResources>()
-        
-        resources.forEach((resource: any) => {
-          if (resource.university && resource.university.id) {
-            const uni = resource.university
-            const existing = universityMap.get(uni.id)
-            if (existing) {
-              existing.resourceCount = (existing.resourceCount || 0) + 1
-            } else {
-              universityMap.set(uni.id, {
-                id: uni.id,
-                name: uni.name,
-                location: uni.location || '',
-                resourceCount: 1
+        // For each university, get resource count (more efficient than fetching all resources)
+        const universitiesWithCounts = await Promise.all(
+          universities.map(async (uni: University) => {
+            try {
+              const resourceResponse = await api.get('/resources', {
+                params: {
+                  educationLevel: 'university',
+                  category: 'freshman', // Changed from 'grade' to 'category'
+                  universityId: uni.id,
+                  limit: 1 // Just get count, not actual resources
+                }
               })
+              
+              return {
+                ...uni,
+                resourceCount: resourceResponse.data.data?.total || 0
+              }
+            } catch (error) {
+              return {
+                ...uni,
+                resourceCount: 0
+              }
             }
-          }
-        })
+          })
+        )
         
-        const universities = Array.from(universityMap.values()).sort((a, b) => a.name.localeCompare(b.name))
+        // Filter out universities with no resources and sort
+        const universitiesWithResources = universitiesWithCounts
+          .filter(uni => uni.resourceCount > 0)
+          .sort((a, b) => a.name.localeCompare(b.name))
         
         return {
           success: true,
-          data: universities
+          data: universitiesWithResources
         }
       }
       
       return {
         success: false,
-        error: 'Failed to fetch universities with freshman resources',
+        error: 'Failed to fetch universities',
         data: []
       }
     } catch (error) {

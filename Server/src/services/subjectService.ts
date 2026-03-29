@@ -1,5 +1,5 @@
-import Subject from '../models/Subject'
-import { AppError } from '../middleware/errorHandler'
+import Subject from '../models/Subject.js'
+import { AppError } from '../middleware/errorHandler.js'
 
 export class SubjectService {
   static async getSubjects(filters: any) {

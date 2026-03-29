@@ -6,6 +6,7 @@ import { Modal } from '@components/common/Modal'
 import { Pagination } from '@components/common/Pagination'
 import { Loading } from '@components/common/Loading'
 import { userService } from '@services/userService'
+import { ApiErrorHandler } from '@utils/apiErrorHandler'
 import type { User } from '@types'
 
 export const SuperAdminUsers: React.FC = () => {
@@ -32,8 +33,8 @@ export const SuperAdminUsers: React.FC = () => {
       setUsers(response.data)
       setTotalPages(Math.ceil(response.total / itemsPerPage))
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch users')
-      console.error('Error fetching users:', err)
+      const userError = ApiErrorHandler.handle(err, 'Failed to fetch users')
+      setError(userError.message)
     } finally {
       setLoading(false)
     }
@@ -53,9 +54,9 @@ export const SuperAdminUsers: React.FC = () => {
         setShowDeleteConfirm(false)
         setSelectedUserId(null)
         setSelectedUserName('')
+        ApiErrorHandler.showSuccess(`User ${selectedUserName} deleted successfully`)
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to delete user')
-        console.error('Error deleting user:', err)
+        ApiErrorHandler.handle(err, `Failed to delete user ${selectedUserName}`)
       }
     }
   }
@@ -88,41 +89,101 @@ export const SuperAdminUsers: React.FC = () => {
             ) : (
               <>
                 <div className="overflow-x-auto">
-                  <table className="w-full">
+                  <table className="min-w-full text-sm">
                     <thead className="bg-gray-50 border-b-2 border-gray-200">
                       <tr>
-                        <th className="px-6 py-3 text-left font-semibold text-gray-900 text-sm">Name</th>
-                        <th className="px-6 py-3 text-left font-semibold text-gray-900 text-sm">Email</th>
-                        <th className="px-6 py-3 text-left font-semibold text-gray-900 text-sm">Role</th>
-                        <th className="px-6 py-3 text-left font-semibold text-gray-900 text-sm">Joined</th>
-                        <th className="px-6 py-3 text-left font-semibold text-gray-900 text-sm">Actions</th>
+                        <th className="px-6 py-3 text-left font-semibold text-gray-900">Student Identity</th>
+                        <th className="px-6 py-3 text-left font-semibold text-gray-900">University / Level</th>
+                        <th className="px-6 py-3 text-left font-semibold text-gray-900">Department / Grade</th>
+                        <th className="px-6 py-3 text-left font-semibold text-gray-900">Platform Join</th>
+                        <th className="px-6 py-3 text-left font-semibold text-gray-900">Account Status</th>
+                        <th className="px-6 py-3 text-left font-semibold text-gray-900">Role</th>
+                        <th className="px-6 py-3 text-left font-semibold text-gray-900">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {users.map(user => (
-                        <tr key={user.id} className="border-b border-gray-200 hover:bg-gray-50">
-                          <td className="px-6 py-4 text-gray-600 text-sm">{user.name}</td>
-                          <td className="px-6 py-4 text-gray-600 text-sm">{user.email}</td>
-                          <td className="px-6 py-4">
-                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                              user.role === 'admin' 
-                                ? 'bg-purple-100 text-purple-800'
-                                : user.role === 'super_admin'
-                                ? 'bg-red-100 text-red-800'
-                                : 'bg-blue-100 text-blue-800'
-                            }`}>
-                              {user.role}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-gray-600 text-sm">
-                            {new Date(user.createdAt).toLocaleDateString()}
-                          </td>
-                          <td className="px-6 py-4 flex gap-2">
-                            <Button variant="secondary" size="sm">View</Button>
-                            <Button variant="danger" size="sm" onClick={() => handleDeleteClick(user.id, user.name)}>Delete</Button>
-                          </td>
-                        </tr>
-                      ))}
+                      {users.map(user => {
+                        const isHighSchool = user.studentType === 'high_school'
+                        const isUniversity = user.studentType === 'university'
+
+                        const levelLabel = isHighSchool
+                          ? 'High School'
+                          : isUniversity
+                          ? 'University'
+                          : 'N/A'
+
+                        const departmentOrGrade = isHighSchool
+                          ? user.highSchoolGrade || 'General High School'
+                          : user.department || user.universityLevel || 'N/A'
+
+                        return (
+                          <tr key={user.id} className="border-b border-gray-200 hover:bg-gray-50">
+                            <td className="px-6 py-4 align-top">
+                              <div className="font-semibold text-gray-900">
+                                {user.name || 'N/A'}
+                              </div>
+                              <div className="text-xs text-gray-500 break-all">
+                                {user.email}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 align-top text-gray-600">
+                              <div>{levelLabel}</div>
+                              {user.university && (
+                                <div className="text-xs text-gray-500">
+                                  {user.university}
+                                </div>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 align-top text-gray-600">
+                              <div>{departmentOrGrade}</div>
+                              {user.highSchoolStream && (
+                                <div className="text-xs text-gray-500">
+                                  {user.highSchoolStream}
+                                </div>
+                              )}
+                            </td>
+                            <td className="px-6 py-4 align-top text-gray-600">
+                              <div>Academic Area</div>
+                              <div className="text-xs text-gray-500">
+                                {new Date(user.createdAt).toLocaleDateString()}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 align-top">
+                              <div className="flex flex-col gap-1">
+                                <span className="inline-flex w-fit px-3 py-1 bg-slate-100 text-slate-800 rounded-full text-xs font-semibold">
+                                  Registered
+                                </span>
+                                <span className="inline-flex w-fit px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+                                  Active
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 align-top">
+                              <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                user.role === 'admin'
+                                  ? 'bg-purple-100 text-purple-800'
+                                  : user.role === 'super_admin'
+                                  ? 'bg-red-100 text-red-800'
+                                  : 'bg-blue-100 text-blue-800'
+                              }`}>
+                                {user.role}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 align-top">
+                              <div className="flex items-center gap-2">
+                                <Button variant="secondary" size="sm">View</Button>
+                                <Button
+                                  variant="danger"
+                                  size="sm"
+                                  onClick={() => handleDeleteClick(user.id, user.name)}
+                                >
+                                  Delete
+                                </Button>
+                              </div>
+                            </td>
+                          </tr>
+                        )
+                      })}
                     </tbody>
                   </table>
                 </div>

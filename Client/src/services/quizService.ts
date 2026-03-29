@@ -19,12 +19,12 @@ export interface QuizResult {
 export const quizService = {
   getAll: async (params?: any): Promise<Quiz[]> => {
     const response = await api.get('/quizzes', { params })
-    return response.data
+    return response.data.data || []
   },
 
   getById: async (id: string): Promise<Quiz> => {
     const response = await api.get(`/quizzes/${id}`)
-    return response.data
+    return response.data.data
   },
 
   create: async (data: {
@@ -39,12 +39,12 @@ export const quizService = {
     passingScore: number
   }): Promise<Quiz> => {
     const response = await api.post('/quizzes', data)
-    return response.data
+    return response.data.data
   },
 
   update: async (id: string, data: Partial<Quiz>): Promise<Quiz> => {
     const response = await api.put(`/quizzes/${id}`, data)
-    return response.data
+    return response.data.data
   },
 
   delete: async (id: string): Promise<void> => {
@@ -58,6 +58,6 @@ export const quizService = {
     answers: Record<string, string>
   }): Promise<QuizResult> => {
     const response = await api.post(`/quizzes/${quizId}/submit`, result)
-    return response.data
+    return response.data.data
   },
 }

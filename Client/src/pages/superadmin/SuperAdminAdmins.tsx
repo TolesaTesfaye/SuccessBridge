@@ -5,6 +5,7 @@ import { Button } from '@components/common/Button'
 import { Modal } from '@components/common/Modal'
 import { Pagination } from '@components/common/Pagination'
 import { Loading } from '@components/common/Loading'
+import { FormInput } from '@components/forms/FormInput'
 import { userService } from '@services/userService'
 import type { User } from '@types'
 
@@ -138,12 +139,19 @@ export const SuperAdminAdmins: React.FC = () => {
               <input type="text" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Admin name" />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">Email</label>
-              <input type="email" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="admin@example.com" />
+              <FormInput
+                label="Email"
+                type="email"
+                placeholder="admin@example.com"
+              />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">Password</label>
-              <input type="password" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="Password" />
+              <FormInput
+                label="Password"
+                type="password"
+                placeholder="Password"
+                showPasswordToggle={true}
+              />
             </div>
             <div className="flex gap-2 pt-4">
               <Button variant="primary" fullWidth>Add Admin</Button>

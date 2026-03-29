@@ -2,12 +2,8 @@ import React, { useState } from 'react'
 import { DashboardLayout } from '@components/dashboards/DashboardLayout'
 import { ResourceList } from '@components/resources/ResourceList'
 import { ResourceFilter } from '@components/resources/ResourceFilter'
-import { ResourceUploadForm } from '@/components/resources/ResourceUploadForm'
-import { Button } from '@components/common/Button'
-import { Modal } from '@components/common/Modal'
 
 export const AdminResources: React.FC = () => {
-  const [showUpload, setShowUpload] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
 
   // Mock resources data
@@ -20,20 +16,10 @@ export const AdminResources: React.FC = () => {
     { id: '6', title: 'History Past Exam', description: 'Past examination papers', type: 'past_exam' as const, fileUrl: '/files/history.pdf', educationLevel: 'high_school' as const, grade: 'Grade 11', subjectId: '6', tags: ['history', 'exam'], uploadedBy: 'admin@example.com', createdAt: new Date('2024-03-03'), updatedAt: new Date('2024-03-03') },
   ]
 
-  const handleUploadSubmit = (data: any) => {
-    console.log('Resource uploaded:', data)
-    setShowUpload(false)
-  }
-
   return (
-    <DashboardLayout title="Resources" subtitle="Manage department resources">
+    <DashboardLayout title="Resources" subtitle="">
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-xl font-bold text-gray-900 m-0">All Resources</h2>
-          <Button variant="primary" onClick={() => setShowUpload(true)}>
-            Upload Resource
-          </Button>
-        </div>
+        <h2 className="text-xl font-bold text-gray-900 m-0">All Resources</h2>
 
         <ResourceFilter onFilter={() => {}} />
         <ResourceList
@@ -43,10 +29,6 @@ export const AdminResources: React.FC = () => {
           onPageChange={setCurrentPage}
           showActions={true}
         />
-
-        <Modal isOpen={showUpload} onClose={() => setShowUpload(false)} title="Upload New Resource" size="lg">
-          <ResourceUploadForm onSubmit={handleUploadSubmit} />
-        </Modal>
       </div>
     </DashboardLayout>
   )

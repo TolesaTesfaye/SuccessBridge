@@ -1,0 +1,241 @@
+import { Request, Response, NextFunction } from 'express'
+import path from 'path'
+import fs from 'fs'
+import { ResourceService } from '../services/resourceService.js'
+import { AppError } from '../middleware/errorHandler.js'
+
+export const getResources = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const filters = req.query as any
+    const result = await ResourceService.getResources(filters)
+
+    res.json({
+      success: true,
+      data: result,
+    })
+  } catch (error) {
+    console.error('Fetch resources error:', error)
+    next(error)
+  }
+}
+
+export const getResourceStats = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const stats = await ResourceService.getResourceStats()
+    res.json({ success: true, data: stats })
+  } catch (error) {
+    console.error('Get resource stats error:', error)
+    next(error)
+  }
+}
+
+export const getResourceById = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const resource = await ResourceService.getResourceById(req.params.id)
+    res.json({ success: true, data: resource })
+  } catch (error) {
+    if (error instanceof AppError) {
+      return res.status(error.statusCode).json({ success: false, error: error.message })
+    }
+    console.error('Fetch resource error:', error)
+    next(error)
+  }
+}
+
+export const createResource = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const createdBy = req.user!.userId
+    const resource = await ResourceService.createResource(req.body, req.file, createdBy)
+
+    res.status(201).json({ success: true, data: resource })
+  } catch (error) {
+    console.error('Resource creation error details:', error)
+    if (error instanceof AppError) {
+      return res.status(error.statusCode).json({ success: false, error: error.message })
+    }
+    res.status(400).json({ success: false, error: (error as Error).message || 'Failed to create resource' })
+  }
+}
+
+export const updateResource = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const resource = await ResourceService.updateResource(req.params.id, req.body)
+    res.json({ success: true, data: resource })
+  } catch (error) {
+    if (error instanceof AppError) {
+      return res.status(error.statusCode).json({ success: false, error: error.message })
+    }
+    console.error('Update resource error:', error)
+    next(error)
+  }
+}
+
+export const deleteResource = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const result = await ResourceService.deleteResource(req.params.id)
+    res.json({ success: true, data: result })
+  } catch (error) {
+    if (error instanceof AppError) {
+      return res.status(error.statusCode).json({ success: false, error: error.message })
+    }
+    console.error('Delete resource error:', error)
+    next(error)
+  }
+}
+
+export const downloadResource = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params
+    
+    // Get resource from database to verify it exists
+    const resource = await ResourceService.getResourceById(id)
+    if (!resource) {
+      throw new AppError(404, 'Resource not found')
+    }
+
+    // Get the file path - handle both absolute and relative paths
+    const uploadDir = process.env.UPLOAD_DIR || './uploads'
+    const resolvedUploadDir = path.resolve(uploadDir)
+    let fileName = resource.fileUrl
+    
+    // Remove /uploads/ prefix if present
+    if (fileName.startsWith('/uploads/')) {
+      fileName = fileName.replace('/uploads/', '')
+    } else if (fileName.startsWith('uploads/')) {
+      fileName = fileName.replace('uploads/', '')
+    }
+    
+    const filePath = path.join(resolvedUploadDir, fileName)
+
+    // Check if file exists on disk
+    if (!fs.existsSync(filePath)) {
+      console.error('File not found:', filePath)
+      throw new AppError(404, `File not found on server: ${fileName}`)
+    }
+
+    // Get file stats
+    const stats = fs.statSync(filePath)
+    const fileSize = stats.size
+
+    // Set appropriate headers for download
+    const ext = path.extname(fileName).toLowerCase()
+    let contentType = 'application/octet-stream'
+    
+    // Set content type based on file extension
+    switch (ext) {
+      case '.pdf':
+        contentType = 'application/pdf'
+        break
+      case '.doc':
+      case '.docx':
+        contentType = 'application/msword'
+        break
+      case '.xls':
+      case '.xlsx':
+        contentType = 'application/vnd.ms-excel'
+        break
+      case '.ppt':
+      case '.pptx':
+        contentType = 'application/vnd.ms-powerpoint'
+        break
+      case '.jpg':
+      case '.jpeg':
+        contentType = 'image/jpeg'
+        break
+      case '.png':
+        contentType = 'image/png'
+        break
+      case '.gif':
+        contentType = 'image/gif'
+        break
+      case '.mp4':
+        contentType = 'video/mp4'
+        break
+      case '.mp3':
+        contentType = 'audio/mpeg'
+        break
+      case '.txt':
+        contentType = 'text/plain'
+        break
+    }
+
+    // Set headers for download
+    res.setHeader('Content-Type', contentType)
+    res.setHeader('Content-Length', fileSize)
+    res.setHeader('Content-Disposition', `attachment; filename="${resource.title}${ext}"`)
+    res.setHeader('Cache-Control', 'no-cache')
+    res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL || 'http://localhost:3000')
+    res.setHeader('Access-Control-Allow-Methods', 'GET')
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+
+    // Stream the file
+    const fileStream = fs.createReadStream(filePath)
+    fileStream.pipe(res)
+
+    fileStream.on('error', (error) => {
+      console.error('File stream error:', error)
+      if (!res.headersSent) {
+        res.status(500).json({ success: false, error: 'Error reading file' })
+      }
+    })
+
+  } catch (error) {
+    if (error instanceof AppError) {
+      return res.status(error.statusCode).json({ success: false, error: error.message })
+    }
+    console.error('Download resource error:', error)
+    next(error)
+  }
+}
+
+export const debugResource = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params
+    
+    // Get resource from database
+    const resource = await ResourceService.getResourceById(id)
+    if (!resource) {
+      return res.status(404).json({ success: false, error: 'Resource not found' })
+    }
+
+    // Check file system
+    const uploadDir = process.env.UPLOAD_DIR || './uploads'
+    const resolvedUploadDir = path.resolve(uploadDir)
+    let fileName = resource.fileUrl
+    
+    if (fileName.startsWith('/uploads/')) {
+      fileName = fileName.replace('/uploads/', '')
+    } else if (fileName.startsWith('uploads/')) {
+      fileName = fileName.replace('uploads/', '')
+    }
+    
+    const filePath = path.join(resolvedUploadDir, fileName)
+    const fileExists = fs.existsSync(filePath)
+    
+    // List all files in uploads directory
+    const allFiles = fs.readdirSync(resolvedUploadDir)
+    
+    res.json({
+      success: true,
+      debug: {
+        resource: {
+          id: resource.id,
+          title: resource.title,
+          fileUrl: resource.fileUrl,
+          type: resource.type
+        },
+        filesystem: {
+          uploadDir: resolvedUploadDir,
+          fileName,
+          filePath,
+          fileExists,
+          allFiles: allFiles.slice(0, 10) // Show first 10 files
+        }
+      }
+    })
+    
+  } catch (error) {
+    console.error('Debug resource error:', error)
+    next(error)
+  }
+}

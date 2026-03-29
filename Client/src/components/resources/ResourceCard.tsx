@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { type Resource } from '@types'
+import { useToast } from '@components/common/Toast'
 import { ExternalLink, Download, FileText, Video, BookOpen, PenTool, Layers, Briefcase, FlaskConical, ClipboardList, Target } from 'lucide-react'
 
 interface ResourceCardProps {
@@ -15,6 +16,9 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   onDelete,
   showAdminActions = false,
 }) => {
+  const [isDownloading, setIsDownloading] = useState(false)
+  const [isOpening, setIsOpening] = useState(false)
+  const toast = useToast()
   const getResourceIcon = (type: string) => {
     const icons: Record<string, React.ReactNode> = {
       textbook: <BookOpen className="w-5 h-5" />,
@@ -48,101 +52,278 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   const getFullUrl = (url: string) => {
     if (!url) return ''
     if (url.startsWith('http')) return url
-    // Assumes backend is at :5000 and frontend is at :5173 locally
+    
+    // Get the base URL from environment or default to localhost
     const baseUrl = import.meta.env.VITE_API_URL
       ? import.meta.env.VITE_API_URL.replace('/api', '')
       : 'http://localhost:5000'
-    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`
+    
+    // Ensure the URL starts with / for file resources
+    const cleanUrl = url.startsWith('/') ? url : `/${url}`
+    return `${baseUrl}${cleanUrl}`
   }
 
-  const handleOpen = () => {
-    if (resource.fileUrl) {
-      window.open(getFullUrl(resource.fileUrl), '_blank', 'noopener,noreferrer')
+  const renderThumbnail = () => {
+    if (!resource.fileUrl) return null
+
+    const fullUrl = getFullUrl(resource.fileUrl)
+    const lowerUrl = resource.fileUrl.toLowerCase()
+
+    // Show first-page preview for PDFs
+    if (lowerUrl.endsWith('.pdf')) {
+      return (
+        <div className="mb-2 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+          <iframe
+            src={`${fullUrl}#page=1&view=fitH`}
+            title={resource.title}
+            className="w-full h-28 md:h-32 lg:h-32 bg-white"
+            loading="lazy"
+          />
+        </div>
+      )
+    }
+
+    // Simple thumbnail-style preview for videos
+    if (resource.type === 'video') {
+      return (
+        <div className="mb-2 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 bg-black/80">
+          <video
+            src={fullUrl}
+            className="w-full h-28 md:h-32 lg:h-32 object-cover"
+            controls={false}
+            muted
+            playsInline
+            preload="metadata"
+          />
+        </div>
+      )
+    }
+
+    return null
+  }
+
+  const handleOpen = async () => {
+    if (!resource.fileUrl || isOpening) {
+      if (!resource.fileUrl) alert('No file URL available for this resource')
+      return
+    }
+    
+    setIsOpening(true)
+    
+    try {
+      // Try the direct file URL first
+      const url = getFullUrl(resource.fileUrl)
+      console.log('Opening resource:', url)
+      
+      // Open in new tab (single attempt)
+      window.open(url, '_blank', 'noopener,noreferrer')
+    } catch (error) {
+      console.error('Failed to open resource:', error)
+      alert('Unable to open the file. Please try downloading it instead.')
+    } finally {
+      setIsOpening(false)
     }
   }
 
   const handleDownload = async () => {
-    if (!resource.fileUrl) return
+    if (!resource.fileUrl || isDownloading) {
+      if (!resource.fileUrl) {
+        toast.error('This resource has no file attached.')
+      }
+      return
+    }
+
+    setIsDownloading(true)
 
     try {
-      const url = getFullUrl(resource.fileUrl)
-      // Fetch the file as a Blob to force download behavior
-      const response = await fetch(url)
-      const blob = await response.blob()
-
-      const blobUrl = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = blobUrl
-      // Extract filename from URL or use resource title
-      const filename = resource.fileUrl.split('/').pop() || `${resource.title}.pdf`
-      link.download = filename
-
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-
-      // Clean up the object URL to avoid memory leaks
-      window.URL.revokeObjectURL(blobUrl)
+      // First try the dedicated download endpoint if available
+      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+      const downloadUrl = `${baseUrl}/resources/${resource.id}/download`
+      
+      console.log('Attempting download from:', downloadUrl)
+      
+      // Try to fetch the download endpoint first
+      const response = await fetch(downloadUrl, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/octet-stream',
+        },
+      })
+      
+      if (response.ok) {
+        // If the endpoint works, use it
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        
+        // Extract filename from response headers or use fallback
+        const contentDisposition = response.headers.get('content-disposition')
+        let filename = resource.title
+        
+        if (contentDisposition) {
+          const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/)
+          if (filenameMatch && filenameMatch[1]) {
+            filename = filenameMatch[1].replace(/['"]/g, '')
+          }
+        } else {
+          // Fallback: extract from fileUrl or use title
+          const urlFilename = resource.fileUrl.split('/').pop()
+          if (urlFilename && urlFilename.includes('.')) {
+            filename = urlFilename
+          } else {
+            // Add appropriate extension based on type
+            const extension = resource.type === 'video' ? '.mp4' : '.pdf'
+            filename = `${resource.title}${extension}`
+          }
+        }
+        
+        // Create download link
+        const link = document.createElement('a')
+        link.href = url
+        link.download = filename
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        
+        // Clean up
+        window.URL.revokeObjectURL(url)
+        console.log('Download completed:', filename)
+        toast.success('Download started. Check your browser downloads.')
+        
+      } else {
+        throw new Error(`Download endpoint failed: ${response.status}`)
+      }
+      
     } catch (error) {
-      console.error('Download failed:', error)
-      // Fallback if fetch fails (e.g., CORS issues)
-      window.open(getFullUrl(resource.fileUrl), '_blank')
+      console.warn('Download endpoint failed, trying direct file URL:', error)
+      
+      // Fallback to direct file URL download
+      try {
+        const directUrl = getFullUrl(resource.fileUrl)
+        console.log('Fallback download from:', directUrl)
+        
+        // Try to fetch the file directly
+        const response = await fetch(directUrl)
+        
+        if (response.ok) {
+          const blob = await response.blob()
+          const url = window.URL.createObjectURL(blob)
+          
+          // Extract filename
+          let filename = resource.fileUrl.split('/').pop() || resource.title
+          if (!filename.includes('.')) {
+            const extension = resource.type === 'video' ? '.mp4' : '.pdf'
+            filename += extension
+          }
+          
+          // Create download link
+          const link = document.createElement('a')
+          link.href = url
+          link.download = filename
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          
+          // Clean up
+          window.URL.revokeObjectURL(url)
+          console.log('Fallback download completed:', filename)
+          toast.success('Download started. Check your browser downloads.')
+          
+        } else {
+          throw new Error(`Direct file access failed: ${response.status}`)
+        }
+        
+      } catch (fallbackError) {
+        console.error('All download methods failed:', fallbackError)
+        
+        // Last resort: try to open the file in a new tab
+        try {
+          const url = getFullUrl(resource.fileUrl)
+          window.open(url, '_blank')
+          toast.info('Download failed, but the file was opened in a new tab. You can save it from there.')
+        } catch (openError) {
+          console.error('Even opening failed:', openError)
+          toast.error('Unable to download or open the file. Please try again or contact support.')
+        }
+      }
+    } finally {
+      setIsDownloading(false)
     }
   }
 
   return (
-    <div className="group bg-white dark:bg-slate-800/80 rounded-2xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1 transition-all duration-300">
+    <div className="group bg-white dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 transition-all duration-300">
       {/* Card Header - Type Badge */}
-      <div className={`px-4 py-2.5 flex items-center gap-2 border-b border-slate-100 dark:border-slate-700/50 ${getTypeColor(resource.type)} bg-opacity-50`}>
+      <div className={`px-3 py-2 flex items-center gap-2 border-b border-slate-100 dark:border-slate-700/50 ${getTypeColor(resource.type)} bg-opacity-50`}>
         {getResourceIcon(resource.type)}
-        <span className="text-[11px] font-bold uppercase tracking-wider">
+        <span className="text-[10px] font-semibold uppercase tracking-wider">
           {resource.type.replace('_', ' ')}
         </span>
       </div>
 
       {/* Card Body */}
-      <div className="p-5 flex-1 flex flex-col gap-3">
-        <h4 className="font-bold text-slate-900 dark:text-white leading-snug line-clamp-2">
+      <div className="px-4 pt-3 pb-2 flex-1 flex flex-col gap-2.5">
+        {renderThumbnail()}
+        <h4 className="font-semibold text-slate-900 dark:text-white leading-snug text-sm line-clamp-2">
           {resource.title}
         </h4>
-        <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-3 flex-1">
+        <p className="text-[12px] text-slate-500 dark:text-slate-400 line-clamp-2 flex-1">
           {resource.description}
         </p>
 
         {/* Tags */}
         {resource.tags && resource.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-1">
             {resource.tags.slice(0, 3).map(tag => (
-              <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-medium">
+              <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-medium">
                 {tag}
               </span>
             ))}
           </div>
         )}
 
-        <p className="text-[10px] text-slate-400 dark:text-slate-500">
+        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
           Added {new Date(resource.createdAt).toLocaleDateString()}
         </p>
       </div>
 
       {/* Card Footer - Actions */}
-      <div className="px-5 pb-5 flex flex-col gap-2">
+      <div className="px-4 pb-3 flex flex-col gap-1.5">
         <div className="flex gap-2">
           <button
             onClick={handleOpen}
-            disabled={!resource.fileUrl}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold transition-all duration-200 active:scale-95"
+            disabled={!resource.fileUrl || isOpening}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold transition-all duration-200 active:scale-95 hover:shadow-lg"
+            title={resource.fileUrl ? 'Open file in new tab' : 'No file available'}
           >
-            <ExternalLink className="w-3.5 h-3.5" />
-            Open
+            {isOpening ? (
+              <>
+                <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Opening...
+              </>
+            ) : (
+              <>
+                <ExternalLink className="w-3.5 h-3.5" />
+                Open
+              </>
+            )}
           </button>
           <button
             onClick={handleDownload}
-            disabled={!resource.fileUrl}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold transition-all duration-200 active:scale-95"
+            disabled={!resource.fileUrl || isDownloading}
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold transition-all duration-200 active:scale-95 hover:shadow-lg"
+            title={resource.fileUrl ? 'Download file' : 'No file available'}
           >
-            <Download className="w-3.5 h-3.5" />
-            Download
+            {isDownloading ? (
+              <>
+                <div className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Downloading...
+              </>
+            ) : (
+              <>
+                <Download className="w-3.5 h-3.5" />
+                Download
+              </>
+            )}
           </button>
         </div>
 

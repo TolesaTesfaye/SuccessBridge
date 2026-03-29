@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { type Quiz } from '@services/quizService'
+import { ChevronLeft, ChevronRight, Timer, CheckCircle2, AlertCircle, Map as MapIcon, XCircle } from 'lucide-react'
 import { Card, CardBody } from '@components/common/Card'
 import { Button } from '@components/common/Button'
 import { Loading } from '@components/common/Loading'
-import { ChevronLeft, ChevronRight, Timer, CheckCircle2, AlertCircle, Map as MapIcon } from 'lucide-react'
 
 interface QuizTakerProps {
   quiz: Quiz
@@ -17,8 +17,11 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [timeLeft, setTimeLeft] = useState(quiz.timeLimit * 60)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [revealedQuestions, setRevealedQuestions] = useState<Record<string, boolean>>({})
+  const [isProcessing, setIsProcessing] = useState(false)
 
   const currentQuestion = quiz.questions[currentIdx]
+  const isRevealed = revealedQuestions[currentQuestion.id]
   const progress = ((Object.keys(answers).length) / quiz.questions.length) * 100
 
   useEffect(() => {
@@ -41,7 +44,19 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
   }
 
   const handleAnswer = (answer: string) => {
+    if (isRevealed || isProcessing) return
+
     setAnswers(prev => ({ ...prev, [currentQuestion.id]: answer }))
+    setRevealedQuestions(prev => ({ ...prev, [currentQuestion.id]: true }))
+    
+    // Auto-advance logic (optional)
+    if (currentIdx < quiz.questions.length - 1) {
+      setIsProcessing(true)
+      setTimeout(() => {
+        setCurrentIdx(prev => prev + 1)
+        setIsProcessing(false)
+      }, 1500)
+    }
   }
 
   const calculateAndSubmit = (finalAnswers = answers) => {
@@ -138,22 +153,58 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
                   {currentQuestion.type === 'multiple_choice' && (
                     <div className="grid grid-cols-1 gap-4">
                       {currentQuestion.options?.map((option, idx) => {
-                        const isSelected = answers[currentQuestion.id] === option
+                        const selectedAnswer = answers[currentQuestion.id]
+                        const isSelected = selectedAnswer === option
+                        const isCorrect = option === currentQuestion.correctAnswer
+                        
+                        let baseClasses = "flex items-center gap-4 p-6 rounded-3xl border-2 transition-all duration-300 text-left group relative overflow-hidden "
+                        let stateClasses = "bg-white dark:bg-slate-800/40 border-slate-100 dark:border-white/5 text-slate-700 dark:text-slate-300 hover:border-blue-500/30 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:translate-x-1"
+                        
+                        if (isRevealed) {
+                          if (isSelected && isCorrect) {
+                            stateClasses = "bg-emerald-600 border-emerald-600 text-white shadow-xl shadow-emerald-500/20 animate-pop scale-[1.02]"
+                          } else if (isSelected && !isCorrect) {
+                            stateClasses = "bg-rose-600 border-rose-600 text-white shadow-xl shadow-rose-500/20 animate-shake"
+                          } else if (isCorrect) {
+                            stateClasses = "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500/50 text-emerald-600 dark:text-emerald-400"
+                          } else {
+                            stateClasses = "opacity-40 grayscale-[0.5]"
+                          }
+                        } else if (isSelected) {
+                          stateClasses = "bg-blue-600 border-blue-600 text-white shadow-xl shadow-blue-500/20 translate-x-2"
+                        }
+
                         return (
                           <button
                             key={idx}
                             onClick={() => handleAnswer(option)}
-                            className={`flex items-center gap-4 p-6 rounded-3xl border-2 transition-all duration-300 text-left group ${isSelected
-                              ? 'bg-blue-600 border-blue-600 text-white shadow-xl shadow-blue-500/20 translate-x-2'
-                              : 'bg-white dark:bg-slate-800/40 border-slate-100 dark:border-white/5 text-slate-700 dark:text-slate-300 hover:border-blue-500/30 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:translate-x-1'
-                              }`}
+                            disabled={isRevealed || isProcessing}
+                            className={baseClasses + stateClasses}
                           >
-                            <span className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm transition-colors ${isSelected ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
-                              }`}>
+                            <span className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm transition-colors ${
+                              (isSelected || (isRevealed && isCorrect)) ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                            }`}>
                               {String.fromCharCode(65 + idx)}
                             </span>
                             <span className="text-lg font-bold">{option}</span>
-                            {isSelected && <CheckCircle2 className="ml-auto w-6 h-6 text-white" />}
+                            
+                            {isRevealed && isCorrect && (
+                              <div className="ml-auto flex items-center gap-2">
+                                <span className="text-[10px] font-black uppercase tracking-wider">Correct</span>
+                                <CheckCircle2 className="w-6 h-6" />
+                              </div>
+                            )}
+                            {isRevealed && isSelected && !isCorrect && (
+                              <div className="ml-auto flex items-center gap-2">
+                                <span className="text-[10px] font-black uppercase tracking-wider">Incorrect</span>
+                                <XCircle className="w-6 h-6" />
+                              </div>
+                            )}
+                            
+                            {/* Decorative background pulse for correct answer */}
+                            {isRevealed && isCorrect && isSelected && (
+                              <div className="absolute inset-0 bg-white/10 animate-pulse pointer-events-none" />
+                            )}
                           </button>
                         )
                       })}
@@ -228,19 +279,33 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
             <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-4 gap-3">
               {quiz.questions.map((q, idx) => {
                 const isAnswered = !!answers[q.id]
+                const isCorrect = isAnswered && answers[q.id] === q.correctAnswer
+                const isRevealed = !!revealedQuestions[q.id]
                 const isActive = idx === currentIdx
+                
                 return (
                   <button
                     key={q.id}
-                    onClick={() => setCurrentIdx(idx)}
-                    className={`h-12 rounded-xl flex items-center justify-center text-xs font-black transition-all duration-300 border-2 ${isActive
-                      ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/25 scale-110'
-                      : isAnswered
-                        ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500/30 text-emerald-600 shadow-sm'
-                        : 'bg-slate-50 dark:bg-slate-800/40 border-slate-100 dark:border-white/5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    onClick={() => !isProcessing && setCurrentIdx(idx)}
+                    className={`h-12 rounded-xl flex items-center justify-center text-xs font-black transition-all duration-300 border-2 relative ${isActive
+                      ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/25 scale-110 z-10'
+                      : isRevealed
+                        ? isCorrect 
+                          ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500/30 text-emerald-600' 
+                          : 'bg-rose-50 dark:bg-rose-500/10 border-rose-500/30 text-rose-600'
+                        : isAnswered
+                          ? 'bg-blue-50 dark:bg-blue-500/10 border-blue-500/30 text-blue-600'
+                          : 'bg-slate-50 dark:bg-slate-800/40 border-slate-100 dark:border-white/5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                       }`}
                   >
                     {idx + 1}
+                    {isRevealed && (
+                      <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 ${
+                        isCorrect ? 'bg-emerald-500' : 'bg-rose-500'
+                      }`}>
+                        {isCorrect ? <CheckCircle2 className="w-2 h-2 text-white" /> : <XCircle className="w-2 h-2 text-white" />}
+                      </div>
+                    )}
                   </button>
                 )
               })}

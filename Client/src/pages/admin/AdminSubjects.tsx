@@ -1,21 +1,38 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { DashboardLayout } from '@components/dashboards/DashboardLayout'
-import { Card, CardBody, CardHeader } from '@components/common/Card'
+import { Card, CardBody } from '@components/common/Card'
+import { subjectService } from '@services/subjectService'
+import { LoadingOverlay } from '@components/common/Spinner'
 import { Button } from '@components/common/Button'
 import { Modal } from '@components/common/Modal'
 
 export const AdminSubjects: React.FC = () => {
   const [showAdd, setShowAdd] = useState(false)
-  const [subjects] = useState([
-    { id: 1, name: 'Mathematics', grade: 'Grade 9', stream: 'Science', resources: 24 },
-    { id: 2, name: 'Physics', grade: 'Grade 10', stream: 'Science', resources: 18 },
-    { id: 3, name: 'Chemistry', grade: 'Grade 10', stream: 'Science', resources: 15 },
-    { id: 4, name: 'Biology', grade: 'Grade 11', stream: 'Science', resources: 22 },
-    { id: 5, name: 'English', grade: 'Grade 9', stream: 'General', resources: 30 },
-  ])
+  const [subjects, setSubjects] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchSubjects()
+  }, [])
+
+  const fetchSubjects = async () => {
+    try {
+      setLoading(true)
+      const res = await subjectService.getAll()
+      setSubjects(res)
+    } catch (error) {
+      console.error('Failed to fetch subjects:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return <LoadingOverlay message="Loading subjects from database..." />
+  }
 
   return (
-    <DashboardLayout title="Subjects" subtitle="Manage department subjects">
+    <DashboardLayout title="Subjects" subtitle="">
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-bold text-gray-900 m-0">All Subjects</h2>
@@ -30,9 +47,10 @@ export const AdminSubjects: React.FC = () => {
               <CardBody>
                 <h3 className="text-lg font-bold text-gray-900 m-0">{subject.name}</h3>
                 <div className="mt-4 space-y-2">
-                  <p className="text-gray-600 text-sm m-0"><strong>Grade:</strong> {subject.grade}</p>
-                  <p className="text-gray-600 text-sm m-0"><strong>Stream:</strong> {subject.stream}</p>
-                  <p className="text-gray-600 text-sm m-0"><strong>Resources:</strong> {subject.resources}</p>
+                  <p className="text-gray-600 text-sm m-0"><strong>Code:</strong> {subject.code || 'N/A'}</p>
+                  <p className="text-gray-600 text-sm m-0"><strong>Grade:</strong> {subject.grade?.name || subject.gradeId || 'N/A'}</p>
+                  <p className="text-gray-600 text-sm m-0"><strong>Stream:</strong> {subject.stream?.name || subject.streamId || 'N/A'}</p>
+                  <p className="text-gray-600 text-sm m-0"><strong>Department:</strong> {subject.department?.name || subject.departmentId || 'N/A'}</p>
                 </div>
                 <div className="mt-4 flex gap-2">
                   <Button variant="secondary" size="sm" fullWidth>Edit</Button>

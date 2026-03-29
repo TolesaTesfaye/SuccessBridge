@@ -6,14 +6,14 @@ services:
     plan: free
     buildCommand: npm install && npm run build
     startCommand: npm start
-    healthCheckPath: /api/health
+    healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        value: postgresql://postgres:702512@Tol_Database@db.oxnntnvtkngfoorkleay.supabase.co:5432/postgres
+        value: postgresql://postgres:702512%40Tol_Database@db.oxnntnvtkngfoorkleay.supabase.co:5432/postgres
       - key: JWT_SECRET
-        value: your-super-secret-jwt-key-minimum-32-characters-long-for-production-use
+        value: SuccessBridge-Super-Secret-JWT-Key-For-Production-2024-Deployment-32-Characters
       - key: PORT
         value: 10000
       - key: SUPABASE_URL
@@ -24,3 +24,17 @@ services:
         value: sb_secret_BnVbahCrOQufviYpHZewjw_6p9ykmQl
       - key: FRONTEND_URL
         value: https://successbridge.vercel.app
+      - key: UPLOAD_DIR
+        value: /tmp/uploads
+      - key: SUPER_ADMIN_EMAIL
+        value: tolesatesfaye273@gmail.com
+      - key: SUPER_ADMIN_PASSWORD
+        value: 702512@Tol
+      - key: SUPER_ADMIN_NAME
+        value: Tolesa Tesfaye
+      - key: ADMIN_EMAIL
+        value: tolesatesfaye327@gmail.com
+      - key: ADMIN_PASSWORD
+        value: 702512@Tol
+      - key: ADMIN_NAME
+        value: Admin User

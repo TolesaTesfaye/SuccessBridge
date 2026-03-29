@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Eye, EyeOff } from 'lucide-react'
 
 interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string
   error?: string
   helperText?: string
   icon?: React.ReactNode
+  showPasswordToggle?: boolean
 }
 
 export const FormInput: React.FC<FormInputProps> = ({
@@ -12,9 +14,22 @@ export const FormInput: React.FC<FormInputProps> = ({
   error,
   helperText,
   icon,
+  showPasswordToggle = false,
+  type,
   className = '',
   ...props
 }) => {
+  const [showPassword, setShowPassword] = useState(false)
+  
+  // Determine the actual input type
+  const inputType = showPasswordToggle && type === 'password' 
+    ? (showPassword ? 'text' : 'password')
+    : type
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
+  }
+
   return (
     <div className="flex flex-col gap-1.5 mb-5 w-full">
       {label && (
@@ -29,12 +44,14 @@ export const FormInput: React.FC<FormInputProps> = ({
           </div>
         )}
         <input
+          type={inputType}
           className={`
             w-full px-4 py-3 rounded-xl 
             bg-white dark:bg-slate-800/50 
             border transition-all duration-300 
             text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600
             ${icon ? 'pl-11' : ''}
+            ${showPasswordToggle && type === 'password' ? 'pr-11' : ''}
             ${error
               ? 'border-red-500 dark:border-red-500/50 focus:ring-4 focus:ring-red-500/10'
               : 'border-slate-200 dark:border-slate-800 focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 dark:focus:ring-blue-500/5'
@@ -44,6 +61,20 @@ export const FormInput: React.FC<FormInputProps> = ({
           `}
           {...props}
         />
+        {showPasswordToggle && type === 'password' && (
+          <button
+            type="button"
+            onClick={togglePasswordVisibility}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors focus:outline-none focus:text-blue-500"
+            tabIndex={-1}
+          >
+            {showPassword ? (
+              <EyeOff className="w-5 h-5" />
+            ) : (
+              <Eye className="w-5 h-5" />
+            )}
+          </button>
+        )}
       </div>
       {error ? (
         <div className="flex items-center gap-1.5 ml-1 mt-1">

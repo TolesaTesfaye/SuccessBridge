@@ -1,7 +1,13 @@
 import express from 'express'
-import { authMiddleware } from '../middleware/auth'
-import { QuizService } from '../services/quizService'
-import { AppError } from '../middleware/errorHandler'
+import { authMiddleware, requireRole } from '../middleware/auth.js'
+import {
+  getQuizzes,
+  getQuizById,
+  createQuiz,
+  updateQuiz,
+  deleteQuiz,
+  submitQuizResult,
+} from '../controllers/quizController.js'
 
 const router = express.Router()
 
@@ -32,14 +38,7 @@ const router = express.Router()
  */
 
 // Get all quizzes
-router.get('/', async (req, res) => {
-  try {
-    const quizzes = await QuizService.getQuizzes(req.query as any)
-    res.json(quizzes)
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch quizzes' })
-  }
-})
+router.get('/', getQuizzes)
 
 /**
  * @swagger
@@ -66,18 +65,7 @@ router.get('/', async (req, res) => {
  *         description: Quiz not found
  */
 // Get quiz by ID
-router.get('/:id', async (req, res) => {
-  try {
-    const quiz = await QuizService.getQuizById(req.params.id)
-    res.json(quiz)
-  } catch (error: any) {
-    if (error instanceof AppError) {
-      res.status(error.statusCode).json({ error: error.message })
-    } else {
-      res.status(500).json({ error: 'Failed to fetch quiz' })
-    }
-  }
-})
+router.get('/:id', getQuizById)
 
 /**
  * @swagger
@@ -130,45 +118,14 @@ router.get('/:id', async (req, res) => {
  *       401:
  *         description: Unauthorized
  */
-// Create quiz (admin only)
-router.post('/', authMiddleware, async (req, res) => {
-  try {
-    const createdBy = (req as any).user.userId || (req as any).user.id
-    const quiz = await QuizService.createQuiz(req.body, createdBy)
-    res.status(201).json(quiz)
-  } catch (error: any) {
-    console.error('Quiz Create Error:', error)
-    res.status(500).json({ error: 'Failed to create quiz', details: error.message })
-  }
-})
+// Create quiz (admin or super admin only)
+router.post('/', authMiddleware, requireRole('admin', 'super_admin'), createQuiz)
 
-// Update quiz
-router.put('/:id', authMiddleware, async (req, res) => {
-  try {
-    const quiz = await QuizService.updateQuiz(req.params.id, req.body)
-    res.json(quiz)
-  } catch (error: any) {
-    if (error instanceof AppError) {
-      res.status(error.statusCode).json({ error: error.message })
-    } else {
-      res.status(500).json({ error: 'Failed to update quiz' })
-    }
-  }
-})
+// Update quiz (admin or super admin only)
+router.put('/:id', authMiddleware, requireRole('admin', 'super_admin'), updateQuiz)
 
-// Delete quiz
-router.delete('/:id', authMiddleware, async (req, res) => {
-  try {
-    const result = await QuizService.deleteQuiz(req.params.id)
-    res.json(result)
-  } catch (error: any) {
-    if (error instanceof AppError) {
-      res.status(error.statusCode).json({ error: error.message })
-    } else {
-      res.status(500).json({ error: 'Failed to delete quiz' })
-    }
-  }
-})
+// Delete quiz (admin or super admin only)
+router.delete('/:id', authMiddleware, requireRole('admin', 'super_admin'), deleteQuiz)
 
 /**
  * @swagger
@@ -243,19 +200,6 @@ router.delete('/:id', authMiddleware, async (req, res) => {
  *         description: Quiz not found
  */
 // Submit quiz result
-router.post('/:id/submit', authMiddleware, async (req, res) => {
-  try {
-    const studentId = (req as any).user.userId || (req as any).user.id
-    const result = await QuizService.submitQuizResult(req.params.id, studentId, req.body)
-    res.status(201).json(result)
-  } catch (error: any) {
-    console.error('Submission error:', error)
-    if (error instanceof AppError) {
-      res.status(error.statusCode).json({ error: error.message })
-    } else {
-      res.status(500).json({ error: 'Failed to submit quiz result' })
-    }
-  }
-})
+router.post('/:id/submit', authMiddleware, submitQuizResult)
 
 export default router

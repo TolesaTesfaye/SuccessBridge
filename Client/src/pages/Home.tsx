@@ -66,30 +66,6 @@ export const Home: React.FC = () => {
                 </div>
             </section>
 
-            {/* Stats Section */}
-            <section className="border-y border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-md relative z-10 transition-colors">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center divide-x divide-slate-200 dark:divide-white/10">
-                        <div className="flex flex-col items-center">
-                            <span className="text-4xl font-bold text-slate-900 dark:text-white mb-2">10k+</span>
-                            <span className="text-sm text-slate-500 dark:text-slate-400 font-medium tracking-wide uppercase">Active Students</span>
-                        </div>
-                        <div className="flex flex-col items-center">
-                            <span className="text-4xl font-bold text-slate-900 dark:text-white mb-2">500+</span>
-                            <span className="text-sm text-slate-500 dark:text-slate-400 font-medium tracking-wide uppercase">Premium Resources</span>
-                        </div>
-                        <div className="flex flex-col items-center">
-                            <span className="text-4xl font-bold text-slate-900 dark:text-white mb-2">95%</span>
-                            <span className="text-sm text-slate-500 dark:text-slate-400 font-medium tracking-wide uppercase">Success Rate</span>
-                        </div>
-                        <div className="flex flex-col items-center">
-                            <span className="text-4xl font-bold text-slate-900 dark:text-white mb-2">24/7</span>
-                            <span className="text-sm text-slate-500 dark:text-slate-400 font-medium tracking-wide uppercase">Platform Access</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             {/* Features Section */}
             <section className="py-24 relative z-10">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">

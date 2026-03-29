@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import { DepartmentService } from '../services/departmentService'
-import { authMiddleware, requireRole } from '../middleware/auth'
+import { DepartmentService } from '../services/departmentService.js'
+import { authMiddleware, requireRole } from '../middleware/auth.js'
 
 const router = Router()
 
@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
   }
 })
 
-router.post('/', authMiddleware, requireRole('super_admin'), async (req, res) => {
+router.post('/', authMiddleware, requireRole('admin', 'super_admin'), async (req, res) => {
   try {
     const dept = await DepartmentService.create(req.body)
     res.status(201).json(dept)

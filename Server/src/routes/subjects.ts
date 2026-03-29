@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import { SubjectService } from '../services/subjectService'
-import { authMiddleware, requireRole } from '../middleware/auth'
+import { SubjectService } from '../services/subjectService.js'
+import { authMiddleware, requireRole } from '../middleware/auth.js'
 
 const router = Router()
 

@@ -6,7 +6,9 @@ class User extends Model<IUser> implements IUser {
   public id!: string
   public email!: string
   public name!: string
-  public password!: string
+  public password?: string
+  public googleId?: string
+  public microsoftId?: string
   public role!: 'student' | 'admin' | 'super_admin'
   public studentType?: 'high_school' | 'university'
   public highSchoolGrade?: 'grade_9' | 'grade_10' | 'grade_11' | 'grade_12'
@@ -18,6 +20,12 @@ class User extends Model<IUser> implements IUser {
   public departmentId?: string
   public gradeId?: string
   public streamId?: string
+  public documents?: string[] // Array of document URLs/paths
+  public isApproved?: boolean
+  public approvalStatus?: 'pending' | 'approved' | 'rejected'
+  public approvedBy?: string
+  public approvedAt?: Date
+  public rejectionReason?: string
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 }
@@ -40,7 +48,17 @@ User.init(
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true, // Allow null for OAuth users
+    },
+    googleId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+    },
+    microsoftId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
     },
     role: {
       type: DataTypes.ENUM('student', 'admin', 'super_admin'),
@@ -70,11 +88,102 @@ User.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    universityId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: 'universities',
+        key: 'id'
+      }
+    },
+    departmentId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: 'departments',
+        key: 'id'
+      }
+    },
+    gradeId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: 'grades',
+        key: 'id'
+      }
+    },
+    streamId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: 'streams',
+        key: 'id'
+      }
+    },
+    isApproved: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true, // Students are auto-approved, admins need approval
+    },
+    approvalStatus: {
+      type: DataTypes.ENUM('pending', 'approved', 'rejected'),
+      defaultValue: 'approved', // Students are auto-approved
+    },
+    approvedBy: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: 'users',
+        key: 'id'
+      }
+    },
+    approvedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    rejectionReason: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    documents: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      defaultValue: [],
+    },
   } as any,
   {
     sequelize,
     tableName: 'users',
     timestamps: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ['email']
+      },
+      {
+        fields: ['role']
+      },
+      {
+        fields: ['studentType']
+      },
+      {
+        fields: ['universityId']
+      },
+      {
+        fields: ['departmentId']
+      },
+      {
+        fields: ['approvalStatus']
+      },
+      {
+        fields: ['isApproved']
+      },
+      {
+        fields: ['googleId']
+      },
+      {
+        fields: ['microsoftId']
+      }
+    ]
   },
 )
 

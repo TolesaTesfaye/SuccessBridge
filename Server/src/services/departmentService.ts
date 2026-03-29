@@ -1,5 +1,5 @@
-import Department from '../models/Department'
-import { AppError } from '../middleware/errorHandler'
+import Department from '../models/Department.js'
+import { AppError } from '../middleware/errorHandler.js'
 
 export class DepartmentService {
   static async getByUniversity(universityId: string) {

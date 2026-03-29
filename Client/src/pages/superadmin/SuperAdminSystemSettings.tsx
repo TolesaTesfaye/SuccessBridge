@@ -10,6 +10,7 @@ import { Spinner, LoadingOverlay } from '@components/common/Spinner'
 import { ErrorMessage } from '@components/common/ErrorMessage'
 import { useToast } from '@components/common/Toast'
 import api from '@services/api'
+import { ApiErrorHandler } from '@utils/apiErrorHandler'
 
 export const SuperAdminSystemSettings: React.FC = () => {
   const toast = useToast()
@@ -45,9 +46,8 @@ export const SuperAdminSystemSettings: React.FC = () => {
           setSettings(response.data)
         }
       } catch (err: any) {
-        console.error('Failed to load settings:', err)
+        ApiErrorHandler.handle(err, 'Failed to load settings. Using defaults.')
         setError('Failed to load settings. Using defaults.')
-        toast.warning('Failed to load settings. Using defaults.')
       } finally {
         setInitialLoading(false)
       }
@@ -70,12 +70,11 @@ export const SuperAdminSystemSettings: React.FC = () => {
     try {
       await api.put('/settings', settings)
       setSaved(true)
-      toast.success('Settings saved successfully! ✓')
+      ApiErrorHandler.showSuccess('Settings saved successfully! ✓')
       setTimeout(() => setSaved(false), 3000)
     } catch (err: any) {
-      const errorMessage = err.response?.data?.message || 'Failed to save settings. Please try again.'
-      setError(errorMessage)
-      toast.error(errorMessage)
+      ApiErrorHandler.handle(err, 'Failed to save settings. Please try again.')
+      setError('Failed to save settings. Please try again.')
       console.error('Settings save error:', err)
     } finally {
       setLoading(false)

@@ -1,14 +1,15 @@
-import User from './User'
-import Resource from './Resource'
-import Subject from './Subject'
-import Quiz from './Quiz'
-import QuizResult from './QuizResult'
-import University from './University'
-import Grade from './Grade'
-import Stream from './Stream'
-import Department from './Department'
-import StudentProgress from './StudentProgress'
-import ResourceAccess from './ResourceAccess'
+import User from './User.js'
+import AdminRequest from './AdminRequest.js'
+import Resource from './Resource.js'
+import Subject from './Subject.js'
+import Quiz from './Quiz.js'
+import QuizResult from './QuizResult.js'
+import University from './University.js'
+import Grade from './Grade.js'
+import Stream from './Stream.js'
+import Department from './Department.js'
+import StudentProgress from './StudentProgress.js'
+import ResourceAccess from './ResourceAccess.js'
 
 // Define relationships
 export const setupAssociations = () => {
@@ -79,6 +80,7 @@ export const setupAssociations = () => {
 
 export {
   User,
+  AdminRequest,
   Resource,
   Subject,
   Quiz,

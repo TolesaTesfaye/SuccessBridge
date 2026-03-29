@@ -3,12 +3,17 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-const redisClient = createClient({
-  socket: {
-    host: process.env.REDIS_HOST || 'localhost',
-    port: parseInt(process.env.REDIS_PORT || '6379'),
-  },
-})
+// Create Redis client only if REDIS_URL is provided
+const redisClient = process.env.REDIS_URL 
+  ? createClient({
+      url: process.env.REDIS_URL
+    })
+  : createClient({
+      socket: {
+        host: process.env.REDIS_HOST || 'localhost',
+        port: parseInt(process.env.REDIS_PORT || '6379'),
+      },
+    })
 
 redisClient.on('error', (err) => {
   if (process.env.NODE_ENV === 'development') {
@@ -24,11 +29,14 @@ redisClient.on('connect', () => {
 
 export const connectRedis = async () => {
   try {
-    await redisClient.connect()
-  } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('⚠️  Redis not available (optional):', (error as Error).message)
+    if (process.env.REDIS_URL || process.env.REDIS_HOST) {
+      await redisClient.connect()
+      console.log('✅ Redis connected')
+    } else {
+      console.log('ℹ️  Redis not configured - token blacklist disabled')
     }
+  } catch (error) {
+    console.warn('⚠️  Redis not available (optional):', (error as Error).message)
   }
 }
 

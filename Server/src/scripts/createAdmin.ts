@@ -1,4 +1,4 @@
-import * as bcrypt from 'bcryptjs'
+import bcrypt from 'bcryptjs'
 import User from '../models/User'
 import sequelize from '../config/database'
 

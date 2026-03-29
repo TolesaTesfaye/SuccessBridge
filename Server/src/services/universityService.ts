@@ -1,5 +1,5 @@
-import University from '../models/University'
-import { AppError } from '../middleware/errorHandler'
+import University from '../models/University.js'
+import { AppError } from '../middleware/errorHandler.js'
 
 export class UniversityService {
   static async getAll() {

@@ -1,0 +1,5 @@
+export * from './psychologyContent'
+export * from './PsychologyIntroduction'
+export * from './WhatIsPsychology'
+export * from './GoalsOfPsychology'
+export * from './PsychologyQuiz'

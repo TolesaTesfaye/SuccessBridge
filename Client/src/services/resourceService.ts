@@ -20,7 +20,7 @@ export const resourceService = {
     const freshmanFilters = {
       ...filters,
       educationLevel: 'university',
-      grade: 'freshman' // This maps to category in backend
+      category: 'freshman' // Changed from 'grade' to 'category' to match backend
     }
     const response = await api.get('/resources', { params: freshmanFilters })
     return response.data
@@ -33,7 +33,9 @@ export const resourceService = {
 
   uploadResource: async (formData: FormData): Promise<ApiResponse<Resource>> => {
     const response = await api.post('/resources', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     })
     return response.data
   },
@@ -43,8 +45,13 @@ export const resourceService = {
     return response.data
   },
 
-  deleteResource: async (id: string): Promise<ApiResponse<void>> => {
+  deleteResource: async (id: string): Promise<ApiResponse<{ message: string }>> => {
     const response = await api.delete(`/resources/${id}`)
     return response.data
   },
+
+  getResourceStats: async (): Promise<ApiResponse<any>> => {
+    const response = await api.get('/resources/stats')
+    return response.data
+  }
 }

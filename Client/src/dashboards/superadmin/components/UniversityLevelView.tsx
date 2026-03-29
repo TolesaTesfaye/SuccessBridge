@@ -50,8 +50,8 @@ export const UniversityLevelView: React.FC<UniversityLevelViewProps> = ({ level 
       if (selectedStream === 'social') {
         return ['Common Course', 'History', 'Geography', 'Economics', 'Civics']
       }
-      // If no stream selected, show general subjects
-      return ['Common Course', 'Natural Science', 'Social Science']
+      // Default remedial subjects when no stream is selected
+      return ['Math', 'English', 'Physics', 'Chemistry', 'Geography', 'History']
     }
     if (selectedDepartment && (DEPARTMENTS as any)[selectedDepartment]) {
       return ['Common Course', ...(DEPARTMENTS as any)[selectedDepartment]]

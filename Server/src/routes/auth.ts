@@ -1,8 +1,21 @@
-import { Router, Request, Response } from 'express'
-import jwt from 'jsonwebtoken'
-import { AppError } from '../middleware/errorHandler.js'
-import { authMiddleware } from '../middleware/auth.js'
-import { AuthService } from '../services/authService.js'
+import { Router } from 'express'
+import { authMiddleware, requireRole } from '../middleware/auth.js'
+import {
+  register,
+  login,
+  getMe,
+  logout,
+  addDemoAdminRequest,
+  getAdminRequests,
+  approveAdminRequest,
+  rejectAdminRequest,
+  submitAdminRequest,
+  getAdminRequestStatus,
+  setupPassword,
+  oauthSuccess,
+  completeOAuthProfile,
+} from '../controllers/authController.js'
+import passport from 'passport'
 
 const router = Router()
 
@@ -84,27 +97,7 @@ const router = Router()
  */
 
 // Register
-router.post('/register', async (req: Request, res: Response) => {
-  try {
-    console.log('Registering request body:', req.body)
-    const result = await AuthService.register(req.body)
-
-    res.status(201).json({
-      success: true,
-      data: result,
-    })
-  } catch (error: any) {
-    console.error('Registration error:', error)
-    if (error instanceof AppError) {
-      res.status(error.statusCode).json({ success: false, error: error.message })
-    } else {
-      const message = error.name === 'SequelizeValidationError'
-        ? error.errors.map((e: any) => e.message).join(', ')
-        : 'Registration failed'
-      res.status(400).json({ success: false, error: message })
-    }
-  }
-})
+router.post('/register', register)
 
 /**
  * @swagger
@@ -156,22 +149,7 @@ router.post('/register', async (req: Request, res: Response) => {
  *               $ref: '#/components/schemas/Error'
  */
 // Login
-router.post('/login', async (req: Request, res: Response) => {
-  try {
-    const result = await AuthService.login(req.body)
-
-    res.json({
-      success: true,
-      data: result,
-    })
-  } catch (error: any) {
-    if (error instanceof AppError) {
-      res.status(error.statusCode).json({ success: false, error: error.message })
-    } else {
-      res.status(500).json({ success: false, error: 'Login failed' })
-    }
-  }
-})
+router.post('/login', login)
 
 /**
  * @swagger
@@ -202,28 +180,7 @@ router.post('/login', async (req: Request, res: Response) => {
  *               $ref: '#/components/schemas/Error'
  */
 // Get current user
-router.get('/me', async (req: Request, res: Response) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1]
-    if (!token) {
-      throw new AppError(401, 'No token provided')
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as any
-    const userData = await AuthService.getCurrentUser(decoded.userId)
-
-    res.json({
-      success: true,
-      data: userData,
-    })
-  } catch (error: any) {
-    if (error instanceof AppError) {
-      res.status(error.statusCode).json({ success: false, error: error.message })
-    } else {
-      res.status(500).json({ success: false, error: 'Failed to get user' })
-    }
-  }
-})
+router.get('/me', authMiddleware, getMe)
 
 /**
  * @swagger
@@ -255,26 +212,256 @@ router.get('/me', async (req: Request, res: Response) => {
  *               $ref: '#/components/schemas/Error'
  */
 // Logout
-router.post('/logout', authMiddleware, async (req: Request, res: Response) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1]
-    
-    if (token) {
-      await AuthService.logout(token)
-    }
+router.post('/logout', authMiddleware, logout)
 
-    res.json({
-      success: true,
-      message: 'Logged out successfully'
-    })
-  } catch (error: any) {
-    console.error('Logout error:', error)
-    if (error instanceof AppError) {
-      res.status(error.statusCode).json({ success: false, error: error.message })
-    } else {
-      res.status(500).json({ success: false, error: 'Logout failed' })
-    }
-  }
-})
+// Add demo admin request (for testing auto-approval) - restricted to super admin
+router.post('/add-tolesa-request', authMiddleware, requireRole('super_admin'), addDemoAdminRequest)
+
+/**
+ * @swagger
+ * /auth/admin-requests:
+ *   get:
+ *     summary: Get all admin requests (Super Admin only)
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of admin requests
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - Super Admin access required
+ */
+router.get('/admin-requests', authMiddleware, requireRole('super_admin'), getAdminRequests)
+
+/**
+ * @swagger
+ * /auth/admin-requests/{id}/approve:
+ *   post:
+ *     summary: Approve an admin request (Super Admin only)
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Admin request ID
+ *     responses:
+ *       200:
+ *         description: Admin request approved successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - Super Admin access required
+ *       404:
+ *         description: Admin request not found
+ */
+router.post('/admin-requests/:id/approve', authMiddleware, requireRole('super_admin'), approveAdminRequest)
+
+/**
+ * @swagger
+ * /auth/admin-requests/{id}/reject:
+ *   post:
+ *     summary: Reject an admin request (Super Admin only)
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Admin request ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - reason
+ *             properties:
+ *               reason:
+ *                 type: string
+ *                 description: Reason for rejection
+ *     responses:
+ *       200:
+ *         description: Admin request rejected successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - Super Admin access required
+ *       404:
+ *         description: Admin request not found
+ */
+router.post('/admin-requests/:id/reject', authMiddleware, requireRole('super_admin'), rejectAdminRequest)
+
+/**
+ * @swagger
+ * /auth/submit-admin-request:
+ *   post:
+ *     summary: Submit admin request with candidate details
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *               - name
+ *               - university
+ *               - department
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Must be successbridge27@gmail.com
+ *               password:
+ *                 type: string
+ *                 description: Must be sb12340987
+ *               name:
+ *                 type: string
+ *                 description: Full name of the admin candidate
+ *               university:
+ *                 type: string
+ *                 description: University name
+ *               department:
+ *                 type: string
+ *                 description: Department name
+ *               stream:
+ *                 type: string
+ *                 description: Academic stream (optional)
+ *     responses:
+ *       200:
+ *         description: Admin request submitted successfully
+ *       400:
+ *         description: Invalid request data
+ *       401:
+ *         description: Invalid credentials
+ *       404:
+ *         description: Admin request not found
+ */
+router.post('/submit-admin-request', submitAdminRequest)
+
+/**
+ * @swagger
+ * /auth/admin-request-status:
+ *   post:
+ *     summary: Check admin request status by email
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email address used for admin request
+ *     responses:
+ *       200:
+ *         description: Admin request status retrieved successfully
+ *       404:
+ *         description: No admin request found for this email
+ */
+router.post('/admin-request-status', getAdminRequestStatus)
+
+/**
+ * @swagger
+ * /auth/setup-password:
+ *   post:
+ *     summary: Set up admin password using invitation token
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - token
+ *               - password
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: Invitation token received via email
+ *               password:
+ *                 type: string
+ *                 minLength: 6
+ *                 description: New password to set
+ *     responses:
+ *       200:
+ *         description: Password set successfully
+ *       400:
+ *         description: Invalid or expired token
+ */
+/**
+ * @swagger
+ * /auth/complete-oauth-profile:
+ *   post:
+ *     summary: Complete OAuth profile with student information
+ *     tags: [Authentication]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - studentType
+ *             properties:
+ *               studentType:
+ *                 type: string
+ *                 enum: [high_school, university]
+ *                 description: Type of student
+ *               highSchoolGrade:
+ *                 type: string
+ *                 enum: [grade_9, grade_10, grade_11, grade_12]
+ *                 description: Required for high school students
+ *               highSchoolStream:
+ *                 type: string
+ *                 enum: [natural, social]
+ *                 description: Required for high school students
+ *               universityLevel:
+ *                 type: string
+ *                 enum: [remedial, freshman, senior, gc]
+ *                 description: Required for university students
+ *               university:
+ *                 type: string
+ *                 description: Required for university students
+ *               department:
+ *                 type: string
+ *                 description: Required for university students
+ *     responses:
+ *       200:
+ *         description: Profile completed successfully
+ *       400:
+ *         description: Invalid request data
+ *       401:
+ *         description: Unauthorized
+ */
+router.post('/complete-oauth-profile', authMiddleware, completeOAuthProfile)
+
+// Google OAuth
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
+router.get('/google/callback', passport.authenticate('google', { session: false }), oauthSuccess)
+
+// Microsoft OAuth
+router.get('/microsoft', passport.authenticate('microsoft', { scope: ['user.read'] }))
+router.get('/microsoft/callback', passport.authenticate('microsoft', { session: false }), oauthSuccess)
 
 export default router

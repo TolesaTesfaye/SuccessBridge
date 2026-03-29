@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -9,6 +9,8 @@ import { useAuthStore } from "@store/authStore";
 import { Layout } from "@components/Layout";
 import { LoadingOverlay } from "@components/common/Spinner";
 import { PerformanceMonitor } from "@components/common/PerformanceMonitor";
+import { ToastProvider, useToast } from "@components/common/Toast";
+import { useApiErrorHandler } from "@utils/apiErrorHandler";
 
 // Eager load critical components
 import { Home } from "@pages/Home";
@@ -16,6 +18,8 @@ import { Login } from "@pages/Login";
 import { Register } from "@pages/Register";
 import { NotFound } from "@pages/NotFound";
 import { Unauthorized } from "@pages/Unauthorized";
+import { OAuthCallback } from "@pages/OAuthCallback";
+import { CompleteProfile } from "@pages/CompleteProfile";
 
 // Lazy load dashboards
 const HighSchoolDashboard = lazy(() =>
@@ -60,16 +64,16 @@ const StudentProfile = lazy(() =>
     default: m.StudentProfile,
   })),
 );
+const UniversityCourseViewer = lazy(() =>
+  import("@pages/student/UniversityCourseViewer").then((m) => ({
+    default: m.UniversityCourseViewer,
+  })),
+);
 
 // Lazy load admin pages
 const AdminResources = lazy(() =>
   import("@pages/admin/AdminResources").then((m) => ({
     default: m.AdminResources,
-  })),
-);
-const AdminSubjects = lazy(() =>
-  import("@pages/admin/AdminSubjects").then((m) => ({
-    default: m.AdminSubjects,
   })),
 );
 const AdminStudents = lazy(() =>
@@ -177,25 +181,61 @@ const ProtectedRoute: React.FC<{
 };
 
 const getDashboard = (user: any) => {
+  console.log("🔍 getDashboard called with user:", user);
+
   if (user?.role === "admin") {
+    console.log("📊 Redirecting to AdminDashboard");
     return <AdminDashboard />;
   }
   if (user?.role === "super_admin") {
+    console.log("📊 Redirecting to SuperAdminDashboard");
     return <SuperAdminDashboard />;
   }
   if (user?.role === "student") {
+    console.log("🎓 Student detected, studentType:", user?.studentType);
     if (user?.studentType === "high_school") {
+      console.log("🏫 Redirecting to HighSchoolDashboard");
       return <HighSchoolDashboard />;
     }
     if (user?.studentType === "university") {
+      console.log(
+        "🏛️ Redirecting to UniversityDashboard, universityLevel:",
+        user?.universityLevel,
+      );
       return <UniversityDashboard />;
     }
+    console.log("⚠️ Student role but no valid studentType, user data:", user);
   }
+  console.log("❌ No valid role/type found, redirecting to login. User:", user);
   return <Navigate to="/login" replace />;
 };
 
 export const App: React.FC = () => {
+  const { isInitialized, initialize } = useAuthStore();
+
+  // Initialize auth on app load
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
+
+  // Show loading while initializing
+  if (!isInitialized) {
+    return <LoadingOverlay />;
+  }
+
+  return (
+    <ToastProvider>
+      <AppContent />
+    </ToastProvider>
+  );
+};
+
+const AppContent: React.FC = () => {
   const { isAuthenticated, user } = useAuthStore();
+  const toast = useToast();
+
+  // Initialize global error handler
+  useApiErrorHandler(toast);
 
   return (
     <>
@@ -217,6 +257,8 @@ export const App: React.FC = () => {
               <Route path="/terms-of-service" element={<TermsOfService />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/oauth-callback" element={<OAuthCallback />} />
+              <Route path="/complete-profile" element={<CompleteProfile />} />
 
               {/* Protected Routes */}
               <Route
@@ -276,6 +318,15 @@ export const App: React.FC = () => {
                 }
               />
 
+              <Route
+                path="/university/course-viewer/:subject"
+                element={
+                  <ProtectedRoute requiredRole="student">
+                    <UniversityCourseViewer />
+                  </ProtectedRoute>
+                }
+              />
+
               {/* Admin Routes */}
               <Route
                 path="/admin/dashboard"
@@ -290,14 +341,6 @@ export const App: React.FC = () => {
                 element={
                   <ProtectedRoute requiredRole="admin">
                     <AdminResources />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/subjects"
-                element={
-                  <ProtectedRoute requiredRole="admin">
-                    <AdminSubjects />
                   </ProtectedRoute>
                 }
               />

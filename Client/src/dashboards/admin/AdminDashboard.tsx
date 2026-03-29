@@ -1,377 +1,617 @@
-import React, { useState } from 'react'
-import { DashboardLayout } from '@components/dashboards/DashboardLayout'
-import { Card, CardBody, CardHeader } from '@components/common/Card'
-import { Button } from '@components/common/Button'
-import { Modal } from '@components/common/Modal'
-import { ResourceUploadForm, UploadFormData } from '@/components/resources/ResourceUploadForm'
-import { resourceService } from '@services/resourceService'
+import React, { useMemo, useState } from "react";
+import { DashboardLayout } from "@components/dashboards/DashboardLayout";
+import { Card, CardBody, CardHeader } from "@components/common/Card";
+import { Button } from "@components/common/Button";
+import { subjectService } from "@services/subjectService";
+import { departmentService } from "@services/departmentService";
+import { universityService } from "@services/universityService";
+import { resourceService } from "@services/resourceService";
+import { quizService } from "@services/quizService";
+import {
+  AlertTriangle,
+  BarChart3,
+  BookOpenCheck,
+  Building2,
+  GraduationCap,
+  PlusCircle,
+  RefreshCcw,
+  School,
+} from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
+
+type TabKey =
+  | "overview"
+  | "subjects"
+  | "departments"
+  | "universities"
+  | "reports";
+
+type DashboardState = {
+  loading: boolean;
+  error: string | null;
+  subjects: any[];
+  departments: any[];
+  universities: any[];
+  quizzes: any[];
+  resourceStats: any | null;
+};
+
+const initialState: DashboardState = {
+  loading: true,
+  error: null,
+  subjects: [],
+  departments: [],
+  universities: [],
+  quizzes: [],
+  resourceStats: null,
+};
+
+const parseArrayData = (value: any): any[] => {
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value?.data)) return value.data;
+  if (Array.isArray(value?.data?.data)) return value.data.data;
+  if (Array.isArray(value?.subjects)) return value.subjects;
+  if (Array.isArray(value?.departments)) return value.departments;
+  if (Array.isArray(value?.universities)) return value.universities;
+  return [];
+};
+
+const parseError = (err: any): string => {
+  const status = err?.response?.status;
+  if (status === 403)
+    return "You do not have permission to perform this action.";
+  if (status === 401) return "Please login again to continue.";
+  return (
+    err?.response?.data?.message ||
+    err?.response?.data?.error ||
+    err?.message ||
+    "Request failed."
+  );
+};
 
 export const AdminDashboard: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('overview')
-  const [showUploadModal, setShowUploadModal] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
-  
-  // Real data from database
-  const [stats, setStats] = useState({
-    totalResources: 0,
-    activeStudents: 0,
-    quizzesCreated: 0,
-    pendingApprovals: 0,
-    loading: true
-  })
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState<TabKey>("overview");
+  const [state, setState] = useState<DashboardState>(initialState);
+  const [submitting, setSubmitting] = useState(false);
+  const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
-  // Fetch dashboard statistics
+  const [subjectForm, setSubjectForm] = useState({
+    name: "",
+    code: "",
+    departmentId: "",
+    gradeId: "",
+    streamId: "",
+  });
+
+  const [departmentForm, setDepartmentForm] = useState({
+    name: "",
+    universityId: "",
+  });
+
+  const [universityForm, setUniversityForm] = useState({
+    name: "",
+    location: "",
+    email: "",
+  });
+
+  const fetchDashboardData = React.useCallback(async () => {
+    setState((prev) => ({ ...prev, loading: true, error: null }));
+
+    const results = await Promise.allSettled([
+      subjectService.getAll(),
+      departmentService.getAll(),
+      universityService.getUniversities(),
+      quizService.getAll({ limit: 200 }),
+      resourceService.getResourceStats(),
+    ]);
+
+    const [
+      subjectsRes,
+      departmentsRes,
+      universitiesRes,
+      quizzesRes,
+      resourceStatsRes,
+    ] = results;
+
+    const subjects =
+      subjectsRes.status === "fulfilled"
+        ? parseArrayData(subjectsRes.value)
+        : [];
+    const departments =
+      departmentsRes.status === "fulfilled"
+        ? parseArrayData(departmentsRes.value)
+        : [];
+    const universities =
+      universitiesRes.status === "fulfilled"
+        ? parseArrayData(universitiesRes.value?.data || universitiesRes.value)
+        : [];
+    const quizzes =
+      quizzesRes.status === "fulfilled" ? parseArrayData(quizzesRes.value) : [];
+    const resourceStats =
+      resourceStatsRes.status === "fulfilled"
+        ? resourceStatsRes.value?.data || {}
+        : null;
+
+    const hardFailures = [
+      subjectsRes,
+      departmentsRes,
+      universitiesRes,
+      quizzesRes,
+      resourceStatsRes,
+    ].filter((result) => result.status === "rejected").length;
+
+    setState({
+      loading: false,
+      error:
+        hardFailures >= 3
+          ? "Some dashboard sources are unavailable right now."
+          : null,
+      subjects,
+      departments,
+      universities,
+      quizzes,
+      resourceStats,
+    });
+  }, []);
+
   React.useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const resourcesRes = await resourceService.getResources({ limit: 1 })
-        
-        setStats({
-          totalResources: resourcesRes.data?.total || 0,
-          activeStudents: 0, // TODO: Add student count API
-          quizzesCreated: 0, // TODO: Add quiz count API
-          pendingApprovals: 0, // TODO: Add approval system
-          loading: false
-        })
-      } catch (error) {
-        console.error('Failed to fetch stats:', error)
-        setStats(prev => ({ ...prev, loading: false }))
-      }
-    }
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
-    fetchStats()
-  }, [])
+  const overviewStats = useMemo(
+    () => [
+      {
+        label: "Subjects",
+        value: state.subjects.length,
+        icon: BookOpenCheck,
+        color: "text-emerald-600",
+      },
+      {
+        label: "Departments",
+        value: state.departments.length,
+        icon: Building2,
+        color: "text-violet-600",
+      },
+      {
+        label: "Universities",
+        value: state.universities.length,
+        icon: School,
+        color: "text-amber-600",
+      },
+      {
+        label: "Quizzes",
+        value: state.quizzes.length,
+        icon: GraduationCap,
+        color: "text-pink-600",
+      },
+      {
+        label: "Resources",
+        value: Number(
+          state.resourceStats?.totalResources ||
+            state.resourceStats?.total ||
+            0,
+        ),
+        icon: BarChart3,
+        color: "text-cyan-600",
+      },
+    ],
+    [state],
+  );
 
-  const handleUploadSubmit = async (data: UploadFormData) => {
+  const tabButton = (id: TabKey, label: string) => (
+    <button
+      key={id}
+      className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${
+        activeTab === id
+          ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
+          : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
+      }`}
+      onClick={() => setActiveTab(id)}
+    >
+      {label}
+    </button>
+  );
+
+  const resetAlerts = () => {
+    setActionMessage(null);
+    setActionError(null);
+  };
+
+  const handleCreateSubject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!subjectForm.name.trim() || !subjectForm.code.trim()) return;
+    resetAlerts();
+    setSubmitting(true);
     try {
-      setIsUploading(true)
-      const formData = new FormData()
-      formData.append('title', data.title)
-      formData.append('description', data.description)
-      formData.append('educationLevel', data.educationLevel)
-      formData.append('type', data.type)
-      formData.append('subject', data.subject)
-      formData.append('tags', data.tags)
-      if (data.file) formData.append('file', data.file)
-      if (data.grade) formData.append('gradeId', data.grade)
-      if (data.stream) formData.append('stream', data.stream)
-      if (data.universityId) formData.append('universityId', data.universityId)
-      if (data.departmentId) formData.append('departmentId', data.departmentId)
-      if (data.category) formData.append('category', data.category)
-
-      await resourceService.uploadResource(formData)
-      setShowUploadModal(false)
-      // Ideally refresh resources tab if active or show success toast
-      alert('Resource uploaded successfully!')
-    } catch (error) {
-      console.error('Upload failed:', error)
-      alert('Failed to upload resource. Please try again.')
+      await subjectService.create({
+        name: subjectForm.name.trim(),
+        code: subjectForm.code.trim(),
+        departmentId: subjectForm.departmentId || undefined,
+        gradeId: subjectForm.gradeId || undefined,
+        streamId: subjectForm.streamId || undefined,
+      });
+      setSubjectForm({
+        name: "",
+        code: "",
+        departmentId: "",
+        gradeId: "",
+        streamId: "",
+      });
+      setActionMessage("Subject created successfully.");
+      await fetchDashboardData();
+    } catch (err: any) {
+      setActionError(parseError(err));
     } finally {
-      setIsUploading(false)
+      setSubmitting(false);
     }
-  }
+  };
+
+  const handleCreateDepartment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!departmentForm.name.trim() || !departmentForm.universityId.trim())
+      return;
+    resetAlerts();
+    setSubmitting(true);
+    try {
+      await departmentService.create({
+        name: departmentForm.name.trim(),
+        universityId: departmentForm.universityId.trim(),
+      });
+      setDepartmentForm({ name: "", universityId: "" });
+      setActionMessage("Department created successfully.");
+      await fetchDashboardData();
+    } catch (err: any) {
+      setActionError(parseError(err));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleCreateUniversity = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!universityForm.name.trim() || !universityForm.location.trim()) return;
+    resetAlerts();
+    setSubmitting(true);
+    try {
+      await universityService.createUniversity({
+        name: universityForm.name.trim(),
+        location: universityForm.location.trim(),
+        email: universityForm.email.trim() || undefined,
+      });
+      setUniversityForm({ name: "", location: "", email: "" });
+      setActionMessage("University created successfully.");
+      await fetchDashboardData();
+    } catch (err: any) {
+      setActionError(parseError(err));
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
-    <DashboardLayout title="Admin Dashboard" subtitle="Manage your department resources and students">
-      <div className="space-y-0">
-        {/* Tabs - Compact & Scrollable */}
-        <div className="border-b-2 border-gray-200 dark:border-slate-700 flex gap-0 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent -mx-6 px-6">
-          <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${activeTab === 'overview'
-              ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5'
-              : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
-              }`}
-            onClick={() => setActiveTab('overview')}
-          >
-            Overview
-          </button>
-          <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${activeTab === 'resources'
-              ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5'
-              : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
-              }`}
-            onClick={() => setActiveTab('resources')}
-          >
-            Resources
-          </button>
-          <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${activeTab === 'students'
-              ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5'
-              : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
-              }`}
-            onClick={() => setActiveTab('students')}
-          >
-            Students
-          </button>
-          <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${activeTab === 'subjects'
-              ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5'
-              : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
-              }`}
-            onClick={() => setActiveTab('subjects')}
-          >
-            Subjects
-          </button>
-          <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${activeTab === 'departments'
-              ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5'
-              : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
-              }`}
-            onClick={() => setActiveTab('departments')}
-          >
-            Departments
-          </button>
-          <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${activeTab === 'universities'
-              ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5'
-              : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
-              }`}
-            onClick={() => setActiveTab('universities')}
-          >
-            Universities
-          </button>
-          <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${activeTab === 'quizzes'
-              ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5'
-              : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
-              }`}
-            onClick={() => setActiveTab('quizzes')}
-          >
-            Quizzes
-          </button>
-          <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${activeTab === 'upload'
-              ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5'
-              : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
-              }`}
-            onClick={() => setActiveTab('upload')}
-          >
-            📤 Upload
-          </button>
-          <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${activeTab === 'analytics'
-              ? 'text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5'
-              : 'text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white'
-              }`}
-            onClick={() => setActiveTab('analytics')}
-          >
-            Reports
-          </button>
+    <DashboardLayout
+      title="Admin Dashboard"
+      subtitle="Manage structures with live database data"
+    >
+      <div className="space-y-6">
+        <div className="border-b-2 border-gray-200 dark:border-slate-700 flex gap-0 overflow-x-auto -mx-6 px-6">
+          {tabButton("overview", "Overview")}
+          {tabButton("subjects", "Subjects")}
+          {tabButton("departments", "Departments")}
+          {tabButton("universities", "Universities")}
+          {tabButton("reports", "Reports")}
         </div>
 
-        {/* Tab Content */}
-        <div className="animate-fadeIn pt-6">
-          {activeTab === 'overview' && <OverviewTab onUpload={() => setShowUploadModal(true)} />}
-          {activeTab === 'upload' && (
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
+            {state.loading
+              ? "Refreshing data..."
+              : "Synced with latest database records"}
+          </p>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={fetchDashboardData}
+            loading={state.loading}
+            icon={<RefreshCcw className="w-4 h-4" />}
+          >
+            Refresh
+          </Button>
+        </div>
+
+        {state.error && (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800 text-sm flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" /> {state.error}
+          </div>
+        )}
+        {actionMessage && (
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-800 text-sm">
+            {actionMessage}
+          </div>
+        )}
+        {actionError && (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-800 text-sm">
+            {actionError}
+          </div>
+        )}
+
+        {activeTab === "overview" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            {overviewStats.map((item) => (
+              <Card key={item.label}>
+                <CardBody className="p-5">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-xs uppercase tracking-widest text-slate-500">
+                        {item.label}
+                      </p>
+                      <p className="text-3xl font-black text-slate-900 dark:text-white mt-2">
+                        {item.value}
+                      </p>
+                    </div>
+                    <item.icon className={`w-6 h-6 ${item.color}`} />
+                  </div>
+                </CardBody>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {activeTab === "subjects" && (
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             <Card>
-              <CardHeader>📤 Upload New Resource</CardHeader>
+              <CardHeader>Add Subject</CardHeader>
               <CardBody>
-                <ResourceUploadForm onSubmit={handleUploadSubmit} loading={isUploading} />
+                <form className="space-y-3" onSubmit={handleCreateSubject}>
+                  <input
+                    value={subjectForm.name}
+                    onChange={(e) =>
+                      setSubjectForm((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
+                    }
+                    placeholder="Subject name"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white dark:bg-slate-900"
+                    required
+                  />
+                  <input
+                    value={subjectForm.code}
+                    onChange={(e) =>
+                      setSubjectForm((prev) => ({
+                        ...prev,
+                        code: e.target.value,
+                      }))
+                    }
+                    placeholder="Subject code"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white dark:bg-slate-900"
+                    required
+                  />
+                  <input
+                    value={subjectForm.departmentId}
+                    onChange={(e) =>
+                      setSubjectForm((prev) => ({
+                        ...prev,
+                        departmentId: e.target.value,
+                      }))
+                    }
+                    placeholder="Department ID (optional)"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white dark:bg-slate-900"
+                  />
+                  <input
+                    value={subjectForm.gradeId}
+                    onChange={(e) =>
+                      setSubjectForm((prev) => ({
+                        ...prev,
+                        gradeId: e.target.value,
+                      }))
+                    }
+                    placeholder="Grade ID (optional)"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white dark:bg-slate-900"
+                  />
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    fullWidth
+                    loading={submitting}
+                    icon={<PlusCircle className="w-4 h-4" />}
+                  >
+                    Create Subject
+                  </Button>
+                </form>
               </CardBody>
             </Card>
-          )}
-          {activeTab === 'resources' && <ResourcesTab onUpload={() => setShowUploadModal(true)} />}
-          {activeTab === 'students' && <StudentsTab />}
-          {activeTab === 'subjects' && <SubjectsTab />}
-          {activeTab === 'departments' && <DepartmentsTab />}
-          {activeTab === 'universities' && <UniversitiesTab />}
-          {activeTab === 'quizzes' && <QuizzesTab />}
-          {activeTab === 'analytics' && <AnalyticsTab />}
-        </div>
+          </div>
+        )}
 
-        <Modal isOpen={showUploadModal} onClose={() => setShowUploadModal(false)} title="Upload New Resource" size="lg">
-          <ResourceUploadForm onSubmit={handleUploadSubmit} loading={isUploading} />
-        </Modal>
+        {activeTab === "departments" && (
+          <div className="max-w-xl">
+            <Card>
+              <CardHeader>Add Department</CardHeader>
+              <CardBody>
+                <form className="space-y-3" onSubmit={handleCreateDepartment}>
+                  <input
+                    value={departmentForm.name}
+                    onChange={(e) =>
+                      setDepartmentForm((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
+                    }
+                    placeholder="Department name"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white dark:bg-slate-900"
+                    required
+                  />
+                  <select
+                    value={departmentForm.universityId}
+                    onChange={(e) =>
+                      setDepartmentForm((prev) => ({
+                        ...prev,
+                        universityId: e.target.value,
+                      }))
+                    }
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white dark:bg-slate-900"
+                    required
+                  >
+                    <option value="">Select university</option>
+                    {state.universities.map((university: any) => (
+                      <option key={university.id} value={university.id}>
+                        {university.name}
+                      </option>
+                    ))}
+                  </select>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    fullWidth
+                    loading={submitting}
+                    icon={<PlusCircle className="w-4 h-4" />}
+                  >
+                    Create Department
+                  </Button>
+                </form>
+              </CardBody>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === "universities" && (
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <Card>
+              <CardHeader>Add University</CardHeader>
+              <CardBody>
+                <form className="space-y-3" onSubmit={handleCreateUniversity}>
+                  <input
+                    value={universityForm.name}
+                    onChange={(e) =>
+                      setUniversityForm((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
+                    }
+                    placeholder="University name"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white dark:bg-slate-900"
+                    required
+                  />
+                  <input
+                    value={universityForm.location}
+                    onChange={(e) =>
+                      setUniversityForm((prev) => ({
+                        ...prev,
+                        location: e.target.value,
+                      }))
+                    }
+                    placeholder="Location"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white dark:bg-slate-900"
+                    required
+                  />
+                  <input
+                    value={universityForm.email}
+                    onChange={(e) =>
+                      setUniversityForm((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }))
+                    }
+                    placeholder="Email (optional)"
+                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white dark:bg-slate-900"
+                  />
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    fullWidth
+                    loading={submitting}
+                    icon={<PlusCircle className="w-4 h-4" />}
+                  >
+                    Create University
+                  </Button>
+                </form>
+              </CardBody>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === "reports" && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>Academic Coverage Report</CardHeader>
+              <CardBody>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-600">Total Subjects</span>
+                    <span className="font-black text-slate-900 dark:text-white">
+                      {state.subjects.length}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-600">Total Departments</span>
+                    <span className="font-black text-slate-900 dark:text-white">
+                      {state.departments.length}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-600">Total Universities</span>
+                    <span className="font-black text-slate-900 dark:text-white">
+                      {state.universities.length}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-600">Total Quizzes</span>
+                    <span className="font-black text-slate-900 dark:text-white">
+                      {state.quizzes.length}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-600">Total Resources</span>
+                    <span className="font-black text-slate-900 dark:text-white">
+                      {Number(
+                        state.resourceStats?.totalResources ||
+                          state.resourceStats?.total ||
+                          0,
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+
+            <Card>
+              <CardHeader>Structure Summary</CardHeader>
+              <CardBody>
+                <div className="space-y-4">
+                  <div className="rounded-xl bg-blue-50 dark:bg-blue-900/20 p-4">
+                    <p className="text-xs uppercase tracking-widest text-blue-600 dark:text-blue-300">
+                      Avg Subjects / Department
+                    </p>
+                    <p className="text-2xl font-black text-blue-700 dark:text-blue-200">
+                      {state.departments.length > 0
+                        ? (
+                            state.subjects.length / state.departments.length
+                          ).toFixed(1)
+                        : "0.0"}
+                    </p>
+                  </div>
+                  <div className="rounded-xl bg-emerald-50 dark:bg-emerald-900/20 p-4">
+                    <p className="text-xs uppercase tracking-widest text-emerald-600 dark:text-emerald-300">
+                      Avg Departments / University
+                    </p>
+                    <p className="text-2xl font-black text-emerald-700 dark:text-emerald-200">
+                      {state.universities.length > 0
+                        ? (
+                            state.departments.length / state.universities.length
+                          ).toFixed(1)
+                        : "0.0"}
+                    </p>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+          </div>
+        )}
       </div>
     </DashboardLayout>
-  )
-}
-
-const OverviewTab: React.FC<{ onUpload: () => void }> = ({ onUpload }) => (
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <Card>
-      <CardHeader>Quick Actions</CardHeader>
-      <CardBody>
-        <div className="space-y-3">
-          <Button variant="primary" fullWidth onClick={onUpload}>
-            Upload Resource
-          </Button>
-          <Button variant="secondary" fullWidth>
-            Create Quiz
-          </Button>
-          <Button variant="secondary" fullWidth>
-            Add Subject
-          </Button>
-          <Button variant="secondary" fullWidth>
-            View Analytics
-          </Button>
-        </div>
-      </CardBody>
-    </Card>
-
-    <Card>
-      <CardHeader>Recent Activity</CardHeader>
-      <CardBody>
-        <div className="space-y-4">
-          <div className="flex gap-3 pb-3 border-b border-gray-200">
-            <span className="text-2xl">📚</span>
-            <div className="flex-1">
-              <p className="font-semibold text-gray-900 m-0">New resource uploaded</p>
-              <p className="text-sm text-gray-600 m-0">2 hours ago</p>
-            </div>
-          </div>
-          <div className="flex gap-3 pb-3 border-b border-gray-200">
-            <span className="text-2xl">✏️</span>
-            <div className="flex-1">
-              <p className="font-semibold text-gray-900 m-0">Quiz created</p>
-              <p className="text-sm text-gray-600 m-0">5 hours ago</p>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <span className="text-2xl">👥</span>
-            <div className="flex-1">
-              <p className="font-semibold text-gray-900 m-0">New student enrolled</p>
-              <p className="text-sm text-gray-600 m-0">1 day ago</p>
-            </div>
-          </div>
-        </div>
-      </CardBody>
-    </Card>
-  </div>
-)
-
-const ResourcesTab: React.FC<{ onUpload: () => void }> = ({ onUpload }) => (
-  <Card>
-    <CardHeader>
-      <div className="flex justify-between items-center">
-        <span>Resource Management</span>
-        <Button variant="primary" size="sm" onClick={onUpload}>
-          Upload Resource
-        </Button>
-      </div>
-    </CardHeader>
-    <CardBody>
-      <div className="text-center py-12 text-gray-600">
-        <p className="text-lg mb-2">📚 Resource Management</p>
-        <p>Upload and manage learning resources for your department</p>
-      </div>
-    </CardBody>
-  </Card>
-)
-
-const StudentsTab: React.FC = () => (
-  <Card>
-    <CardHeader>
-      <div className="flex justify-between items-center">
-        <span>Student Management</span>
-        <Button variant="secondary" size="sm">
-          Refresh
-        </Button>
-      </div>
-    </CardHeader>
-    <CardBody>
-      <div className="text-center py-12 text-gray-600">
-        <p className="text-lg mb-2">👥 Student Management</p>
-        <p>View and manage students in your department</p>
-      </div>
-    </CardBody>
-  </Card>
-)
-
-const SubjectsTab: React.FC = () => (
-  <Card>
-    <CardHeader>
-      <div className="flex justify-between items-center">
-        <span>Subject Management</span>
-        <Button variant="primary" size="sm">
-          Add Subject
-        </Button>
-      </div>
-    </CardHeader>
-    <CardBody>
-      <div className="text-center py-12 text-gray-600">
-        <p className="text-lg mb-2">📖 Subject Management</p>
-        <p>Create and manage subjects for your department</p>
-      </div>
-    </CardBody>
-  </Card>
-)
-
-const DepartmentsTab: React.FC = () => (
-  <Card>
-    <CardHeader>
-      <div className="flex justify-between items-center">
-        <span>Department Management</span>
-        <Button variant="secondary" size="sm">
-          Refresh
-        </Button>
-      </div>
-    </CardHeader>
-    <CardBody>
-      <div className="text-center py-12 text-gray-600">
-        <p className="text-lg mb-2">🏢 Department Management</p>
-        <p>Manage department information and settings</p>
-      </div>
-    </CardBody>
-  </Card>
-)
-
-const UniversitiesTab: React.FC = () => (
-  <Card>
-    <CardHeader>
-      <div className="flex justify-between items-center">
-        <span>University Management</span>
-        <Button variant="secondary" size="sm">
-          Refresh
-        </Button>
-      </div>
-    </CardHeader>
-    <CardBody>
-      <div className="text-center py-12 text-gray-600">
-        <p className="text-lg mb-2">🏫 University Management</p>
-        <p>Manage university information and student settings</p>
-      </div>
-    </CardBody>
-  </Card>
-)
-
-const QuizzesTab: React.FC = () => (
-  <Card>
-    <CardHeader>
-      <div className="flex justify-between items-center">
-        <span>Quiz Management</span>
-        <Button variant="primary" size="sm">
-          Create Quiz
-        </Button>
-      </div>
-    </CardHeader>
-    <CardBody>
-      <div className="text-center py-12 text-gray-600">
-        <p className="text-lg mb-2">✏️ Quiz Management</p>
-        <p>Create and manage quizzes for your students</p>
-      </div>
-    </CardBody>
-  </Card>
-)
-
-const AnalyticsTab: React.FC = () => (
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <Card>
-      <CardHeader>Student Performance</CardHeader>
-      <CardBody>
-        <div className="flex items-center justify-center min-h-80 bg-gray-50 rounded text-gray-600">
-          <p>📊 Performance analytics will be displayed here</p>
-        </div>
-      </CardBody>
-    </Card>
-
-    <Card>
-      <CardHeader>Resource Usage</CardHeader>
-      <CardBody>
-        <div className="flex items-center justify-center min-h-80 bg-gray-50 rounded text-gray-600">
-          <p>📈 Resource usage metrics will be displayed here</p>
-        </div>
-      </CardBody>
-    </Card>
-  </div>
-)
+  );
+};

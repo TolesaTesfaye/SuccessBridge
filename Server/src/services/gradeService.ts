@@ -1,5 +1,5 @@
-import Grade from '../models/Grade'
-import { AppError } from '../middleware/errorHandler'
+import Grade from '../models/Grade.js'
+import { AppError } from '../middleware/errorHandler.js'
 
 export class GradeService {
   static async getAll() {

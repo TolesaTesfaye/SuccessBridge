@@ -1,7 +1,6 @@
 import React from 'react'
 import { FormSelect } from '@components/forms/FormSelect'
 import { FormInput } from '@components/forms/FormInput'
-import { Button } from '@components/common/Button'
 
 interface ResourceFilterProps {
   onFilter: (filters: FilterOptions) => void
@@ -16,6 +15,7 @@ export interface FilterOptions {
   stream?: string
   university?: string
   department?: string
+  studentType?: string
 }
 
 export const ResourceFilter: React.FC<ResourceFilterProps> = ({
@@ -26,16 +26,9 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
-    setFilters(prev => ({ ...prev, [name]: value || undefined }))
-  }
-
-  const handleFilter = () => {
-    onFilter(filters)
-  }
-
-  const handleReset = () => {
-    setFilters({})
-    onFilter({})
+    const updated = { ...filters, [name]: value || undefined }
+    setFilters(updated)
+    onFilter(updated)
   }
 
   const resourceTypes = [
@@ -60,8 +53,9 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
   ]
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-2">
+    <div className="space-y-5 bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-white/10 shadow-sm mb-6">
+      {/* Search Field - Alone on its own line */}
+      <div className="w-full">
         <FormInput
           label="Search"
           type="text"
@@ -70,13 +64,29 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
           value={filters.search || ''}
           onChange={handleChange}
         />
+      </div>
 
+      {/* Dropdown Filters - All on the same line (grid) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-4">
         <FormSelect
           label="Resource Type"
           name="type"
           value={filters.type || ''}
           onChange={handleChange}
           options={resourceTypes}
+        />
+
+        <FormSelect
+          label="Student Type"
+          name="studentType"
+          value={filters.studentType || ''}
+          onChange={handleChange}
+          options={[
+            { value: 'regular', label: 'Regular' },
+            { value: 'extension', label: 'Extension' },
+            { value: 'distance', label: 'Distance' },
+            { value: 'summer', label: 'Summer' },
+          ]}
         />
 
         <FormSelect
@@ -140,15 +150,6 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
             />
           </>
         )}
-      </div>
-
-      <div className="flex justify-start gap-4">
-        <Button variant="primary" onClick={handleFilter} className="min-w-[140px]">
-          Apply Filters
-        </Button>
-        <Button variant="secondary" onClick={handleReset} className="min-w-[140px]">
-          Reset
-        </Button>
       </div>
     </div>
   )

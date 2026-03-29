@@ -1,6 +1,6 @@
 import { DataTypes, Model } from 'sequelize'
-import sequelize from '../config/database'
-import type { IResource, ResourceType } from '../types/index'
+import sequelize from '../config/database.js'
+import type { IResource, ResourceType } from '../types/index.js'
 
 class Resource extends Model<IResource> implements IResource {
   public id!: string

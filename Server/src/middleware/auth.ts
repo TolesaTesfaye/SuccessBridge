@@ -5,9 +5,7 @@ import redisClient from '../config/redis.js'
 
 declare global {
   namespace Express {
-    interface Request {
-      user?: IAuthPayload
-    }
+    interface User extends IAuthPayload {}
   }
 }
 

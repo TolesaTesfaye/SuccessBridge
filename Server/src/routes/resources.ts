@@ -1,10 +1,18 @@
-import { Router, Request, Response } from 'express'
+import { Router } from 'express'
 import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
 import { authMiddleware, requireRole } from '../middleware/auth.js'
-import { AppError } from '../middleware/errorHandler.js'
-import { ResourceService } from '../services/resourceService.js'
+import {
+  getResources,
+  getResourceById,
+  getResourceStats,
+  createResource,
+  updateResource,
+  deleteResource,
+  downloadResource,
+  debugResource,
+} from '../controllers/resourceController.js'
 
 const router = Router()
 
@@ -107,72 +115,13 @@ const upload = multer({
  *               $ref: '#/components/schemas/Error'
  */
 // Get all resources
-router.get('/', async (req: Request, res: Response) => {
-  try {
-    const filters = req.query as any
-    const result = await ResourceService.getResources(filters)
+router.get('/', getResources)
 
-    if (process.env.DEBUG === 'true') {
-      console.log('📦 Backend: Found resources count:', result.total)
-    }
+// Get resource statistics
+router.get('/stats', getResourceStats)
 
-    res.json({
-      success: true,
-      data: result,
-    })
-  } catch (error: any) {
-    console.error('Fetch resources error:', error)
-    res.status(500).json({ success: false, error: 'Failed to fetch resources' })
-  }
-})
-
-/**
- * @swagger
- * /resources/{id}:
- *   get:
- *     summary: Get a single resource by ID
- *     tags: [Resources]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *           format: uuid
- *         description: Resource ID
- *     responses:
- *       200:
- *         description: Resource details
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 data:
- *                   $ref: '#/components/schemas/Resource'
- *       404:
- *         description: Resource not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Error'
- */
 // Get single resource
-router.get('/:id', async (req: Request, res: Response) => {
-  try {
-    const resource = await ResourceService.getResourceById(req.params.id)
-    res.json({ success: true, data: resource })
-  } catch (error: any) {
-    if (error instanceof AppError) {
-      res.status(error.statusCode).json({ success: false, error: error.message })
-    } else {
-      res.status(500).json({ success: false, error: 'Failed to fetch resource' })
-    }
-  }
-})
+router.get('/:id', getResourceById)
 
 /**
  * @swagger
@@ -258,48 +207,20 @@ router.get('/:id', async (req: Request, res: Response) => {
  *               $ref: '#/components/schemas/Error'
  */
 // Create resource (admin only)
-router.post('/', authMiddleware, requireRole('admin', 'super_admin'), upload.single('file'), async (req: Request, res: Response) => {
-  try {
-    const createdBy = req.user!.userId
-    const resource = await ResourceService.createResource(req.body, req.file, createdBy)
-
-    res.status(201).json({ success: true, data: resource })
-  } catch (error: any) {
-    console.error('Resource creation error details:', error)
-    if (error instanceof AppError) {
-      res.status(error.statusCode).json({ success: false, error: error.message })
-    } else {
-      res.status(400).json({ success: false, error: (error as Error).message || 'Failed to create resource' })
-    }
-  }
-})
+router.post('/', authMiddleware, requireRole('admin', 'super_admin'), upload.single('file'), createResource)
 
 // Update resource (admin only)
-router.put('/:id', authMiddleware, requireRole('admin', 'super_admin'), async (req: Request, res: Response) => {
-  try {
-    const resource = await ResourceService.updateResource(req.params.id, req.body)
-    res.json({ success: true, data: resource })
-  } catch (error: any) {
-    if (error instanceof AppError) {
-      res.status(error.statusCode).json({ success: false, error: error.message })
-    } else {
-      res.status(500).json({ success: false, error: 'Failed to update resource' })
-    }
-  }
-})
+router.put('/:id', authMiddleware, requireRole('admin', 'super_admin'), updateResource)
 
 // Delete resource (admin only)
-router.delete('/:id', authMiddleware, requireRole('admin', 'super_admin'), async (req: Request, res: Response) => {
-  try {
-    const result = await ResourceService.deleteResource(req.params.id)
-    res.json(result)
-  } catch (error: any) {
-    if (error instanceof AppError) {
-      res.status(error.statusCode).json({ success: false, error: error.message })
-    } else {
-      res.status(500).json({ success: false, error: 'Failed to delete resource' })
-    }
-  }
-})
+router.delete('/:id', authMiddleware, requireRole('admin', 'super_admin'), deleteResource)
+
+// Download resource file
+router.get('/:id/download', downloadResource)
+
+// Debug resource (development only)
+if (process.env.NODE_ENV === 'development') {
+  router.get('/:id/debug', debugResource)
+}
 
 export default router

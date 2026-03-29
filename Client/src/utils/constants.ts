@@ -1,6 +1,6 @@
 export const UNIVERSITIES = [
   "Addis Ababa University",
-  "Jimma University", 
+  "Jimma University",
   "Bahir Dar University",
   "Haramaya University",
   "Hawassa University",
@@ -41,7 +41,7 @@ export const UNIVERSITIES = [
   "Wolkite University",
   "Wollo University",
   "Wondo Genet College of Forestry",
-  "Yirgalem Adola University"
+  "Yirgalem Adola University",
 ];
 
 export const DEPARTMENTS = {

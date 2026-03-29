@@ -1,10 +1,11 @@
 import { Op } from 'sequelize'
-import Resource from '../models/Resource'
-import Subject from '../models/Subject'
-import University from '../models/University'
-import Department from '../models/Department'
-import Grade from '../models/Grade'
-import { AppError } from '../middleware/errorHandler'
+import sequelize from '../config/database.js'
+import Resource from '../models/Resource.js'
+import Subject from '../models/Subject.js'
+import University from '../models/University.js'
+import Department from '../models/Department.js'
+import Grade from '../models/Grade.js'
+import { AppError } from '../middleware/errorHandler.js'
 
 interface ResourceFilters {
   page?: number
@@ -111,6 +112,81 @@ export class ResourceService {
       total: count,
       page: Number(page),
       limit: Number(limit),
+    }
+  }
+
+  /**
+   * Get resource statistics
+   */
+  static async getResourceStats() {
+    const totalResources = await Resource.count()
+    
+    if (totalResources === 0) {
+      return {
+        total: 0,
+        byEducationLevel: {},
+        byGrade: {},
+        byType: {},
+        recent: []
+      }
+    }
+
+    // Count by education level
+    const byEducationLevel = await Resource.findAll({
+      attributes: [
+        'educationLevel',
+        [sequelize.fn('COUNT', sequelize.col('educationLevel')), 'count']
+      ],
+      group: ['educationLevel'],
+      raw: true
+    })
+
+    // Count by grade/category
+    const byGrade = await Resource.findAll({
+      attributes: [
+        'grade',
+        [sequelize.fn('COUNT', sequelize.col('grade')), 'count']
+      ],
+      group: ['grade'],
+      raw: true
+    })
+
+    // Count by type
+    const byType = await Resource.findAll({
+      attributes: [
+        'type',
+        [sequelize.fn('COUNT', sequelize.col('type')), 'count']
+      ],
+      group: ['type'],
+      raw: true
+    })
+
+    // Get recent resources
+    const recent = await Resource.findAll({
+      limit: 5,
+      order: [['createdAt', 'DESC']],
+      attributes: ['id', 'title', 'type', 'educationLevel', 'grade', 'createdAt'],
+      include: [
+        { model: University, as: 'university', attributes: ['name'] },
+        { model: Subject, as: 'subject', attributes: ['name'] }
+      ]
+    })
+
+    return {
+      total: totalResources,
+      byEducationLevel: byEducationLevel.reduce((acc: any, item: any) => {
+        acc[item.educationLevel] = parseInt(item.count)
+        return acc
+      }, {}),
+      byGrade: byGrade.reduce((acc: any, item: any) => {
+        acc[item.grade || 'unspecified'] = parseInt(item.count)
+        return acc
+      }, {}),
+      byType: byType.reduce((acc: any, item: any) => {
+        acc[item.type] = parseInt(item.count)
+        return acc
+      }, {}),
+      recent: recent
     }
   }
 

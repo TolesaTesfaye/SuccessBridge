@@ -30,7 +30,7 @@ export const AdminQuizzes: React.FC = () => {
     return (
       <DashboardLayout
         title="Create New Quiz"
-        subtitle="Build an engaging assessment for your students"
+        subtitle=""
       >
         <AdminQuizCreator
           onClose={() => setIsCreating(false)}
@@ -44,7 +44,7 @@ export const AdminQuizzes: React.FC = () => {
   }
 
   return (
-    <DashboardLayout title="Quizzes" subtitle="Architect and manage academic assessments">
+    <DashboardLayout title="Quizzes" subtitle="">
       <div className="space-y-8 animate-fadeIn">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-slate-900 p-8 rounded-[32px] border border-slate-200 dark:border-white/5 shadow-xl shadow-slate-200/50 dark:shadow-none transition-colors duration-300">
           <div>

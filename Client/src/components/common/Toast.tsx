@@ -105,39 +105,45 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onRemove }) => {
   const config = {
     success: {
       icon: <CheckCircle className="w-5 h-5" />,
-      bgColor: 'bg-emerald-500',
+      bgColor: 'bg-gradient-to-r from-emerald-500 to-emerald-600',
       textColor: 'text-white',
+      borderColor: 'border-emerald-400',
     },
     error: {
       icon: <XCircle className="w-5 h-5" />,
-      bgColor: 'bg-red-500',
+      bgColor: 'bg-gradient-to-r from-red-500 to-red-600',
       textColor: 'text-white',
+      borderColor: 'border-red-400',
     },
     warning: {
       icon: <AlertCircle className="w-5 h-5" />,
-      bgColor: 'bg-orange-500',
+      bgColor: 'bg-gradient-to-r from-orange-500 to-orange-600',
       textColor: 'text-white',
+      borderColor: 'border-orange-400',
     },
     info: {
       icon: <Info className="w-5 h-5" />,
-      bgColor: 'bg-blue-500',
+      bgColor: 'bg-gradient-to-r from-blue-500 to-blue-600',
       textColor: 'text-white',
+      borderColor: 'border-blue-400',
     },
   }
 
-  const { icon, bgColor, textColor } = config[toast.type]
+  const { icon, bgColor, textColor, borderColor } = config[toast.type]
 
   return (
     <div
-      className={`${bgColor} ${textColor} rounded-lg shadow-lg p-4 flex items-center gap-3 min-w-[300px] animate-slideIn`}
+      className={`${bgColor} ${textColor} rounded-xl shadow-2xl border ${borderColor} p-4 flex items-center gap-3 min-w-[320px] max-w-md backdrop-blur-sm animate-slideIn transform transition-all duration-300 hover:scale-105`}
       role="alert"
     >
-      <div className="flex-shrink-0">{icon}</div>
-      <p className="flex-1 text-sm font-medium">{toast.message}</p>
+      <div className="flex-shrink-0 animate-pulse">{icon}</div>
+      <div className="flex-1">
+        <p className="text-sm font-semibold leading-relaxed">{toast.message}</p>
+      </div>
       <button
         onClick={() => onRemove(toast.id)}
-        className="flex-shrink-0 hover:opacity-70 transition-opacity"
-        aria-label="Close"
+        className="flex-shrink-0 hover:bg-white/20 rounded-full p-1 transition-all duration-200 hover:rotate-90"
+        aria-label="Close notification"
       >
         <X className="w-4 h-4" />
       </button>

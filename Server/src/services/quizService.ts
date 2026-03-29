@@ -1,5 +1,5 @@
-import { Quiz, QuizResult, StudentProgress } from '../models/index'
-import { AppError } from '../middleware/errorHandler'
+import { Quiz, QuizResult, StudentProgress } from '../models/index.js'
+import { AppError } from '../middleware/errorHandler.js'
 
 export class QuizService {
   /**

@@ -16,11 +16,11 @@ export interface StudentStats {
 export const studentService = {
   getProgress: async (): Promise<StudentProgress[]> => {
     const response = await api.get('/student/progress')
-    return response.data
+    return response.data.data || []
   },
 
   getStats: async (): Promise<StudentStats> => {
     const response = await api.get('/student/stats')
-    return response.data
+    return response.data.data
   },
 }
