@@ -1,47 +1,37 @@
 import React from "react";
 import { Filter, Search, X, RefreshCw } from "lucide-react";
 import { ResourceCard } from "@components/resources/ResourceCard";
-import { DEPARTMENTS, UNIVERSITIES } from "@utils/constants";
 
-interface UniversityResourceHubProps {
-  selectedUniversity: string;
-  setSelectedUniversity: (value: string) => void;
-  availableUniversities: any[];
-  selectedStream: string;
-  setSelectedStream: (value: "" | "natural" | "social") => void;
-  isIntroductory: boolean;
-  selectedDepartment: string;
-  setSelectedDepartment: (value: string) => void;
-  selectedResourceType: string;
-  setSelectedResourceType: (value: string) => void;
-  resourceTypes: string[];
-  selectedSubject: string;
-  setSelectedSubject: (value: string) => void;
+type Grade = "grade_9" | "grade_10" | "grade_11" | "grade_12";
+type Stream = "natural" | "social" | null;
+
+interface HighSchoolResourceHubProps {
+  activeGrade: Grade;
+  selectedStream: Stream;
+  handleStreamChange: (stream: Stream) => void;
+  selectedSubject: string | null;
+  setSelectedSubject: (subject: string | null) => void;
   subjects: string[];
+  selectedResourceType: string | null;
+  setSelectedResourceType: (type: string | null) => void;
+  resourceTypes: string[];
   loading: boolean;
   resources: any[];
-  activeCategory: string;
   onRefresh: () => void;
 }
 
-export const UniversityResourceHub: React.FC<UniversityResourceHubProps> = ({
-  selectedUniversity,
-  setSelectedUniversity,
-  availableUniversities,
+export const HighSchoolResourceHub: React.FC<HighSchoolResourceHubProps> = ({
+  activeGrade,
   selectedStream,
-  setSelectedStream,
-  isIntroductory,
-  selectedDepartment,
-  setSelectedDepartment,
-  selectedResourceType,
-  setSelectedResourceType,
-  resourceTypes,
+  handleStreamChange,
   selectedSubject,
   setSelectedSubject,
   subjects,
+  selectedResourceType,
+  setSelectedResourceType,
+  resourceTypes,
   loading,
   resources,
-  activeCategory,
   onRefresh,
 }) => {
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -60,11 +50,9 @@ export const UniversityResourceHub: React.FC<UniversityResourceHubProps> = ({
   }, [resources, searchQuery]);
 
   const activeFiltersCount = [
-    selectedUniversity,
     selectedStream,
-    selectedDepartment,
-    selectedResourceType,
     selectedSubject,
+    selectedResourceType,
   ].filter(Boolean).length;
 
   return (
@@ -124,64 +112,44 @@ export const UniversityResourceHub: React.FC<UniversityResourceHubProps> = ({
         {/* Collapsible Filters */}
         {showFilters && (
           <div className="px-4 pb-4 space-y-3 border-t border-slate-200 dark:border-slate-700 pt-4">
-            {/* University Filter */}
+            {/* Stream Selector (Only for 11 & 12) */}
+            {(activeGrade === "grade_11" || activeGrade === "grade_12") && (
+              <div>
+                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
+                  Stream
+                </label>
+                <select
+                  value={selectedStream || ""}
+                  onChange={(e) =>
+                    handleStreamChange((e.target.value as Stream) || null)
+                  }
+                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all"
+                >
+                  <option value="">All Streams</option>
+                  <option value="natural">Natural Science</option>
+                  <option value="social">Social Science</option>
+                </select>
+              </div>
+            )}
+
+            {/* Subject Selector */}
             <div>
               <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
-                University
+                Subject
               </label>
               <select
-                value={selectedUniversity}
-                onChange={(e) => setSelectedUniversity(e.target.value)}
+                value={selectedSubject || ""}
+                onChange={(e) => setSelectedSubject(e.target.value || null)}
                 className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all"
               >
-                <option value="">All Universities</option>
-                {(availableUniversities.length > 0
-                  ? availableUniversities.map((u) => u.name)
-                  : UNIVERSITIES
-                ).map((uni) => (
-                  <option key={uni} value={uni}>
-                    {uni}
+                <option value="">All Subjects</option>
+                {subjects.map((subject) => (
+                  <option key={subject} value={subject}>
+                    {subject}
                   </option>
                 ))}
               </select>
             </div>
-
-            {/* Stream Selector */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
-                Stream
-              </label>
-              <select
-                value={selectedStream}
-                onChange={(e) => setSelectedStream(e.target.value as any)}
-                className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all"
-              >
-                <option value="">All Streams</option>
-                <option value="natural">Natural Science</option>
-                <option value="social">Social Science</option>
-              </select>
-            </div>
-
-            {/* Department Selector (Only for Senior/GC) */}
-            {!isIntroductory && (
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
-                  Department
-                </label>
-                <select
-                  value={selectedDepartment}
-                  onChange={(e) => setSelectedDepartment(e.target.value)}
-                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all"
-                >
-                  <option value="">All Departments</option>
-                  {Object.keys(DEPARTMENTS).map((dept) => (
-                    <option key={dept} value={dept}>
-                      {dept.replace(/_/g, " ")}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
 
             {/* Resource Type Selector */}
             <div>
@@ -189,12 +157,14 @@ export const UniversityResourceHub: React.FC<UniversityResourceHubProps> = ({
                 Resource Type
               </label>
               <select
-                value={selectedResourceType}
-                onChange={(e) => setSelectedResourceType(e.target.value)}
+                value={selectedResourceType || ""}
+                onChange={(e) =>
+                  setSelectedResourceType(e.target.value || null)
+                }
                 className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all"
               >
                 <option value="">All Types</option>
-                {resourceTypes.map((type) => (
+                {resourceTypes.map((type: string) => (
                   <option key={type} value={type}>
                     {type}
                   </option>
@@ -202,38 +172,13 @@ export const UniversityResourceHub: React.FC<UniversityResourceHubProps> = ({
               </select>
             </div>
 
-            {/* Subject Filter */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
-                Subject
-              </label>
-              <select
-                value={selectedSubject}
-                onChange={(e) => setSelectedSubject(e.target.value)}
-                className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all"
-              >
-                <option value="">All Subjects</option>
-                {subjects.map((subj) => (
-                  <option key={subj} value={subj}>
-                    {subj}
-                  </option>
-                ))}
-              </select>
-            </div>
-
             {/* Clear Filters Button */}
-            {(selectedUniversity ||
-              selectedStream ||
-              selectedDepartment ||
-              selectedResourceType ||
-              selectedSubject) && (
+            {(selectedStream || selectedSubject || selectedResourceType) && (
               <button
                 onClick={() => {
-                  setSelectedUniversity("");
-                  setSelectedStream("");
-                  setSelectedDepartment("");
-                  setSelectedResourceType("");
-                  setSelectedSubject("");
+                  handleStreamChange(null);
+                  setSelectedSubject(null);
+                  setSelectedResourceType(null);
                 }}
                 className="w-full px-4 py-2.5 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
               >
@@ -244,63 +189,37 @@ export const UniversityResourceHub: React.FC<UniversityResourceHubProps> = ({
         )}
 
         {/* Active Filters Pills - Mobile Optimized */}
-        {(selectedUniversity ||
-          selectedStream ||
-          selectedDepartment ||
-          selectedResourceType ||
-          selectedSubject) &&
+        {(selectedStream || selectedSubject || selectedResourceType) &&
           !showFilters && (
             <div className="px-4 pb-4 flex flex-wrap gap-2">
-              {selectedUniversity && (
+              {selectedStream && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium">
-                  {selectedUniversity}
+                  {selectedStream}
                   <button
-                    onClick={() => setSelectedUniversity("")}
+                    onClick={() => handleStreamChange(null)}
                     className="hover:text-blue-900 dark:hover:text-blue-100"
                   >
                     <X className="w-3 h-3" />
                   </button>
                 </span>
               )}
-              {selectedStream && (
+              {selectedSubject && (
                 <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 rounded-full text-xs font-medium">
-                  {selectedStream}
+                  {selectedSubject}
                   <button
-                    onClick={() => setSelectedStream("")}
+                    onClick={() => setSelectedSubject(null)}
                     className="hover:text-emerald-900 dark:hover:text-emerald-100"
                   >
                     <X className="w-3 h-3" />
                   </button>
                 </span>
               )}
-              {selectedDepartment && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded-full text-xs font-medium">
-                  {selectedDepartment.replace(/_/g, " ")}
-                  <button
-                    onClick={() => setSelectedDepartment("")}
-                    className="hover:text-purple-900 dark:hover:text-purple-100"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              )}
               {selectedResourceType && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 rounded-full text-xs font-medium">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded-full text-xs font-medium">
                   {selectedResourceType}
                   <button
-                    onClick={() => setSelectedResourceType("")}
-                    className="hover:text-amber-900 dark:hover:text-amber-100"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              )}
-              {selectedSubject && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-300 rounded-full text-xs font-medium">
-                  {selectedSubject}
-                  <button
-                    onClick={() => setSelectedSubject("")}
-                    className="hover:text-rose-900 dark:hover:text-rose-100"
+                    onClick={() => setSelectedResourceType(null)}
+                    className="hover:text-purple-900 dark:hover:text-purple-100"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -328,7 +247,7 @@ export const UniversityResourceHub: React.FC<UniversityResourceHubProps> = ({
         </button>
       </div>
 
-      {/* Curated Material Grid */}
+      {/* Resources Gallery */}
       <div className="bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden">
         {loading ? (
           <div className="text-center py-16 flex flex-col items-center">

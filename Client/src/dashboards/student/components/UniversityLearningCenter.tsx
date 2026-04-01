@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronRight, ChevronDown, Home, BookmarkIcon } from 'lucide-react';
+import { ChevronRight, ChevronDown, BookmarkIcon } from 'lucide-react';
 import { InlineExercise } from '../../../components/common/InlineExercise';
 import { PSYCHOLOGY_EXERCISES } from '../learning center/University/Freshman/Psychology/psychologyExercises';
 import { MATH_EXERCISES } from '../learning center/University/Freshman/math/mathExercises';
@@ -151,15 +151,6 @@ export const UniversityLearningCenter: React.FC<UniversityLearningCenterProps> =
       {/* W3Schools Styled Top Navigation Bar */}
       <div className="bg-[#282a35] overflow-x-auto no-scrollbar shadow-lg border-b border-white/5 sticky top-0 z-30">
         <div className="flex items-center min-w-max h-12">
-          {/* Home Icon */}
-          <button
-            onClick={() => setActiveTab('home')}
-            className="h-full px-4 text-slate-300 hover:bg-black/40 hover:text-white transition-all flex items-center justify-center border-r border-white/5"
-            title="Return to Overview"
-          >
-            <Home className="w-4 h-4" />
-          </button>
-
           {subjects.map((subj) => (
             <button
               key={subj}

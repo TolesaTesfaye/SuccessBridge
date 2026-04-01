@@ -1,4 +1,6 @@
 import { ArrowRight, BookOpen, BrainCircuit, CalendarCheck, FileText, Flame, GraduationCap, Library, Play, Sparkles, Star, Target, Trophy } from 'lucide-react'
+import { Testimonials } from '@components/common/Testimonials'
+import { ResourceCard } from '@components/resources/ResourceCard'
 
 type Grade = 'grade_9' | 'grade_10' | 'grade_11' | 'grade_12'
 type Stream = 'natural' | 'social' | null
@@ -153,50 +155,15 @@ export const HighSchoolOverview: React.FC<HighSchoolOverviewProps> = ({
         </div>
 
         {homeLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3].map(n => (
-              <div key={n} className="h-[280px] bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse"></div>
+              <div key={n} className="h-[380px] bg-slate-100 dark:bg-slate-800 rounded-xl animate-pulse"></div>
             ))}
           </div>
         ) : homeResources.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {homeResources.slice(0, 6).map((resource: any) => (
-              <div
-                key={resource.id}
-                className="group bg-white dark:bg-slate-950 rounded-2xl overflow-hidden border border-slate-100 dark:border-slate-800/60 shadow-sm hover:shadow-2xl hover:shadow-blue-500/10 transition-all cursor-pointer flex flex-col"
-                onClick={() => window.open(resource.fileUrl, '_blank')}
-              >
-                <div className="relative aspect-video overflow-hidden bg-slate-100">
-                  <img
-                    src={getThumbnail(resource.type)}
-                    alt={resource.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all flex items-center justify-center">
-                    {resource.type === 'Video' && <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center text-blue-600 shadow-xl group-hover:scale-110 transition-transform"><Play className="w-5 h-5 fill-current" /></div>}
-                  </div>
-                </div>
-
-                <div className="p-5 flex flex-col flex-1">
-                  <h5 className="font-black text-slate-900 dark:text-white line-clamp-2 min-h-[3rem] mb-4 group-hover:text-blue-600 transition-colors">
-                    {resource.title}
-                  </h5>
-
-                  <div className="flex items-center justify-between mt-auto">
-                    <div className="flex items-center gap-1 text-amber-500">
-                      <Star className="w-3 h-3 fill-current" />
-                      <Star className="w-3 h-3 fill-current" />
-                      <Star className="w-3 h-3 fill-current" />
-                      <Star className="w-3 h-3 fill-current" />
-                      <Star className="w-3 h-3 fill-current text-slate-200 dark:text-slate-800" />
-                      <span className="text-[10px] font-black text-slate-500 ml-1">4.2</span>
-                    </div>
-                    <div className="px-2 py-0.5 bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-[9px] font-black uppercase tracking-tighter rounded-md">
-                      Resource
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {homeResources.slice(0, 3).map((resource: any) => (
+              <ResourceCard key={resource.id} resource={resource} />
             ))}
           </div>
         ) : (
@@ -219,6 +186,8 @@ export const HighSchoolOverview: React.FC<HighSchoolOverviewProps> = ({
           Start
         </button>
       </div>
+
+      <Testimonials />
     </div>
   )
 }

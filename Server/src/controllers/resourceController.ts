@@ -44,16 +44,27 @@ export const getResourceById = async (req: Request, res: Response, next: NextFun
 
 export const createResource = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    console.log('Create resource request body:', req.body)
+    console.log('Create resource file:', req.file)
+    
     const createdBy = req.user!.userId
     const resource = await ResourceService.createResource(req.body, req.file, createdBy)
 
     res.status(201).json({ success: true, data: resource })
   } catch (error) {
     console.error('Resource creation error details:', error)
+    console.error('Error stack:', (error as Error).stack)
+    
     if (error instanceof AppError) {
       return res.status(error.statusCode).json({ success: false, error: error.message })
     }
-    res.status(400).json({ success: false, error: (error as Error).message || 'Failed to create resource' })
+    
+    // Return 500 with detailed error message
+    res.status(500).json({ 
+      success: false, 
+      error: (error as Error).message || 'Failed to create resource',
+      details: process.env.NODE_ENV === 'development' ? (error as Error).stack : undefined
+    })
   }
 }
 

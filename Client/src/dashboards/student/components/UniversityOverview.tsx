@@ -13,6 +13,8 @@ import {
   Trophy,
   Zap
 } from 'lucide-react'
+import { Testimonials } from '@components/common/Testimonials'
+import { ResourceCard } from '@components/resources/ResourceCard'
 
 interface UniversityOverviewProps {
   user: any
@@ -140,9 +142,9 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
         </div>
 
         {homeLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3].map((n) => (
-              <div key={n} className="h-64 rounded-2xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
+              <div key={n} className="h-[380px] rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
             ))}
           </div>
         ) : homeResources.length === 0 ? (
@@ -151,48 +153,9 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
             <p className="text-slate-500 font-semibold">No resources yet. New content will appear here.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {homeResources.slice(0, 6).map((resource: any) => (
-              <article
-                key={resource.id}
-                className="group overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-xl transition-all"
-              >
-                <div className="relative h-40 overflow-hidden">
-                  <img
-                    src={getThumbnail(resource)}
-                    alt={resource.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-black/60 text-white text-[10px] font-black uppercase tracking-wider">
-                    {resource.type || 'Resource'}
-                  </div>
-                </div>
-
-                <div className="p-5">
-                  <h3 className="font-black text-slate-900 dark:text-white line-clamp-2 min-h-[3rem]">
-                    {resource.title}
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 uppercase tracking-wide">
-                    {getSubjectText(resource) || 'General'} • {resource.grade || activeCategory}
-                  </p>
-
-                  <div className="mt-4 flex items-center justify-between">
-                    <div className="flex items-center gap-1 text-amber-500">
-                      <Star className="w-3.5 h-3.5 fill-current" />
-                      <Star className="w-3.5 h-3.5 fill-current" />
-                      <Star className="w-3.5 h-3.5 fill-current" />
-                      <Star className="w-3.5 h-3.5 fill-current text-amber-300" />
-                      <Star className="w-3.5 h-3.5 fill-current text-slate-300 dark:text-slate-700" />
-                    </div>
-                    <button
-                      onClick={() => resource.fileUrl && window.open(resource.fileUrl, '_blank')}
-                      className="text-xs font-black text-blue-600 dark:text-blue-400 uppercase tracking-wide"
-                    >
-                      Open
-                    </button>
-                  </div>
-                </div>
-              </article>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {homeResources.slice(0, 3).map((resource: any) => (
+              <ResourceCard key={resource.id} resource={resource} />
             ))}
           </div>
         )}
@@ -212,6 +175,8 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
           <p className="text-sm text-slate-500 mt-1">Keep your learning streak active this week.</p>
         </div>
       </div>
+
+      <Testimonials />
     </div>
   )
 }

@@ -1,9 +1,28 @@
 import React, { useState } from 'react';
-import { ChevronRight, ChevronDown, Home, BookmarkIcon } from 'lucide-react';
-import { getHighSchoolContent } from '@utils/highSchoolCourseContent';
+import { ChevronRight, ChevronDown, BookmarkIcon } from 'lucide-react';
+import { getGradeSpecificContent } from '@utils/gradeSpecificContent';
+
+interface Topic {
+  id: string;
+  title: string;
+  content: string;
+}
+
+interface Chapter {
+  id: string;
+  title: string;
+  topics: Topic[];
+}
+
+interface LearningContent {
+  title: string;
+  grade: string;
+  introduction: string;
+  chapters: Chapter[];
+}
 
 interface HighSchoolLearningCenterProps {
-  grade: string;
+  grade: 'grade_9' | 'grade_10' | 'grade_11' | 'grade_12';
   stream: string | null;
   subjects: string[];
   learningSubject: string;
@@ -22,29 +41,31 @@ export const HighSchoolLearningCenter: React.FC<HighSchoolLearningCenterProps> =
   const [selectedChapter, setSelectedChapter] = useState<string>('');
   const [selectedTopic, setSelectedTopic] = useState<string>('');
   const [expandedChapters, setExpandedChapters] = useState<Set<string>>(new Set());
+  
+  // Get grade-specific content for the selected subject
+  const learningContent = getGradeSpecificContent(grade, learningSubject) as LearningContent | null;
 
-  const normalize = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, '');
-  const gradeContent = getHighSchoolContent(grade);
-  const subjectAliases: Record<string, string[]> = {
-    Math: ['Mathematics'],
-    Civics: ['Civics and Ethical Education'],
-    ICT: ['Information and Communication Technology'],
-    Science: ['Physics', 'Chemistry', 'Biology'],
-  };
+  // If no content is available for this grade/subject combination, show a message
+  if (!learningContent) {
+    return (
+      <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-900">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-6xl mb-4">📚</div>
+            <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-2">
+              Content Not Available
+            </h3>
+            <p className="text-slate-600 dark:text-slate-400">
+              Learning content for {learningSubject} in {grade.replace('_', ' ').toUpperCase()} is not yet available.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  const keys = Object.keys(gradeContent as Record<string, unknown>);
-  const candidateSubjects = [learningSubject, ...(subjectAliases[learningSubject] || [])];
-  const resolvedKey = keys.find((key) =>
-    candidateSubjects.some((candidate) => normalize(key) === normalize(candidate))
-  );
-
-  const learningContent =
-    (resolvedKey && (gradeContent as any)[resolvedKey]) ||
-    (gradeContent as any)[keys[0]] ||
-    null;
-
-  const currentChapter = learningContent?.chapters?.find((ch: any) => ch.id === selectedChapter);
-  const currentTopic = currentChapter?.topics?.find((topic: any) => topic.id === selectedTopic);
+  const currentChapter = learningContent?.chapters?.find((ch: Chapter) => ch.id === selectedChapter);
+  const currentTopic = currentChapter?.topics?.find((topic: Topic) => topic.id === selectedTopic);
 
   React.useEffect(() => {
     if (learningContent?.chapters?.length > 0) {
@@ -71,7 +92,7 @@ export const HighSchoolLearningCenter: React.FC<HighSchoolLearningCenterProps> =
     setExpandedChapters(newExpanded);
   };
 
-  const handleChapterClick = (chapter: any) => {
+  const handleChapterClick = (chapter: Chapter) => {
     setSelectedChapter(chapter.id);
     if (chapter.topics?.length > 0) {
       setSelectedTopic(chapter.topics[0].id);
@@ -82,9 +103,9 @@ export const HighSchoolLearningCenter: React.FC<HighSchoolLearningCenterProps> =
   };
 
   const getAllTopics = () => {
-    const allTopics: any[] = [];
-    learningContent?.chapters?.forEach((chapter: any) => {
-      chapter.topics?.forEach((topic: any) => {
+    const allTopics: (Topic & { chapterId: string })[] = [];
+    learningContent?.chapters?.forEach((chapter: Chapter) => {
+      chapter.topics?.forEach((topic: Topic) => {
         allTopics.push({ ...topic, chapterId: chapter.id });
       });
     });
@@ -177,14 +198,6 @@ export const HighSchoolLearningCenter: React.FC<HighSchoolLearningCenterProps> =
     <div className="flex flex-col h-screen">
       <div className="bg-[#282a35] overflow-x-auto no-scrollbar shadow-lg border-b border-white/5 sticky top-0 z-30">
         <div className="flex items-center min-w-max h-12">
-          <button
-            onClick={() => setActiveTab('home')}
-            className="h-full px-4 text-slate-300 hover:bg-black/40 hover:text-white transition-all flex items-center justify-center border-r border-white/5"
-            title="Return to Overview"
-          >
-            <Home className="w-4 h-4" />
-          </button>
-
           {subjects.map((subj) => (
             <button
               key={subj}

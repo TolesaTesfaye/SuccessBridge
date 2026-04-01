@@ -88,12 +88,15 @@ export const SuperAdminDashboard: React.FC = () => {
       if (data.departmentId) formData.append('departmentId', data.departmentId)
       if (data.category) formData.append('category', data.category)
 
+      console.log('Uploading resource with data:', Object.fromEntries(formData.entries()))
+
       await resourceService.uploadResource(formData)
       setShowUploadModal(false)
       alert('Resource uploaded successfully!')
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload failed:', error)
-      alert('Failed to upload resource. Please try again.')
+      const errorMessage = error?.response?.data?.error || error?.message || 'Failed to upload resource. Please try again.'
+      alert(`Upload failed: ${errorMessage}`)
     } finally {
       setIsUploading(false)
     }

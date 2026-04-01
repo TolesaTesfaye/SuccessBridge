@@ -205,6 +205,9 @@ export class ResourceService {
    * Create a new resource
    */
   static async createResource(data: any, file: Express.Multer.File | undefined, uploadedBy: string) {
+    console.log('Creating resource with data:', data)
+    console.log('File:', file)
+    
     const {
       title,
       description,
@@ -221,10 +224,12 @@ export class ResourceService {
     } = data
 
     if (!title || !type || !educationLevel || !subject) {
+      console.error('Missing required fields:', { title, type, educationLevel, subject })
       throw new AppError(400, 'Missing required fields (title, type, educationLevel, subject)')
     }
 
     if (!file && !providedFileUrl) {
+      console.error('No file or fileUrl provided')
       throw new AppError(400, 'File or File URL is required')
     }
 

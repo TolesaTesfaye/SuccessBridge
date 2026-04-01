@@ -1,1 +1,36 @@
 /* App-specific styles - using Tailwind CSS */
+
+/* Ensure resource cards scale height proportionally with width on small screens */
+@media (max-width: 768px) {
+  .resource-card {
+    aspect-ratio: 3 / 4;
+  }
+}
+
+@media (min-width: 769px) {
+  .resource-card {
+    aspect-ratio: auto;
+  }
+}
+
+/* Make scrollbars thinner (for preview and page scroll) */
+/* WebKit-based browsers (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgba(148, 163, 184, 0.9); /* slate-400 */
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.9) transparent;
+}
