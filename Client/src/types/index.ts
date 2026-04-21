@@ -10,6 +10,7 @@ export interface User {
   universityLevel?: "remedial" | "freshman" | "senior" | "gc";
   university?: string;
   department?: string;
+  isEmailVerified?: boolean;
   createdAt: string | Date;
 }
 

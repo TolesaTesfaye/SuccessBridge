@@ -118,7 +118,7 @@ export const Login: React.FC = () => {
                   required
                 />
                 <div className="text-right">
-                  <Link to="#" className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
+                  <Link to="/forgot-password" className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
                     Forgot your password?
                   </Link>
                 </div>

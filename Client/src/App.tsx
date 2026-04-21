@@ -16,6 +16,10 @@ import { useApiErrorHandler } from "@utils/apiErrorHandler";
 import { Home } from "@pages/Home";
 import { Login } from "@pages/Login";
 import { Register } from "@pages/Register";
+import { VerifyEmail } from "@pages/VerifyEmail";
+import { ResendVerification } from "@pages/ResendVerification";
+import { ForgotPassword } from "@pages/ForgotPassword";
+import { ResetPassword } from "@pages/ResetPassword";
 import { NotFound } from "@pages/NotFound";
 import { Unauthorized } from "@pages/Unauthorized";
 import { OAuthCallback } from "@pages/OAuthCallback";
@@ -181,32 +185,24 @@ const ProtectedRoute: React.FC<{
 };
 
 const getDashboard = (user: any) => {
-  console.log("🔍 getDashboard called with user:", user);
+  if (import.meta.env.DEV) {
+    console.log("🔍 getDashboard called with user:", user);
+  }
 
   if (user?.role === "admin") {
-    console.log("📊 Redirecting to AdminDashboard");
     return <AdminDashboard />;
   }
   if (user?.role === "super_admin") {
-    console.log("📊 Redirecting to SuperAdminDashboard");
     return <SuperAdminDashboard />;
   }
   if (user?.role === "student") {
-    console.log("🎓 Student detected, studentType:", user?.studentType);
     if (user?.studentType === "high_school") {
-      console.log("🏫 Redirecting to HighSchoolDashboard");
       return <HighSchoolDashboard />;
     }
     if (user?.studentType === "university") {
-      console.log(
-        "🏛️ Redirecting to UniversityDashboard, universityLevel:",
-        user?.universityLevel,
-      );
       return <UniversityDashboard />;
     }
-    console.log("⚠️ Student role but no valid studentType, user data:", user);
   }
-  console.log("❌ No valid role/type found, redirecting to login. User:", user);
   return <Navigate to="/login" replace />;
 };
 
@@ -257,6 +253,10 @@ const AppContent: React.FC = () => {
               <Route path="/terms-of-service" element={<TermsOfService />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/resend-verification" element={<ResendVerification />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/oauth-callback" element={<OAuthCallback />} />
               <Route path="/complete-profile" element={<CompleteProfile />} />
 

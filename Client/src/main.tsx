@@ -10,15 +10,16 @@ const initializeTheme = () => {
     const saved = localStorage.getItem('theme')
     const isDark = saved === 'dark'
     
-    console.log('📱 Initial setup - isDark:', isDark, 'saved:', saved)
-    
     if (isDark) {
       document.documentElement.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')
     }
   } catch (error) {
-    console.error('❌ Error initializing theme:', error)
+    // Silent fail in production
+    if (import.meta.env.DEV) {
+      console.error('Error initializing theme:', error)
+    }
   }
 }
 

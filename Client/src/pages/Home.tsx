@@ -225,23 +225,22 @@ export const Home: React.FC = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="py-24 relative overflow-hidden">
-                <div className="absolute inset-0 bg-blue-600"></div>
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/80 via-blue-900/80 to-blue-600/80"></div>
+            <section className="py-24 relative overflow-hidden bg-slate-50 dark:bg-slate-900 transition-colors">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/80 via-indigo-50/80 to-slate-100/80 dark:from-slate-800/80 dark:via-slate-900/80 dark:to-slate-950/80 transition-colors"></div>
 
                 {/* Decorative Grid */}
-                <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0)', backgroundSize: '32px 32px' }}></div>
+                <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(100,116,139,0.1) 1px, transparent 0)', backgroundSize: '32px 32px' }}></div>
 
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
-                    <Lightbulb className="w-16 h-16 text-yellow-300 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(253,224,71,0.5)]" />
-                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Unlock Your Potential?</h2>
-                    <p className="text-blue-100 text-lg md:text-xl max-w-2xl mx-auto mb-10">
+                    <Lightbulb className="w-16 h-16 text-yellow-500 dark:text-yellow-400 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(253,224,71,0.5)] transition-colors" />
+                    <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-6 transition-colors">Ready to Unlock Your Potential?</h2>
+                    <p className="text-slate-600 dark:text-slate-300 text-lg md:text-xl max-w-2xl mx-auto mb-10 transition-colors">
                         Join thousands of students who are already using SuccessBridge to secure top grades and build a brighter future.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                         <button
                             onClick={() => navigate('/register')}
-                            className="px-8 py-4 bg-white text-blue-900 font-bold tracking-wide rounded-full hover:bg-slate-100 hover:scale-105 transition-all shadow-xl flex items-center gap-2"
+                            className="px-8 py-4 bg-blue-600 dark:bg-slate-800 text-white dark:text-white font-bold tracking-wide rounded-full hover:bg-blue-700 dark:hover:bg-slate-700 hover:scale-105 transition-all shadow-xl flex items-center gap-2"
                         >
                             <Users className="w-5 h-5" />
                             Create Free Account

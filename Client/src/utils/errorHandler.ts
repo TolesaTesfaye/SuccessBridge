@@ -68,6 +68,18 @@ const ERROR_MESSAGES: Record<string, UserFriendlyError> = {
     type: 'error',
     duration: 6000
   },
+  'VERIFICATION_TOKEN_INVALID': {
+    title: 'Invalid Verification Link',
+    message: 'The verification link is invalid or has expired. Please request a new verification email.',
+    type: 'error',
+    duration: 6000,
+  },
+  'EMAIL_ALREADY_VERIFIED': {
+    title: 'Already Verified',
+    message: 'Your email address has already been verified. You can now access all features.',
+    type: 'info',
+    duration: 5000,
+  },
   'WEAK_PASSWORD': {
     title: 'Password Too Weak',
     message: 'Your password must be at least 8 characters long and include uppercase, lowercase, numbers, and special characters.',
@@ -273,15 +285,16 @@ export function parseApiError(error: any): UserFriendlyError {
       return ERROR_MESSAGES[data.code]
     }
 
-    // Check for specific error messages from backend
-    if (data?.message) {
-      const message = data.message.toLowerCase()
+    // PRIORITY: Check for backend error message first (before HTTP status codes)
+    if (data?.error || data?.message) {
+      const backendMessage = data.error || data.message
+      const message = backendMessage.toLowerCase()
       
       // Map common backend messages to error codes
       if (message.includes('invalid credentials') || message.includes('incorrect password')) {
         return ERROR_MESSAGES['INVALID_CREDENTIALS']
       }
-      if (message.includes('pending approval')) {
+      if (message.includes('pending approval') || message.includes('being processed')) {
         return ERROR_MESSAGES['ADMIN_PENDING_APPROVAL']
       }
       if (message.includes('rejected')) {
@@ -290,8 +303,25 @@ export function parseApiError(error: any): UserFriendlyError {
       if (message.includes('user not found') || message.includes('account not found')) {
         return ERROR_MESSAGES['USER_NOT_FOUND']
       }
+      if (message.includes('verify your email') || message.includes('email address before logging')) {
+        return {
+          title: 'Email Not Verified',
+          message: backendMessage,
+          type: 'warning',
+          duration: 8000
+        }
+      }
       if (message.includes('email already exists') || message.includes('already registered')) {
         return ERROR_MESSAGES['EMAIL_ALREADY_EXISTS']
+      }
+      if (message.includes('email not verified')) {
+        return ERROR_MESSAGES['EMAIL_NOT_VERIFIED']
+      }
+      if (message.includes('verification token') || message.includes('verification link')) {
+        return ERROR_MESSAGES['VERIFICATION_TOKEN_INVALID']
+      }
+      if (message.includes('already verified')) {
+        return ERROR_MESSAGES['EMAIL_ALREADY_VERIFIED']
       }
       if (message.includes('password') && message.includes('weak')) {
         return ERROR_MESSAGES['WEAK_PASSWORD']
@@ -308,9 +338,20 @@ export function parseApiError(error: any): UserFriendlyError {
       if (message.includes('validation') || message.includes('required')) {
         return ERROR_MESSAGES['VALIDATION_ERROR']
       }
+      
+      // If we have a backend message but no specific match, return it directly
+      // This ensures specific backend messages (like email verification) are shown
+      if (response?.status === 403) {
+        return {
+          title: 'Access Denied',
+          message: backendMessage,
+          type: 'warning',
+          duration: 8000
+        }
+      }
     }
 
-    // Check HTTP status codes
+    // Check HTTP status codes (only if no specific backend message)
     if (response?.status && HTTP_STATUS_MESSAGES[response.status]) {
       return HTTP_STATUS_MESSAGES[response.status]
     }
@@ -363,6 +404,8 @@ export const SUCCESS_MESSAGES = {
   LOGIN: 'Welcome back! You have successfully logged in.',
   LOGOUT: 'You have been logged out successfully.',
   REGISTER: 'Account created successfully! Welcome to SuccessBridge.',
+  EMAIL_VERIFIED: 'Email verified successfully! You can now access all features.',
+  VERIFICATION_EMAIL_SENT: 'Verification email sent! Please check your inbox.',
   PASSWORD_RESET: 'Password reset link has been sent to your email.',
   PASSWORD_CHANGED: 'Your password has been updated successfully.',
   PROFILE_UPDATED: 'Your profile has been updated successfully.',

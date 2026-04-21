@@ -76,18 +76,20 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
           options={resourceTypes}
         />
 
-        <FormSelect
-          label="Student Type"
-          name="studentType"
-          value={filters.studentType || ''}
-          onChange={handleChange}
-          options={[
-            { value: 'regular', label: 'Regular' },
-            { value: 'extension', label: 'Extension' },
-            { value: 'distance', label: 'Distance' },
-            { value: 'summer', label: 'Summer' },
-          ]}
-        />
+        {educationLevel === 'university' && (
+          <FormSelect
+            label="Student Type"
+            name="studentType"
+            value={filters.studentType || ''}
+            onChange={handleChange}
+            options={[
+              { value: 'regular', label: 'Regular' },
+              { value: 'extension', label: 'Extension' },
+              { value: 'distance', label: 'Distance' },
+              { value: 'summer', label: 'Summer' },
+            ]}
+          />
+        )}
 
         <FormSelect
           label="Subject"

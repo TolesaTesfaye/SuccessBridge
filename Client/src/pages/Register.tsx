@@ -12,7 +12,8 @@ type UniversityLevel = 'remedial' | 'freshman' | 'senior' | 'gc' | null
 type HighSchoolGrade = 'grade_9' | 'grade_10' | 'grade_11' | 'grade_12' | null
 
 interface FormDataType {
-  name: string
+  firstName: string
+  lastName: string
   email: string
   password: string
   confirmPassword: string
@@ -43,7 +44,8 @@ export const Register: React.FC = () => {
   const { register: registerUser, loading } = useAuth()
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState<FormDataType>({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -61,7 +63,7 @@ export const Register: React.FC = () => {
     setFormError(null)
 
     if (step === 1) {
-      if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+      if (!formData.firstName || !formData.lastName || !formData.email || !formData.password || !formData.confirmPassword) {
         setFormError('Please fill in all fields')
         return false
       }
@@ -147,8 +149,16 @@ export const Register: React.FC = () => {
     }
 
     try {
-      const payload = { ...formData }
+      // Combine first and last name
+      const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`
+      
+      const payload = { 
+        ...formData,
+        name: fullName  // Add combined name for backend
+      }
       delete (payload as any).confirmPassword
+      delete (payload as any).firstName  // Remove separate fields
+      delete (payload as any).lastName
       
       console.log('Sending registration payload:', payload)
       const result = await registerUser(payload)
@@ -162,8 +172,13 @@ export const Register: React.FC = () => {
           }
         })
       } else if (result) {
-        // Student registration - redirect to dashboard
-        navigate('/dashboard')
+        // Student registration - redirect to verification page with email
+        navigate('/verify-email', { 
+          state: { 
+            email: formData.email,
+            message: 'Registration successful! Please check your email for a 6-digit verification code.'
+          }
+        })
       }
     } catch (err) {
       // Error handling is now done in useAuth hook with toast notifications
@@ -257,15 +272,27 @@ export const Register: React.FC = () => {
               {/* Step 1: Basic Information */}
               {step === 1 && (
                 <>
-                  <FormInput
-                    label="Full Name"
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    placeholder="e.g. Abebe Bekele"
-                    required
-                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormInput
+                      label="First Name"
+                      type="text"
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleChange}
+                      placeholder="e.g. Abebe"
+                      required
+                    />
+
+                    <FormInput
+                      label="Last Name"
+                      type="text"
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleChange}
+                      placeholder="e.g. Bekele"
+                      required
+                    />
+                  </div>
 
                   <FormInput
                     label="Email Address"

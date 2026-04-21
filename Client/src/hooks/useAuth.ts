@@ -30,7 +30,13 @@ export const useAuth = () => {
         toast.error(errorMsg)
       }
     } catch (err: any) {
-      console.error("❌ Login error:", err);
+      console.error("❌ Login error details:", {
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
+        userFriendlyError: err.userFriendlyError
+      });
+      
       const userError = err.userFriendlyError
       if (userError) {
         setError(userError.message)
@@ -56,11 +62,17 @@ export const useAuth = () => {
           toast.success('🎉 Admin registration request submitted successfully!\n\n⏳ Your application is now under review by the super admin. Please wait for approval before attempting to log in.\n\n📧 You will be notified once your account has been reviewed.\n\n⚡ Approval typically takes a few seconds.', 8000)
           return true // Don't auto-login for admins
         } else {
-          // Student registration - auto-login
-          setUser(response.data.user)
-          setToken(response.data.token)
-          toast.success(SUCCESS_MESSAGES.REGISTER)
-          return true
+          // Student registration - show verification message (no auto-login)
+          if (response.data.requiresVerification) {
+            toast.success('🎉 Registration successful!\n\n📧 Please check your email and click the verification link to activate your account.\n\n⚠️ You must verify your email before you can log in.', 8000)
+            return true
+          } else {
+            // Fallback for backward compatibility
+            setUser(response.data.user)
+            setToken(response.data.token)
+            toast.success(SUCCESS_MESSAGES.REGISTER)
+            return true
+          }
         }
       }
       const errorMsg = response.error || 'Registration failed'

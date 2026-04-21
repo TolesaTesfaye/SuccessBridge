@@ -23,6 +23,16 @@ export const universityService = {
     return response.data
   },
 
+  updateUniversity: async (id: string, data: { name: string; location: string; contactEmail?: string }): Promise<ApiResponse<University>> => {
+    const response = await api.put(`/universities/${id}`, data)
+    return response.data
+  },
+
+  deleteUniversity: async (id: string): Promise<ApiResponse<void>> => {
+    const response = await api.delete(`/universities/${id}`)
+    return response.data
+  },
+
   getUniversitiesWithFreshmanResources: async (): Promise<ApiResponse<UniversityWithResources[]>> => {
     try {
       // Get universities directly from universities endpoint (more efficient)

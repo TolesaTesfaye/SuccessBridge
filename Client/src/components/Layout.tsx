@@ -16,7 +16,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const navigate = useNavigate()
 
   // Don't show layout wrapper for auth pages and dashboards
-  const isAuthPage = ['/login', '/register', '/unauthorized', '/404'].includes(location.pathname)
+  const isAuthPage = ['/login', '/register', '/unauthorized', '/404', '/verify-email', '/resend-verification'].includes(location.pathname) || location.pathname.startsWith('/verify-email/')
   const isDashboard = location.pathname.includes('/dashboard') ||
     location.pathname.includes('/student') ||
     location.pathname.includes('/admin') ||

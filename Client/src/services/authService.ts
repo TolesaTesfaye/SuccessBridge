@@ -113,4 +113,34 @@ export const authService = {
       throw { ...error as any, userFriendlyError: userError }
     }
   },
+
+  forgotPassword: async (email: string): Promise<ApiResponse<{ message: string }>> => {
+    try {
+      const response = await api.post('/auth/forgot-password', { email })
+      return response.data
+    } catch (error) {
+      const userError = parseApiError(error)
+      throw { ...error as any, userFriendlyError: userError }
+    }
+  },
+
+  verifyResetCode: async (email: string, code: string): Promise<ApiResponse<{ message: string; email: string }>> => {
+    try {
+      const response = await api.post('/auth/verify-reset-code', { email, code })
+      return response.data
+    } catch (error) {
+      const userError = parseApiError(error)
+      throw { ...error as any, userFriendlyError: userError }
+    }
+  },
+
+  resetPassword: async (email: string, code: string, newPassword: string): Promise<ApiResponse<{ message: string }>> => {
+    try {
+      const response = await api.post('/auth/reset-password', { email, code, newPassword })
+      return response.data
+    } catch (error) {
+      const userError = parseApiError(error)
+      throw { ...error as any, userFriendlyError: userError }
+    }
+  },
 }

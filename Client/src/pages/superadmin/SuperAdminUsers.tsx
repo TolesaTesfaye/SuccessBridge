@@ -16,8 +16,16 @@ export const SuperAdminUsers: React.FC = () => {
   const [error, setError] = useState<string | null>(null)
   const [totalPages, setTotalPages] = useState(1)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showViewModal, setShowViewModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
   const [selectedUserName, setSelectedUserName] = useState<string>('')
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    email: '',
+    role: ''
+  })
 
   const itemsPerPage = 10
 
@@ -44,6 +52,36 @@ export const SuperAdminUsers: React.FC = () => {
     setSelectedUserId(id)
     setSelectedUserName(name)
     setShowDeleteConfirm(true)
+  }
+
+  const handleViewClick = (user: User) => {
+    setSelectedUser(user)
+    setShowViewModal(true)
+  }
+
+  const handleEditClick = (user: User) => {
+    setSelectedUser(user)
+    setEditFormData({
+      name: user.name || '',
+      email: user.email || '',
+      role: user.role || ''
+    })
+    setShowEditModal(true)
+  }
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedUser) return
+    
+    try {
+      await userService.updateUser(selectedUser.id, editFormData)
+      await fetchUsers()
+      setShowEditModal(false)
+      setSelectedUser(null)
+      ApiErrorHandler.showSuccess('User updated successfully')
+    } catch (err) {
+      ApiErrorHandler.handle(err, 'Failed to update user')
+    }
   }
 
   const handleConfirmDelete = async () => {
@@ -96,7 +134,6 @@ export const SuperAdminUsers: React.FC = () => {
                         <th className="px-6 py-3 text-left font-semibold text-gray-900">University / Level</th>
                         <th className="px-6 py-3 text-left font-semibold text-gray-900">Department / Grade</th>
                         <th className="px-6 py-3 text-left font-semibold text-gray-900">Platform Join</th>
-                        <th className="px-6 py-3 text-left font-semibold text-gray-900">Account Status</th>
                         <th className="px-6 py-3 text-left font-semibold text-gray-900">Role</th>
                         <th className="px-6 py-3 text-left font-semibold text-gray-900">Actions</th>
                       </tr>
@@ -149,16 +186,6 @@ export const SuperAdminUsers: React.FC = () => {
                               </div>
                             </td>
                             <td className="px-6 py-4 align-top">
-                              <div className="flex flex-col gap-1">
-                                <span className="inline-flex w-fit px-3 py-1 bg-slate-100 text-slate-800 rounded-full text-xs font-semibold">
-                                  Registered
-                                </span>
-                                <span className="inline-flex w-fit px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
-                                  Active
-                                </span>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 align-top">
                               <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                                 user.role === 'admin'
                                   ? 'bg-purple-100 text-purple-800'
@@ -171,7 +198,8 @@ export const SuperAdminUsers: React.FC = () => {
                             </td>
                             <td className="px-6 py-4 align-top">
                               <div className="flex items-center gap-2">
-                                <Button variant="secondary" size="sm">View</Button>
+                                <Button variant="secondary" size="sm" onClick={() => handleViewClick(user)}>View</Button>
+                                <Button variant="secondary" size="sm" onClick={() => handleEditClick(user)}>Edit</Button>
                                 <Button
                                   variant="danger"
                                   size="sm"
@@ -195,9 +223,10 @@ export const SuperAdminUsers: React.FC = () => {
           </CardBody>
         </Card>
 
+        {/* Delete Confirmation Modal */}
         <Modal isOpen={showDeleteConfirm} onClose={() => setShowDeleteConfirm(false)} title="Confirm Delete User">
           <div className="space-y-4">
-            <p className="text-gray-700">
+            <p className="text-gray-700 dark:text-slate-300">
               Are you sure you want to delete <strong>{selectedUserName}</strong>? This action cannot be undone.
             </p>
             <div className="flex gap-2">
@@ -205,6 +234,129 @@ export const SuperAdminUsers: React.FC = () => {
               <Button variant="secondary" fullWidth onClick={() => setShowDeleteConfirm(false)}>Cancel</Button>
             </div>
           </div>
+        </Modal>
+
+        {/* View User Modal */}
+        <Modal isOpen={showViewModal} onClose={() => setShowViewModal(false)} title="User Details" size="lg">
+          {selectedUser ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-white/10">
+                <div className="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-2xl">
+                  {selectedUser.role === 'admin' || selectedUser.role === 'super_admin' ? '👨‍💼' : '🎓'}
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white m-0">{selectedUser.name}</h3>
+                  <p className="text-slate-500 dark:text-slate-400 m-0">{selectedUser.email}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-500 dark:text-slate-400 mb-1">Role</label>
+                  <p className="text-gray-900 dark:text-white capitalize">{selectedUser.role?.replace('_', ' ')}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-500 dark:text-slate-400 mb-1">Student Type</label>
+                  <p className="text-gray-900 dark:text-white capitalize">{selectedUser.studentType?.replace('_', ' ') || 'N/A'}</p>
+                </div>
+              </div>
+
+              {selectedUser.studentType === 'university' && (
+                <>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-500 dark:text-slate-400 mb-1">University</label>
+                    <p className="text-gray-900 dark:text-white">{selectedUser.university || 'N/A'}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-500 dark:text-slate-400 mb-1">Department</label>
+                      <p className="text-gray-900 dark:text-white">{selectedUser.department || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-500 dark:text-slate-400 mb-1">University Level</label>
+                      <p className="text-gray-900 dark:text-white capitalize">{selectedUser.universityLevel?.replace('_', ' ') || 'N/A'}</p>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {selectedUser.studentType === 'high_school' && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-500 dark:text-slate-400 mb-1">Grade</label>
+                    <p className="text-gray-900 dark:text-white">{selectedUser.highSchoolGrade || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-500 dark:text-slate-400 mb-1">Stream</label>
+                    <p className="text-gray-900 dark:text-white capitalize">{selectedUser.highSchoolStream || 'N/A'}</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-500 dark:text-slate-400 mb-1">Created At</label>
+                  <p className="text-gray-900 dark:text-white">{new Date(selectedUser.createdAt).toLocaleString()}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-500 dark:text-slate-400 mb-1">User ID</label>
+                  <p className="text-gray-900 dark:text-white font-mono text-xs break-all">{selectedUser.id}</p>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t dark:border-slate-700">
+                <Button variant="secondary" fullWidth onClick={() => setShowViewModal(false)}>Close</Button>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-500 dark:text-slate-400">No user selected</p>
+            </div>
+          )}
+        </Modal>
+
+        {/* Edit User Modal */}
+        <Modal isOpen={showEditModal} onClose={() => setShowEditModal(false)} title="Edit User" size="lg">
+          <form className="space-y-4" onSubmit={handleEditSubmit}>
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Name</label>
+              <input 
+                type="text" 
+                className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" 
+                value={editFormData.name}
+                onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Email</label>
+              <input 
+                type="email" 
+                className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600" 
+                value={editFormData.email}
+                onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Role</label>
+              <select 
+                className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+                value={editFormData.role}
+                onChange={(e) => setEditFormData({ ...editFormData, role: e.target.value })}
+                required
+              >
+                <option value="">Select Role</option>
+                <option value="student">Student</option>
+                <option value="admin">Admin</option>
+                <option value="super_admin">Super Admin</option>
+              </select>
+            </div>
+            <div className="flex gap-2 pt-4">
+              <Button variant="primary" fullWidth type="submit">Update User</Button>
+              <Button variant="secondary" fullWidth type="button" onClick={() => setShowEditModal(false)}>Cancel</Button>
+            </div>
+          </form>
         </Modal>
       </div>
     </DashboardLayout>
