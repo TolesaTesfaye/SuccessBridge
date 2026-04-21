@@ -1,5 +1,5 @@
-import { Router } from 'express'
-import { authMiddleware, requireRole } from '../middleware/auth.js'
+import { Router } from "express";
+import { authMiddleware, requireRole } from "../middleware/auth.js";
 import {
   register,
   login,
@@ -14,10 +14,15 @@ import {
   setupPassword,
   oauthSuccess,
   completeOAuthProfile,
-} from '../controllers/authController.js'
-import passport from 'passport'
+  verifyEmail,
+  resendVerificationEmail,
+  requestPasswordReset,
+  verifyResetCode,
+  resetPassword,
+} from "../controllers/authController.js";
+import passport from "passport";
 
-const router = Router()
+const router = Router();
 
 /**
  * @swagger
@@ -97,7 +102,7 @@ const router = Router()
  */
 
 // Register
-router.post('/register', register)
+router.post("/register", register);
 
 /**
  * @swagger
@@ -149,7 +154,7 @@ router.post('/register', register)
  *               $ref: '#/components/schemas/Error'
  */
 // Login
-router.post('/login', login)
+router.post("/login", login);
 
 /**
  * @swagger
@@ -180,7 +185,7 @@ router.post('/login', login)
  *               $ref: '#/components/schemas/Error'
  */
 // Get current user
-router.get('/me', authMiddleware, getMe)
+router.get("/me", authMiddleware, getMe);
 
 /**
  * @swagger
@@ -212,10 +217,15 @@ router.get('/me', authMiddleware, getMe)
  *               $ref: '#/components/schemas/Error'
  */
 // Logout
-router.post('/logout', authMiddleware, logout)
+router.post("/logout", authMiddleware, logout);
 
 // Add demo admin request (for testing auto-approval) - restricted to super admin
-router.post('/add-tolesa-request', authMiddleware, requireRole('super_admin'), addDemoAdminRequest)
+router.post(
+  "/add-tolesa-request",
+  authMiddleware,
+  requireRole("super_admin"),
+  addDemoAdminRequest,
+);
 
 /**
  * @swagger
@@ -233,7 +243,12 @@ router.post('/add-tolesa-request', authMiddleware, requireRole('super_admin'), a
  *       403:
  *         description: Forbidden - Super Admin access required
  */
-router.get('/admin-requests', authMiddleware, requireRole('super_admin'), getAdminRequests)
+router.get(
+  "/admin-requests",
+  authMiddleware,
+  requireRole("super_admin"),
+  getAdminRequests,
+);
 
 /**
  * @swagger
@@ -260,7 +275,12 @@ router.get('/admin-requests', authMiddleware, requireRole('super_admin'), getAdm
  *       404:
  *         description: Admin request not found
  */
-router.post('/admin-requests/:id/approve', authMiddleware, requireRole('super_admin'), approveAdminRequest)
+router.post(
+  "/admin-requests/:id/approve",
+  authMiddleware,
+  requireRole("super_admin"),
+  approveAdminRequest,
+);
 
 /**
  * @swagger
@@ -299,7 +319,12 @@ router.post('/admin-requests/:id/approve', authMiddleware, requireRole('super_ad
  *       404:
  *         description: Admin request not found
  */
-router.post('/admin-requests/:id/reject', authMiddleware, requireRole('super_admin'), rejectAdminRequest)
+router.post(
+  "/admin-requests/:id/reject",
+  authMiddleware,
+  requireRole("super_admin"),
+  rejectAdminRequest,
+);
 
 /**
  * @swagger
@@ -323,10 +348,10 @@ router.post('/admin-requests/:id/reject', authMiddleware, requireRole('super_adm
  *               email:
  *                 type: string
  *                 format: email
- *                 description: Must be successbridge27@gmail.com
+ *                 description: Email address for the admin candidate
  *               password:
  *                 type: string
- *                 description: Must be sb12340987
+ *                 description: Password for the admin candidate
  *               name:
  *                 type: string
  *                 description: Full name of the admin candidate
@@ -349,7 +374,7 @@ router.post('/admin-requests/:id/reject', authMiddleware, requireRole('super_adm
  *       404:
  *         description: Admin request not found
  */
-router.post('/submit-admin-request', submitAdminRequest)
+router.post("/submit-admin-request", submitAdminRequest);
 
 /**
  * @swagger
@@ -376,7 +401,7 @@ router.post('/submit-admin-request', submitAdminRequest)
  *       404:
  *         description: No admin request found for this email
  */
-router.post('/admin-request-status', getAdminRequestStatus)
+router.post("/admin-request-status", getAdminRequestStatus);
 
 /**
  * @swagger
@@ -454,14 +479,182 @@ router.post('/admin-request-status', getAdminRequestStatus)
  *       401:
  *         description: Unauthorized
  */
-router.post('/complete-oauth-profile', authMiddleware, completeOAuthProfile)
+router.post("/complete-oauth-profile", authMiddleware, completeOAuthProfile);
+
+/**
+ * @swagger
+ * /auth/verify-email:
+ *   post:
+ *     summary: Verify email address with 6-digit code
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - code
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email address to verify
+ *               code:
+ *                 type: string
+ *                 description: 6-digit verification code
+ *     responses:
+ *       200:
+ *         description: Email verified successfully
+ *       400:
+ *         description: Invalid or expired code
+ */
+router.post("/verify-email", verifyEmail);
+
+/**
+ * @swagger
+ * /auth/resend-verification:
+ *   post:
+ *     summary: Resend email verification link
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email address to resend verification to
+ *     responses:
+ *       200:
+ *         description: Verification email sent successfully
+ *       400:
+ *         description: Email already verified or invalid
+ *       404:
+ *         description: User not found
+ */
+router.post("/resend-verification", resendVerificationEmail);
+
+/**
+ * @swagger
+ * /auth/forgot-password:
+ *   post:
+ *     summary: Request password reset code
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email address to send reset code to
+ *     responses:
+ *       200:
+ *         description: Reset code sent if account exists
+ *       400:
+ *         description: Invalid request
+ */
+router.post("/forgot-password", requestPasswordReset);
+
+/**
+ * @swagger
+ * /auth/verify-reset-code:
+ *   post:
+ *     summary: Verify password reset code
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - code
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email address
+ *               code:
+ *                 type: string
+ *                 description: 6-digit reset code
+ *     responses:
+ *       200:
+ *         description: Reset code verified successfully
+ *       400:
+ *         description: Invalid or expired code
+ */
+router.post("/verify-reset-code", verifyResetCode);
+
+/**
+ * @swagger
+ * /auth/reset-password:
+ *   post:
+ *     summary: Reset password with verified code
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - code
+ *               - newPassword
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email address
+ *               code:
+ *                 type: string
+ *                 description: 6-digit reset code
+ *               newPassword:
+ *                 type: string
+ *                 minLength: 6
+ *                 description: New password
+ *     responses:
+ *       200:
+ *         description: Password reset successfully
+ *       400:
+ *         description: Invalid request or expired code
+ */
+router.post("/reset-password", resetPassword);
 
 // Google OAuth
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
-router.get('/google/callback', passport.authenticate('google', { session: false }), oauthSuccess)
+router.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] }),
+);
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { session: false }),
+  oauthSuccess,
+);
 
 // Microsoft OAuth
-router.get('/microsoft', passport.authenticate('microsoft', { scope: ['user.read'] }))
-router.get('/microsoft/callback', passport.authenticate('microsoft', { session: false }), oauthSuccess)
+router.get(
+  "/microsoft",
+  passport.authenticate("microsoft", { scope: ["user.read"] }),
+);
+router.get(
+  "/microsoft/callback",
+  passport.authenticate("microsoft", { session: false }),
+  oauthSuccess,
+);
 
-export default router
+export default router;

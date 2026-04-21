@@ -26,6 +26,11 @@ class User extends Model<IUser> implements IUser {
   public approvedBy?: string
   public approvedAt?: Date
   public rejectionReason?: string
+  public isEmailVerified?: boolean
+  public emailVerificationToken?: string
+  public emailVerificationExpires?: Date
+  public passwordResetToken?: string
+  public passwordResetExpires?: Date
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 }
@@ -148,6 +153,26 @@ User.init(
       type: DataTypes.JSON,
       allowNull: true,
       defaultValue: [],
+    },
+    isEmailVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    emailVerificationToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    emailVerificationExpires: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
+    passwordResetToken: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    passwordResetExpires: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
   } as any,
   {

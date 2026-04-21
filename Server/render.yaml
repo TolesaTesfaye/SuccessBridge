@@ -1,7 +1,9 @@
+# NOTE: Do not commit real credentials/secrets to this repo.
+# Set secrets (DATABASE_URL, JWT_SECRET, SUPABASE_* etc.) in Render's dashboard.
 services:
   - type: web
     name: successbridge-api
-    env: node
+    runtime: node
     region: singapore
     plan: free
     buildCommand: npm install && npm run build
@@ -11,30 +13,42 @@ services:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        value: postgresql://postgres:702512%40Tol_Database@db.oxnntnvtkngfoorkleay.supabase.co:5432/postgres
+        value: REPLACE_ME
       - key: JWT_SECRET
-        value: SuccessBridge-Super-Secret-JWT-Key-For-Production-2024-Deployment-32-Characters
+        value: REPLACE_ME
       - key: PORT
         value: 10000
       - key: SUPABASE_URL
-        value: https://oxnntnvtkngfoorkleay.supabase.co
+        value: REPLACE_ME
       - key: SUPABASE_ANON_KEY
-        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94bm50bnZ0a25nZm9vcmtsZWF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY2NzU5NzQsImV4cCI6MjA1MjI1MTk3NH0.sb_publishable_7cmmPTJwl0Nj7-nQWpWrvA_YgvBKTum
+        value: REPLACE_ME
       - key: SUPABASE_SERVICE_KEY
-        value: sb_secret_BnVbahCrOQufviYpHZewjw_6p9ykmQl
+        value: REPLACE_ME
       - key: FRONTEND_URL
         value: https://successbridge.vercel.app
       - key: UPLOAD_DIR
         value: /tmp/uploads
       - key: SUPER_ADMIN_EMAIL
-        value: tolesatesfaye273@gmail.com
+        value: REPLACE_ME
       - key: SUPER_ADMIN_PASSWORD
-        value: 702512@Tol
+        value: REPLACE_ME
       - key: SUPER_ADMIN_NAME
-        value: Tolesa Tesfaye
+        value: Super Admin
       - key: ADMIN_EMAIL
-        value: tolesatesfaye327@gmail.com
+        value: REPLACE_ME
       - key: ADMIN_PASSWORD
-        value: 702512@Tol
+        value: REPLACE_ME
       - key: ADMIN_NAME
         value: Admin User
+      - key: AWS_REGION
+        value: auto
+      - key: AWS_ACCESS_KEY_ID
+        value: REPLACE_ME
+      - key: AWS_SECRET_ACCESS_KEY
+        value: REPLACE_ME
+      - key: AWS_S3_BUCKET
+        value: successbridge-resources
+      - key: AWS_ENDPOINT
+        value: REPLACE_ME
+      - key: MAX_FILE_SIZE
+        value: 52428800

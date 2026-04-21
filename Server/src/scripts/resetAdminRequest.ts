@@ -1,49 +1,42 @@
-import AdminRequest from '../models/AdminRequest.js'
-import User from '../models/User.js'
-import sequelize from '../config/database.js'
+import AdminRequest from "../models/AdminRequest.js";
+import User from "../models/User.js";
+import sequelize from "../config/database.js";
 
 const resetAdminRequest = async () => {
   try {
-    await sequelize.authenticate()
-    console.log('✅ Database connected')
+    await sequelize.authenticate();
+    console.log("✅ Database connected");
 
-    const standardEmail = 'successbridge27@gmail.com'
-    
+    const targetEmail = process.env.ADMIN_REQUEST_EMAIL;
+
+    if (!targetEmail) {
+      console.error("❌ ADMIN_REQUEST_EMAIL is required");
+      process.exit(1);
+    }
+
     // Remove any existing admin user with this email
-    const existingUser = await User.findOne({ where: { email: standardEmail } })
+    const existingUser = await User.findOne({ where: { email: targetEmail } });
     if (existingUser) {
-      await existingUser.destroy()
-      console.log(`🗑️  Removed existing user: ${standardEmail}`)
+      await existingUser.destroy();
+      console.log(`🗑️  Removed existing user: ${targetEmail}`);
     }
 
     // Remove any existing admin request
-    const existingRequest = await AdminRequest.findOne({ where: { email: standardEmail } })
+    const existingRequest = await AdminRequest.findOne({
+      where: { email: targetEmail },
+    });
     if (existingRequest) {
-      await existingRequest.destroy()
-      console.log(`🗑️  Removed existing admin request: ${standardEmail}`)
+      await existingRequest.destroy();
+      console.log(`🗑️  Removed existing admin request: ${targetEmail}`);
     }
 
-    // Also clean up the old test admin
-    const oldTestAdmin = await User.findOne({ where: { email: 'tolesatesfaye327@gmail.com' } })
-    if (oldTestAdmin) {
-      await oldTestAdmin.destroy()
-      console.log(`🗑️  Removed old test admin: tolesatesfaye327@gmail.com`)
-    }
-
-    const oldTestRequest = await AdminRequest.findOne({ where: { email: 'tolesatesfaye327@gmail.com' } })
-    if (oldTestRequest) {
-      await oldTestRequest.destroy()
-      console.log(`🗑️  Removed old test admin request: tolesatesfaye327@gmail.com`)
-    }
-
-    await sequelize.close()
-    console.log('✅ Database connection closed')
-    console.log('🔄 Ready for new admin request workflow')
-    
+    await sequelize.close();
+    console.log("✅ Database connection closed");
+    console.log("🔄 Ready for new admin request workflow");
   } catch (error) {
-    console.error('❌ Error resetting admin request:', error)
-    process.exit(1)
+    console.error("❌ Error resetting admin request:", error);
+    process.exit(1);
   }
-}
+};
 
-resetAdminRequest()
+resetAdminRequest();

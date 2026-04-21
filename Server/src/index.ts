@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import path from 'path'
 import fs from 'fs'
+import { Op } from 'sequelize'
 import sequelize, { testMainConnection } from './config/database.js'
 import { connectRedis } from './config/redis.js'
 import { seedSuperAdmin } from './config/seedAdmin.js'
@@ -25,6 +26,7 @@ import systemRoutes from './routes/system.js'
 // Import all models to ensure they are registered with Sequelize
 import User from './models/User.js'
 import AdminRequest from './models/AdminRequest.js'
+import PendingUser from './models/PendingUser.js'
 import Resource from './models/Resource.js'
 import Subject from './models/Subject.js'
 import Quiz from './models/Quiz.js'
@@ -173,6 +175,24 @@ const startServer = async () => {
       
       if (connectionSuccess) {
         logger.success('SuccessBridge server started successfully with database!')
+        
+        // Start periodic cleanup of expired pending users (every hour)
+        setInterval(async () => {
+          try {
+            const result = await PendingUser.destroy({
+              where: {
+                verificationExpires: {
+                  [Op.lt]: new Date(),
+                },
+              },
+            });
+            if (result > 0) {
+              logger.info(`🧹 Cleaned up ${result} expired pending user(s)`);
+            }
+          } catch (error) {
+            logger.error('Error cleaning up pending users:', error);
+          }
+        }, 60 * 60 * 1000); // Run every hour
       } else {
         logger.warn('SuccessBridge server started in limited mode (no database)')
         logger.info('Fix database connection and restart for full functionality')

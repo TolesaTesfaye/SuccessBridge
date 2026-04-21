@@ -17,15 +17,20 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       return res.status(401).json({ success: false, error: 'No token provided' })
     }
 
-    // Check if token is blacklisted
+    // Check if token is blacklisted (only if Redis is connected)
     try {
-      const isBlacklisted = await redisClient.get(`blacklist_${token}`)
-      if (isBlacklisted) {
-        return res.status(401).json({ success: false, error: 'Token has been invalidated' })
+      if (redisClient && redisClient.isOpen) {
+        const isBlacklisted = await redisClient.get(`blacklist_${token}`)
+        if (isBlacklisted) {
+          return res.status(401).json({ success: false, error: 'Token has been invalidated' })
+        }
       }
     } catch (redisError) {
-      console.warn('Redis not available for blacklist checking:', redisError)
-      // Continue without blacklist check if Redis is not available
+      // Silently continue without blacklist check if Redis is not available
+      // Only log in development mode
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Redis not available for blacklist checking')
+      }
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as IAuthPayload
