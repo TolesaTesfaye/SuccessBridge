@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { GradeService } from '../services/gradeService'
+import { GradeService } from '../services/gradeService.js'
 
 const router = Router()
 
