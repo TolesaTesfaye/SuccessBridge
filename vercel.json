@@ -1,32 +1,12 @@
 {
-  "version": 2,
-  "builds": [
+  "buildCommand": "cd Client && npm install && npm run build",
+  "outputDirectory": "Client/dist",
+  "installCommand": "cd Client && npm install",
+  "framework": "vite",
+  "rewrites": [
     {
-      "src": "Client/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "Client/dist"
-      }
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/Client/$1"
-    }
-  ],
-  "env": {
-    "VITE_API_URL": "https://successbridge-tolesa-api.onrender.com/api",
-    "VITE_APP_NAME": "SuccessBridge",
-    "VITE_APP_VERSION": "1.0.0"
-  },
-  "build": {
-    "env": {
-      "VITE_API_URL": "https://successbridge-tolesa-api.onrender.com/api",
-      "VITE_APP_NAME": "SuccessBridge",
-      "VITE_APP_VERSION": "1.0.0",
-      "VITE_SUPABASE_URL": "https://oxnntnvtkngfoorkleay.supabase.co",
-      "VITE_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94bm50bnZ0a25nZm9vcmtsZWF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY2NzU5NzQsImV4cCI6MjA1MjI1MTk3NH0.sb_publishable_7cmmPTJwl0Nj7-nQWpWrvA_YgvBKTum"
-    }
-  }
+  ]
 }
