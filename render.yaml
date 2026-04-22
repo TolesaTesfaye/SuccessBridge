@@ -18,7 +18,7 @@ services:
       - key: PORT
         value: 10000
       - key: FRONTEND_URL
-        value: https://port-k1wt19s4t-tolesas-projects-164416d0.vercel.app
+        value: https://success-bridge-black.vercel.app
       - key: DATABASE_URL
         value: postgresql://postgres.oxnntnvtkngfoorkleay:702512Tol_Database@aws-1-eu-west-1.pooler.supabase.com:5432/postgres
       - key: JWT_SECRET
