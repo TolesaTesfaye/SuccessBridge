@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios'
 import { useAuthStore } from '@store/authStore'
 import { parseApiError } from '@utils/errorHandler'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+const API_BASE_URL = (window as any).__VITE_API_URL__ || import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
 const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
