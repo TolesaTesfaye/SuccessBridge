@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd Client && npm install && npm run build",
+  "buildCommand": "cd Client && bash set-env.sh",
   "outputDirectory": "Client/dist",
   "installCommand": "cd Client && npm install",
   "framework": "vite",
