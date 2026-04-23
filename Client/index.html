@@ -8,8 +8,10 @@
     <meta name="theme-color" content="#3b82f6" />
     <title>SuccessBridge - Learning Platform</title>
     <script>
-      // Set API URL globally before app loads
-      window.__VITE_API_URL__ = 'https://successbridge-tolesa-api.onrender.com/api';
+      // Set API URL for production (Vercel will use this, local dev will use .env)
+      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        window.__VITE_API_URL__ = 'https://successbridge-tolesa-api.onrender.com/api';
+      }
     </script>
   </head>
   <body>
