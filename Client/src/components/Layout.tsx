@@ -56,7 +56,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">{user.role.replace('_', ' ')}</p>
                   </div>
                   <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold">
-                    {user.name.charAt(0).toUpperCase()}
+                    {user?.name?.charAt(0).toUpperCase() || 'U'}
                   </div>
                 </div>
                 <Button variant="secondary" onClick={handleLogout} className="text-sm">
