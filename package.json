@@ -5,10 +5,15 @@
   "scripts": {
     "build": "cd Server && npm install && npm run build",
     "start": "cd Server && npm start",
-    "dev": "cd Server && npm run dev"
+    "dev": "cd Server && npm run dev",
+    "deploy": "wrangler deploy",
+    "preview": "wrangler dev"
   },
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.84.1"
   }
 }
