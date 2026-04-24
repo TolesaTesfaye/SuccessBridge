@@ -175,7 +175,7 @@ export const downloadResource = async (req: Request, res: Response, next: NextFu
     res.setHeader('Content-Length', fileSize)
     res.setHeader('Content-Disposition', `attachment; filename="${resource.title}${ext}"`)
     res.setHeader('Cache-Control', 'no-cache')
-    res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL || 'http://localhost:3000')
+    res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*')
     res.setHeader('Access-Control-Allow-Methods', 'GET')
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
 

@@ -71,8 +71,8 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
   }
 
   return (
-    <div className="space-y-10 pb-16 animate-in fade-in duration-700">
-      <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-700 text-white p-8 md:p-12 shadow-2xl">
+    <div className="space-y-4 md:space-y-10 pb-8 md:pb-16 animate-in fade-in duration-700">
+      <div className="relative overflow-hidden rounded-2xl md:rounded-[2rem] bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-700 text-white p-4 md:p-8 lg:p-12 shadow-2xl">
         <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-white/10 blur-3xl" />
         <div className="absolute -bottom-20 -left-16 w-56 h-56 rounded-full bg-blue-300/20 blur-3xl" />
 
@@ -81,34 +81,34 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
             <p className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-xs font-bold uppercase tracking-widest mb-4">
               <Sparkles className="w-3.5 h-3.5" /> Personalized University Space
             </p>
-            <h1 className="text-4xl lg:text-6xl font-black tracking-tight leading-tight">
+            <h1 className="text-2xl md:text-4xl lg:text-6xl font-black tracking-tight leading-tight">
               Welcome back,
               <span className="block text-blue-200">{firstName}.</span>
             </h1>
-            <p className="mt-4 text-blue-100/90 max-w-xl">
+            <p className="mt-3 md:mt-4 text-sm md:text-base text-blue-100/90 max-w-xl">
               Your {activeCategory} dashboard is ready with smart recommendations, trending materials, and focused learning tracks.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-4 md:mt-8 flex flex-wrap gap-2 md:gap-3">
               <button
                 onClick={() => setActiveTab('learning')}
-                className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 rounded-xl font-black text-xs uppercase tracking-widest transition-colors"
+                className="px-4 md:px-6 py-2 md:py-3 bg-emerald-500 hover:bg-emerald-600 rounded-xl font-black text-xs uppercase tracking-widest transition-colors"
               >
                 Continue Learning
               </button>
               <button
                 onClick={() => setActiveTab('hub')}
-                className="px-6 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-black text-xs uppercase tracking-widest transition-colors"
+                className="px-4 md:px-6 py-2 md:py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-black text-xs uppercase tracking-widest transition-colors"
               >
                 Open Resource Hub
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2 md:gap-3">
             {highlights.map((item) => (
-              <div key={item.label} className="bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-4">
+              <div key={item.label} className="bg-white/10 backdrop-blur-sm border border-white/10 rounded-xl md:rounded-2xl p-3 md:p-4">
                 <item.icon className="w-4 h-4 text-blue-200 mb-2" />
-                <p className="text-2xl font-black">{item.value}</p>
+                <p className="text-xl md:text-2xl font-black">{item.value}</p>
                 <p className="text-xs text-blue-100/80 uppercase tracking-widest">{item.label}</p>
               </div>
             ))}
@@ -116,28 +116,28 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
         {tracks.map((track) => (
           <button
             key={track.title}
             onClick={track.action}
-            className={`text-left p-6 rounded-2xl bg-gradient-to-br ${track.color} text-white shadow-lg hover:scale-[1.01] transition-transform`}
+            className={`text-left p-4 md:p-6 rounded-xl md:rounded-2xl bg-gradient-to-br ${track.color} text-white shadow-lg hover:scale-[1.01] transition-transform`}
           >
-            <track.icon className="w-6 h-6 mb-4" />
-            <h3 className="font-black text-lg">{track.title}</h3>
-            <p className="text-sm text-white/80">{track.subtitle}</p>
+            <track.icon className="w-5 h-5 md:w-6 md:h-6 mb-3 md:mb-4" />
+            <h3 className="font-black text-base md:text-lg">{track.title}</h3>
+            <p className="text-xs md:text-sm text-white/80">{track.subtitle}</p>
           </button>
         ))}
       </div>
 
-      <div className="bg-white dark:bg-slate-900/60 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 md:p-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Trending Materials</h2>
+      <div className="bg-white dark:bg-slate-900/60 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-slate-800 p-4 md:p-6 lg:p-8">
+        <div className="flex items-center justify-between mb-4 md:mb-6">
+          <h2 className="text-base md:text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Trending Materials</h2>
           <button
             onClick={() => setActiveTab('hub')}
-            className="text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-widest flex items-center gap-2"
+            className="text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-widest flex items-center gap-1 md:gap-2"
           >
-            Explore all <ArrowRight className="w-4 h-4" />
+            Explore all <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
           </button>
         </div>
 
@@ -161,22 +161,20 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 p-6 bg-white dark:bg-slate-900/60">
-          <h4 className="text-sm font-black uppercase tracking-widest text-slate-500 mb-3">Daily Momentum</h4>
-          <p className="text-3xl font-black text-slate-900 dark:text-white">+24%</p>
-          <p className="text-sm text-slate-500 mt-1">You are ahead compared to last week.</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+        <div className="rounded-xl md:rounded-2xl border border-slate-200 dark:border-slate-800 p-4 md:p-6 bg-white dark:bg-slate-900/60">
+          <h4 className="text-xs md:text-sm font-black uppercase tracking-widest text-slate-500 mb-2 md:mb-3">Daily Momentum</h4>
+          <p className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white">+24%</p>
+          <p className="text-xs md:text-sm text-slate-500 mt-1">You are ahead compared to last week.</p>
         </div>
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 p-6 bg-white dark:bg-slate-900/60">
-          <h4 className="text-sm font-black uppercase tracking-widest text-slate-500 mb-3">Achievement</h4>
-          <p className="flex items-center gap-2 text-lg font-black text-slate-900 dark:text-white">
-            <Trophy className="w-5 h-5 text-amber-500" /> Consistency Streak
+        <div className="rounded-xl md:rounded-2xl border border-slate-200 dark:border-slate-800 p-4 md:p-6 bg-white dark:bg-slate-900/60">
+          <h4 className="text-xs md:text-sm font-black uppercase tracking-widest text-slate-500 mb-2 md:mb-3">Achievement</h4>
+          <p className="flex items-center gap-2 text-base md:text-lg font-black text-slate-900 dark:text-white">
+            <Trophy className="w-4 h-4 md:w-5 md:h-5 text-amber-500" /> Consistency Streak
           </p>
-          <p className="text-sm text-slate-500 mt-1">Keep your learning streak active this week.</p>
+          <p className="text-xs md:text-sm text-slate-500 mt-1">Keep your learning streak active this week.</p>
         </div>
       </div>
-
-      <Testimonials />
     </div>
   )
 }
