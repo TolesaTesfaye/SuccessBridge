@@ -98,12 +98,33 @@ export const Footer: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Copyright Section - Moved to bottom with more separation */}
-                <div className="pt-5 md:pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-4 text-[9px] md:text-xs font-bold text-slate-400 dark:text-slate-500 tracking-wide md:tracking-widest uppercase">
-                    <p className="text-center md:text-left">© 2024 SUCCESSBRIDGE. ARCHITECTING FUTURES.</p>
-                    <div className="flex gap-3 md:gap-8 text-center">
-                        <span className="hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer transition-colors tracking-[0.1em] md:tracking-[0.2em]">ET-TECH STACK</span>
-                        <span className="hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer transition-colors tracking-[0.1em] md:tracking-[0.2em]">V1.0.4-LATEST</span>
+                {/* Copyright Section with Support Info */}
+                <div className="pt-5 md:pt-8 border-t border-slate-200 dark:border-slate-800">
+                    {/* Support Info - Horizontal Layout */}
+                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-8 mb-4 md:mb-5">
+                        <a href="mailto:support@successbridge.edu.et" className="flex items-center gap-2 group">
+                            <Mail className="w-4 h-4 text-emerald-600 dark:text-emerald-500" />
+                            <div>
+                                <p className="text-[9px] md:text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase tracking-wider">Email Support</p>
+                                <p className="text-xs md:text-sm text-slate-700 dark:text-slate-300 font-medium group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">support@successbridge.edu.et</p>
+                            </div>
+                        </a>
+                        <a href="tel:+251900000000" className="flex items-center gap-2 group">
+                            <Phone className="w-4 h-4 text-blue-600 dark:text-blue-500" />
+                            <div>
+                                <p className="text-[9px] md:text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase tracking-wider">Phone Line</p>
+                                <p className="text-xs md:text-sm text-slate-700 dark:text-slate-300 font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">+251 900 000 000</p>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    {/* Copyright */}
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-2 md:gap-4 text-[9px] md:text-xs font-bold text-slate-400 dark:text-slate-500 tracking-wide md:tracking-widest uppercase">
+                        <p className="text-center md:text-left">© 2024 SUCCESSBRIDGE. ARCHITECTING FUTURES.</p>
+                        <div className="flex gap-3 md:gap-8 text-center">
+                            <span className="hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer transition-colors tracking-[0.1em] md:tracking-[0.2em]">ET-TECH STACK</span>
+                            <span className="hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer transition-colors tracking-[0.1em] md:tracking-[0.2em]">V1.0.4-LATEST</span>
+                        </div>
                     </div>
                 </div>
             </div>

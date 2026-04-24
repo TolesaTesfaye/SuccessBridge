@@ -77,10 +77,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           </div>
 
           <div className="flex items-center gap-2 md:gap-3 pl-2 md:pl-3">
-            <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-sm md:text-lg font-bold shadow-lg shadow-blue-500/20">
+            <div className="w-7 h-7 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-xs md:text-lg font-bold shadow-lg shadow-blue-500/20">
               {user?.name?.charAt(0).toUpperCase()}
             </div>
-            <div className="flex flex-col min-w-0">
+            <div className="hidden sm:flex flex-col min-w-0">
               <h3 className="text-xs md:text-sm font-bold text-slate-900 dark:text-white truncate tracking-tight">
                 {(() => {
                   const nameParts = user?.name?.split(' ') || [];
