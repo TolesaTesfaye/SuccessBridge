@@ -35,7 +35,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f1c] flex flex-col transition-colors duration-300 overflow-hidden h-screen">
       {/* 1. Full-Width Header at the Top */}
-      <header className="h-12 md:h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-2 md:px-4 lg:px-6 flex-shrink-0 z-40 transition-colors duration-300 shadow-sm">
+      <header className="h-12 md:h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-2 md:px-3 flex-shrink-0 z-40 transition-colors duration-300 shadow-sm">
         <div className="flex items-center gap-2 md:gap-4">
           <button
             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
@@ -93,13 +93,14 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 pl-2 md:pl-3 border-l border-slate-100 dark:border-white/5">
+          <div className="flex items-center gap-1 pl-2 md:pl-3 border-l border-slate-100 dark:border-white/5">
             <button
               onClick={handleLogout}
-              className="group flex items-center gap-1 md:gap-1.5 px-1.5 md:px-3 py-1 md:py-2 bg-rose-500/5 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg md:rounded-xl transition-all duration-300 font-bold text-[8px] md:text-[10px] uppercase tracking-wider border border-rose-500/20 hover:border-rose-500 shadow-sm hover:shadow-rose-500/25"
+              className="group flex items-center gap-1.5 px-2 md:px-3 py-1.5 md:py-2 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg transition-all duration-300 font-semibold text-xs uppercase tracking-wide border border-rose-500/20 hover:border-rose-500"
+              title="Sign Out"
             >
-              <LogOut className="w-3 h-3 md:w-3.5 md:h-3.5 transition-transform group-hover:rotate-12" />
-              <span className="hidden sm:inline">Sign Out</span>
+              <LogOut className="w-4 h-4 transition-transform group-hover:rotate-12" />
+              <span className="hidden md:inline">Sign Out</span>
             </button>
           </div>
         </div>
@@ -128,9 +129,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </div>
 
         <main className="flex-1 overflow-y-auto custom-scrollbar w-full">
-          <div
-            className={`w-full ${noPadding ? "p-0 space-y-0" : "p-6 lg:p-8 space-y-0"}`}
-          >
+          <div className="w-full">
             {children}
           </div>
 

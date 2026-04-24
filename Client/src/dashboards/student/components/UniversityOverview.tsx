@@ -118,12 +118,12 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
       </div>
 
       {/* Action Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-4 md:px-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {tracks.map((track) => (
           <button
             key={track.title}
             onClick={track.action}
-            className={`text-left p-5 rounded-xl bg-gradient-to-br ${track.color} text-white shadow-lg hover:shadow-xl active:scale-95 transition-all`}
+            className={`text-left p-5 bg-gradient-to-br ${track.color} text-white shadow-lg hover:shadow-xl active:scale-95 transition-all`}
           >
             <track.icon className="w-6 h-6 mb-3" />
             <h3 className="font-bold text-lg mb-1">{track.title}</h3>
@@ -165,13 +165,13 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
       </div>
 
       {/* Progress Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 md:px-6">
-        <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-5 bg-white dark:bg-slate-900/60 shadow-sm">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="border-t border-b border-slate-200 dark:border-slate-800 p-5 bg-white dark:bg-slate-900/60">
           <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Daily Momentum</h4>
           <p className="text-3xl font-black text-slate-900 dark:text-white">+24%</p>
           <p className="text-sm text-slate-500 mt-1">You are ahead compared to last week.</p>
         </div>
-        <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-5 bg-white dark:bg-slate-900/60 shadow-sm">
+        <div className="border-t border-b border-slate-200 dark:border-slate-800 p-5 bg-white dark:bg-slate-900/60">
           <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Achievement</h4>
           <p className="flex items-center gap-2 text-lg font-black text-slate-900 dark:text-white">
             <Trophy className="w-5 h-5 text-amber-500" /> Consistency Streak
