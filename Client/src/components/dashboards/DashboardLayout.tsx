@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useAuthStore } from "@store/authStore";
+import { useThemeStore } from "@store/themeStore";
 import { useNavigate } from "react-router-dom";
-import { ThemeToggle } from "@components/common/ThemeToggle";
 import { Footer } from "@components/common/Footer";
-import { Menu, LogOut } from "lucide-react";
+import { Menu } from "lucide-react";
 import { AppLogo } from "@components/common/AppLogo";
 import { Sidebar } from "./Sidebar";
 
@@ -37,6 +37,16 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       {/* 1. Full-Width Header at the Top */}
       <header className="h-12 md:h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-2 md:px-3 flex-shrink-0 z-40 transition-colors duration-300 shadow-sm">
         <div className="flex items-center gap-2 md:gap-4">
+          {/* Logo - Mobile First */}
+          <div
+            className="flex lg:hidden items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => navigate("/")}
+            title="Go to Home"
+          >
+            <AppLogo size="sm" />
+          </div>
+
+          {/* Collapse Button - Desktop */}
           <button
             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
             className="hidden lg:flex p-1.5 md:p-2.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg md:rounded-xl transition-all hover:scale-110 active:scale-95 border border-transparent hover:border-slate-200 dark:hover:border-white/10"
@@ -47,22 +57,24 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <Menu className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
           </button>
 
+          {/* Menu Button - Mobile */}
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="lg:hidden p-1.5 md:p-2.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg md:rounded-xl transition-all active:scale-95"
+            className="lg:hidden p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all active:scale-95"
           >
-            <Menu className="w-5 h-5 md:w-6 md:h-6" />
+            <Menu className="w-4 h-4" />
           </button>
 
+          {/* Logo - Desktop */}
           <div
-            className="hidden sm:flex items-center gap-2 md:gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+            className="hidden lg:flex items-center gap-2 md:gap-3 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => navigate("/")}
             title="Go to Home"
           >
             <AppLogo size="md" />
           </div>
 
-          {/* Navigation Items - Medium position between left and center */}
+          {/* Navigation Items */}
           {headerNav && (
             <div className="flex items-center gap-1 ml-2 md:ml-4 lg:absolute lg:left-1/2 lg:-translate-x-1/2">
               {headerNav}
@@ -71,36 +83,40 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </div>
 
         <div className="flex items-center gap-1 md:gap-2">
-
-          <div className="flex items-center gap-2 pr-2 md:pr-3 border-r dark:border-white/5">
-            <ThemeToggle />
+          {/* Theme Toggle */}
+          <div className="flex items-center pr-1 md:pr-2 border-r dark:border-white/5">
+            <button
+              onClick={useThemeStore.getState().toggleTheme}
+              className="p-1 md:p-1.5 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors active:scale-95"
+              aria-label="Toggle theme"
+            >
+              {useThemeStore.getState().isDark ? (
+                <svg className="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l-2.12-2.12a1 1 0 00-1.414 0l-.707.707a1 1 0 000 1.414l2.12 2.12a1 1 0 001.414 0l.707-.707a1 1 0 000-1.414zm2.12-10.607a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM9 4a1 1 0 100-2 1 1 0 000 2zm6.464 12.05l-2.12-2.12a1 1 0 10-1.414 1.414l2.12 2.12a1 1 0 001.414-1.414l-.707-.707a1 1 0 000-1.414zM9 16a1 1 0 100 2 1 1 0 000-2z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg className="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                </svg>
+              )}
+            </button>
           </div>
 
-          <div className="flex items-center gap-2 md:gap-3 pl-2 md:pl-3">
-            <div className="w-7 h-7 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-xs md:text-lg font-bold shadow-lg shadow-blue-500/20">
-              {user?.name?.charAt(0).toUpperCase()}
-            </div>
-            <div className="hidden sm:flex flex-col min-w-0">
-              <h3 className="text-xs md:text-sm font-bold text-slate-900 dark:text-white truncate tracking-tight">
-                {(() => {
-                  const nameParts = user?.name?.split(' ') || [];
-                  if (nameParts.length >= 2) {
-                    return `${nameParts[0]}.${nameParts[1].charAt(0)}`;
-                  }
-                  return user?.name;
-                })()}
-              </h3>
+          {/* Profile */}
+          <div className="flex items-center gap-1 md:gap-2 pl-1 md:pl-2">
+            <div className="w-6 h-6 md:w-8 md:h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px] md:text-sm font-bold shadow-lg shadow-blue-500/20">
+              {user?.name?.split(' ').map(n => n.charAt(0).toUpperCase()).slice(0, 2).join('')}
             </div>
           </div>
 
-          <div className="flex items-center gap-1 pl-2 md:pl-3 border-l border-slate-100 dark:border-white/5">
+          {/* Logout */}
+          <div className="flex items-center pl-1 md:pl-2 border-l border-slate-100 dark:border-white/5">
             <button
               onClick={handleLogout}
-              className="group flex items-center gap-1.5 px-2 md:px-3 py-1.5 md:py-2 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg transition-all duration-300 font-semibold text-xs uppercase tracking-wide border border-rose-500/20 hover:border-rose-500"
+              className="px-2 md:px-3 py-1 md:py-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg transition-all duration-300 font-semibold text-[10px] md:text-xs uppercase tracking-wide border border-rose-500/20 hover:border-rose-500"
               title="Sign Out"
             >
-              <LogOut className="w-4 h-4 transition-transform group-hover:rotate-12" />
-              <span className="hidden md:inline">Sign Out</span>
+              <span>Logout</span>
             </button>
           </div>
         </div>

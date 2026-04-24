@@ -194,9 +194,9 @@ export const UniversityDashboard: React.FC = () => {
       headerNav={
         <div className="flex items-center gap-0.5 md:gap-1">
           {[
-            { id: "home", label: "Home", icon: Home },
-            { id: "learning", label: "Learning Center", icon: BookOpen },
-            { id: "hub", label: "Resource Hub", icon: Library },
+            { id: "home", label: "Home", shortLabel: "Home", icon: Home },
+            { id: "learning", label: "Learning Center", shortLabel: "Learning", icon: BookOpen },
+            { id: "hub", label: "Resource Hub", shortLabel: "Resource", icon: Library },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -208,7 +208,8 @@ export const UniversityDashboard: React.FC = () => {
               }`}
             >
               <tab.icon className="hidden md:inline-block w-3.5 h-3.5" />
-              <span>{tab.label}</span>
+              <span className="md:hidden">{tab.shortLabel}</span>
+              <span className="hidden md:inline">{tab.label}</span>
             </button>
           ))}
         </div>
