@@ -72,7 +72,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
         <div className="flex items-center gap-1 md:gap-2">
 
-          <div className="hidden sm:flex items-center gap-2 pr-2 md:pr-3 border-r dark:border-white/5">
+          <div className="flex items-center gap-2 pr-2 md:pr-3 border-r dark:border-white/5">
             <ThemeToggle />
           </div>
 
