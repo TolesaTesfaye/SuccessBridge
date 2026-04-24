@@ -1,5 +1,6 @@
 import React from 'react'
-import { Facebook, Twitter, Instagram, Mail, Phone, Github } from 'lucide-react'
+import { Mail, Phone } from 'lucide-react'
+import { FaFacebook, FaInstagram, FaTelegram, FaTiktok, FaYoutube, FaGithub, FaLinkedin } from 'react-icons/fa'
 
 export const Footer: React.FC = () => {
     return (
@@ -19,52 +20,61 @@ export const Footer: React.FC = () => {
                             Empowering Ethiopian students with world-class digital learning resources,
                             bridging the gap between secondary and higher education.
                         </p>
-                        <div className="flex items-center gap-2 md:gap-3 pt-2">
-                            <a href="#" className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-blue-600 dark:hover:bg-blue-600 hover:text-white transition-all text-slate-500 dark:text-slate-400 active:scale-95">
-                                <Facebook className="w-4 h-4 md:w-6 md:h-6" />
+                        <div className="flex items-center gap-2 md:gap-3 pt-2 flex-wrap">
+                            <a href="https://t.me/tolinaaftt" target="_blank" rel="noopener noreferrer" className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-blue-500 dark:hover:bg-blue-500 hover:text-white transition-all text-slate-500 dark:text-slate-400 active:scale-95" title="Telegram Channel">
+                                <FaTelegram className="w-4 h-4 md:w-6 md:h-6" />
                             </a>
-                            <a href="#" className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-blue-400 dark:hover:bg-blue-400 hover:text-white transition-all text-slate-500 dark:text-slate-400 active:scale-95">
-                                <Twitter className="w-4 h-4 md:w-6 md:h-6" />
+                            <a href="https://www.tiktok.com/@tolinaaftt" target="_blank" rel="noopener noreferrer" className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-black dark:hover:bg-black hover:text-white transition-all text-slate-500 dark:text-slate-400 active:scale-95" title="TikTok">
+                                <FaTiktok className="w-4 h-4 md:w-6 md:h-6" />
                             </a>
-                            <a href="#" className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-pink-600 dark:hover:bg-pink-600 hover:text-white transition-all text-slate-500 dark:text-slate-400 active:scale-95">
-                                <Instagram className="w-4 h-4 md:w-6 md:h-6" />
+                            <a href="https://www.instagram.com/tolman_tube" target="_blank" rel="noopener noreferrer" className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-pink-600 dark:hover:bg-pink-600 hover:text-white transition-all text-slate-500 dark:text-slate-400 active:scale-95" title="Instagram">
+                                <FaInstagram className="w-4 h-4 md:w-6 md:h-6" />
                             </a>
-                            <a href="#" className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-700 dark:hover:bg-slate-700 hover:text-white transition-all text-slate-500 dark:text-slate-400 active:scale-95">
-                                <Github className="w-4 h-4 md:w-6 md:h-6" />
+                            <a href="https://www.facebook.com/profile.php?id=61555804154730" target="_blank" rel="noopener noreferrer" className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-blue-600 dark:hover:bg-blue-600 hover:text-white transition-all text-slate-500 dark:text-slate-400 active:scale-95" title="Facebook">
+                                <FaFacebook className="w-4 h-4 md:w-6 md:h-6" />
+                            </a>
+                            <a href="https://www.youtube.com/@tolinaaf" target="_blank" rel="noopener noreferrer" className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-red-600 dark:hover:bg-red-600 hover:text-white transition-all text-slate-500 dark:text-slate-400 active:scale-95" title="YouTube">
+                                <FaYoutube className="w-4 h-4 md:w-6 md:h-6" />
+                            </a>
+                            <a href="https://github.com/TolesaTesfaye" target="_blank" rel="noopener noreferrer" className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-700 dark:hover:bg-slate-700 hover:text-white transition-all text-slate-500 dark:text-slate-400 active:scale-95" title="GitHub">
+                                <FaGithub className="w-4 h-4 md:w-6 md:h-6" />
+                            </a>
+                            <a href="https://www.linkedin.com/in/tolesa-tesfaye-9057a538b/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-blue-700 dark:hover:bg-blue-700 hover:text-white transition-all text-slate-500 dark:text-slate-400 active:scale-95" title="LinkedIn">
+                                <FaLinkedin className="w-4 h-4 md:w-6 md:h-6" />
                             </a>
                         </div>
                     </div>
 
-                    {/* Navigation Content - Stack on mobile, 2 columns on desktop */}
-                    <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+                    {/* Navigation Content - 2 columns on all screens */}
+                    <div className="lg:col-span-3 grid grid-cols-2 gap-4 md:gap-10">
 
                     {/* Academic Paths */}
                     <div className="space-y-2 md:space-y-4">
-                        <h4 className="text-slate-900 dark:text-white font-bold text-sm md:text-lg mb-2 md:mb-4 flex items-center gap-2">
-                            <div className="w-1 h-4 md:h-6 bg-blue-600 dark:bg-blue-500 rounded-full"></div>
+                        <h4 className="text-slate-900 dark:text-white font-bold text-xs md:text-lg mb-2 md:mb-4 flex items-center gap-1 md:gap-2">
+                            <div className="w-1 h-3 md:h-6 bg-blue-600 dark:bg-blue-500 rounded-full"></div>
                             Learning Path
                         </h4>
-                        <ul className="space-y-1.5 md:space-y-3 text-xs md:text-base font-medium text-slate-600 dark:text-slate-300">
-                            <li><a href="/highschool/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors block py-1 md:py-1 active:text-blue-700">High School Hub</a></li>
-                            <li><a href="/university/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors block py-1 md:py-1 active:text-blue-700">Freshman Common Courses</a></li>
-                            <li><a href="/university/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors block py-1 md:py-1 active:text-blue-700">Digital Modules</a></li>
-                            <li><a href="/university/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors block py-1 md:py-1 active:text-blue-700">Past Entrance Exams</a></li>
-                            <li><a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors block py-1 md:py-1 active:text-blue-700">Interactive Quizzes</a></li>
+                        <ul className="space-y-1 md:space-y-3 text-[10px] md:text-base font-medium text-slate-600 dark:text-slate-300">
+                            <li><a href="/highschool/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors block py-0.5 md:py-1 active:text-blue-700">High School Hub</a></li>
+                            <li><a href="/university/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors block py-0.5 md:py-1 active:text-blue-700">Freshman Common Courses</a></li>
+                            <li><a href="/university/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors block py-0.5 md:py-1 active:text-blue-700">Digital Modules</a></li>
+                            <li><a href="/university/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors block py-0.5 md:py-1 active:text-blue-700">Past Entrance Exams</a></li>
+                            <li><a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors block py-0.5 md:py-1 active:text-blue-700">Interactive Quizzes</a></li>
                         </ul>
                     </div>
 
                     {/* Quick Links */}
                     <div className="space-y-2 md:space-y-4">
-                        <h4 className="text-slate-900 dark:text-white font-bold text-sm md:text-lg mb-2 md:mb-4 flex items-center gap-2">
-                            <div className="w-1 h-4 md:h-6 bg-indigo-600 dark:bg-indigo-500 rounded-full"></div>
+                        <h4 className="text-slate-900 dark:text-white font-bold text-xs md:text-lg mb-2 md:mb-4 flex items-center gap-1 md:gap-2">
+                            <div className="w-1 h-3 md:h-6 bg-indigo-600 dark:bg-indigo-500 rounded-full"></div>
                             Resources
                         </h4>
-                        <ul className="space-y-1.5 md:space-y-3 text-xs md:text-base font-medium text-slate-600 dark:text-slate-300">
-                            <li><a href="/about" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block py-1 md:py-1 active:text-indigo-700">About Our Mission</a></li>
-                            <li><a href="/contact" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block py-1 md:py-1 active:text-indigo-700">Support Center</a></li>
-                            <li><a href="/privacy-policy" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block py-1 md:py-1 active:text-indigo-700">Privacy Policy</a></li>
-                            <li><a href="/terms-of-service" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block py-1 md:py-1 active:text-indigo-700">Terms of Service</a></li>
-                            <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block py-1 md:py-1 active:text-indigo-700">API Documentation</a></li>
+                        <ul className="space-y-1 md:space-y-3 text-[10px] md:text-base font-medium text-slate-600 dark:text-slate-300">
+                            <li><a href="/about" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block py-0.5 md:py-1 active:text-indigo-700">About Our Mission</a></li>
+                            <li><a href="/contact" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block py-0.5 md:py-1 active:text-indigo-700">Support Center</a></li>
+                            <li><a href="/privacy-policy" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block py-0.5 md:py-1 active:text-indigo-700">Privacy Policy</a></li>
+                            <li><a href="/terms-of-service" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block py-0.5 md:py-1 active:text-indigo-700">Terms of Service</a></li>
+                            <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block py-0.5 md:py-1 active:text-indigo-700">API Documentation</a></li>
                         </ul>
                     </div>
                     </div>
