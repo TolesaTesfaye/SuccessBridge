@@ -35,8 +35,8 @@ export const Footer: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Navigation Content - 75% width (3 columns) */}
-                    <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
+                    {/* Navigation Content - Stack on mobile, 2 columns on desktop */}
+                    <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
 
                     {/* Academic Paths */}
                     <div className="space-y-2 md:space-y-4">
@@ -66,34 +66,6 @@ export const Footer: React.FC = () => {
                             <li><a href="/terms-of-service" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block py-1 md:py-1 active:text-indigo-700">Terms of Service</a></li>
                             <li><a href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block py-1 md:py-1 active:text-indigo-700">API Documentation</a></li>
                         </ul>
-                    </div>
-
-                    {/* Contact & Support */}
-                    <div className="space-y-2 md:space-y-4">
-                        <h4 className="text-slate-900 dark:text-white font-bold text-sm md:text-lg mb-2 md:mb-4 flex items-center gap-2">
-                            <div className="w-1 h-4 md:h-6 bg-emerald-600 dark:bg-emerald-500 rounded-full"></div>
-                            Support
-                        </h4>
-                        <div className="space-y-2.5 md:space-y-4">
-                            <a href="mailto:support@successbridge.edu.et" className="flex items-start gap-2 md:gap-3 group active:scale-[0.98] transition-transform">
-                                <div className="w-9 h-9 md:w-12 md:h-12 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-emerald-600 dark:text-emerald-500 flex-shrink-0 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-900/20 transition-colors">
-                                    <Mail className="w-4 h-4 md:w-6 md:h-6" />
-                                </div>
-                                <div>
-                                    <p className="text-[10px] md:text-sm text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-0.5 md:mb-1">Email Support</p>
-                                    <p className="text-xs md:text-base text-slate-700 dark:text-slate-300 font-medium break-all">support@successbridge.edu.et</p>
-                                </div>
-                            </a>
-                            <a href="tel:+251900000000" className="flex items-start gap-2 md:gap-3 group active:scale-[0.98] transition-transform">
-                                <div className="w-9 h-9 md:w-12 md:h-12 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-blue-600 dark:text-blue-500 flex-shrink-0 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
-                                    <Phone className="w-4 h-4 md:w-6 md:h-6" />
-                                </div>
-                                <div>
-                                    <p className="text-[10px] md:text-sm text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider mb-0.5 md:mb-1">Phone Line</p>
-                                    <p className="text-xs md:text-base text-slate-700 dark:text-slate-300 font-medium">+251 900 000 000</p>
-                                </div>
-                            </a>
-                        </div>
                     </div>
                     </div>
                 </div>
