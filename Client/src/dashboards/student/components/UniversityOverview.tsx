@@ -71,58 +71,92 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
   }
 
   return (
-    <div className="space-y-4 md:space-y-6 pb-8 md:pb-16 animate-in fade-in duration-700">
-      {/* Quick Stats - Mobile Optimized */}
-      <div className="grid grid-cols-2 gap-2 md:gap-3">
-        {highlights.map((item) => (
-          <div key={item.label} className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 md:p-4 shadow-sm">
-            <item.icon className="w-5 h-5 text-blue-600 dark:text-blue-400 mb-2" />
-            <p className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white">{item.value}</p>
-            <p className="text-xs text-slate-600 dark:text-slate-400 uppercase tracking-wide font-semibold">{item.label}</p>
+    <div className="space-y-6 pb-8 animate-in fade-in duration-700">
+      {/* Hero Section - Full Width */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-700 text-white p-6 md:p-8 lg:p-12 shadow-2xl">
+        <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-white/10 blur-3xl" />
+        <div className="absolute -bottom-20 -left-16 w-56 h-56 rounded-full bg-blue-300/20 blur-3xl" />
+
+        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
+          <div>
+            <p className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-xs font-bold uppercase tracking-widest mb-4">
+              <Sparkles className="w-3.5 h-3.5" /> Personalized University Space
+            </p>
+            <h1 className="text-3xl md:text-4xl lg:text-6xl font-black tracking-tight leading-tight">
+              Welcome back,
+              <span className="block text-blue-200">{firstName}.</span>
+            </h1>
+            <p className="mt-4 text-sm md:text-base text-blue-100/90">
+              Your {activeCategory} dashboard is ready with smart recommendations, trending materials, and focused learning tracks.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <button
+                onClick={() => setActiveTab('learning')}
+                className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 rounded-xl font-bold text-xs uppercase tracking-widest transition-colors"
+              >
+                Continue Learning
+              </button>
+              <button
+                onClick={() => setActiveTab('hub')}
+                className="px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl font-bold text-xs uppercase tracking-widest transition-colors"
+              >
+                Open Resource Hub
+              </button>
+            </div>
           </div>
-        ))}
+
+          <div className="grid grid-cols-2 gap-3">
+            {highlights.map((item) => (
+              <div key={item.label} className="bg-white/10 backdrop-blur-sm border border-white/10 rounded-xl p-4">
+                <item.icon className="w-5 h-5 text-blue-200 mb-2" />
+                <p className="text-2xl font-black">{item.value}</p>
+                <p className="text-xs text-blue-100/80 uppercase tracking-widest">{item.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* Action Cards - Mobile First */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      {/* Action Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-4 md:px-6">
         {tracks.map((track) => (
           <button
             key={track.title}
             onClick={track.action}
-            className={`text-left p-4 rounded-xl bg-gradient-to-br ${track.color} text-white shadow-lg hover:shadow-xl active:scale-95 transition-all`}
+            className={`text-left p-5 rounded-xl bg-gradient-to-br ${track.color} text-white shadow-lg hover:shadow-xl active:scale-95 transition-all`}
           >
             <track.icon className="w-6 h-6 mb-3" />
-            <h3 className="font-bold text-base mb-1">{track.title}</h3>
-            <p className="text-xs text-white/90">{track.subtitle}</p>
+            <h3 className="font-bold text-lg mb-1">{track.title}</h3>
+            <p className="text-sm text-white/90">{track.subtitle}</p>
           </button>
         ))}
       </div>
 
       {/* Trending Materials */}
-      <div className="bg-white dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-800 p-4 shadow-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Trending Materials</h2>
+      <div className="bg-white dark:bg-slate-900/60 border-t border-b border-slate-200 dark:border-slate-800 p-4 md:p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Trending Materials</h2>
           <button
             onClick={() => setActiveTab('hub')}
-            className="text-blue-600 dark:text-blue-400 text-xs font-semibold flex items-center gap-1 hover:gap-2 transition-all"
+            className="text-blue-600 dark:text-blue-400 text-sm font-semibold flex items-center gap-1 hover:gap-2 transition-all"
           >
             View All <ArrowRight className="w-4 h-4" />
           </button>
         </div>
 
         {homeLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[1, 2, 3].map((n) => (
-              <div key={n} className="h-[320px] rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
+              <div key={n} className="h-[350px] rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
             ))}
           </div>
         ) : homeResources.length === 0 ? (
-          <div className="text-center py-12 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
-            <BookOpen className="w-8 h-8 mx-auto text-slate-400 mb-2" />
-            <p className="text-slate-500 text-sm">No resources yet. New content will appear here.</p>
+          <div className="text-center py-16 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+            <BookOpen className="w-10 h-10 mx-auto text-slate-400 mb-3" />
+            <p className="text-slate-500">No resources yet. New content will appear here.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {homeResources.slice(0, 3).map((resource: any) => (
               <ResourceCard key={resource.id} resource={resource} />
             ))}
@@ -131,18 +165,18 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
       </div>
 
       {/* Progress Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-white dark:bg-slate-900/60 shadow-sm">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 md:px-6">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-5 bg-white dark:bg-slate-900/60 shadow-sm">
           <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Daily Momentum</h4>
           <p className="text-3xl font-black text-slate-900 dark:text-white">+24%</p>
-          <p className="text-xs text-slate-500 mt-1">You are ahead compared to last week.</p>
+          <p className="text-sm text-slate-500 mt-1">You are ahead compared to last week.</p>
         </div>
-        <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-4 bg-white dark:bg-slate-900/60 shadow-sm">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-800 p-5 bg-white dark:bg-slate-900/60 shadow-sm">
           <h4 className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Achievement</h4>
           <p className="flex items-center gap-2 text-lg font-black text-slate-900 dark:text-white">
             <Trophy className="w-5 h-5 text-amber-500" /> Consistency Streak
           </p>
-          <p className="text-xs text-slate-500 mt-1">Keep your learning streak active this week.</p>
+          <p className="text-sm text-slate-500 mt-1">Keep your learning streak active this week.</p>
         </div>
       </div>
     </div>

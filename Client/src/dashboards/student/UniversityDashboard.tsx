@@ -215,7 +215,7 @@ export const UniversityDashboard: React.FC = () => {
       }
     >
       {activeTab === "home" ? (
-        <div className="max-w-7xl mx-auto p-6 lg:p-8 space-y-10">
+        <div className="space-y-10">
           <UniversityOverview
             user={user}
             activeCategory={activeCategory}
