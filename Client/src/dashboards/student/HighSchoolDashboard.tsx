@@ -155,7 +155,7 @@ export const HighSchoolDashboard: React.FC = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-2 md:px-4 py-1.5 md:py-2 text-[7px] md:text-[10px] font-black uppercase tracking-wider md:tracking-widest transition-all flex items-center gap-1 md:gap-2 rounded-lg md:rounded-xl ${
+              className={`px-1.5 md:px-4 py-1 md:py-2 text-[7px] md:text-[10px] font-black uppercase tracking-wider md:tracking-widest transition-all flex items-center gap-1 md:gap-2 rounded-lg md:rounded-xl ${
                 activeTab === tab.id
                   ? "bg-blue-600 text-white shadow-lg shadow-blue-500/25 scale-105"
                   : "text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"

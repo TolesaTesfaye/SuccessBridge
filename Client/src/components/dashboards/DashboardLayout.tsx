@@ -113,7 +113,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           <div className="flex items-center pl-1 md:pl-2 border-l border-slate-100 dark:border-white/5">
             <button
               onClick={handleLogout}
-              className="px-2 md:px-3 py-1 md:py-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg transition-all duration-300 font-semibold text-[10px] md:text-xs uppercase tracking-wide border border-rose-500/20 hover:border-rose-500"
+              className="px-1.5 md:px-3 py-0.5 md:py-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg transition-all duration-300 font-semibold text-[8px] md:text-xs uppercase tracking-wide border border-rose-500/20 hover:border-rose-500"
               title="Sign Out"
             >
               <span>Logout</span>

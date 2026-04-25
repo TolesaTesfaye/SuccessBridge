@@ -101,11 +101,11 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     // Show first-page preview for PDFs
     if (lowerUrl.endsWith(".pdf")) {
       return (
-        <div className="mb-1.5 md:mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
           <iframe
             src={`${fullUrl}#page=1&view=fitH`}
             title={resource.title}
-            className="w-full h-24 md:h-20 lg:h-32 bg-white pointer-events-none"
+            className="w-full h-16 md:h-20 lg:h-32 bg-white pointer-events-none"
             scrolling="no"
             loading="lazy"
           />
@@ -122,11 +122,11 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       lowerUrl.endsWith(".webp")
     ) {
       return (
-        <div className="mb-1.5 md:mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900">
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900">
           <img
             src={fullUrl}
             alt={resource.title}
-            className="w-full h-24 md:h-20 lg:h-32 object-cover"
+            className="w-full h-16 md:h-20 lg:h-32 object-cover"
             loading="lazy"
           />
         </div>
@@ -136,10 +136,10 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     // Simple thumbnail-style preview for videos
     if (resource.type === "video") {
       return (
-        <div className="mb-1.5 md:mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-black/80">
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-black/80">
           <video
             src={fullUrl}
-            className="w-full h-24 md:h-20 lg:h-32 object-cover pointer-events-none"
+            className="w-full h-16 md:h-20 lg:h-32 object-cover pointer-events-none"
             controls={false}
             muted
             playsInline
@@ -312,25 +312,25 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       )}
       {/* Card Header - Type Badge */}
       <div
-        className={`px-2 py-1.5 md:px-1.5 md:py-0.5 flex items-center gap-1.5 md:gap-1 border-b border-slate-100 dark:border-slate-700/50 ${getTypeColor(resource.type)} bg-opacity-50`}
+        className={`px-2 py-1 md:px-1.5 md:py-0.5 flex items-center gap-1 border-b border-slate-100 dark:border-slate-700/50 ${getTypeColor(resource.type)} bg-opacity-50`}
       >
         {getResourceIcon(resource.type)}
-        <span className="text-[9px] md:text-[8px] font-bold md:font-semibold uppercase tracking-wider">
+        <span className="text-[8px] md:text-[8px] font-bold md:font-semibold uppercase tracking-wider">
           {getTypeLabel(resource.type)}
         </span>
       </div>
 
       {/* Card Body */}
-      <div className="px-2 py-2 md:px-1.5 md:pt-1 md:pb-1 flex-1 flex flex-col gap-1.5 md:gap-1">
+      <div className="px-2 py-1.5 md:px-1.5 md:pt-1 md:pb-1 flex-1 flex flex-col gap-1">
         {renderThumbnail()}
-        <h4 className="font-bold md:font-semibold text-slate-900 dark:text-white leading-tight text-xs md:text-[11px] line-clamp-2">
+        <h4 className="font-bold md:font-semibold text-slate-900 dark:text-white leading-tight text-[10px] md:text-[11px] line-clamp-2">
           {resource.title}
         </h4>
         {resource.description && (
           <div className="flex-1 flex flex-col gap-0.5">
             <p
-              className={`text-[11px] md:text-[10px] text-slate-600 dark:text-slate-400 leading-snug ${
-                isDescriptionExpanded ? "" : "line-clamp-2"
+              className={`text-[9px] md:text-[10px] text-slate-600 dark:text-slate-400 leading-snug ${
+                isDescriptionExpanded ? "" : "line-clamp-1"
               }`}
             >
               {resource.description}
@@ -338,7 +338,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
             <button
               type="button"
               onClick={() => setIsDescriptionExpanded((prev) => !prev)}
-              className="self-start text-[10px] md:text-[9px] font-bold md:font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+              className="self-start text-[8px] md:text-[9px] font-bold md:font-semibold text-blue-600 dark:text-blue-400 hover:underline"
             >
               {isDescriptionExpanded ? "Less" : "More"}
             </button>
@@ -347,24 +347,24 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       </div>
 
       {/* Card Footer - Actions */}
-      <div className="px-2 pb-2 md:px-1.5 md:pb-1.5 flex flex-col gap-1.5 md:gap-1">
-        <div className="flex gap-1.5 md:gap-1">
+      <div className="px-2 pb-1.5 md:px-1.5 md:pb-1.5 flex flex-col gap-1">
+        <div className="flex gap-1">
           <button
             onClick={handleOpen}
             disabled={!resource.fileUrl || isOpening}
-            className="flex-1 flex items-center justify-center gap-1 md:gap-0.5 py-1.5 px-2 md:py-0.5 md:px-1.5 rounded-md md:rounded-md bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-[10px] md:text-[8px] font-bold md:font-semibold transition-all duration-200 active:scale-95"
+            className="flex-1 flex items-center justify-center gap-0.5 py-1 px-1.5 md:py-0.5 md:px-1.5 rounded-md bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-[8px] md:text-[8px] font-bold md:font-semibold transition-all duration-200 active:scale-95"
             title={
               resource.fileUrl ? "Open file in new tab" : "No file available"
             }
           >
             {isOpening ? (
               <>
-                <div className="w-3 h-3 md:w-2 md:h-2 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-2.5 h-2.5 md:w-2 md:h-2 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 <span className="hidden md:inline">Opening...</span>
               </>
             ) : (
               <>
-                <ExternalLink className="w-3 h-3 md:w-2 md:h-2" />
+                <ExternalLink className="w-2.5 h-2.5 md:w-2 md:h-2" />
                 Open
               </>
             )}
@@ -372,17 +372,17 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           <button
             onClick={handleDownload}
             disabled={!resource.fileUrl || isDownloading}
-            className="flex-1 flex items-center justify-center gap-1 md:gap-0.5 py-1.5 px-2 md:py-0.5 md:px-1.5 rounded-md md:rounded-md bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-[10px] md:text-[8px] font-bold md:font-semibold transition-all duration-200 active:scale-95"
+            className="flex-1 flex items-center justify-center gap-0.5 py-1 px-1.5 md:py-0.5 md:px-1.5 rounded-md bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-[8px] md:text-[8px] font-bold md:font-semibold transition-all duration-200 active:scale-95"
             title={resource.fileUrl ? "Download file" : "No file available"}
           >
             {isDownloading ? (
               <>
-                <div className="w-3 h-3 md:w-2 md:h-2 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <div className="w-2.5 h-2.5 md:w-2 md:h-2 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 <span className="hidden md:inline">Downloading...</span>
               </>
             ) : (
               <>
-                <Download className="w-3 h-3 md:w-2 md:h-2" />
+                <Download className="w-2.5 h-2.5 md:w-2 md:h-2" />
                 Download
               </>
             )}
