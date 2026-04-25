@@ -6,6 +6,7 @@ import University from '../models/University.js'
 import Department from '../models/Department.js'
 import Grade from '../models/Grade.js'
 import { AppError } from '../middleware/errorHandler.js'
+import { getB2PublicUrl } from '../middleware/b2Upload.js'
 
 interface ResourceFilters {
   page?: number
@@ -260,7 +261,29 @@ export class ResourceService {
       subjectId = newSubject.id
     }
 
-    const fileUrl = file ? `/uploads/${file.filename}` : providedFileUrl
+    // For B2/S3 uploads, construct the public URL from the file key
+    // For local uploads, file.filename contains just the filename
+    let fileUrl: string
+    if (file) {
+      if ((file as any).key) {
+        // B2/S3 upload - construct public URL from key
+        fileUrl = getB2PublicUrl((file as any).key)
+        console.log('B2 file uploaded with key:', (file as any).key)
+        console.log('B2 public URL:', fileUrl)
+      } else if ((file as any).location) {
+        // B2/S3 upload - use the location if provided
+        fileUrl = (file as any).location
+        console.log('B2 file location:', fileUrl)
+      } else if (file.filename) {
+        // Local upload - construct the URL
+        fileUrl = `/uploads/${file.filename}`
+      } else {
+        console.error('Invalid file object:', file)
+        throw new AppError(400, 'Invalid file upload')
+      }
+    } else {
+      fileUrl = providedFileUrl
+    }
 
     // Resolve University and Department
     let finalUniversityId = null

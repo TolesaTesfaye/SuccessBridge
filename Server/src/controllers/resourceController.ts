@@ -104,10 +104,18 @@ export const downloadResource = async (req: Request, res: Response, next: NextFu
       throw new AppError(404, 'Resource not found')
     }
 
-    // Get the file path - handle both absolute and relative paths
+    const fileUrl = resource.fileUrl
+
+    // Check if it's a B2/S3 URL (starts with https://)
+    if (fileUrl.startsWith('https://') || fileUrl.startsWith('http://')) {
+      // Redirect to the B2 URL directly
+      return res.redirect(fileUrl)
+    }
+
+    // Handle local file download (legacy support)
     const uploadDir = process.env.UPLOAD_DIR || './uploads'
     const resolvedUploadDir = path.resolve(uploadDir)
-    let fileName = resource.fileUrl
+    let fileName = fileUrl
     
     // Remove /uploads/ prefix if present
     if (fileName.startsWith('/uploads/')) {
