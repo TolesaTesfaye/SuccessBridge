@@ -49,7 +49,9 @@ export const FormInput: React.FC<FormInputProps> = ({
             w-full px-4 py-3 rounded-xl 
             bg-white dark:bg-slate-800/50 
             border transition-all duration-300 
-            text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600
+            text-slate-900 dark:text-white 
+            placeholder:text-slate-400 placeholder:opacity-100
+            dark:placeholder:text-slate-500 dark:placeholder:opacity-100
             ${icon ? 'pl-11' : ''}
             ${showPasswordToggle && type === 'password' ? 'pr-11' : ''}
             ${error
