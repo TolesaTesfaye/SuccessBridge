@@ -138,7 +138,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             onClick={() => setIsSidebarOpen(false)}
           />
           <aside
-            className={`absolute inset-y-0 left-0 w-48 bg-white dark:bg-slate-900 transition-transform duration-300 shadow-2xl ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+            className={`absolute inset-y-0 left-0 w-64 md:w-72 bg-white dark:bg-slate-900 transition-transform duration-300 shadow-2xl ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
           >
             <Sidebar onClose={() => setIsSidebarOpen(false)} />
           </aside>

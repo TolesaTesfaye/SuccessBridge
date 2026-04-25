@@ -26,6 +26,7 @@ export const UniversityLearningCenter: React.FC<UniversityLearningCenterProps> =
   const [selectedChapter, setSelectedChapter] = useState<string>('');
   const [selectedTopic, setSelectedTopic] = useState<string>('');
   const [expandedChapters, setExpandedChapters] = useState<Set<string>>(new Set());
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Get current chapter and topic content
   const currentChapter = learningContent?.chapters?.find((ch: any) => ch.id === selectedChapter);
@@ -64,6 +65,8 @@ export const UniversityLearningCenter: React.FC<UniversityLearningCenterProps> =
     const newExpanded = new Set(expandedChapters);
     newExpanded.add(chapter.id);
     setExpandedChapters(newExpanded);
+    // Close sidebar on mobile after selection
+    setIsSidebarOpen(false);
   };
 
   // Navigation logic
@@ -169,9 +172,45 @@ export const UniversityLearningCenter: React.FC<UniversityLearningCenterProps> =
 
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="md:hidden fixed bottom-4 right-4 z-40 bg-[#2563eb] text-white p-4 rounded-full shadow-lg hover:bg-[#1d4ed8] transition-colors"
+        >
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
+        {/* Overlay for mobile */}
+        {isSidebarOpen && (
+          <div
+            className="md:hidden fixed inset-0 bg-black/50 z-40"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
         {/* Left Sidebar - Tutorial Navigation */}
-        <div className="w-48 bg-[#f1f1f1] dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col h-full">
+        <div className={`
+          fixed md:relative inset-y-0 left-0 z-50
+          w-64 md:w-48 bg-[#f1f1f1] dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 
+          flex flex-col h-full
+          transform transition-transform duration-300 ease-in-out
+          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}>
           <div className="flex-1 overflow-y-auto overflow-x-hidden sidebar-scroll" style={{ maxHeight: 'calc(100vh - 48px)', minHeight: '400px' }}>
+            {/* Close button for mobile */}
+            <div className="md:hidden flex justify-end p-2 border-b border-slate-200 dark:border-slate-700">
+              <button
+                onClick={() => setIsSidebarOpen(false)}
+                className="p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
             {/* Tutorial Navigation */}
             <div className="space-y-0">
               {/* Subject Tutorial Header - Always visible and highlighted */}
@@ -229,7 +268,10 @@ export const UniversityLearningCenter: React.FC<UniversityLearningCenterProps> =
                   {expandedChapters.has(chapter.id) && chapter.topics?.map((topic: any) => (
                     <button
                       key={topic.id}
-                      onClick={() => setSelectedTopic(topic.id)}
+                      onClick={() => {
+                        setSelectedTopic(topic.id);
+                        setIsSidebarOpen(false);
+                      }}
                       className={`w-full text-left px-6 py-2 text-xs border-b border-slate-200 dark:border-slate-700 transition-colors ${
                         selectedTopic === topic.id
                           ? 'bg-slate-300 dark:bg-slate-600 text-slate-900 dark:text-white'
@@ -247,7 +289,7 @@ export const UniversityLearningCenter: React.FC<UniversityLearningCenterProps> =
 
         {/* Main Content Area */}
         <div className="flex-1 overflow-y-auto bg-white dark:bg-slate-900">
-          <div className="max-w-4xl mx-auto p-8">
+          <div className="max-w-4xl mx-auto p-4 md:p-8">
             {/* Bookmark Icon */}
             <div className="flex justify-end mb-4">
               <BookmarkIcon className="w-6 h-6 text-slate-400 hover:text-[#2563eb] cursor-pointer transition-colors" />

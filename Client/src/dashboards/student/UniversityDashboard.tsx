@@ -235,28 +235,26 @@ export const UniversityDashboard: React.FC = () => {
           setActiveTab={setActiveTab}
         />
       ) : (
-        <div className="max-w-7xl mx-auto p-6 lg:p-8 space-y-10">
-          <UniversityResourceHub
-            selectedUniversity={selectedUniversity}
-            setSelectedUniversity={setSelectedUniversity}
-            availableUniversities={availableUniversities}
-            selectedStream={selectedStream}
-            setSelectedStream={setSelectedStream}
-            isIntroductory={isIntroductory}
-            selectedDepartment={selectedDepartment}
-            setSelectedDepartment={setSelectedDepartment}
-            selectedResourceType={selectedResourceType}
-            setSelectedResourceType={setSelectedResourceType}
-            resourceTypes={resourceTypes}
-            selectedSubject={selectedSubject}
-            setSelectedSubject={setSelectedSubject}
-            subjects={subjects}
-            loading={loading}
-            resources={resources}
-            activeCategory={activeCategory}
-            onRefresh={fetchResources}
-          />
-        </div>
+        <UniversityResourceHub
+          selectedUniversity={selectedUniversity}
+          setSelectedUniversity={setSelectedUniversity}
+          availableUniversities={availableUniversities}
+          selectedStream={selectedStream}
+          setSelectedStream={setSelectedStream}
+          isIntroductory={isIntroductory}
+          selectedDepartment={selectedDepartment}
+          setSelectedDepartment={setSelectedDepartment}
+          selectedResourceType={selectedResourceType}
+          setSelectedResourceType={setSelectedResourceType}
+          resourceTypes={resourceTypes}
+          selectedSubject={selectedSubject}
+          setSelectedSubject={setSelectedSubject}
+          subjects={subjects}
+          loading={loading}
+          resources={resources}
+          activeCategory={activeCategory}
+          onRefresh={fetchResources}
+        />
       )}
     </DashboardLayout>
   );
