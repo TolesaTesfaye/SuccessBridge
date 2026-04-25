@@ -1,8 +1,6 @@
 import { Router } from 'express'
-import multer from 'multer'
-import path from 'path'
-import fs from 'fs'
 import { authMiddleware, requireRole } from '../middleware/auth.js'
+import { b2Upload as upload } from '../middleware/b2Upload.js'
 import {
   getResources,
   getResourceById,
@@ -22,28 +20,6 @@ const router = Router()
  *   name: Resources
  *   description: Resource management endpoints
  */
-
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = process.env.UPLOAD_DIR || './uploads'
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true })
-    }
-    cb(null, uploadDir)
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
-    cb(null, uniqueSuffix + path.extname(file.originalname))
-  },
-})
-
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: parseInt(process.env.MAX_FILE_SIZE || '52428800'), // 50MB default
-  },
-})
 
 /**
  * @swagger

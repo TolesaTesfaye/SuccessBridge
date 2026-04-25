@@ -352,7 +352,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           <button
             onClick={handleOpen}
             disabled={!resource.fileUrl || isOpening}
-            className="flex-1 flex items-center justify-center gap-0.5 py-1 px-1.5 md:py-0.5 md:px-1.5 rounded-md bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-[8px] md:text-[8px] font-bold md:font-semibold transition-all duration-200 active:scale-95"
+            className="flex-1 flex items-center justify-center gap-0.5 py-0.5 md:py-0.5 md:px-1.5 rounded-md bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-[8px] md:text-[8px] font-bold md:font-semibold transition-all duration-200 active:scale-95"
             title={
               resource.fileUrl ? "Open file in new tab" : "No file available"
             }
@@ -372,7 +372,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           <button
             onClick={handleDownload}
             disabled={!resource.fileUrl || isDownloading}
-            className="flex-1 flex items-center justify-center gap-0.5 py-1 px-1.5 md:py-0.5 md:px-1.5 rounded-md bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-[8px] md:text-[8px] font-bold md:font-semibold transition-all duration-200 active:scale-95"
+            className="flex-1 flex items-center justify-center gap-0.5 py-0.5 md:py-0.5 md:px-1.5 rounded-md bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-[8px] md:text-[8px] font-bold md:font-semibold transition-all duration-200 active:scale-95"
             title={resource.fileUrl ? "Download file" : "No file available"}
           >
             {isDownloading ? (
