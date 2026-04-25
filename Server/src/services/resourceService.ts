@@ -6,7 +6,7 @@ import University from '../models/University.js'
 import Department from '../models/Department.js'
 import Grade from '../models/Grade.js'
 import { AppError } from '../middleware/errorHandler.js'
-import { getB2PublicUrl } from '../middleware/b2Upload.js'
+import { uploadToB2 } from '../middleware/b2Upload.js'
 
 interface ResourceFilters {
   page?: number
@@ -207,7 +207,7 @@ export class ResourceService {
    */
   static async createResource(data: any, file: Express.Multer.File | undefined, uploadedBy: string) {
     console.log('Creating resource with data:', data)
-    console.log('File:', file)
+    console.log('File object:', JSON.stringify(file, null, 2))
     
     const {
       title,
@@ -261,29 +261,30 @@ export class ResourceService {
       subjectId = newSubject.id
     }
 
-    // For B2/S3 uploads, construct the public URL from the file key
-    // For local uploads, file.filename contains just the filename
+    // Upload file to B2 and get public URL
     let fileUrl: string
     if (file) {
-      if ((file as any).key) {
-        // B2/S3 upload - construct public URL from key
-        fileUrl = getB2PublicUrl((file as any).key)
-        console.log('B2 file uploaded with key:', (file as any).key)
-        console.log('B2 public URL:', fileUrl)
-      } else if ((file as any).location) {
-        // B2/S3 upload - use the location if provided
-        fileUrl = (file as any).location
-        console.log('B2 file location:', fileUrl)
-      } else if (file.filename) {
-        // Local upload - construct the URL
-        fileUrl = `/uploads/${file.filename}`
-      } else {
-        console.error('Invalid file object:', file)
-        throw new AppError(400, 'Invalid file upload')
+      console.log('Processing file upload...')
+      console.log('File buffer size:', file.buffer?.length || 'no buffer')
+      console.log('File mimetype:', file.mimetype)
+      console.log('File originalname:', file.originalname)
+      
+      try {
+        // Upload to B2 and get public URL
+        fileUrl = await uploadToB2(data, file)
+        console.log('File uploaded to B2, public URL:', fileUrl)
+      } catch (error) {
+        console.error('B2 upload failed:', error)
+        throw new AppError(500, `File upload failed: ${error}`)
       }
-    } else {
+    } else if (providedFileUrl) {
       fileUrl = providedFileUrl
+      console.log('Using provided file URL:', fileUrl)
+    } else {
+      throw new AppError(400, 'No file provided')
     }
+
+    console.log('Final fileUrl to be saved:', fileUrl)
 
     // Resolve University and Department
     let finalUniversityId = null
@@ -310,7 +311,7 @@ export class ResourceService {
 
     const gradeValue = category || gradeId || ''
 
-    return await Resource.create({
+    const newResource = await Resource.create({
       title,
       description,
       type: type.toLowerCase().replace(/\s+/g, '_'),
@@ -324,6 +325,9 @@ export class ResourceService {
       tags: typeof tags === 'string' ? tags.split(',').map((t: string) => t.trim()) : (tags || []),
       uploadedBy,
     } as any)
+
+    console.log('Resource created successfully with fileUrl:', newResource.fileUrl)
+    return newResource
   }
 
   /**
