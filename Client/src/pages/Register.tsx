@@ -218,7 +218,7 @@ export const Register: React.FC = () => {
   const totalSteps = formData.role === 'admin' ? 1 : formData.studentType === 'high_school' ? 3 : 4
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0a0f1c] flex flex-col justify-center py-6 md:py-12 transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-800 flex flex-col justify-center py-6 md:py-12 transition-colors duration-300">
 
       {/* Theme Toggle - Top Right */}
       <div className="absolute top-3 right-3 md:top-4 md:right-4 z-20">
@@ -231,7 +231,7 @@ export const Register: React.FC = () => {
           <AppLogo size="md" className="md:scale-125" />
         </div>
 
-        <div className="bg-white dark:bg-slate-900/50 py-4 md:py-8 px-3 md:px-10 md:shadow-2xl md:border border-slate-200 dark:border-white/10 rounded-2xl md:rounded-3xl md:backdrop-blur-xl transition-all">
+        <div className="bg-white dark:bg-slate-700 py-4 md:py-8 px-3 md:px-10 md:shadow-2xl md:border border-slate-200 dark:border-slate-600 rounded-2xl md:rounded-3xl md:backdrop-blur-xl transition-all">
           <div className="text-center mb-4 md:mb-8">
             <h1 className="text-xl md:text-3xl font-extrabold text-slate-900 dark:text-white transition-colors">Create Account</h1>
 
@@ -422,14 +422,14 @@ export const Register: React.FC = () => {
                       <div className="w-full border-t border-slate-300 dark:border-slate-700"></div>
                     </div>
                     <div className="relative flex justify-center text-xs md:text-sm">
-                      <span className="px-3 md:px-4 bg-white dark:bg-slate-900/50 text-slate-500 dark:text-slate-400">Or continue with</span>
+                      <span className="px-3 md:px-4 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-300">Or continue with</span>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2 md:gap-3">
                     <a
                       href={`${import.meta.env.VITE_API_URL}/auth/google`}
-                      className="flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-3 px-2 md:px-4 border border-slate-300 dark:border-slate-700 rounded-lg md:rounded-xl text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all font-medium"
+                      className="flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-3 px-2 md:px-4 border border-slate-300 dark:border-slate-600 rounded-lg md:rounded-xl text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-100 bg-white dark:bg-slate-600 hover:bg-slate-50 dark:hover:bg-slate-500 transition-all font-medium"
                     >
                       <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-4 h-4 md:w-5 md:h-5" />
                       Google
@@ -437,7 +437,7 @@ export const Register: React.FC = () => {
 
                     <a
                       href={`${import.meta.env.VITE_API_URL}/auth/microsoft`}
-                      className="flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-3 px-2 md:px-4 border border-slate-300 dark:border-slate-700 rounded-lg md:rounded-xl text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all font-medium"
+                      className="flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-3 px-2 md:px-4 border border-slate-300 dark:border-slate-600 rounded-lg md:rounded-xl text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-100 bg-white dark:bg-slate-600 hover:bg-slate-50 dark:hover:bg-slate-500 transition-all font-medium"
                     >
                       <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft" className="w-4 h-4 md:w-5 md:h-5" />
                       Microsoft
@@ -684,8 +684,8 @@ export const Register: React.FC = () => {
             </div>
           </form>
 
-          <div className="mt-4 md:mt-8 pt-4 md:pt-6 border-t border-slate-200 dark:border-white/10 text-center transition-colors">
-            <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
+          <div className="mt-4 md:mt-8 pt-4 md:pt-6 border-t border-slate-200 dark:border-slate-600 text-center transition-colors">
+            <p className="text-xs md:text-sm text-slate-600 dark:text-slate-300">
               Already have an account?{' '}
               <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
                 Log in here
