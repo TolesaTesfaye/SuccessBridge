@@ -111,6 +111,7 @@ export default defineConfig({
   // Enable esbuild optimizations
   esbuild: {
     logOverride: { 'this-is-undefined-in-esm': 'silent' },
-    drop: ['console', 'debugger'], // Remove console and debugger in production
+    // Only drop console/debugger in production builds
+    ...(process.env.NODE_ENV === 'production' ? { drop: ['console', 'debugger'] } : {}),
   },
 })
