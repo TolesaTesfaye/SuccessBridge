@@ -32,10 +32,8 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true, // Listen on all addresses
-    strictPort: false, // Allow fallback to another port if 3000 is busy
     hmr: {
       overlay: true, // Show errors as overlay
-      clientPort: undefined, // Use the same port as the server
     },
     proxy: {
       '/api': {
@@ -48,72 +46,60 @@ export default defineConfig({
   build: {
     // Optimize build for production
     sourcemap: false, // Disable sourcemaps for production
-    minify: 'esbuild', // Use esbuild for faster builds
-    target: 'esnext', // Use modern JS for smaller bundles
-    cssCodeSplit: true, // Split CSS for better caching
+    minify: 'esbuild', // Use esbuild for faster builds (no terser dependency needed)
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          // Vendor chunks
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) {
-              return 'react-vendor';
-            }
-            if (id.includes('lucide-react')) {
-              return 'icons';
-            }
-            if (id.includes('zustand') || id.includes('axios')) {
-              return 'state-vendor';
-            }
+        manualChunks(id) {
+          // Bundle React and React-DOM together
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            return 'react-vendor';
+          }
+          // Bundle router separately
+          if (id.includes('node_modules/react-router-dom')) {
+            return 'react-vendor';
+          }
+          // Bundle state management
+          if (id.includes('node_modules/zustand')) {
+            return 'state-vendor';
+          }
+          // Bundle UI libraries
+          if (id.includes('node_modules/lucide-react')) {
             return 'vendor';
           }
-          
-          // Dashboard chunks
-          if (id.includes('/dashboards/student/')) {
+          // Bundle other node_modules
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+          // Bundle dashboard components
+          if (id.includes('/src/dashboards/student/')) {
             return 'student-dashboard';
           }
-          if (id.includes('/dashboards/admin/')) {
+          if (id.includes('/src/dashboards/admin/')) {
             return 'admin-dashboard';
           }
-          if (id.includes('/dashboards/superadmin/')) {
+          if (id.includes('/src/dashboards/superadmin/')) {
             return 'superadmin-dashboard';
           }
-          
-          // Component chunks
-          if (id.includes('/components/quizzes/')) {
+          // Bundle quiz components
+          if (id.includes('/src/components/quizzes/')) {
             return 'quiz-components';
           }
-          if (id.includes('/components/resources/')) {
+          // Bundle resource components
+          if (id.includes('/src/components/resources/')) {
             return 'resource-components';
           }
-          if (id.includes('/components/analytics/')) {
+          // Bundle analytics components
+          if (id.includes('/src/components/analytics/')) {
             return 'analytics-components';
           }
-          
-          // Learning content chunks
-          if (id.includes('/learning center/')) {
-            return 'learning-content';
-          }
         },
-        // Optimize chunk naming
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]',
       },
     },
     // Increase chunk size warning limit
     chunkSizeWarningLimit: 1000,
-    // Enable compression
-    reportCompressedSize: true,
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom', 'zustand', 'axios'],
-    exclude: [],
-  },
-  // Enable esbuild optimizations
-  esbuild: {
-    logOverride: { 'this-is-undefined-in-esm': 'silent' },
-    // Only drop console/debugger in production builds
-    ...(process.env.NODE_ENV === 'production' ? { drop: ['console', 'debugger'] } : {}),
+    include: ['react', 'react-dom', 'react-router-dom'],
+    force: true,
   },
 })
