@@ -49,6 +49,10 @@ export default defineConfig({
     minify: 'esbuild', // Use esbuild for faster builds (no terser dependency needed)
     rollupOptions: {
       output: {
+        // Add hash to filenames for cache busting
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]',
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'state-vendor': ['zustand'],
