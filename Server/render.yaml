@@ -1,54 +1,14 @@
-# NOTE: Do not commit real credentials/secrets to this repo.
-# Set secrets (DATABASE_URL, JWT_SECRET, SUPABASE_* etc.) in Render's dashboard.
 services:
   - type: web
     name: successbridge-api
-    runtime: node
-    region: singapore
+    env: node
+    region: oregon
     plan: free
     buildCommand: npm install && npm run build
     startCommand: npm start
-    healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: DATABASE_URL
-        value: REPLACE_ME
-      - key: JWT_SECRET
-        value: REPLACE_ME
       - key: PORT
         value: 10000
-      - key: SUPABASE_URL
-        value: REPLACE_ME
-      - key: SUPABASE_ANON_KEY
-        value: REPLACE_ME
-      - key: SUPABASE_SERVICE_KEY
-        value: REPLACE_ME
-      - key: FRONTEND_URL
-        value: https://successbridge.vercel.app
-      - key: UPLOAD_DIR
-        value: /tmp/uploads
-      - key: SUPER_ADMIN_EMAIL
-        value: REPLACE_ME
-      - key: SUPER_ADMIN_PASSWORD
-        value: REPLACE_ME
-      - key: SUPER_ADMIN_NAME
-        value: Super Admin
-      - key: ADMIN_EMAIL
-        value: REPLACE_ME
-      - key: ADMIN_PASSWORD
-        value: REPLACE_ME
-      - key: ADMIN_NAME
-        value: Admin User
-      - key: AWS_REGION
-        value: auto
-      - key: AWS_ACCESS_KEY_ID
-        value: REPLACE_ME
-      - key: AWS_SECRET_ACCESS_KEY
-        value: REPLACE_ME
-      - key: AWS_S3_BUCKET
-        value: successbridge-resources
-      - key: AWS_ENDPOINT
-        value: REPLACE_ME
-      - key: MAX_FILE_SIZE
-        value: 52428800
+    autoDeploy: true
