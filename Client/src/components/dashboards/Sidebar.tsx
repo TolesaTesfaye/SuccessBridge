@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "@store/authStore";
-import { preloadRoute } from "@utils/routePreloader";
 import {
   LayoutDashboard,
   PenTool,
@@ -192,8 +191,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <button
               key={item.path}
               onClick={() => handleNav(item.path)}
-              onMouseEnter={() => preloadRoute(item.path)}
-              onFocus={() => preloadRoute(item.path)}
               title={collapsed ? item.label : undefined}
               className={`w-full flex items-center gap-3 md:gap-4 py-2.5 md:py-3.5 transition-all duration-200 group relative
                                 ${
