@@ -153,12 +153,12 @@ export const UniversityLearningCenter: React.FC<UniversityLearningCenterProps> =
     <div className="flex flex-col h-screen">
       {/* W3Schools Styled Top Navigation Bar */}
       <div className="bg-[#282a35] overflow-x-auto no-scrollbar shadow-lg border-b border-white/5 sticky top-0 z-30">
-        <div className="flex items-center min-w-max h-12">
+        <div className="flex items-center min-w-max h-10 md:h-12">
           {subjects.map((subj) => (
             <button
               key={subj}
               onClick={() => setLearningSubject(subj)}
-              className={`h-full px-6 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center whitespace-nowrap ${
+              className={`h-full px-3 md:px-6 text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center whitespace-nowrap ${
                 learningSubject === subj
                   ? 'bg-[#2563eb] text-white shadow-inner'
                   : 'text-slate-300 hover:bg-black/40 hover:text-white'
@@ -193,7 +193,7 @@ export const UniversityLearningCenter: React.FC<UniversityLearningCenterProps> =
         {/* Left Sidebar - Tutorial Navigation */}
         <div className={`
           fixed md:relative inset-y-0 left-0 z-50
-          w-64 md:w-48 bg-[#f1f1f1] dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 
+          w-56 md:w-48 bg-[#f1f1f1] dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 
           flex flex-col h-full
           transform transition-transform duration-300 ease-in-out
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
@@ -214,7 +214,7 @@ export const UniversityLearningCenter: React.FC<UniversityLearningCenterProps> =
             {/* Tutorial Navigation */}
             <div className="space-y-0">
               {/* Subject Tutorial Header - Always visible and highlighted */}
-              <div className="bg-[#2563eb] text-white px-4 py-3 text-sm font-bold border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
+              <div className="bg-[#2563eb] text-white px-3 md:px-4 py-2 md:py-3 text-xs md:text-sm font-bold border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10">
                 {learningSubject} Tutorial
               </div>
 
@@ -224,7 +224,7 @@ export const UniversityLearningCenter: React.FC<UniversityLearningCenterProps> =
                   setSelectedChapter('');
                   setSelectedTopic('');
                 }}
-                className={`w-full text-left px-4 py-3 text-sm border-b border-slate-200 dark:border-slate-700 transition-colors ${
+                className={`w-full text-left px-3 md:px-4 py-2 md:py-3 text-xs md:text-sm border-b border-slate-200 dark:border-slate-700 transition-colors ${
                   !selectedChapter
                     ? 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-medium'
                     : 'text-slate-700 dark:text-slate-300'
@@ -240,7 +240,7 @@ export const UniversityLearningCenter: React.FC<UniversityLearningCenterProps> =
                   <div className="flex items-center">
                     <button
                       onClick={() => handleChapterClick(chapter)}
-                      className={`flex-1 text-left px-4 py-3 text-sm border-b border-slate-200 dark:border-slate-700 transition-colors ${
+                      className={`flex-1 text-left px-3 md:px-4 py-2 md:py-3 text-xs md:text-sm border-b border-slate-200 dark:border-slate-700 transition-colors ${
                         selectedChapter === chapter.id
                           ? 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-medium'
                           : 'text-slate-700 dark:text-slate-300'
@@ -250,16 +250,16 @@ export const UniversityLearningCenter: React.FC<UniversityLearningCenterProps> =
                     </button>
                     <button
                       onClick={() => toggleChapter(chapter.id)}
-                      className={`px-2 py-3 border-b border-slate-200 dark:border-slate-700 transition-colors ${
+                      className={`px-2 py-2 md:py-3 border-b border-slate-200 dark:border-slate-700 transition-colors ${
                         selectedChapter === chapter.id
                           ? 'bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white'
                           : 'text-slate-500 dark:text-slate-400'
                       }`}
                     >
                       {expandedChapters.has(chapter.id) ? (
-                        <ChevronDown className="w-4 h-4" />
+                        <ChevronDown className="w-3 h-3 md:w-4 md:h-4" />
                       ) : (
-                        <ChevronRight className="w-4 h-4" />
+                        <ChevronRight className="w-3 h-3 md:w-4 md:h-4" />
                       )}
                     </button>
                   </div>
@@ -272,7 +272,7 @@ export const UniversityLearningCenter: React.FC<UniversityLearningCenterProps> =
                         setSelectedTopic(topic.id);
                         setIsSidebarOpen(false);
                       }}
-                      className={`w-full text-left px-6 py-2 text-xs border-b border-slate-200 dark:border-slate-700 transition-colors ${
+                      className={`w-full text-left px-4 md:px-6 py-1.5 md:py-2 text-[10px] md:text-xs border-b border-slate-200 dark:border-slate-700 transition-colors ${
                         selectedTopic === topic.id
                           ? 'bg-slate-300 dark:bg-slate-600 text-slate-900 dark:text-white'
                           : 'text-slate-600 dark:text-slate-400'
@@ -299,23 +299,23 @@ export const UniversityLearningCenter: React.FC<UniversityLearningCenterProps> =
             {!selectedChapter ? (
               // Subject Introduction
               <div>
-                <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-8">
+                <h1 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 md:mb-8">
                   {learningSubject} Introduction
                 </h1>
 
-                <div className="prose prose-slate dark:prose-invert max-w-none mb-12">
-                  <p className="text-lg text-slate-700 dark:text-slate-300 mb-6">
+                <div className="prose prose-slate dark:prose-invert max-w-none mb-8 md:mb-12">
+                  <p className="text-sm md:text-lg text-slate-700 dark:text-slate-300 mb-4 md:mb-6">
                     {learningSubject} is a fundamental subject for university students.
                   </p>
                   
-                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+                  <h2 className="text-lg md:text-2xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-3 md:mb-4">
                     What is {learningSubject}?
                   </h2>
                   
                   {learningContent?.chapters?.length > 0 && (
-                    <ul className="space-y-2">
+                    <ul className="space-y-1 md:space-y-2">
                       {learningContent.chapters.map((chapter: any) => (
-                        <li key={chapter.id} className="text-slate-700 dark:text-slate-300">
+                        <li key={chapter.id} className="text-sm md:text-base text-slate-700 dark:text-slate-300">
                           • {chapter.title}
                         </li>
                       ))}
@@ -353,19 +353,19 @@ export const UniversityLearningCenter: React.FC<UniversityLearningCenterProps> =
             ) : currentTopic ? (
               // Topic Content
               <div>
-                <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-8">
+                <h1 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 md:mb-8">
                   {currentTopic.title}
                 </h1>
 
-                <div className="prose prose-slate dark:prose-invert max-w-none mb-12">
+                <div className="prose prose-slate dark:prose-invert max-w-none mb-8 md:mb-12">
                   {currentTopic.content.map((paragraph: string, index: number) => (
-                    <div key={index} className="mb-4">
+                    <div key={index} className="mb-3 md:mb-4">
                       {paragraph.startsWith('- **') || paragraph.startsWith('• ') ? (
-                        <div className="ml-4 text-slate-700 dark:text-slate-300" dangerouslySetInnerHTML={{ __html: paragraph }} />
+                        <div className="ml-4 text-sm md:text-base text-slate-700 dark:text-slate-300" dangerouslySetInnerHTML={{ __html: paragraph }} />
                       ) : paragraph.includes('**') ? (
-                        <p className="text-slate-700 dark:text-slate-300" dangerouslySetInnerHTML={{ __html: paragraph.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                        <p className="text-sm md:text-base text-slate-700 dark:text-slate-300" dangerouslySetInnerHTML={{ __html: paragraph.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
                       ) : (
-                        <p className="text-slate-700 dark:text-slate-300">{paragraph}</p>
+                        <p className="text-sm md:text-base text-slate-700 dark:text-slate-300">{paragraph}</p>
                       )}
                     </div>
                   ))}
@@ -459,21 +459,21 @@ export const UniversityLearningCenter: React.FC<UniversityLearningCenterProps> =
             ) : (
               // Chapter Overview
               <div>
-                <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-8">
+                <h1 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 md:mb-8">
                   {currentChapter?.title}
                 </h1>
 
-                <div className="prose prose-slate dark:prose-invert max-w-none mb-12">
-                  <p className="text-lg text-slate-700 dark:text-slate-300 mb-6">
+                <div className="prose prose-slate dark:prose-invert max-w-none mb-8 md:mb-12">
+                  <p className="text-sm md:text-lg text-slate-700 dark:text-slate-300 mb-4 md:mb-6">
                     This chapter covers the following topics:
                   </p>
                   
-                  <ul className="space-y-2">
+                  <ul className="space-y-1 md:space-y-2">
                     {currentChapter?.topics?.map((topic: any) => (
                       <li key={topic.id}>
                         <button
                           onClick={() => setSelectedTopic(topic.id)}
-                          className="text-[#2563eb] hover:underline font-medium"
+                          className="text-sm md:text-base text-[#2563eb] hover:underline font-medium"
                         >
                           {topic.title}
                         </button>

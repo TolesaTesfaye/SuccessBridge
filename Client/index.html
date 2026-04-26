@@ -6,16 +6,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="SuccessBridge - Comprehensive learning platform for high school and university students" />
     <meta name="theme-color" content="#3b82f6" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- Performance optimizations -->
+    <link rel="preconnect" href="https://successbridge-tolesa-api.onrender.com" crossorigin />
+    <link rel="dns-prefetch" href="https://successbridge-tolesa-api.onrender.com" />
+    
+    <!-- Preload critical resources -->
+    <link rel="modulepreload" href="/src/main.tsx" />
+    
     <title>SuccessBridge - Learning Platform</title>
+    
+    <!-- Inline critical CSS for faster initial render -->
+    <style>
+      /* Critical CSS - Loading state */
+      #root {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      
+      .initial-loader {
+        text-align: center;
+        color: white;
+      }
+      
+      .initial-loader-spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 20px;
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+    
     <script>
       // Set API URL for production (Vercel will use this, local dev will use .env)
       if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
         window.__VITE_API_URL__ = 'https://successbridge-tolesa-api.onrender.com/api';
       }
+      
+      // Initialize theme immediately to prevent flash
+      (function() {
+        try {
+          const theme = localStorage.getItem('theme');
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {}
+      })();
+      
+      // Register service worker for caching
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {
+            // Silent fail - service worker is optional
+          });
+        });
+      }
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Initial loading state -->
+      <div class="initial-loader">
+        <div class="initial-loader-spinner"></div>
+        <p>Loading SuccessBridge...</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

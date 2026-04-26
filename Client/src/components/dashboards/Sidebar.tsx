@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuthStore } from "@store/authStore";
+import { preloadRoute } from "@utils/routePreloader";
 import {
   LayoutDashboard,
   PenTool,
@@ -184,33 +185,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       {/* Navigation Items */}
-      <nav className="flex-1 py-4 space-y-1 overflow-y-auto custom-scrollbar">
+      <nav className="flex-1 py-2 md:py-4 space-y-1 overflow-y-auto custom-scrollbar">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
             <button
               key={item.path}
               onClick={() => handleNav(item.path)}
+              onMouseEnter={() => preloadRoute(item.path)}
+              onFocus={() => preloadRoute(item.path)}
               title={collapsed ? item.label : undefined}
-              className={`w-full flex items-center gap-4 py-3.5 transition-all duration-200 group relative
+              className={`w-full flex items-center gap-3 md:gap-4 py-2.5 md:py-3.5 transition-all duration-200 group relative
                                 ${
                                   isActive
                                     ? "bg-[#1E56A0] text-white"
                                     : "text-slate-400 hover:bg-white/5 hover:text-white"
                                 }
-                                ${collapsed ? "justify-center px-0" : "px-5"}
+                                ${collapsed ? "justify-center px-0" : "px-3 md:px-5"}
                             `}
             >
               {/* Icon */}
               <span
                 className={`flex-shrink-0 transition-transform duration-200 group-hover:scale-110 ${isActive ? "text-white" : ""}`}
               >
-                {item.icon}
+                <div className="w-4 h-4 md:w-5 md:h-5">{item.icon}</div>
               </span>
 
               {/* Label */}
               {!collapsed && (
-                <span className="text-sm font-semibold tracking-tight truncate">
+                <span className="text-xs md:text-sm font-semibold tracking-tight truncate">
                   {item.label}
                 </span>
               )}
