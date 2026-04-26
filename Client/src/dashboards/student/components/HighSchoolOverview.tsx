@@ -108,16 +108,16 @@ export const HighSchoolOverview: React.FC<HighSchoolOverviewProps> = ({
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4">
         {quickActions.map((action) => (
           <button
             key={action.title}
             onClick={action.action}
-            className={`text-left p-6 rounded-2xl bg-gradient-to-br ${action.color} text-white shadow-lg hover:scale-[1.01] transition-transform`}
+            className={`text-left p-3 md:p-6 rounded-xl md:rounded-2xl bg-gradient-to-br ${action.color} text-white shadow-lg hover:scale-[1.01] active:scale-95 transition-transform`}
           >
-            <action.icon className="w-6 h-6 mb-4" />
-            <h3 className="font-black text-lg">{action.title}</h3>
-            <p className="text-sm text-white/85">{action.subtitle}</p>
+            <action.icon className="w-4 h-4 md:w-6 md:h-6 mb-1.5 md:mb-4" />
+            <h3 className="font-bold text-xs md:text-lg mb-0.5 md:mb-1">{action.title}</h3>
+            <p className="text-[10px] md:text-sm text-white/85 leading-tight">{action.subtitle}</p>
           </button>
         ))}
       </div>

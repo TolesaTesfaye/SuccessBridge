@@ -118,16 +118,16 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
       </div>
 
       {/* Action Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-4">
         {tracks.map((track) => (
           <button
             key={track.title}
             onClick={track.action}
-            className={`text-left p-4 md:p-5 bg-gradient-to-br ${track.color} text-white shadow-lg hover:shadow-xl active:scale-95 transition-all`}
+            className={`text-left p-3 md:p-5 rounded-xl md:rounded-2xl bg-gradient-to-br ${track.color} text-white shadow-lg hover:shadow-xl active:scale-95 transition-all`}
           >
-            <track.icon className="w-5 h-5 md:w-6 md:h-6 mb-2 md:mb-3" />
-            <h3 className="font-bold text-sm md:text-lg mb-1">{track.title}</h3>
-            <p className="text-xs md:text-sm text-white/90">{track.subtitle}</p>
+            <track.icon className="w-4 h-4 md:w-6 md:h-6 mb-1.5 md:mb-3" />
+            <h3 className="font-bold text-xs md:text-lg mb-0.5 md:mb-1">{track.title}</h3>
+            <p className="text-[10px] md:text-sm text-white/90 leading-tight">{track.subtitle}</p>
           </button>
         ))}
       </div>
