@@ -11,7 +11,6 @@ import { LoadingOverlay } from "@components/common/Spinner";
 import { PerformanceMonitor } from "@components/common/PerformanceMonitor";
 import { ToastProvider, useToast } from "@components/common/Toast";
 import { useApiErrorHandler } from "@utils/apiErrorHandler";
-import { preloadDashboardRoutes } from "@utils/routePreloader";
 
 // Eager load critical components
 import { Home } from "@pages/Home";
@@ -220,9 +219,9 @@ export const App: React.FC = () => {
     initialize();
   }, [initialize]);
 
-  // Show loading while initializing
+  // Initialize silently without showing loading screen
   if (!isInitialized) {
-    return <LoadingOverlay />;
+    return null;
   }
 
   return (
@@ -239,23 +238,12 @@ const AppContent: React.FC = () => {
   // Initialize global error handler
   useApiErrorHandler(toast);
 
-  // Preload dashboard routes based on user role
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      // Delay preloading to not block initial render
-      const timer = setTimeout(() => {
-        preloadDashboardRoutes(user.role, user.studentType);
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [isAuthenticated, user]);
-
   return (
     <>
       <PerformanceMonitor />
       <Router>
         <Layout>
-          <Suspense fallback={<LoadingOverlay message="Loading page..." />}>
+          <Suspense fallback={<div className="min-h-screen" />}>
             <Routes>
               {/* Public Routes */}
               <Route

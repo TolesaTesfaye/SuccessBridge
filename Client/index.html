@@ -6,44 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="SuccessBridge - Comprehensive learning platform for high school and university students" />
     <meta name="theme-color" content="#3b82f6" />
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/manifest.json" />
-    
-    <!-- Performance optimizations -->
-    <link rel="preconnect" href="https://successbridge-tolesa-api.onrender.com" crossorigin />
-    <link rel="dns-prefetch" href="https://successbridge-tolesa-api.onrender.com" />
-    
-    <!-- Preload critical resources -->
-    <link rel="modulepreload" href="/src/main.tsx" />
-    
     <title>SuccessBridge - Learning Platform</title>
-    
     <script>
       // Set API URL for production (Vercel will use this, local dev will use .env)
       if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
         window.__VITE_API_URL__ = 'https://successbridge-tolesa-api.onrender.com/api';
-      }
-      
-      // Initialize theme immediately to prevent flash
-      (function() {
-        try {
-          const theme = localStorage.getItem('theme');
-          if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-          }
-        } catch (e) {}
-      })();
-      
-      // Register service worker for caching (only in production)
-      if ('serviceWorker' in navigator && window.location.hostname !== 'localhost') {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').then(() => {
-            console.log('Service Worker registered');
-          }).catch((error) => {
-            console.warn('Service Worker registration failed:', error);
-          });
-        });
       }
     </script>
   </head>

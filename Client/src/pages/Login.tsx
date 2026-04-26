@@ -61,32 +61,27 @@ export const Login: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0a0f1c] flex flex-col py-4 md:py-12 px-4 md:px-6 lg:px-8 transition-colors duration-300 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0a0f1c] flex flex-col justify-center py-6 md:py-12 transition-colors duration-300">
 
       {/* Theme Toggle - Top Right */}
       <div className="absolute top-3 right-3 md:top-4 md:right-4 z-20">
         <ThemeToggle />
       </div>
 
-      {/* Background Decorative Elements - Hidden on mobile */}
-      <div className="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] opacity-30 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 dark:from-violet-600 dark:to-indigo-600 blur-[100px] rounded-full mix-blend-screen transition-colors"></div>
-      </div>
-
-      <div className="w-full md:mx-auto md:max-w-md relative z-10">
-        <div className="flex justify-start md:justify-center mb-4 md:mb-6">
-          <AppLogo size="lg" />
+      <div className="w-full mx-auto max-w-md relative z-10 px-3 md:px-0">
+        <div className="flex justify-center mb-3 md:mb-6">
+          <AppLogo size="md" className="md:scale-125" />
         </div>
-        <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white transition-colors text-left md:text-center">
+        <h2 className="text-xl md:text-3xl font-extrabold text-slate-900 dark:text-white transition-colors text-center">
           Welcome back
         </h2>
-        <p className="mt-1 md:mt-2 text-sm text-slate-600 dark:text-slate-400 transition-colors text-left md:text-center">
+        <p className="mt-1 md:mt-2 text-xs md:text-sm text-slate-600 dark:text-slate-400 transition-colors text-center">
           Log in to continue your learning journey
         </p>
       </div>
 
-      <div className="mt-6 md:mt-8 w-full md:mx-auto md:max-w-md relative z-10">
-        <div className="bg-white dark:bg-slate-900/50 py-6 md:py-8 px-0 md:px-10 md:shadow-2xl md:border border-slate-200 dark:border-white/10 md:rounded-3xl md:backdrop-blur-xl transition-all">
+      <div className="mt-4 md:mt-8 w-full mx-auto max-w-md relative z-10 px-3 md:px-0">
+        <div className="bg-white dark:bg-slate-900/50 py-4 md:py-8 px-3 md:px-10 md:shadow-2xl md:border border-slate-200 dark:border-white/10 rounded-2xl md:rounded-3xl md:backdrop-blur-xl transition-all">
           <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
             {formError && (
               <div className="bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 px-3 py-2.5 md:px-4 md:py-3 rounded-lg md:rounded-xl border border-red-200 dark:border-red-500/20 flex items-center gap-2 md:gap-3 text-xs md:text-sm">
@@ -163,7 +158,7 @@ export const Login: React.FC = () => {
             </div>
           </div>
 
-          <div className="mt-6 md:mt-8 pt-5 md:pt-6 border-t border-slate-200 dark:border-white/10 text-left md:text-center transition-colors">
+          <div className="mt-6 md:mt-8 pt-5 md:pt-6 border-t border-slate-200 dark:border-white/10 text-center transition-colors">
             <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
               Don't have an account?{' '}
               <Link to="/register" className="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
