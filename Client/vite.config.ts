@@ -32,8 +32,10 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true, // Listen on all addresses
+    strictPort: false, // Allow fallback to another port if 3000 is busy
     hmr: {
       overlay: true, // Show errors as overlay
+      clientPort: undefined, // Use the same port as the server
     },
     proxy: {
       '/api': {
