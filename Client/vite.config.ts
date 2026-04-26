@@ -49,49 +49,10 @@ export default defineConfig({
     minify: 'esbuild', // Use esbuild for faster builds (no terser dependency needed)
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          // Bundle React and React-DOM together
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
-            return 'react-vendor';
-          }
-          // Bundle router separately
-          if (id.includes('node_modules/react-router-dom')) {
-            return 'react-vendor';
-          }
-          // Bundle state management
-          if (id.includes('node_modules/zustand')) {
-            return 'state-vendor';
-          }
-          // Bundle UI libraries
-          if (id.includes('node_modules/lucide-react')) {
-            return 'vendor';
-          }
-          // Bundle other node_modules
-          if (id.includes('node_modules')) {
-            return 'vendor';
-          }
-          // Bundle dashboard components
-          if (id.includes('/src/dashboards/student/')) {
-            return 'student-dashboard';
-          }
-          if (id.includes('/src/dashboards/admin/')) {
-            return 'admin-dashboard';
-          }
-          if (id.includes('/src/dashboards/superadmin/')) {
-            return 'superadmin-dashboard';
-          }
-          // Bundle quiz components
-          if (id.includes('/src/components/quizzes/')) {
-            return 'quiz-components';
-          }
-          // Bundle resource components
-          if (id.includes('/src/components/resources/')) {
-            return 'resource-components';
-          }
-          // Bundle analytics components
-          if (id.includes('/src/components/analytics/')) {
-            return 'analytics-components';
-          }
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'state-vendor': ['zustand'],
+          'vendor': ['axios', 'lucide-react'],
         },
       },
     },
@@ -99,7 +60,6 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom'],
-    force: true,
+    include: ['react', 'react-dom', 'react-router-dom', 'zustand', 'axios'],
   },
 })
