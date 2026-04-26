@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, BrainCircuit, CalendarCheck, FileText, Flame, GraduationCap, Library, Play, Sparkles, Star, Target, Trophy } from 'lucide-react'
+import { ArrowRight, BookOpen, BrainCircuit, CalendarCheck, FileText, Flame, GraduationCap, Library, Play, Sparkles, Star, Target, Trophy, Clock, Award, CheckCircle2, Zap, TrendingUp } from 'lucide-react'
 import { Testimonials } from '@components/common/Testimonials'
 import { ResourceCard } from '@components/resources/ResourceCard'
 
@@ -32,6 +32,24 @@ export const HighSchoolOverview: React.FC<HighSchoolOverviewProps> = ({
     { title: 'Start Lesson', subtitle: 'Jump into Learning Center', icon: BrainCircuit, action: () => setActiveTab('learning'), color: 'from-blue-600 to-indigo-600' },
     { title: 'Practice Hub', subtitle: 'Explore all materials', icon: Library, action: () => setActiveTab('hub'), color: 'from-emerald-500 to-teal-500' },
     { title: 'Exam Mode', subtitle: 'Focus on top resources', icon: Target, action: () => setActiveTab('hub'), color: 'from-amber-500 to-orange-500' },
+  ]
+
+  const achievements = [
+    { icon: Flame, label: 'Study Streak', value: '5 Days', color: 'text-orange-500', bgColor: 'bg-orange-50 dark:bg-orange-900/20' },
+    { icon: Target, label: 'Today Goal', value: '3 Topics', color: 'text-blue-500', bgColor: 'bg-blue-50 dark:bg-blue-900/20' },
+    { icon: Trophy, label: 'Progress Badge', value: 'Rising Star', color: 'text-amber-500', bgColor: 'bg-amber-50 dark:bg-amber-900/20' },
+  ]
+
+  const examTips = [
+    'Focus on understanding concepts, not just memorization',
+    'Practice time management with mock exams',
+    'Review your mistakes to avoid repeating them',
+    'Stay consistent with daily study sessions',
+  ]
+
+  const upcomingMilestones = [
+    { title: 'Mid-term Exams', date: 'In 2 weeks', icon: CalendarCheck, color: 'text-blue-600' },
+    { title: 'EUEE Preparation', date: 'Ongoing', icon: GraduationCap, color: 'text-indigo-600' },
   ]
 
   const getThumbnail = (type: string) => {
@@ -122,25 +140,49 @@ export const HighSchoolOverview: React.FC<HighSchoolOverviewProps> = ({
         ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 p-5 bg-white dark:bg-slate-900/60">
-          <p className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Study Streak</p>
-          <p className="flex items-center gap-2 text-2xl font-black text-slate-900 dark:text-white">
-            <Flame className="w-5 h-5 text-orange-500" /> 5 Days
-          </p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+        {achievements.map((achievement, index) => (
+          <div key={index} className={`rounded-xl md:rounded-2xl border border-slate-200 dark:border-slate-800 p-3 md:p-5 ${achievement.bgColor} hover:shadow-lg transition-all`}>
+            <div className="flex items-center gap-2 mb-1 md:mb-2">
+              <achievement.icon className={`w-4 h-4 md:w-5 md:h-5 ${achievement.color}`} />
+              <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-slate-500">{achievement.label}</p>
+            </div>
+            <p className="text-xl md:text-2xl font-black text-slate-900 dark:text-white">{achievement.value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Exam Preparation Tips */}
+      <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 border border-indigo-100 dark:border-indigo-800 p-4 md:p-6 rounded-xl md:rounded-2xl">
+        <div className="flex items-center gap-2 mb-3 md:mb-4">
+          <Zap className="w-4 h-4 md:w-5 md:h-5 text-indigo-600 dark:text-indigo-400" />
+          <h3 className="text-sm md:text-lg font-bold text-slate-900 dark:text-white">EUEE Preparation Tips</h3>
         </div>
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 p-5 bg-white dark:bg-slate-900/60">
-          <p className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Today Goal</p>
-          <p className="flex items-center gap-2 text-2xl font-black text-slate-900 dark:text-white">
-            <Target className="w-5 h-5 text-blue-500" /> 3 Topics
-          </p>
+        <div className="space-y-2 md:space-y-3">
+          {examTips.map((tip, index) => (
+            <div key={index} className="flex items-start gap-2 md:gap-3">
+              <CheckCircle2 className="w-3 h-3 md:w-4 md:h-4 text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5" />
+              <p className="text-xs md:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{tip}</p>
+            </div>
+          ))}
         </div>
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 p-5 bg-white dark:bg-slate-900/60">
-          <p className="text-xs font-black uppercase tracking-widest text-slate-500 mb-2">Progress Badge</p>
-          <p className="flex items-center gap-2 text-2xl font-black text-slate-900 dark:text-white">
-            <Trophy className="w-5 h-5 text-amber-500" /> Rising Star
-          </p>
-        </div>
+      </div>
+
+      {/* Upcoming Milestones */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+        {upcomingMilestones.map((milestone, index) => (
+          <div key={index} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 md:p-5 rounded-xl md:rounded-2xl hover:shadow-lg transition-all">
+            <div className="flex items-center gap-3 mb-2">
+              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center ${milestone.color}`}>
+                <milestone.icon className="w-5 h-5 md:w-6 md:h-6" />
+              </div>
+              <div>
+                <h4 className="text-xs md:text-sm font-bold text-slate-900 dark:text-white">{milestone.title}</h4>
+                <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400">{milestone.date}</p>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
 
       <div className="space-y-6">

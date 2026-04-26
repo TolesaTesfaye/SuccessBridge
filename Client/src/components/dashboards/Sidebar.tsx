@@ -16,6 +16,7 @@ import {
   BookMarked,
   Server,
   ShieldCheck,
+  Megaphone,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -45,12 +46,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: <LayoutDashboard className="w-5 h-5" />,
       emoji: "📊",
     },
-    {
-      label: "Library",
-      path: "/student/resources",
-      icon: <BookOpen className="w-5 h-5" />,
-      emoji: "📚",
-    },
     ...(shouldShowQuizzes
       ? [
           {
@@ -72,6 +67,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       path: "/student/profile",
       icon: <User className="w-5 h-5" />,
       emoji: "👤",
+    },
+    {
+      label: "Promotions",
+      path: "/student/promotions",
+      icon: <Megaphone className="w-5 h-5" />,
+      emoji: "📢",
     },
   ];
 

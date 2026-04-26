@@ -1,25 +1,58 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { DashboardLayout } from '@components/dashboards/DashboardLayout'
 import { Card, CardBody } from '@components/common/Card'
 import { Button } from '@components/common/Button'
 import { Camera, Mail, Phone, BookOpen, GraduationCap, Building2, Calendar, User as UserIcon, ShieldCheck } from 'lucide-react'
+import { useAuthStore } from '@store/authStore'
 
 export const StudentProfile: React.FC = () => {
+  const { user } = useAuthStore()
+  
   const [profile, setProfile] = useState({
-    name: 'Abebe Kebede',
-    email: 'abebe@example.com',
-    phone: '+251-911-123456',
-    grade: 'Grade 10',
-    stream: 'Science',
-    university: 'Addis Ababa University',
-    department: 'Natural Sciences',
-    joinDate: '2024-01-15',
+    name: '',
+    email: '',
+    phone: '',
+    grade: '',
+    stream: '',
+    university: '',
+    department: '',
+    joinDate: '',
+    studentType: '',
+    universityLevel: '',
   })
 
   const [isEditing, setIsEditing] = useState(false)
 
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        name: user.name || 'Student',
+        email: user.email || '',
+        phone: user.phone || 'Not provided',
+        grade: user.studentType === 'high_school' 
+          ? (user.highSchoolGrade?.replace('_', ' ').toUpperCase() || 'Not set')
+          : 'University Student',
+        stream: user.studentType === 'high_school' && user.highSchoolStream
+          ? user.highSchoolStream.charAt(0).toUpperCase() + user.highSchoolStream.slice(1)
+          : 'N/A',
+        university: user.university || 'Not set',
+        department: user.department || 'Not set',
+        joinDate: user.createdAt || new Date().toISOString(),
+        studentType: user.studentType || 'high_school',
+        universityLevel: user.universityLevel || '',
+      })
+    }
+  }, [user])
+
   const handleChange = (field: string, value: string) => {
     setProfile(prev => ({ ...prev, [field]: value }))
+  }
+
+  const getStudentTypeLabel = () => {
+    if (profile.studentType === 'university') {
+      return `University - ${profile.universityLevel?.toUpperCase() || 'Student'}`
+    }
+    return 'High School Student'
   }
 
   return (
@@ -50,12 +83,12 @@ export const StudentProfile: React.FC = () => {
             
             <div className="flex-1 text-center sm:text-left mb-2">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-1">
-                <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{profile.name}</h1>
-                <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-sm font-bold w-fit mx-auto sm:mx-0">
-                  <ShieldCheck size={16} /> Student
+                <h1 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight">{profile.name}</h1>
+                <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs md:text-sm font-bold w-fit mx-auto sm:mx-0">
+                  <ShieldCheck size={16} /> {getStudentTypeLabel()}
                 </span>
               </div>
-              <p className="text-slate-500 font-medium">{profile.email} • Joined {new Date(profile.joinDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
+              <p className="text-xs md:text-sm text-slate-500 font-medium">{profile.email} • Joined {new Date(profile.joinDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
             </div>
 
             <div className="mb-2 shrink-0 w-full sm:w-auto">

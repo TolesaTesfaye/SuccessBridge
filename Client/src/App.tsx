@@ -63,6 +63,11 @@ const StudentProgress = lazy(() =>
     default: m.StudentProgress,
   })),
 );
+const StudentPromotions = lazy(() =>
+  import("@pages/student/StudentPromotions").then((m) => ({
+    default: m.StudentPromotions,
+  })),
+);
 const StudentProfile = lazy(() =>
   import("@pages/student/StudentProfile").then((m) => ({
     default: m.StudentProfile,
@@ -296,6 +301,14 @@ const AppContent: React.FC = () => {
                 element={
                   <ProtectedRoute requiredRole="student">
                     <StudentProgress />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/promotions"
+                element={
+                  <ProtectedRoute requiredRole="student">
+                    <StudentPromotions />
                   </ProtectedRoute>
                 }
               />

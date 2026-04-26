@@ -11,7 +11,12 @@ import {
   Star,
   TrendingUp,
   Trophy,
-  Zap
+  Zap,
+  Target,
+  Clock,
+  Award,
+  Flame,
+  CheckCircle2
 } from 'lucide-react'
 import { Testimonials } from '@components/common/Testimonials'
 import { ResourceCard } from '@components/resources/ResourceCard'
@@ -46,6 +51,18 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
     { label: 'Materials', value: `${homeResources.length}`, icon: TrendingUp },
     { label: 'Subjects', value: `${subjectCount}`, icon: Globe2 },
     { label: 'Videos', value: `${videoCount}`, icon: Play },
+  ]
+
+  const achievements = [
+    { icon: Flame, label: 'Study Streak', value: '7 Days', color: 'text-orange-500' },
+    { icon: Target, label: 'Weekly Goal', value: '5/7 Topics', color: 'text-blue-500' },
+    { icon: Trophy, label: 'Rank', value: 'Top 15%', color: 'text-amber-500' },
+  ]
+
+  const quickTips = [
+    'Review your notes daily for better retention',
+    'Practice with past exams to boost confidence',
+    'Join study groups for collaborative learning',
   ]
 
   const getSubjectText = (resource: any) => {
@@ -165,18 +182,31 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
       </div>
 
       {/* Progress Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-        <div className="border-t border-b border-slate-200 dark:border-slate-800 p-4 md:p-5 bg-white dark:bg-slate-900/60">
-          <h4 className="text-[10px] md:text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1 md:mb-2">Daily Momentum</h4>
-          <p className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white">+24%</p>
-          <p className="text-xs md:text-sm text-slate-500 mt-1">You are ahead compared to last week.</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+        {achievements.map((achievement, index) => (
+          <div key={index} className="border-t border-b border-slate-200 dark:border-slate-800 p-3 md:p-5 bg-white dark:bg-slate-900/60 rounded-lg hover:shadow-lg transition-all">
+            <div className="flex items-center gap-3 mb-2">
+              <achievement.icon className={`w-5 h-5 md:w-6 md:h-6 ${achievement.color}`} />
+              <h4 className="text-[10px] md:text-xs font-semibold uppercase tracking-wide text-slate-500">{achievement.label}</h4>
+            </div>
+            <p className="text-xl md:text-3xl font-black text-slate-900 dark:text-white">{achievement.value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Study Tips Section */}
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-100 dark:border-blue-800 p-4 md:p-6 rounded-xl md:rounded-2xl">
+        <div className="flex items-center gap-2 mb-3 md:mb-4">
+          <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-blue-600 dark:text-blue-400" />
+          <h3 className="text-sm md:text-lg font-bold text-slate-900 dark:text-white">Quick Study Tips</h3>
         </div>
-        <div className="border-t border-b border-slate-200 dark:border-slate-800 p-4 md:p-5 bg-white dark:bg-slate-900/60">
-          <h4 className="text-[10px] md:text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1 md:mb-2">Achievement</h4>
-          <p className="flex items-center gap-2 text-base md:text-lg font-black text-slate-900 dark:text-white">
-            <Trophy className="w-4 h-4 md:w-5 md:h-5 text-amber-500" /> Consistency Streak
-          </p>
-          <p className="text-xs md:text-sm text-slate-500 mt-1">Keep your learning streak active this week.</p>
+        <div className="space-y-2 md:space-y-3">
+          {quickTips.map((tip, index) => (
+            <div key={index} className="flex items-start gap-2 md:gap-3">
+              <CheckCircle2 className="w-3 h-3 md:w-4 md:h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+              <p className="text-xs md:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{tip}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>

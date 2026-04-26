@@ -145,7 +145,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </div>
 
         <main className="flex-1 overflow-y-auto custom-scrollbar w-full">
-          <div className="w-full">
+          <div className="w-full pt-4 md:pt-6">
             {children}
           </div>
 
