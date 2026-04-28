@@ -47,6 +47,8 @@ export default defineConfig({
     // Optimize build for production
     sourcemap: false, // Disable sourcemaps for production
     minify: 'esbuild', // Use esbuild for faster builds (no terser dependency needed)
+    target: 'esnext', // Modern browsers only for faster builds
+    cssCodeSplit: true, // Split CSS for better caching
     rollupOptions: {
       output: {
         // Add hash to filenames for cache busting
@@ -62,6 +64,8 @@ export default defineConfig({
     },
     // Increase chunk size warning limit
     chunkSizeWarningLimit: 1000,
+    // Optimize for Cloudflare Pages
+    reportCompressedSize: false, // Skip gzip size reporting to speed up build
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom', 'zustand', 'axios'],
