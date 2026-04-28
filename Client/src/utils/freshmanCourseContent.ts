@@ -1,10 +1,5 @@
 import { PSYCHOLOGY_CONTENT } from '../dashboards/student/learning center/University/Freshman/Psychology/psychologyContent'
 import { LOGIC_CONTENT } from '../dashboards/student/learning center/University/Freshman/Logic/logicContent'
-import { PHYSICS_CONTENT } from '../dashboards/student/learning center/University/Freshman/physics/physicsContent'
-import { MATH_CONTENT } from '../dashboards/student/learning center/University/Freshman/math/mathContent'
-import { GEOGRAPHY_CONTENT } from '../dashboards/student/learning center/University/Freshman/geography/geographyContent'
-import { HISTORY_CONTENT } from '../dashboards/student/learning center/University/Freshman/history/historyContent'
-import { ENGLISH_CONTENT } from '../dashboards/student/learning center/University/Freshman/english/englishContent'
 
 export interface Topic {
   id: string
@@ -26,9 +21,10 @@ export interface CourseContent {
 export const FRESHMAN_COURSE_CONTENT: Record<string, CourseContent> = {
   Psychology: PSYCHOLOGY_CONTENT,
   Logic: LOGIC_CONTENT,
-  Physics: PHYSICS_CONTENT,
-  Math: MATH_CONTENT,
-  Geography: GEOGRAPHY_CONTENT,
-  History: HISTORY_CONTENT,
-  English: ENGLISH_CONTENT,
+  // Physics uses new chapter structure - no content file needed
+  // Math (Natural Science) uses new chapter structure - no content file needed
+  // Math (Social Science) uses new chapter structure - no content file needed
+  // Geography: Content not yet created
+  // History: Content not yet created
+  // English: Content not yet created
 }

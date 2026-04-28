@@ -79,6 +79,53 @@ const UniversityCourseViewer = lazy(() =>
   })),
 );
 
+// Lazy load Psychology chapters
+const PsychologyChapter1 = lazy(() =>
+  import("@dashboards/student/learning center/University/Freshman/Psychology/chapters/Chapter1/Chapter1").then((m) => ({
+    default: m.default,
+  })),
+);
+const PsychologyChapter2 = lazy(() =>
+  import("@dashboards/student/learning center/University/Freshman/Psychology/chapters/Chapter2/Chapter2").then((m) => ({
+    default: m.default,
+  })),
+);
+const PsychologyChapter3 = lazy(() =>
+  import("@dashboards/student/learning center/University/Freshman/Psychology/chapters/Chapter3/Chapter3").then((m) => ({
+    default: m.default,
+  })),
+);
+const PsychologyChapter4 = lazy(() =>
+  import("@dashboards/student/learning center/University/Freshman/Psychology/chapters/Chapter4/Chapter4").then((m) => ({
+    default: m.default,
+  })),
+);
+const PsychologyChapter5 = lazy(() =>
+  import("@dashboards/student/learning center/University/Freshman/Psychology/chapters/Chapter5/Chapter5").then((m) => ({
+    default: m.default,
+  })),
+);
+const PsychologyChapter6 = lazy(() =>
+  import("@dashboards/student/learning center/University/Freshman/Psychology/chapters/Chapter6/Chapter6").then((m) => ({
+    default: m.default,
+  })),
+);
+const PsychologyChapter7 = lazy(() =>
+  import("@dashboards/student/learning center/University/Freshman/Psychology/chapters/Chapter7/Chapter7").then((m) => ({
+    default: m.default,
+  })),
+);
+const PsychologyChapter8 = lazy(() =>
+  import("@dashboards/student/learning center/University/Freshman/Psychology/chapters/Chapter8/Chapter8").then((m) => ({
+    default: m.default,
+  })),
+);
+const PsychologyChapter9 = lazy(() =>
+  import("@dashboards/student/learning center/University/Freshman/Psychology/chapters/Chapter9/Chapter9").then((m) => ({
+    default: m.default,
+  })),
+);
+
 // Lazy load admin pages
 const AdminResources = lazy(() =>
   import("@pages/admin/AdminResources").then((m) => ({
@@ -327,6 +374,80 @@ const AppContent: React.FC = () => {
                 element={
                   <ProtectedRoute requiredRole="student">
                     <UniversityDashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Psychology Learning Center Routes */}
+              <Route
+                path="/student/learning-center/psychology/chapter1"
+                element={
+                  <ProtectedRoute requiredRole="student">
+                    <PsychologyChapter1 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/learning-center/psychology/chapter2"
+                element={
+                  <ProtectedRoute requiredRole="student">
+                    <PsychologyChapter2 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/learning-center/psychology/chapter3"
+                element={
+                  <ProtectedRoute requiredRole="student">
+                    <PsychologyChapter3 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/learning-center/psychology/chapter4"
+                element={
+                  <ProtectedRoute requiredRole="student">
+                    <PsychologyChapter4 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/learning-center/psychology/chapter5"
+                element={
+                  <ProtectedRoute requiredRole="student">
+                    <PsychologyChapter5 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/learning-center/psychology/chapter6"
+                element={
+                  <ProtectedRoute requiredRole="student">
+                    <PsychologyChapter6 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/learning-center/psychology/chapter7"
+                element={
+                  <ProtectedRoute requiredRole="student">
+                    <PsychologyChapter7 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/learning-center/psychology/chapter8"
+                element={
+                  <ProtectedRoute requiredRole="student">
+                    <PsychologyChapter8 />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/learning-center/psychology/chapter9"
+                element={
+                  <ProtectedRoute requiredRole="student">
+                    <PsychologyChapter9 />
                   </ProtectedRoute>
                 }
               />
