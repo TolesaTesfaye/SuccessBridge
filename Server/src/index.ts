@@ -164,6 +164,16 @@ const startServer = async () => {
           logging: console.log // Enable logging to see what's happening
         })
         logger.database('Models synced')
+        
+        // IMPORTANT: Ensure PendingUser table exists in production
+        // This is needed because we added this table after initial deployment
+        try {
+          const PendingUser = (await import('../models/PendingUser.js')).default
+          await PendingUser.sync({ alter: true })
+          logger.database('PendingUser table verified/created')
+        } catch (pendingUserError) {
+          logger.error('Failed to sync PendingUser table:', pendingUserError)
+        }
 
         // Seed super admin (only if not exists)
         await seedSuperAdmin()
