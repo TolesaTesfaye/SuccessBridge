@@ -11,6 +11,9 @@ export const register = async (
   next: NextFunction,
 ) => {
   try {
+    console.log('=== REGISTRATION CONTROLLER ===');
+    console.log('Request body:', JSON.stringify(req.body, null, 2));
+    
     const { email, name, password } = req.body;
     if (!email || !name || !password) {
       throw new AppError(400, "Email, name, and password are required");
@@ -24,16 +27,42 @@ export const register = async (
     });
   } catch (error: any) {
     console.error("Registration error:", error);
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+    
     if (error instanceof AppError) {
       return res
         .status(error.statusCode)
         .json({ success: false, error: error.message });
     }
-    const message =
-      error.name === "SequelizeValidationError"
-        ? error.errors.map((e: any) => e.message).join(", ")
-        : "Registration failed";
-    res.status(400).json({ success: false, error: message });
+    
+    // Handle Sequelize validation errors with more detail
+    if (error.name === "SequelizeValidationError") {
+      const validationErrors = error.errors.map((e: any) => ({
+        field: e.path,
+        message: e.message,
+        value: e.value,
+        type: e.type
+      }));
+      console.error("Validation errors:", validationErrors);
+      const message = error.errors.map((e: any) => `${e.path}: ${e.message}`).join(", ");
+      return res.status(400).json({ 
+        success: false, 
+        error: message,
+        details: validationErrors
+      });
+    }
+    
+    // Handle Sequelize database errors
+    if (error.name === "SequelizeDatabaseError") {
+      console.error("Database error:", error.message);
+      return res.status(400).json({ 
+        success: false, 
+        error: "Database error: " + error.message 
+      });
+    }
+    
+    res.status(400).json({ success: false, error: error.message || "Registration failed" });
   }
 };
 

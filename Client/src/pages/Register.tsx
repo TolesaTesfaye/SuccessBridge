@@ -192,8 +192,13 @@ export const Register: React.FC = () => {
         }
       }
       
-      console.log('Sending registration payload:', payload)
+      console.log('=== FRONTEND REGISTRATION ===')
+      console.log('Form data:', formData)
+      console.log('Sending registration payload:', JSON.stringify(payload, null, 2))
+      
       const result = await registerUser(payload)
+      
+      console.log('Registration result:', result)
       
       if (formData.role === 'admin') {
         // Admin registration - show success message and redirect to login
@@ -214,7 +219,7 @@ export const Register: React.FC = () => {
       }
     } catch (err) {
       // Error handling is now done in useAuth hook with toast notifications
-      console.error('Registration error:', err)
+      console.error('Registration error in component:', err)
     }
   }
 

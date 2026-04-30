@@ -32,6 +32,10 @@ export class AuthService {
       department?: string;
     },
   ) {
+    // Log the incoming registration data for debugging
+    console.log('=== REGISTRATION REQUEST ===');
+    console.log('Received data:', JSON.stringify(data, null, 2));
+    
     const {
       email,
       name,
@@ -46,6 +50,7 @@ export class AuthService {
     } = data;
 
     if (!email || !name || !password) {
+      console.error('Missing required fields:', { email: !!email, name: !!name, password: !!password });
       throw new AppError(400, "Email, name, and password are required");
     }
 
@@ -127,6 +132,8 @@ export class AuthService {
         verificationExpires: verificationExpires,
       };
 
+      console.log('Creating pending user with data:', JSON.stringify(pendingData, null, 2));
+      
       await PendingUser.create(pendingData as any);
 
       // Send verification email with 6-digit code
