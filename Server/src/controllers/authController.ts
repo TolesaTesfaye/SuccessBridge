@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { AppError } from "../middleware/errorHandler.js";
 import { AuthService } from "../services/authService.js";
 import { ILoginRequest, IRegisterRequest } from "../types/index.js";
+import User from "../models/User.js";
+import bcrypt from "bcryptjs";
 
 export const register = async (
   req: Request<unknown, unknown, IRegisterRequest>,
@@ -336,6 +338,83 @@ export const setupPassword = async (
   }
 };
 
+export const oauthRegisterComplete = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { 
+      email, name, password, googleId, provider,
+      studentType, highSchoolGrade, highSchoolStream,
+      universityLevel, universityId, departmentId
+    } = req.body;
+
+    if (!email || !name || !password) {
+      throw new AppError(400, "Email, name, and password are required");
+    }
+
+    if (!provider || provider !== 'google') {
+      throw new AppError(400, "Invalid OAuth provider");
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      throw new AppError(400, "User with this email already exists");
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create user directly (bypass PendingUser for OAuth)
+    const newUser = await User.create({
+      email,
+      name,
+      password: hashedPassword,
+      role: 'student',
+      isEmailVerified: true, // OAuth emails are pre-verified
+      isApproved: true,
+      approvalStatus: 'approved',
+      // Profile data
+      studentType: studentType || null,
+      highSchoolGrade: highSchoolGrade || null,
+      highSchoolStream: highSchoolStream || null,
+      universityLevel: universityLevel || null,
+      universityId: universityId || null,
+      departmentId: departmentId || null,
+      // OAuth IDs
+      ...(googleId && { googleId })
+    } as any);
+
+    // Generate token
+    const token = AuthService.generateToken(newUser);
+
+    res.status(201).json({
+      success: true,
+      data: {
+        token,
+        user: {
+          id: newUser.id,
+          email: newUser.email,
+          name: newUser.name,
+          role: newUser.role,
+          studentType: newUser.studentType
+        }
+      },
+      message: "Registration successful."
+    });
+  } catch (error: any) {
+    if (error instanceof AppError) {
+      return res
+        .status(error.statusCode)
+        .json({ success: false, error: error.message });
+    }
+    console.error("OAuth register complete error:", error);
+    res.status(500).json({ success: false, error: "Registration failed" });
+  }
+};
+
 export const completeOAuthProfile = async (
   req: Request,
   res: Response,
@@ -411,23 +490,33 @@ export const oauthSuccess = async (req: Request, res: Response) => {
     console.log("OAuth Success - User:", req.user);
 
     const user = req.user as any;
-    if (!user || !user.userId) {
+    if (!user) {
       console.error("OAuth Success - No user data received");
       const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
       return res.redirect(`${frontendUrl}/login?error=no_user_data`);
     }
 
-    // Check if user profile is complete
-    const fullUser = await AuthService.getCurrentUser(user.userId);
-    const isProfileComplete =
-      fullUser.studentType &&
-      ((fullUser.studentType === "high_school" &&
-        fullUser.highSchoolGrade &&
-        fullUser.highSchoolStream) ||
-        (fullUser.studentType === "university" &&
-          fullUser.universityLevel &&
-          fullUser.university &&
-          fullUser.department));
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+
+    // If this is a registration flow, redirect to registration form
+    if (user.isRegistration) {
+      const params = new URLSearchParams({
+        email: user.email,
+        name: user.name,
+        provider: user.provider,
+        ...(user.googleId && { googleId: user.googleId })
+      });
+      
+      const redirectUrl = `${frontendUrl}/oauth-register?${params.toString()}`;
+      console.log("OAuth Success - Redirecting to registration form:", redirectUrl);
+      return res.redirect(redirectUrl);
+    }
+
+    // If this is a login flow, generate token and redirect to dashboard
+    if (!user.userId) {
+      console.error("OAuth Success - No userId for login");
+      return res.redirect(`${frontendUrl}/login?error=no_user_data`);
+    }
 
     const token = AuthService.generateToken({
       id: user.userId,
@@ -436,19 +525,8 @@ export const oauthSuccess = async (req: Request, res: Response) => {
     } as any);
     console.log("OAuth Success - Token generated for user:", user.userId);
 
-    // Redirect based on profile completeness
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
-    let redirectUrl: string;
-
-    if (isProfileComplete) {
-      // Profile complete - go to dashboard
-      redirectUrl = `${frontendUrl}/oauth-callback?token=${token}`;
-    } else {
-      // Profile incomplete - go to profile completion page
-      redirectUrl = `${frontendUrl}/oauth-callback?token=${token}&complete_profile=true`;
-    }
-
-    console.log("OAuth Success - Redirecting to:", redirectUrl);
+    const redirectUrl = `${frontendUrl}/oauth-callback?token=${token}`;
+    console.log("OAuth Success - Redirecting to dashboard:", redirectUrl);
     res.redirect(redirectUrl);
   } catch (error) {
     console.error("OAuth success error:", error);

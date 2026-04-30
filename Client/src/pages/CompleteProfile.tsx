@@ -1,5 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useToast } from '../components/common/Toast'
+import { useAuthStore } from '../store/authStore'
 
 interface ProfileData {
   studentType: 'high_school' | 'university' | ''
@@ -10,10 +12,27 @@ interface ProfileData {
   department: string
 }
 
+interface University {
+  id: string
+  name: string
+}
+
+interface Department {
+  id: string
+  name: string
+  universityId: string
+}
+
 export const CompleteProfile: React.FC = () => {
   const navigate = useNavigate()
+  const toast = useToast()
+  const { setToken, setUser, initialize } = useAuthStore()
   const [currentStep, setCurrentStep] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [universities, setUniversities] = useState<University[]>([])
+  const [departments, setDepartments] = useState<Department[]>([])
+  const [filteredDepartments, setFilteredDepartments] = useState<Department[]>([])
+  
   const [profileData, setProfileData] = useState<ProfileData>({
     studentType: '',
     highSchoolGrade: '',
@@ -23,8 +42,44 @@ export const CompleteProfile: React.FC = () => {
     department: ''
   })
 
-  const totalSteps = profileData.studentType === 'high_school' ? 3 : 
-                    profileData.studentType === 'university' ? 4 : 2
+  const totalSteps = profileData.studentType === 'high_school' ? 2 : 
+                    profileData.studentType === 'university' ? 3 : 1
+
+  // Fetch universities and departments on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch universities
+        const univResponse = await fetch(`${import.meta.env.VITE_API_URL}/universities`)
+        const univData = await univResponse.json()
+        if (univData.success) {
+          setUniversities(univData.data)
+        }
+
+        // Fetch all departments
+        const deptResponse = await fetch(`${import.meta.env.VITE_API_URL}/departments`)
+        const deptData = await deptResponse.json()
+        setDepartments(deptData)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      }
+    }
+    fetchData()
+  }, [])
+
+  // Filter departments when university changes
+  useEffect(() => {
+    if (profileData.university) {
+      const filtered = departments.filter(d => d.universityId === profileData.university)
+      setFilteredDepartments(filtered)
+      // Reset department if it's not in the filtered list
+      if (profileData.department && !filtered.find(d => d.id === profileData.department)) {
+        setProfileData(prev => ({ ...prev, department: '' }))
+      }
+    } else {
+      setFilteredDepartments([])
+    }
+  }, [profileData.university, departments])
 
   const handleNext = () => {
     if (currentStep < totalSteps) {
@@ -41,36 +96,80 @@ export const CompleteProfile: React.FC = () => {
   const handleSubmit = async () => {
     setLoading(true)
     try {
-      const token = localStorage.getItem('token')
-      if (!token) {
-        alert('No authentication token found. Please login again.')
-        navigate('/login')
-        return
-      }
-
-      console.log('Submitting profile data:', profileData)
+      // Check if this is OAuth registration
+      const oauthDataStr = sessionStorage.getItem('oauthData')
       
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/complete-oauth-profile`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(profileData)
-      })
+      if (oauthDataStr) {
+        // OAuth registration - create account with profile data
+        const oauthData = JSON.parse(oauthDataStr)
+        const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8)
+        
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/oauth-register-complete`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: oauthData.email,
+            name: oauthData.name,
+            password: randomPassword,
+            googleId: oauthData.googleId,
+            provider: oauthData.provider,
+            // Include profile data
+            studentType: profileData.studentType,
+            highSchoolGrade: profileData.highSchoolGrade || undefined,
+            highSchoolStream: profileData.highSchoolStream || undefined,
+            universityLevel: profileData.universityLevel || undefined,
+            universityId: profileData.university || undefined,
+            departmentId: profileData.department || undefined,
+          })
+        })
 
-      const data = await response.json()
-      console.log('Profile completion response:', data)
+        const data = await response.json()
 
-      if (data.success) {
-        alert('Profile completed successfully!')
-        navigate('/dashboard')
+        if (data.success) {
+          // Store token and user data
+          setToken(data.data.token)
+          setUser(data.data.user)
+          sessionStorage.removeItem('oauthData') // Clean up
+          
+          toast.success('Registration completed successfully!')
+          
+          // Navigate to dashboard - the auth context is now properly initialized
+          navigate('/dashboard')
+        } else {
+          toast.error(data.error || 'Registration failed')
+        }
       } else {
-        alert(data.error || 'Failed to complete profile')
+        // Regular profile completion (user already exists)
+        const token = localStorage.getItem('token')
+        if (!token) {
+          toast.error('No authentication token found. Please login again.')
+          navigate('/login')
+          return
+        }
+
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/complete-oauth-profile`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(profileData)
+        })
+
+        const data = await response.json()
+
+        if (data.success) {
+          toast.success('Profile completed successfully!')
+          navigate('/dashboard')
+        } else {
+          toast.error(data.error || 'Failed to complete profile')
+        }
       }
     } catch (error) {
       console.error('Profile completion error:', error)
-      alert('An error occurred while completing your profile')
+      toast.error('An error occurred while completing your profile')
     } finally {
       setLoading(false)
     }
@@ -85,16 +184,15 @@ export const CompleteProfile: React.FC = () => {
 
   const canProceed = () => {
     switch (currentStep) {
-      case 1: return true // Welcome step
-      case 2: return profileData.studentType !== ''
-      case 3: 
+      case 1: return profileData.studentType !== ''
+      case 2: 
         if (profileData.studentType === 'high_school') {
           return profileData.highSchoolGrade !== ''
         } else if (profileData.studentType === 'university') {
           return profileData.universityLevel !== ''
         }
         return false
-      case 4: 
+      case 3: 
         if (profileData.studentType === 'high_school') {
           return profileData.highSchoolStream !== ''
         } else if (profileData.studentType === 'university') {
@@ -109,33 +207,15 @@ export const CompleteProfile: React.FC = () => {
     switch (currentStep) {
       case 1:
         return (
-          <div className="text-center space-y-6">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-              <span className="text-2xl">👋</span>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Welcome to SuccessBridge!
-              </h3>
-              <p className="text-gray-600">
-                Let's set up your profile to provide you with personalized learning resources.
-                This will only take a minute.
-              </p>
-            </div>
-          </div>
-        )
-
-      case 2:
-        return (
           <div className="space-y-6">
             <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl">🎓</span>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 What type of student are you?
               </h3>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-300">
                 This helps us show you the right content and resources.
               </p>
             </div>
@@ -144,16 +224,16 @@ export const CompleteProfile: React.FC = () => {
               <button
                 className={`w-full p-4 border-2 rounded-lg text-left transition-all ${
                   profileData.studentType === 'high_school'
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                 }`}
                 onClick={() => updateProfileData('studentType', 'high_school')}
               >
                 <div className="flex items-center">
                   <span className="text-2xl mr-3">🏫</span>
                   <div>
-                    <div className="font-medium">High School Student</div>
-                    <div className="text-sm text-gray-500">Grades 9-12</div>
+                    <div className="font-medium text-gray-900 dark:text-white">High School Student</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Grades 9-12</div>
                   </div>
                 </div>
               </button>
@@ -161,16 +241,16 @@ export const CompleteProfile: React.FC = () => {
               <button
                 className={`w-full p-4 border-2 rounded-lg text-left transition-all ${
                   profileData.studentType === 'university'
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                 }`}
                 onClick={() => updateProfileData('studentType', 'university')}
               >
                 <div className="flex items-center">
                   <span className="text-2xl mr-3">🏛️</span>
                   <div>
-                    <div className="font-medium">University Student</div>
-                    <div className="text-sm text-gray-500">Undergraduate & Graduate</div>
+                    <div className="font-medium text-gray-900 dark:text-white">University Student</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Undergraduate & Graduate</div>
                   </div>
                 </div>
               </button>
@@ -178,7 +258,7 @@ export const CompleteProfile: React.FC = () => {
           </div>
         )
 
-      case 3:
+      case 2:
         if (profileData.studentType === 'high_school') {
           return (
             <div className="space-y-6">
@@ -251,15 +331,15 @@ export const CompleteProfile: React.FC = () => {
         }
         break
 
-      case 4:
+      case 3:
         if (profileData.studentType === 'high_school') {
           return (
             <div className="space-y-6">
               <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl">🔬</span>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   What's your stream?
                 </h3>
               </div>
@@ -268,16 +348,16 @@ export const CompleteProfile: React.FC = () => {
                 <button
                   className={`w-full p-4 border-2 rounded-lg text-left transition-all ${
                     profileData.highSchoolStream === 'natural'
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                      : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                   }`}
                   onClick={() => updateProfileData('highSchoolStream', 'natural')}
                 >
                   <div className="flex items-center">
                     <span className="text-2xl mr-3">🧪</span>
                     <div>
-                      <div className="font-medium">Natural Science</div>
-                      <div className="text-sm text-gray-500">Physics, Chemistry, Biology, Math</div>
+                      <div className="font-medium text-gray-900 dark:text-white">Natural Science</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">Physics, Chemistry, Biology, Math</div>
                     </div>
                   </div>
                 </button>
@@ -285,16 +365,16 @@ export const CompleteProfile: React.FC = () => {
                 <button
                   className={`w-full p-4 border-2 rounded-lg text-left transition-all ${
                     profileData.highSchoolStream === 'social'
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                      : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                   }`}
                   onClick={() => updateProfileData('highSchoolStream', 'social')}
                 >
                   <div className="flex items-center">
                     <span className="text-2xl mr-3">📖</span>
                     <div>
-                      <div className="font-medium">Social Science</div>
-                      <div className="text-sm text-gray-500">History, Geography, Languages, Arts</div>
+                      <div className="font-medium text-gray-900 dark:text-white">Social Science</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">History, Geography, Languages, Arts</div>
                     </div>
                   </div>
                 </button>
@@ -305,42 +385,55 @@ export const CompleteProfile: React.FC = () => {
           return (
             <div className="space-y-6">
               <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-2xl">🏛️</span>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                   University Details
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-300">
                   Tell us about your university and department
                 </p>
               </div>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     University Name
                   </label>
-                  <input 
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  <select
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
                     value={profileData.university}
                     onChange={(e) => updateProfileData('university', e.target.value)}
-                    placeholder="e.g., Addis Ababa University"
-                  />
+                  >
+                    <option value="">Select a university</option>
+                    {universities.map((univ) => (
+                      <option key={univ.id} value={univ.id}>
+                        {univ.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Department
                   </label>
-                  <input 
-                    type="text"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  <select
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white disabled:opacity-50"
                     value={profileData.department}
                     onChange={(e) => updateProfileData('department', e.target.value)}
-                    placeholder="e.g., Computer Science"
-                  />
+                    disabled={!profileData.university}
+                  >
+                    <option value="">
+                      {profileData.university ? 'Select a department' : 'Select university first'}
+                    </option>
+                    {filteredDepartments.map((dept) => (
+                      <option key={dept.id} value={dept.id}>
+                        {dept.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>
@@ -354,7 +447,7 @@ export const CompleteProfile: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center py-12 px-4">
       <div className="max-w-md w-full space-y-8">
         {/* Progress Bar */}
         <div className="text-center">
@@ -363,30 +456,30 @@ export const CompleteProfile: React.FC = () => {
               {Array.from({ length: totalSteps }, (_, i) => (
                 <div
                   key={i}
-                  className={`w-3 h-3 rounded-full ${
-                    i + 1 <= currentStep ? 'bg-blue-500' : 'bg-gray-300'
+                  className={`w-3 h-3 rounded-full transition-all ${
+                    i + 1 <= currentStep ? 'bg-blue-500' : 'bg-gray-300 dark:bg-gray-600'
                   }`}
                 />
               ))}
             </div>
           </div>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
             Step {currentStep} of {totalSteps}
           </p>
         </div>
 
         {/* Step Content */}
-        <div className="bg-white p-8 rounded-lg shadow">
+        <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl">
           {renderStep()}
         </div>
 
         {/* Navigation Buttons */}
         <div className="flex justify-between">
           <button
-            className={`px-6 py-2 rounded-md ${
+            className={`px-6 py-2 rounded-md font-medium transition-all ${
               currentStep === 1
-                ? 'text-gray-400 cursor-not-allowed'
-                : 'text-gray-600 hover:text-gray-800'
+                ? 'text-gray-400 dark:text-gray-600 cursor-not-allowed'
+                : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-white dark:bg-gray-700 shadow'
             }`}
             onClick={handleBack}
             disabled={currentStep === 1}
@@ -396,7 +489,7 @@ export const CompleteProfile: React.FC = () => {
 
           {currentStep === totalSteps ? (
             <button
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg transition-all"
               onClick={handleSubmit}
               disabled={loading || !canProceed()}
             >
@@ -404,7 +497,7 @@ export const CompleteProfile: React.FC = () => {
             </button>
           ) : (
             <button
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium shadow-lg transition-all"
               onClick={handleNext}
               disabled={!canProceed()}
             >
@@ -416,7 +509,7 @@ export const CompleteProfile: React.FC = () => {
         {/* Skip Option */}
         <div className="text-center">
           <button
-            className="text-sm text-gray-500 hover:text-gray-700"
+            className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 underline"
             onClick={() => navigate('/dashboard')}
           >
             Skip for now

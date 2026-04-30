@@ -6,9 +6,9 @@ class User extends Model<IUser> implements IUser {
   public id!: string
   public email!: string
   public name!: string
+  public fatherName?: string
   public password?: string
   public googleId?: string
-  public microsoftId?: string
   public role!: 'student' | 'admin' | 'super_admin'
   public studentType?: 'high_school' | 'university'
   public highSchoolGrade?: 'grade_9' | 'grade_10' | 'grade_11' | 'grade_12'
@@ -50,6 +50,10 @@ User.init(
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    fatherName: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     password: {
       type: DataTypes.STRING,

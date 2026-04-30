@@ -4,11 +4,12 @@ import * as nodemailer from 'nodemailer';
 // Create transporter for sending emails (lazy initialization)
 let transporter: nodemailer.Transporter | null = null;
 let transporterInitialized = false;
+let transporterReady = false;
 
 /**
  * Initialize email transporter (called on first use)
  */
-function initializeTransporter() {
+async function initializeTransporter() {
   if (transporterInitialized) {
     return;
   }
@@ -18,6 +19,12 @@ function initializeTransporter() {
   try {
     const smtpUser = process.env.SMTP_USER;
     const smtpPass = process.env.SMTP_PASS;
+    
+    console.log('🔧 Initializing email service...');
+    console.log('📧 SMTP_USER:', smtpUser ? `${smtpUser.substring(0, 5)}...` : 'NOT SET');
+    console.log('📧 SMTP_PASS:', smtpPass ? '***SET***' : 'NOT SET');
+    console.log('📧 SMTP_HOST:', process.env.SMTP_HOST || 'smtp.gmail.com');
+    console.log('📧 SMTP_PORT:', process.env.SMTP_PORT || '587');
     
     if (!smtpUser || !smtpPass) {
       console.warn('⚠️ SMTP credentials not configured. Emails will be logged to console.');
@@ -32,21 +39,27 @@ function initializeTransporter() {
         user: smtpUser,
         pass: smtpPass,
       },
-    });
-
-    // Verify transporter configuration
-    transporter.verify((error, success) => {
-      if (error) {
-        console.error('❌ Email service configuration error:', error);
-        transporter = null; // Reset on error
-      } else {
-        console.log('✅ Email service is ready to send emails');
+      tls: {
+        rejectUnauthorized: false // Allow self-signed certificates
       }
     });
+
+    // Verify transporter configuration (make it synchronous)
+    try {
+      await transporter.verify();
+      console.log('✅ Email service is ready to send emails');
+      transporterReady = true;
+    } catch (error) {
+      console.error('❌ Email service configuration error:', error);
+      console.error('❌ Error details:', JSON.stringify(error, null, 2));
+      transporter = null;
+      transporterReady = false;
+    }
   } catch (error) {
     console.error('❌ Failed to initialize email transporter:', error);
     console.log('📧 Emails will be logged to console instead');
     transporter = null;
+    transporterReady = false;
   }
 }
 
@@ -56,7 +69,7 @@ export class EmailService {
    */
   static async sendVerificationCodeEmail(email: string, name: string, code: string) {
     // Initialize transporter on first use
-    initializeTransporter();
+    await initializeTransporter();
     
     try {
       const mailOptions = {
@@ -127,9 +140,12 @@ The SuccessBridge Team
         `,
       };
 
-      if (transporter) {
-        await transporter.sendMail(mailOptions);
+      if (transporter && transporterReady) {
+        console.log(`📧 Attempting to send verification email to ${email}...`);
+        const info = await transporter.sendMail(mailOptions);
         console.log(`✅ Verification code sent to ${email}`);
+        console.log(`📬 Message ID: ${info.messageId}`);
+        return true;
       } else {
         // Fallback to console logging if transporter is not available
         console.log(`
@@ -140,15 +156,18 @@ Verification Code: ${code}
 Expires: 2 minutes
         `);
         console.log(`⚠️ Email transporter not available. Code logged to console.`);
+        return false;
       }
     } catch (error) {
       console.error('❌ Failed to send verification email:', error);
+      console.error('❌ Error details:', JSON.stringify(error, null, 2));
       // Log to console as fallback
       console.log(`
 📧 FALLBACK - Verification code for ${email}:
 Code: ${code}
 Expires: 2 minutes
       `);
+      return false;
     }
   }
 
@@ -370,7 +389,7 @@ The SuccessBridge Team
    */
   static async sendPasswordResetEmail(email: string, name: string, code: string) {
     // Initialize transporter on first use
-    initializeTransporter();
+    await initializeTransporter();
     
     try {
       const mailOptions = {
@@ -440,9 +459,12 @@ The SuccessBridge Team
         `,
       };
 
-      if (transporter) {
-        await transporter.sendMail(mailOptions);
+      if (transporter && transporterReady) {
+        console.log(`📧 Attempting to send password reset email to ${email}...`);
+        const info = await transporter.sendMail(mailOptions);
         console.log(`✅ Password reset code sent to ${email}`);
+        console.log(`📬 Message ID: ${info.messageId}`);
+        return true;
       } else {
         // Fallback to console logging if transporter is not available
         console.log(`
@@ -453,15 +475,18 @@ Reset Code: ${code}
 Expires: 10 minutes
         `);
         console.log(`⚠️ Email transporter not available. Code logged to console.`);
+        return false;
       }
     } catch (error) {
       console.error('❌ Failed to send password reset email:', error);
+      console.error('❌ Error details:', JSON.stringify(error, null, 2));
       // Log to console as fallback
       console.log(`
 📧 FALLBACK - Password reset code for ${email}:
 Code: ${code}
 Expires: 10 minutes
       `);
+      return false;
     }
   }
 }

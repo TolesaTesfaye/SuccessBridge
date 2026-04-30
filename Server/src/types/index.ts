@@ -3,9 +3,9 @@ export interface IUser {
   id: string;
   email: string;
   name: string;
+  fatherName?: string;
   password?: string; // Optional for OAuth users
   googleId?: string;
-  microsoftId?: string;
   role: "student" | "admin" | "super_admin";
   studentType?: "high_school" | "university";
   highSchoolGrade?: "grade_9" | "grade_10" | "grade_11" | "grade_12";
@@ -191,7 +191,6 @@ export interface IRegisterRequest {
   name: string;
   password?: string;
   googleId?: string;
-  microsoftId?: string;
   role?: "student" | "admin" | "super_admin";
   studentType?: "high_school" | "university";
   highSchoolGrade?: "grade_9" | "grade_10" | "grade_11" | "grade_12";

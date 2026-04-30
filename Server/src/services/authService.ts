@@ -182,7 +182,7 @@ export class AuthService {
     if (!user.password) {
       throw new AppError(
         400,
-        "This account does not have a password. Please sign in with Google/Microsoft, or set a password first.",
+        "This account does not have a password. Please sign in with Google, or set a password first.",
       );
     }
 
@@ -646,7 +646,7 @@ export class AuthService {
     if (!user.password) {
       throw new AppError(
         400,
-        'This account uses OAuth authentication (Google/Microsoft). Please sign in with your OAuth provider.',
+        'This account uses OAuth authentication (Google). Please sign in with your OAuth provider.',
       );
     }
 

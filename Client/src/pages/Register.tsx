@@ -218,7 +218,12 @@ export const Register: React.FC = () => {
   const totalSteps = formData.role === 'admin' ? 1 : formData.studentType === 'high_school' ? 3 : 4
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-800 flex flex-col justify-center py-6 md:py-12 transition-colors duration-300">
+    <div className="min-h-screen relative overflow-hidden flex flex-col justify-center py-6 md:py-12 bg-slate-50 dark:bg-[#0a0f1c]">
+      {/* Background Decorative Elements - Same as Home Page */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] opacity-30 pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-indigo-600 blur-[100px] rounded-full mix-blend-screen"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-gradient-to-r from-cyan-500 to-blue-500 blur-[100px] rounded-full mix-blend-screen opacity-50"></div>
+      </div>
 
       {/* Theme Toggle - Top Right */}
       <div className="absolute top-3 right-3 md:top-4 md:right-4 z-20">
@@ -227,11 +232,11 @@ export const Register: React.FC = () => {
 
       <div className="w-full mx-auto max-w-md relative z-10 px-3 md:px-0">
 
-        <div className="flex justify-center mb-3 md:mb-6">
+        <div className="flex justify-center mb-3 md:mb-6 animate-fade-in">
           <AppLogo size="md" className="md:scale-125" />
         </div>
 
-        <div className="bg-white dark:bg-slate-700 py-4 md:py-8 px-3 md:px-10 md:shadow-2xl md:border border-slate-200 dark:border-slate-600 rounded-2xl md:rounded-3xl md:backdrop-blur-xl transition-all">
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl py-4 md:py-8 px-3 md:px-10 shadow-2xl border border-slate-200/50 dark:border-slate-700/50 rounded-2xl md:rounded-3xl transition-all hover:shadow-3xl shadow-blue-500/20 dark:shadow-blue-500/30 hover:shadow-blue-500/40 dark:hover:shadow-blue-500/50 animate-fade-in-up delay-100">
           <div className="text-center mb-4 md:mb-8">
             <h1 className="text-xl md:text-3xl font-extrabold text-slate-900 dark:text-white transition-colors">Create Account</h1>
 
@@ -241,7 +246,7 @@ export const Register: React.FC = () => {
                 <div
                   key={index}
                   className={`h-1.5 md:h-2 rounded-full transition-all duration-300 flex-1 ${index + 1 === step ? 'bg-blue-600 w-12' :
-                    index + 1 < step ? 'bg-blue-400' : 'bg-slate-200 dark:bg-slate-800'
+                    index + 1 < step ? 'bg-blue-400' : 'bg-slate-200 dark:bg-slate-700'
                     }`}
                 ></div>
               ))}
@@ -426,21 +431,13 @@ export const Register: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 md:gap-3">
+                  <div className="grid grid-cols-1 gap-2 md:gap-3">
                     <a
-                      href={`${import.meta.env.VITE_API_URL}/auth/google`}
+                      href={`${import.meta.env.VITE_API_URL}/auth/google/register`}
                       className="flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-3 px-2 md:px-4 border border-slate-300 dark:border-slate-600 rounded-lg md:rounded-xl text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-100 bg-white dark:bg-slate-600 hover:bg-slate-50 dark:hover:bg-slate-500 transition-all font-medium"
                     >
                       <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-4 h-4 md:w-5 md:h-5" />
                       Google
-                    </a>
-
-                    <a
-                      href={`${import.meta.env.VITE_API_URL}/auth/microsoft`}
-                      className="flex items-center justify-center gap-1.5 md:gap-2 py-2 md:py-3 px-2 md:px-4 border border-slate-300 dark:border-slate-600 rounded-lg md:rounded-xl text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-100 bg-white dark:bg-slate-600 hover:bg-slate-50 dark:hover:bg-slate-500 transition-all font-medium"
-                    >
-                      <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft" className="w-4 h-4 md:w-5 md:h-5" />
-                      Microsoft
                     </a>
                   </div>
                 </>

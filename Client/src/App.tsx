@@ -23,6 +23,7 @@ import { ResetPassword } from "@pages/ResetPassword";
 import { NotFound } from "@pages/NotFound";
 import { Unauthorized } from "@pages/Unauthorized";
 import { OAuthCallback } from "@pages/OAuthCallback";
+import { OAuthRegister } from "@pages/OAuthRegister";
 import { CompleteProfile } from "@pages/CompleteProfile";
 
 // Lazy load dashboards
@@ -310,6 +311,7 @@ const AppContent: React.FC = () => {
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/oauth-callback" element={<OAuthCallback />} />
+              <Route path="/oauth-register" element={<OAuthRegister />} />
               <Route path="/complete-profile" element={<CompleteProfile />} />
 
               {/* Protected Routes */}

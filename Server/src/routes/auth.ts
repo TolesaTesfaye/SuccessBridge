@@ -13,6 +13,7 @@ import {
   getAdminRequestStatus,
   setupPassword,
   oauthSuccess,
+  oauthRegisterComplete,
   completeOAuthProfile,
   verifyEmail,
   resendVerificationEmail,
@@ -481,6 +482,9 @@ router.post("/admin-request-status", getAdminRequestStatus);
  */
 router.post("/complete-oauth-profile", authMiddleware, completeOAuthProfile);
 
+// OAuth Registration Complete (after collecting additional info)
+router.post("/oauth-register-complete", oauthRegisterComplete);
+
 /**
  * @swagger
  * /auth/verify-email:
@@ -635,25 +639,20 @@ router.post("/verify-reset-code", verifyResetCode);
  */
 router.post("/reset-password", resetPassword);
 
-// Google OAuth
+// Google OAuth - Register (create new users)
 router.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] }),
-);
-router.get(
-  "/google/callback",
-  passport.authenticate("google", { session: false }),
-  oauthSuccess,
+  "/google/register",
+  passport.authenticate("google", { 
+    scope: ["profile", "email"],
+    prompt: "select_account",
+    state: "register" // Pass mode as state
+  }),
 );
 
-// Microsoft OAuth
+// Google OAuth - Callback
 router.get(
-  "/microsoft",
-  passport.authenticate("microsoft", { scope: ["user.read"] }),
-);
-router.get(
-  "/microsoft/callback",
-  passport.authenticate("microsoft", { session: false }),
+  "/google/callback",
+  passport.authenticate("google", { session: false, failureRedirect: '/login?error=oauth_failed' }),
   oauthSuccess,
 );
 
