@@ -152,13 +152,45 @@ export const Register: React.FC = () => {
       // Combine first and last name
       const fullName = `${formData.firstName.trim()} ${formData.lastName.trim()}`
       
-      const payload = { 
-        ...formData,
-        name: fullName  // Add combined name for backend
+      // Build clean payload - only include defined values
+      const payload: any = { 
+        name: fullName,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role
       }
-      delete (payload as any).confirmPassword
-      delete (payload as any).firstName  // Remove separate fields
-      delete (payload as any).lastName
+
+      // Add student-specific fields only if they have values
+      if (formData.role === 'student') {
+        if (formData.studentType) {
+          payload.studentType = formData.studentType
+        }
+        if (formData.highSchoolGrade) {
+          payload.highSchoolGrade = formData.highSchoolGrade
+        }
+        if (formData.highSchoolStream) {
+          payload.highSchoolStream = formData.highSchoolStream
+        }
+        if (formData.universityLevel) {
+          payload.universityLevel = formData.universityLevel
+        }
+        if (formData.university) {
+          payload.university = formData.university
+        }
+        if (formData.department) {
+          payload.department = formData.department
+        }
+      }
+
+      // Add admin-specific fields
+      if (formData.role === 'admin') {
+        if (formData.university) {
+          payload.university = formData.university
+        }
+        if (formData.department) {
+          payload.department = formData.department
+        }
+      }
       
       console.log('Sending registration payload:', payload)
       const result = await registerUser(payload)
