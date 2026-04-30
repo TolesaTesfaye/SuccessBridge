@@ -168,7 +168,6 @@ const startServer = async () => {
         // IMPORTANT: Ensure PendingUser table exists in production
         // This is needed because we added this table after initial deployment
         try {
-          const PendingUser = (await import('../models/PendingUser.js')).default
           await PendingUser.sync({ alter: true })
           logger.database('PendingUser table verified/created')
         } catch (pendingUserError) {
