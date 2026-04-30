@@ -27,15 +27,26 @@ const initializeTheme = () => {
 const registerServiceWorker = async () => {
   if ('serviceWorker' in navigator && import.meta.env.PROD) {
     try {
+      // Unregister any existing service workers first to avoid conflicts
+      const registrations = await navigator.serviceWorker.getRegistrations()
+      for (const registration of registrations) {
+        await registration.unregister()
+        console.log('Unregistered old service worker')
+      }
+      
+      // Register new service worker
       const registration = await navigator.serviceWorker.register('/sw.js', {
         scope: '/',
+        updateViaCache: 'none', // Always fetch fresh service worker
       })
       
       console.log('Service Worker registered successfully:', registration)
       
       // Check for updates every 60 seconds
       setInterval(() => {
-        registration.update()
+        registration.update().catch(err => {
+          console.log('Service Worker update check failed (non-critical):', err)
+        })
       }, 60000)
       
       // Listen for updates
@@ -52,7 +63,8 @@ const registerServiceWorker = async () => {
         }
       })
     } catch (error) {
-      console.log('Service Worker registration failed:', error)
+      console.log('Service Worker registration failed (non-critical):', error)
+      // Service worker is optional, app will work without it
     }
   }
 }
