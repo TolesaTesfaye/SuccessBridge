@@ -1,5 +1,6 @@
 import sequelize from '../config/database.js'
 import PendingUser from '../models/PendingUser.js'
+import { QueryTypes } from 'sequelize'
 
 /**
  * Ensure PendingUser table exists with correct schema
@@ -20,7 +21,7 @@ const ensurePendingUsersTable = async () => {
        FROM information_schema.columns 
        WHERE table_name = 'pending_users' 
        ORDER BY ordinal_position;`,
-      { type: sequelize.QueryTypes.SELECT }
+      { type: QueryTypes.SELECT }
     )
     
     console.log('📋 Table structure:')
