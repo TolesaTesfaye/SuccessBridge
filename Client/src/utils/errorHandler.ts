@@ -284,6 +284,7 @@ const HTTP_STATUS_MESSAGES: Record<number, UserFriendlyError> = {
 
 /**
  * Parse error from API response and return user-friendly message
+ * Provides clear, actionable error messages for all API errors
  */
 export function parseApiError(error: any): UserFriendlyError {
   // Handle Axios errors
