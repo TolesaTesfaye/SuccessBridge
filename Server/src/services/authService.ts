@@ -88,9 +88,16 @@ export class AuthService {
 
         // Send new verification email
         try {
-          await EmailService.sendVerificationCodeEmail(email, name, verificationCode);
+          // Use Promise.race to timeout after 5 seconds
+          await Promise.race([
+            EmailService.sendVerificationCodeEmail(email, name, verificationCode),
+            new Promise((_, reject) => 
+              setTimeout(() => reject(new Error('Email timeout')), 5000)
+            )
+          ]);
         } catch (error) {
-          console.error('Failed to send verification email:', error);
+          console.error('Failed to send verification email (non-blocking):', error);
+          // Don't throw - allow registration to continue even if email fails
         }
 
         return {
@@ -171,11 +178,18 @@ export class AuthService {
       
       await PendingUser.create(pendingData as any);
 
-      // Send verification email with 6-digit code
+      // Send verification email with 6-digit code (with timeout to prevent blocking)
       try {
-        await EmailService.sendVerificationCodeEmail(email, name, verificationCode);
+        // Use Promise.race to timeout after 5 seconds
+        await Promise.race([
+          EmailService.sendVerificationCodeEmail(email, name, verificationCode),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Email timeout')), 5000)
+          )
+        ]);
       } catch (error) {
-        console.error('Failed to send verification email:', error);
+        console.error('Failed to send verification email (non-blocking):', error);
+        // Don't throw - allow registration to continue even if email fails
       }
 
       // Don't return token - user must verify email first
@@ -660,10 +674,17 @@ export class AuthService {
     });
 
     try {
-      await EmailService.sendVerificationCodeEmail(email, pendingUser.name, verificationCode);
+      // Use Promise.race to timeout after 5 seconds
+      await Promise.race([
+        EmailService.sendVerificationCodeEmail(email, pendingUser.name, verificationCode),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Email timeout')), 5000)
+        )
+      ]);
     } catch (error) {
-      console.error('Failed to send verification email:', error);
-      throw new AppError(500, 'Failed to send verification email');
+      console.error('Failed to send verification email (non-blocking):', error);
+      // Don't throw - allow resend to complete even if email fails
+      // The code is still updated in database
     }
 
     return {
@@ -702,10 +723,16 @@ export class AuthService {
     });
 
     try {
-      await EmailService.sendPasswordResetEmail(email, user.name, resetCode);
+      // Use Promise.race to timeout after 5 seconds
+      await Promise.race([
+        EmailService.sendPasswordResetEmail(email, user.name, resetCode),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Email timeout')), 5000)
+        )
+      ]);
     } catch (error) {
-      console.error('Failed to send password reset email:', error);
-      throw new AppError(500, 'Failed to send password reset email');
+      console.error('Failed to send password reset email (non-blocking):', error);
+      // Don't throw - allow password reset to continue even if email fails
     }
 
     return {

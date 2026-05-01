@@ -19,7 +19,13 @@ export const register = async (
       throw new AppError(400, "Email, name, and password are required");
     }
 
-    const result = await AuthService.register(req.body);
+    // Set a timeout for the entire registration process
+    const registrationPromise = AuthService.register(req.body);
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Registration timeout')), 25000) // 25 seconds
+    );
+
+    const result = await Promise.race([registrationPromise, timeoutPromise]) as any;
 
     res.status(201).json({
       success: true,
@@ -29,6 +35,14 @@ export const register = async (
     console.error("Registration error:", error);
     console.error("Error name:", error.name);
     console.error("Error message:", error.message);
+    
+    // Handle timeout specifically
+    if (error.message === 'Registration timeout') {
+      return res.status(408).json({ 
+        success: false, 
+        error: 'Registration is taking longer than expected. Your account may have been created. Please try logging in or use the "Resend Code" option if you received a verification email.' 
+      });
+    }
     
     if (error instanceof AppError) {
       return res

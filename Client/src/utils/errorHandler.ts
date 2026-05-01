@@ -136,6 +136,12 @@ const ERROR_MESSAGES: Record<string, UserFriendlyError> = {
     type: 'warning',
     duration: 6000
   },
+  'REGISTRATION_TIMEOUT': {
+    title: 'Registration In Progress',
+    message: 'Your registration is being processed. Please check your email for a verification code, or try logging in if you already have an account.',
+    type: 'info',
+    duration: 8000
+  },
 
   // Permission & Access Errors
   'UNAUTHORIZED': {
@@ -243,6 +249,12 @@ const HTTP_STATUS_MESSAGES: Record<number, UserFriendlyError> = {
     message: 'The requested resource could not be found.',
     type: 'error',
     duration: 5000
+  },
+  408: {
+    title: 'Request Timeout',
+    message: 'The request took too long. Your registration may have been created. Please check your email or try logging in.',
+    type: 'info',
+    duration: 8000
   },
   409: {
     title: 'Conflict',
@@ -373,6 +385,14 @@ export function parseApiError(error: any): UserFriendlyError {
           message: 'We\'re experiencing technical difficulties. Please try again in a few moments.',
           type: 'error',
           duration: 7000
+        }
+      }
+      if (message.includes('timeout') || message.includes('taking longer than expected')) {
+        return {
+          title: 'Registration In Progress',
+          message: 'Your registration is being processed. Please check your email for a verification code in a few moments, or try the "Resend Code" option.',
+          type: 'info',
+          duration: 8000
         }
       }
       if (message.includes('network') || message.includes('timeout')) {
