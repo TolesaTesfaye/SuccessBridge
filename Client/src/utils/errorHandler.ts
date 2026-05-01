@@ -317,9 +317,9 @@ export function parseApiError(error: any): UserFriendlyError {
       }
       if (message.includes('registration pending') || message.includes('pending. please check your email')) {
         return {
-          title: 'Registration Pending',
-          message: 'You already started registration with this email. Please check your email for the verification code, or use the "Resend Code" option on the verify-email page.',
-          type: 'warning',
+          title: 'Verification Code Sent',
+          message: 'A new verification code has been sent to your email. Please check your inbox and enter the code to complete registration. The code expires in 15 minutes.',
+          type: 'info',
           duration: 10000
         }
       }

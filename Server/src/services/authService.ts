@@ -63,7 +63,42 @@ export class AuthService {
     // Check if there's a pending registration
     const existingPending = await PendingUser.findOne({ where: { email } });
     if (existingPending) {
-      throw new AppError(400, "Registration pending. You already started registration with this email. Please check your email for the verification code, or use the 'Resend Code' option on the verify-email page.");
+      // If the pending registration has expired, delete it and allow re-registration
+      if (existingPending.verificationExpires < new Date()) {
+        console.log('Expired pending registration found, deleting and allowing re-registration');
+        await existingPending.destroy();
+      } else {
+        // If still valid, update it with new code instead of blocking
+        const verificationCode = this.generateVerificationCode();
+        const verificationExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+        
+        await existingPending.update({
+          name: name, // Update name in case they changed it
+          password: await bcrypt.hash(password, 10), // Update password
+          verificationCode: verificationCode,
+          verificationExpires: verificationExpires,
+          // Update student info if provided
+          studentType: studentType || existingPending.studentType,
+          highSchoolGrade: highSchoolGrade || existingPending.highSchoolGrade,
+          highSchoolStream: highSchoolStream || existingPending.highSchoolStream,
+          universityLevel: universityLevel || existingPending.universityLevel,
+          university: university || existingPending.university,
+          department: department || existingPending.department,
+        });
+
+        // Send new verification email
+        try {
+          await EmailService.sendVerificationCodeEmail(email, name, verificationCode);
+        } catch (error) {
+          console.error('Failed to send verification email:', error);
+        }
+
+        return {
+          message: 'A new verification code has been sent to your email. The previous code has been replaced. The code will expire in 15 minutes.',
+          requiresVerification: true,
+          email: email,
+        };
+      }
     }
 
     // Check if admin request already exists
@@ -115,7 +150,7 @@ export class AuthService {
     } else {
       // For student registration, store in PendingUser table until email is verified
       const verificationCode = this.generateVerificationCode();
-      const verificationExpires = new Date(Date.now() + 2 * 60 * 1000); // 2 minutes
+      const verificationExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes (increased from 2)
 
       const pendingData = {
         email,
@@ -145,7 +180,7 @@ export class AuthService {
 
       // Don't return token - user must verify email first
       return {
-        message: 'Registration initiated! Please check your email for a 6-digit verification code. The code will expire in 2 minutes.',
+        message: 'Registration initiated! Please check your email for a 6-digit verification code. The code will expire in 15 minutes.',
         requiresVerification: true,
         email: email,
       };
@@ -615,9 +650,9 @@ export class AuthService {
       throw new AppError(404, 'No pending registration found for this email. Please start a new registration.');
     }
 
-    // Generate new verification code
+    // Generate new verification code with longer expiration
     const verificationCode = this.generateVerificationCode();
-    const verificationExpires = new Date(Date.now() + 2 * 60 * 1000); // 2 minutes
+    const verificationExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
     await pendingUser.update({
       verificationCode: verificationCode,
@@ -632,7 +667,7 @@ export class AuthService {
     }
 
     return {
-      message: 'Verification code sent successfully! Please check your inbox. The code will expire in 2 minutes.',
+      message: 'Verification code sent successfully! Please check your inbox. The code will expire in 15 minutes.',
     };
   }
 
