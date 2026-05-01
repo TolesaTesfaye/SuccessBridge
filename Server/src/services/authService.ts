@@ -51,19 +51,19 @@ export class AuthService {
 
     if (!email || !name || !password) {
       console.error('Missing required fields:', { email: !!email, name: !!name, password: !!password });
-      throw new AppError(400, "Email, name, and password are required");
+      throw new AppError(400, "Email, name, and password are required. Please fill in all required fields.");
     }
 
     // Check if user already exists in User table
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-      throw new AppError(400, "User already exists");
+      throw new AppError(400, "An account with this email already exists. Please try logging in instead, or use a different email address.");
     }
 
     // Check if there's a pending registration
     const existingPending = await PendingUser.findOne({ where: { email } });
     if (existingPending) {
-      throw new AppError(400, "Registration pending. Please check your email for the verification code or request a new one.");
+      throw new AppError(400, "Registration pending. You already started registration with this email. Please check your email for the verification code, or use the 'Resend Code' option on the verify-email page.");
     }
 
     // Check if admin request already exists
@@ -91,7 +91,7 @@ export class AuthService {
       if (!university || !department) {
         throw new AppError(
           400,
-          "University and department are required for admin registration",
+          "University and department are required for admin registration. Please select both from the dropdown menus.",
         );
       }
 
@@ -159,7 +159,7 @@ export class AuthService {
     const { email, password } = data;
 
     if (!email || !password) {
-      throw new AppError(400, "Email and password are required");
+      throw new AppError(400, "Email and password are required. Please fill in both fields.");
     }
 
     const user = await User.findOne({ where: { email } });
@@ -171,32 +171,32 @@ export class AuthService {
         if (adminRequest.status === "pending") {
           throw new AppError(
             403,
-            "Your admin account is being processed. Please wait for approval.",
+            "Your admin account is being processed. Please wait for approval before logging in. You will receive an email once your account is approved.",
           );
         }
         if (adminRequest.status === "rejected") {
           throw new AppError(
             403,
-            `Your admin account has been rejected. Reason: ${adminRequest.rejectionReason || "No reason provided"}`,
+            `Your admin account request was rejected. Reason: ${adminRequest.rejectionReason || "No reason provided"}. Please contact support for more information.`,
           );
         }
       }
 
-      throw new AppError(401, "Invalid credentials");
+      throw new AppError(401, "No account found with this email address. Please check your email or create a new account.");
     }
 
     // OAuth users may not have a password set
     if (!user.password) {
       throw new AppError(
         400,
-        "This account does not have a password. Please sign in with Google, or set a password first.",
+        "This account uses Google sign-in. Please click 'Continue with Google' to log in, or set a password first.",
       );
     }
 
     // Validate password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw new AppError(401, "Invalid credentials");
+      throw new AppError(401, "Incorrect password. Please try again or use 'Forgot Password' to reset it.");
     }
 
     const token = this.generateToken(user);
@@ -540,7 +540,7 @@ export class AuthService {
     });
 
     if (!pendingUser) {
-      throw new AppError(400, 'Invalid or expired verification code');
+      throw new AppError(400, 'Invalid or expired verification code. The code may have expired (valid for 2 minutes). Please request a new code using the "Resend Code" button.');
     }
 
     // Check if user already exists (shouldn't happen, but safety check)
@@ -548,7 +548,7 @@ export class AuthService {
     if (existingUser) {
       // Clean up pending user
       await pendingUser.destroy();
-      throw new AppError(400, 'User already exists. Please login.');
+      throw new AppError(400, 'This email is already verified. Please log in to your account.');
     }
 
     // Create the actual user account
@@ -605,14 +605,14 @@ export class AuthService {
     // Check if user already exists and is verified
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-      throw new AppError(400, 'Email is already verified. Please login.');
+      throw new AppError(400, 'This email is already verified. Please log in to your account.');
     }
 
     // Find pending user
     const pendingUser = await PendingUser.findOne({ where: { email } });
 
     if (!pendingUser) {
-      throw new AppError(404, 'No pending registration found for this email. Please register first.');
+      throw new AppError(404, 'No pending registration found for this email. Please start a new registration.');
     }
 
     // Generate new verification code

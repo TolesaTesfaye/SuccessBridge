@@ -68,6 +68,18 @@ const ERROR_MESSAGES: Record<string, UserFriendlyError> = {
     type: 'error',
     duration: 6000
   },
+  'USER_ALREADY_EXISTS': {
+    title: 'Account Already Exists',
+    message: 'An account with this email already exists. Please try logging in instead, or use the "Forgot Password" option if you need to reset your password.',
+    type: 'error',
+    duration: 8000
+  },
+  'REGISTRATION_PENDING': {
+    title: 'Registration In Progress',
+    message: 'You already started registration with this email. Please check your email for the verification code. If you didn\'t receive it, use the "Resend Code" option.',
+    type: 'warning',
+    duration: 10000
+  },
   'VERIFICATION_TOKEN_INVALID': {
     title: 'Invalid Verification Link',
     message: 'The verification link is invalid or has expired. Please request a new verification email.',
@@ -294,6 +306,14 @@ export function parseApiError(error: any): UserFriendlyError {
       if (message.includes('invalid credentials') || message.includes('incorrect password')) {
         return ERROR_MESSAGES['INVALID_CREDENTIALS']
       }
+      if (message.includes('user already exists') || message.includes('user with this email already exists')) {
+        return {
+          title: 'Account Already Exists',
+          message: 'An account with this email already exists. Please try logging in instead, or use a different email address.',
+          type: 'error',
+          duration: 8000
+        }
+      }
       if (message.includes('registration pending') || message.includes('pending. please check your email')) {
         return {
           title: 'Registration Pending',
@@ -346,9 +366,41 @@ export function parseApiError(error: any): UserFriendlyError {
       if (message.includes('validation') || message.includes('required')) {
         return ERROR_MESSAGES['VALIDATION_ERROR']
       }
+      if (message.includes('database') || message.includes('connection')) {
+        return {
+          title: 'Database Error',
+          message: 'We\'re experiencing technical difficulties. Please try again in a few moments.',
+          type: 'error',
+          duration: 7000
+        }
+      }
+      if (message.includes('network') || message.includes('timeout')) {
+        return {
+          title: 'Connection Timeout',
+          message: 'The request took too long. Please check your internet connection and try again.',
+          type: 'error',
+          duration: 6000
+        }
+      }
+      if (message.includes('duplicate') || message.includes('unique constraint')) {
+        return {
+          title: 'Duplicate Entry',
+          message: 'This information is already in use. Please use different details.',
+          type: 'error',
+          duration: 6000
+        }
+      }
       
       // If we have a backend message but no specific match, return it directly
       // This ensures specific backend messages (like email verification) are shown
+      if (response?.status === 400) {
+        return {
+          title: 'Invalid Request',
+          message: backendMessage,
+          type: 'warning',
+          duration: 8000
+        }
+      }
       if (response?.status === 403) {
         return {
           title: 'Access Denied',
@@ -356,6 +408,7 @@ export function parseApiError(error: any): UserFriendlyError {
           type: 'warning',
           duration: 8000
         }
+      }
       }
     }
 
