@@ -120,7 +120,9 @@ The SuccessBridge Team
         });
         
         console.log(`✅ Verification code sent to ${email}`);
-        console.log(`📬 Email ID: ${result.id || result.data?.id || 'sent'}`);
+        if (result.data) {
+          console.log(`📬 Email ID: ${result.data.id}`);
+        }
         return true;
       } catch (error: any) {
         console.error('❌ Failed to send verification email:', error);
