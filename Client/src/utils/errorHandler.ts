@@ -294,6 +294,14 @@ export function parseApiError(error: any): UserFriendlyError {
       if (message.includes('invalid credentials') || message.includes('incorrect password')) {
         return ERROR_MESSAGES['INVALID_CREDENTIALS']
       }
+      if (message.includes('registration pending') || message.includes('pending. please check your email')) {
+        return {
+          title: 'Registration Pending',
+          message: 'You already started registration with this email. Please check your email for the verification code, or use the "Resend Code" option on the verify-email page.',
+          type: 'warning',
+          duration: 10000
+        }
+      }
       if (message.includes('pending approval') || message.includes('being processed')) {
         return ERROR_MESSAGES['ADMIN_PENDING_APPROVAL']
       }

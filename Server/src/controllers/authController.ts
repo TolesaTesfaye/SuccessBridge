@@ -725,3 +725,24 @@ export const resetPassword = async (
       .json({ success: false, error: 'Failed to reset password' });
   }
 };
+
+export const cleanupExpiredPendingUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const result = await AuthService.cleanupExpiredPendingUsers();
+    
+    res.json({
+      success: true,
+      message: `Cleaned up ${result} expired pending user(s)`,
+      count: result,
+    });
+  } catch (error: any) {
+    console.error('Cleanup expired pending users error:', error);
+    res
+      .status(500)
+      .json({ success: false, error: 'Failed to cleanup expired pending users' });
+  }
+};

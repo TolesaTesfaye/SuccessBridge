@@ -20,6 +20,7 @@ import {
   requestPasswordReset,
   verifyResetCode,
   resetPassword,
+  cleanupExpiredPendingUsers,
 } from "../controllers/authController.js";
 import passport from "passport";
 
@@ -638,6 +639,20 @@ router.post("/verify-reset-code", verifyResetCode);
  *         description: Invalid request or expired code
  */
 router.post("/reset-password", resetPassword);
+
+/**
+ * @swagger
+ * /auth/cleanup-expired-pending:
+ *   post:
+ *     summary: Cleanup expired pending user registrations
+ *     tags: [Authentication]
+ *     responses:
+ *       200:
+ *         description: Cleanup successful
+ *       500:
+ *         description: Server error
+ */
+router.post("/cleanup-expired-pending", cleanupExpiredPendingUsers);
 
 // Google OAuth - Register (create new users)
 router.get(

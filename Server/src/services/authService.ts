@@ -734,4 +734,19 @@ export class AuthService {
       message: 'Password reset successfully. You can now log in with your new password.',
     };
   }
+
+  /**
+   * Cleanup expired pending users
+   */
+  static async cleanupExpiredPendingUsers() {
+    const result = await PendingUser.destroy({
+      where: {
+        verificationExpires: {
+          [Op.lt]: new Date(),
+        },
+      },
+    });
+
+    return result;
+  }
 }
