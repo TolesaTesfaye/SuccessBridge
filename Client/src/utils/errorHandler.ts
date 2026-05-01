@@ -409,7 +409,6 @@ export function parseApiError(error: any): UserFriendlyError {
           duration: 8000
         }
       }
-      }
     }
 
     // Check HTTP status codes (only if no specific backend message)
