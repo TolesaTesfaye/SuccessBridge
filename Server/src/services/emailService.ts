@@ -110,9 +110,12 @@ The SuccessBridge Team
     if (resendClient && resendReady) {
       try {
         console.log(`📧 Sending verification email to ${email} via Resend HTTP API...`);
+        console.log(`📧 From: ${process.env.FROM_EMAIL || 'onboarding@resend.dev'}`);
         
         const result = await resendClient.emails.send({
-          from: `${process.env.FROM_NAME || 'SuccessBridge Team'} <${process.env.FROM_EMAIL || 'onboarding@resend.dev'}>`,
+          from: process.env.FROM_EMAIL && process.env.FROM_EMAIL.includes('@resend.dev') 
+            ? `${process.env.FROM_NAME || 'SuccessBridge Team'} <${process.env.FROM_EMAIL}>`
+            : 'SuccessBridge Team <onboarding@resend.dev>',
           to: email,
           subject: '✅ Your Verification Code - SuccessBridge',
           html: htmlContent,
@@ -120,8 +123,12 @@ The SuccessBridge Team
         });
         
         console.log(`✅ Verification code sent to ${email}`);
+        console.log(`📧 Resend response:`, JSON.stringify(result, null, 2));
         if (result.data) {
           console.log(`📬 Email ID: ${result.data.id}`);
+        }
+        if (result.error) {
+          console.error(`❌ Resend error:`, result.error);
         }
         return true;
       } catch (error: any) {
