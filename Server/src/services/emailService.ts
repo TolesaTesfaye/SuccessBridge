@@ -23,6 +23,10 @@ async function initializeTransporter() {
     const smtpPass = process.env.SMTP_PASS;
     
     console.log('🔧 Initializing email service...');
+    console.log('🔍 DEBUG - Environment variables:');
+    console.log('   - RESEND_API_KEY:', resendApiKey ? 'SET' : 'NOT SET');
+    console.log('   - SMTP_USER:', smtpUser ? 'SET' : 'NOT SET');
+    console.log('   - SMTP_PASS:', smtpPass ? 'SET' : 'NOT SET');
     
     // Check if Resend API key is available (preferred)
     if (resendApiKey) {
