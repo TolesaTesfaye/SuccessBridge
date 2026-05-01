@@ -5,6 +5,7 @@ import * as nodemailer from 'nodemailer';
 let transporter: nodemailer.Transporter | null = null;
 let transporterInitialized = false;
 let transporterReady = false;
+let useResend = false;
 
 /**
  * Initialize email transporter (called on first use)
@@ -17,10 +18,43 @@ async function initializeTransporter() {
   transporterInitialized = true;
   
   try {
+    const resendApiKey = process.env.RESEND_API_KEY;
     const smtpUser = process.env.SMTP_USER;
     const smtpPass = process.env.SMTP_PASS;
     
     console.log('🔧 Initializing email service...');
+    
+    // Check if Resend API key is available (preferred)
+    if (resendApiKey) {
+      console.log('📧 Using Resend API');
+      console.log('📧 RESEND_API_KEY:', resendApiKey ? `${resendApiKey.substring(0, 8)}...` : 'NOT SET');
+      useResend = true;
+      
+      // Resend uses SMTP with API key
+      transporter = nodemailer.createTransport({
+        host: 'smtp.resend.com',
+        port: 465,
+        secure: true,
+        auth: {
+          user: 'resend',
+          pass: resendApiKey,
+        },
+      });
+      
+      try {
+        await transporter.verify();
+        console.log('✅ Resend email service is ready to send emails');
+        transporterReady = true;
+      } catch (error) {
+        console.error('❌ Resend email service configuration error:', error);
+        transporter = null;
+        transporterReady = false;
+      }
+      return;
+    }
+    
+    // Fallback to SMTP if Resend is not configured
+    console.log('📧 Using SMTP');
     console.log('📧 SMTP_USER:', smtpUser ? `${smtpUser.substring(0, 5)}...` : 'NOT SET');
     console.log('📧 SMTP_PASS:', smtpPass ? '***SET***' : 'NOT SET');
     console.log('📧 SMTP_HOST:', process.env.SMTP_HOST || 'smtp.gmail.com');
@@ -34,17 +68,19 @@ async function initializeTransporter() {
     transporter = nodemailer.createTransport({
       host: process.env.SMTP_HOST || 'smtp.gmail.com',
       port: parseInt(process.env.SMTP_PORT || '587'),
-      secure: false, // true for 465, false for other ports
+      secure: process.env.SMTP_SECURE === 'true' || parseInt(process.env.SMTP_PORT || '587') === 465,
       auth: {
         user: smtpUser,
         pass: smtpPass,
       },
       tls: {
-        rejectUnauthorized: false // Allow self-signed certificates
-      }
+        rejectUnauthorized: false
+      },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
     });
 
-    // Verify transporter configuration (make it synchronous)
     try {
       await transporter.verify();
       console.log('✅ Email service is ready to send emails');
