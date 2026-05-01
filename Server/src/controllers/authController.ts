@@ -746,3 +746,24 @@ export const cleanupExpiredPendingUsers = async (
       .json({ success: false, error: 'Failed to cleanup expired pending users' });
   }
 };
+
+export const getPendingUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const result = await AuthService.getPendingUsers();
+    
+    res.json({
+      success: true,
+      data: result,
+      count: result.length,
+    });
+  } catch (error: any) {
+    console.error('Get pending users error:', error);
+    res
+      .status(500)
+      .json({ success: false, error: 'Failed to get pending users' });
+  }
+};

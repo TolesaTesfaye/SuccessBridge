@@ -749,4 +749,25 @@ export class AuthService {
 
     return result;
   }
+
+  /**
+   * Get all pending users (for debugging/admin purposes)
+   */
+  static async getPendingUsers() {
+    const pendingUsers = await PendingUser.findAll({
+      attributes: ['id', 'email', 'name', 'role', 'studentType', 'verificationExpires', 'createdAt'],
+      order: [['createdAt', 'DESC']],
+    });
+
+    return pendingUsers.map(user => ({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      studentType: user.studentType,
+      verificationExpires: user.verificationExpires,
+      createdAt: user.createdAt,
+      isExpired: user.verificationExpires < new Date(),
+    }));
+  }
 }

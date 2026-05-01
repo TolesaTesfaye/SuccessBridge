@@ -21,6 +21,7 @@ import {
   verifyResetCode,
   resetPassword,
   cleanupExpiredPendingUsers,
+  getPendingUsers,
 } from "../controllers/authController.js";
 import passport from "passport";
 
@@ -653,6 +654,20 @@ router.post("/reset-password", resetPassword);
  *         description: Server error
  */
 router.post("/cleanup-expired-pending", cleanupExpiredPendingUsers);
+
+/**
+ * @swagger
+ * /auth/pending-users:
+ *   get:
+ *     summary: Get all pending user registrations (for debugging)
+ *     tags: [Authentication]
+ *     responses:
+ *       200:
+ *         description: List of pending users
+ *       500:
+ *         description: Server error
+ */
+router.get("/pending-users", getPendingUsers);
 
 // Google OAuth - Register (create new users)
 router.get(
