@@ -1,0 +1,8 @@
+Contact: mailto:tolesatesfaye273@gmail.com
+Preferred-Languages: en
+Canonical: https://successbridge.pages.dev/.well-known/security.txt
+
+# SuccessBridge is a legitimate educational platform
+# This is not a phishing site
+# We use standard authentication practices
+# All user data is securely handled

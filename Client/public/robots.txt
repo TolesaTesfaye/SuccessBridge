@@ -1,0 +1,9 @@
+# SuccessBridge - Legitimate Educational Platform
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://successbridge.pages.dev/sitemap.xml
+
+# Contact
+# For security concerns, please contact: tolesatesfaye273@gmail.com
