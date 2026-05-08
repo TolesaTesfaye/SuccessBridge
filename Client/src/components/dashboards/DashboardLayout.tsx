@@ -40,8 +40,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f1c] flex flex-col transition-colors duration-300 overflow-hidden h-screen m-0 p-0">
       {/* 1. Full-Width Header at the Top */}
-      <header className="h-12 md:h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-2 md:px-3 flex-shrink-0 z-30 transition-colors duration-300 shadow-sm">
-        <div className="flex items-center gap-2 md:gap-4">
+      <header className="h-12 md:h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-1 md:px-3 flex-shrink-0 z-30 transition-colors duration-300 shadow-sm">
+        <div className="flex items-center gap-1 md:gap-4">
           {/* Logo - Mobile First */}
           <div
             className="flex lg:hidden items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
@@ -65,7 +65,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           {/* Menu Button - Mobile */}
           <button
             onClick={() => setIsSidebarOpen(true)}
-            className="lg:hidden p-1.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all active:scale-95"
+            className="lg:hidden p-1 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all active:scale-95"
           >
             <Menu className="w-4 h-4" />
           </button>
@@ -81,13 +81,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
           {/* Navigation Items */}
           {headerNav && (
-            <div className="flex items-center gap-1 ml-2 md:ml-4 lg:absolute lg:left-1/2 lg:-translate-x-1/2">
+            <div className="flex items-center gap-1 ml-1 md:ml-4 lg:absolute lg:left-1/2 lg:-translate-x-1/2">
               {headerNav}
             </div>
           )}
         </div>
 
-        <div className="flex items-center gap-1 md:gap-2">
+        <div className="flex items-center gap-0.5 md:gap-2">
           {/* Notifications */}
           <div className="flex items-center">
             <NotificationBell />
@@ -137,7 +137,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           </div>
 
           {/* Profile */}
-          <div className="flex items-center gap-1 md:gap-2">
+          <div className="flex items-center gap-0.5 md:gap-2">
             <div className="w-6 h-6 md:w-8 md:h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px] md:text-sm font-bold shadow-lg shadow-blue-500/20">
               {user?.name
                 ?.split(" ")
@@ -151,7 +151,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           <div className="flex items-center">
             <button
               onClick={handleLogout}
-              className="px-1.5 md:px-3 py-0.5 md:py-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg transition-all duration-300 font-semibold text-[8px] md:text-xs uppercase tracking-wide border border-rose-500/20 hover:border-rose-500"
+              className="px-1.5 md:px-3 py-0.5 md:py-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg transition-all duration-300 font-semibold text-[9px] md:text-xs uppercase tracking-wide border border-rose-500/20 hover:border-rose-500"
               title="Sign Out"
             >
               <span>Logout</span>
