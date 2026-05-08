@@ -1,5 +1,58 @@
 /* App-specific styles - using Tailwind CSS */
 
+/* Mobile-First Responsive Typography */
+@media (max-width: 640px) {
+  /* Base text sizes for mobile */
+  html {
+    font-size: 14px; /* Reduce base font size on mobile */
+  }
+  
+  /* Headings */
+  h1 { font-size: 1.5rem !important; } /* 24px */
+  h2 { font-size: 1.25rem !important; } /* 20px */
+  h3 { font-size: 1.125rem !important; } /* 18px */
+  h4 { font-size: 1rem !important; } /* 16px */
+  h5 { font-size: 0.875rem !important; } /* 14px */
+  h6 { font-size: 0.75rem !important; } /* 12px */
+  
+  /* Body text */
+  body, p, span, div {
+    font-size: 0.875rem; /* 14px */
+  }
+  
+  /* Buttons */
+  button {
+    font-size: 0.875rem !important;
+    padding: 0.5rem 0.75rem !important;
+  }
+  
+  /* Input fields */
+  input, textarea, select {
+    font-size: 0.875rem !important;
+  }
+  
+  /* Labels */
+  label {
+    font-size: 0.75rem !important;
+  }
+  
+  /* Cards and containers */
+  .card-title {
+    font-size: 1rem !important;
+  }
+  
+  .card-description {
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 641px) and (max-width: 1024px) {
+  html {
+    font-size: 15px;
+  }
+}
+
 /* Ensure resource cards scale height proportionally with width on small screens */
 @media (max-width: 768px) {
   .resource-card {
