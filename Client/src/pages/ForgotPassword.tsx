@@ -1,49 +1,49 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { AppLogo } from '@components/common/AppLogo'
-import { ThemeToggle } from '@components/common/ThemeToggle'
-import { FormInput } from '@components/forms/FormInput'
-import { useToast } from '@components/common/Toast'
-import { authService } from '@services/authService'
-import { Mail, ArrowLeft, CheckCircle } from 'lucide-react'
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { AppLogo } from "@components/common/AppLogo";
+import { ThemeToggle } from "@components/common/ThemeToggle";
+import { FormInput } from "@components/forms/FormInput";
+import { useToast } from "@components/common/Toast";
+import { authService } from "@services/authService";
+import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
 
 export const ForgotPassword: React.FC = () => {
-  const toast = useToast()
-  const [email, setEmail] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [emailSent, setEmailSent] = useState(false)
+  const toast = useToast();
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!email) {
-      toast.error('Please enter your email address')
-      return
+      toast.error("Please enter your email address");
+      return;
     }
 
-    if (!email.includes('@')) {
-      toast.error('Please enter a valid email address')
-      return
+    if (!email.includes("@")) {
+      toast.error("Please enter a valid email address");
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await authService.forgotPassword(email)
+      const response = await authService.forgotPassword(email);
       if (response.success) {
-        setEmailSent(true)
-        toast.success('Password reset code sent! Check your email.')
+        setEmailSent(true);
+        toast.success("Password reset code sent! Check your email.");
       }
     } catch (err: any) {
-      const userError = err.userFriendlyError
+      const userError = err.userFriendlyError;
       if (userError) {
-        toast.showToast(userError.type, userError.message, userError.duration)
+        toast.showToast(userError.type, userError.message, userError.duration);
       } else {
-        toast.error(err.response?.data?.error || 'Failed to send reset code')
+        toast.error(err.response?.data?.error || "Failed to send reset code");
       }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0a0f1c] flex flex-col justify-center py-12 sm:px-6 lg:px-8 transition-colors duration-300 relative overflow-hidden">
@@ -65,10 +65,9 @@ export const ForgotPassword: React.FC = () => {
           Reset Your Password
         </h2>
         <p className="mt-2 text-center text-sm text-slate-600 dark:text-slate-400 transition-colors">
-          {emailSent 
-            ? 'Check your email for the reset code'
-            : 'Enter your email to receive a password reset code'
-          }
+          {emailSent
+            ? "Check your email for the reset code"
+            : "Enter your email to receive a password reset code"}
         </p>
       </div>
 
@@ -83,8 +82,9 @@ export const ForgotPassword: React.FC = () => {
                 Check Your Email
               </h3>
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
-                We've sent a 6-digit reset code to <span className="font-medium">{email}</span>. 
-                The code will expire in 10 minutes.
+                We've sent a 6-digit reset code to{" "}
+                <span className="font-medium">{email}</span>. The code will
+                expire in 10 minutes.
               </p>
               <Link
                 to="/reset-password"
@@ -118,7 +118,7 @@ export const ForgotPassword: React.FC = () => {
                 disabled={loading}
                 className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {loading ? 'Sending...' : 'Send Reset Code'}
+                {loading ? "Sending..." : "Send Reset Code"}
               </button>
             </form>
           )}
@@ -135,5 +135,5 @@ export const ForgotPassword: React.FC = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

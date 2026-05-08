@@ -20,74 +20,20 @@ import {
 } from "lucide-react";
 import { AppLogo } from "@components/common/AppLogo";
 
-// Video Player Component with Thumbnail
+// Video Player Component with YouTube Embed
 const VideoPlayer: React.FC = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [imageError, setImageError] = useState(false);
-  const videoId = "YOUR_VIDEO_ID"; // Replace with your YouTube video ID (e.g., 'dQw4w9WgXcQ')
-  const thumbnailUrl = "/photo_2025-12-18_10-03-03.jpg";
-
-  const handlePlayClick = () => {
-    setIsPlaying(true);
-  };
-
-  const handleImageError = () => {
-    console.error("Failed to load thumbnail image:", thumbnailUrl);
-    setImageError(true);
-  };
+  const videoId = "pPD6FWuqn1Q"; // YouTube video ID from https://youtu.be/pPD6FWuqn1Q
 
   return (
-    <div className="relative aspect-video rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800">
-      {!isPlaying ? (
-        // Thumbnail with Play Button
-        <button
-          onClick={handlePlayClick}
-          className="relative w-full h-full group cursor-pointer"
-        >
-          {!imageError ? (
-            <>
-              <img
-                src={thumbnailUrl}
-                alt="Discover SuccessBridge - Video Thumbnail"
-                className="w-full h-full object-cover"
-                onError={handleImageError}
-              />
-              {/* Overlay on hover */}
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors"></div>
-            </>
-          ) : (
-            // Fallback if image fails to load
-            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600">
-              <div className="text-center text-white">
-                <p className="text-xl font-bold mb-2">Video Preview</p>
-                <p className="text-sm opacity-80">Click to play</p>
-              </div>
-            </div>
-          )}
-
-          {/* Large Play Button */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-20 h-20 md:w-28 md:h-28 rounded-full bg-white shadow-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-              <svg
-                className="w-10 h-10 md:w-14 md:h-14 text-red-600 ml-1"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </div>
-          </div>
-        </button>
-      ) : (
-        // YouTube Video Player
-        <iframe
-          className="absolute inset-0 w-full h-full"
-          src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
-          title="Discover SuccessBridge"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
-      )}
+    <div className="relative aspect-video overflow-hidden bg-slate-100 dark:bg-slate-800">
+      {/* YouTube Video Player - Auto-embedded */}
+      <iframe
+        className="absolute inset-0 w-full h-full"
+        src={`https://www.youtube.com/embed/${videoId}`}
+        title="Discover SuccessBridge"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      ></iframe>
     </div>
   );
 };
@@ -216,18 +162,18 @@ export const Home: React.FC = () => {
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center px-4">
             <button
               onClick={() => navigate("/register")}
-              className="w-full sm:w-auto group relative px-8 md:px-10 py-4 md:py-5 bg-blue-600 dark:bg-white text-white dark:text-slate-900 font-bold rounded-full overflow-hidden shadow-[0_0_40px_-10px_rgba(37,99,235,0.3)] dark:shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] transition-all active:scale-95 hover:scale-105 hover:shadow-[0_0_60px_-15px_rgba(37,99,235,0.5)] dark:hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.5)] flex items-center justify-center gap-2 text-base md:text-lg touch-manipulation"
+              className="w-full sm:w-auto group relative px-6 md:px-8 py-3 md:py-4 bg-blue-600 dark:bg-white text-white dark:text-slate-900 font-bold rounded-full overflow-hidden shadow-[0_0_40px_-10px_rgba(37,99,235,0.3)] dark:shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] transition-all active:scale-95 hover:scale-105 hover:shadow-[0_0_60px_-15px_rgba(37,99,235,0.5)] dark:hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.5)] flex items-center justify-center gap-2 text-sm md:text-base touch-manipulation"
             >
               <span className="relative z-10">Sign Up</span>
-              <ChevronRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 group-active:translate-x-2 transition-transform relative z-10" />
+              <ChevronRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 group-active:translate-x-2 transition-transform relative z-10" />
               <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-blue-500 dark:from-slate-100 dark:to-white opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity"></div>
             </button>
             <button
               onClick={() => navigate("/login")}
-              className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-white/80 dark:bg-white/10 text-slate-800 dark:text-white font-bold rounded-full border-2 border-slate-300 dark:border-white/20 hover:bg-slate-100 dark:hover:bg-white/20 active:scale-95 hover:scale-105 transition-all flex items-center justify-center gap-2 backdrop-blur-md text-base md:text-lg touch-manipulation shadow-lg"
+              className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-white/80 dark:bg-white/10 text-slate-800 dark:text-white font-bold rounded-full border-2 border-slate-300 dark:border-white/20 hover:bg-slate-100 dark:hover:bg-white/20 active:scale-95 hover:scale-105 transition-all flex items-center justify-center gap-2 backdrop-blur-md text-sm md:text-base touch-manipulation shadow-lg"
             >
               <span>Login</span>
-              <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
+              <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
             </button>
           </div>
         </div>
@@ -256,9 +202,9 @@ export const Home: React.FC = () => {
       </section>
 
       {/* Introduction Video Section */}
-      <section className="py-12 md:py-24 bg-white dark:bg-slate-900 transition-colors">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8 md:mb-12">
+      <section className="bg-white dark:bg-slate-900 transition-colors">
+        <div className="w-full">
+          <div className="text-center py-8 md:py-12 px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl md:text-5xl font-bold text-slate-900 dark:text-white mb-3 md:mb-4 transition-colors">
               Discover SuccessBridge
             </h2>
@@ -267,11 +213,13 @@ export const Home: React.FC = () => {
             </p>
           </div>
 
-          <div className="max-w-5xl mx-auto">
+          <div className="w-full px-4 md:px-6">
             <VideoPlayer />
+          </div>
 
-            {/* Video Features */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-6 md:mt-8">
+          {/* Video Features */}
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-6 md:mt-8 pb-8 md:pb-12">
               <div className="text-center p-3 md:p-4 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                 <div className="text-lg md:text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
                   2 min
@@ -530,17 +478,17 @@ export const Home: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center items-center px-4">
             <button
               onClick={() => navigate("/register")}
-              className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-blue-600 dark:bg-slate-800 text-white dark:text-white font-bold tracking-wide rounded-full hover:bg-blue-700 dark:hover:bg-slate-700 active:scale-95 hover:scale-105 transition-all shadow-xl flex items-center justify-center gap-2 text-base md:text-lg touch-manipulation"
+              className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-blue-600 dark:bg-slate-800 text-white dark:text-white font-bold tracking-wide rounded-full hover:bg-blue-700 dark:hover:bg-slate-700 active:scale-95 hover:scale-105 transition-all shadow-xl flex items-center justify-center gap-2 text-sm md:text-base touch-manipulation"
             >
-              <Users className="w-5 h-5 md:w-6 md:h-6" />
+              <Users className="w-4 h-4 md:w-5 md:h-5" />
               <span>Sign Up Free</span>
             </button>
             <button
               onClick={() => navigate("/login")}
-              className="w-full sm:w-auto px-8 md:px-10 py-4 md:py-5 bg-white dark:bg-white/10 text-slate-800 dark:text-white font-bold tracking-wide rounded-full border-2 border-slate-300 dark:border-white/20 hover:bg-slate-100 dark:hover:bg-white/20 active:scale-95 hover:scale-105 transition-all shadow-lg flex items-center justify-center gap-2 backdrop-blur-md text-base md:text-lg touch-manipulation"
+              className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 bg-white dark:bg-white/10 text-slate-800 dark:text-white font-bold tracking-wide rounded-full border-2 border-slate-300 dark:border-white/20 hover:bg-slate-100 dark:hover:bg-white/20 active:scale-95 hover:scale-105 transition-all shadow-lg flex items-center justify-center gap-2 backdrop-blur-md text-sm md:text-base touch-manipulation"
             >
               <span>Login</span>
-              <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
+              <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
             </button>
           </div>
         </div>

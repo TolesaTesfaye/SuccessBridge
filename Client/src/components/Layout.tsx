@@ -48,7 +48,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             </span>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
             {isAuthenticated && user ? (
               <>
                 <NotificationBell />
@@ -67,12 +67,18 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               </>
             ) : (
               <>
-                <Button variant="secondary" onClick={() => navigate('/login')} className="text-sm">
+                <button
+                  onClick={() => navigate('/login')}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                >
                   Login
-                </Button>
-                <Button variant="primary" onClick={() => navigate('/register')} className="text-sm">
+                </button>
+                <button
+                  onClick={() => navigate('/register')}
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-sm"
+                >
                   Sign Up
-                </Button>
+                </button>
               </>
             )}
             <ThemeToggle />
