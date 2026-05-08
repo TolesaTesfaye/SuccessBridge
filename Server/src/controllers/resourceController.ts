@@ -106,10 +106,17 @@ export const downloadResource = async (req: Request, res: Response, next: NextFu
 
     const fileUrl = resource.fileUrl
 
+    console.log('📥 Download request for resource:', {
+      id: resource.id,
+      title: resource.title,
+      fileUrl: fileUrl
+    })
+
     // Check if it's a B2/S3 URL (starts with https://)
     if (fileUrl.startsWith('https://') || fileUrl.startsWith('http://')) {
-      // Redirect to the B2 URL directly
-      return res.redirect(fileUrl)
+      console.log('✅ Redirecting to B2 URL:', fileUrl)
+      // Redirect to the B2 URL directly - browser will handle the download
+      return res.redirect(302, fileUrl)
     }
 
     // Handle local file download (legacy support)
@@ -126,9 +133,11 @@ export const downloadResource = async (req: Request, res: Response, next: NextFu
     
     const filePath = path.join(resolvedUploadDir, fileName)
 
+    console.log('📂 Looking for local file:', filePath)
+
     // Check if file exists on disk
     if (!fs.existsSync(filePath)) {
-      console.error('File not found:', filePath)
+      console.error('❌ File not found:', filePath)
       throw new AppError(404, `File not found on server: ${fileName}`)
     }
 
@@ -178,6 +187,12 @@ export const downloadResource = async (req: Request, res: Response, next: NextFu
         break
     }
 
+    console.log('✅ Streaming local file:', {
+      fileName,
+      contentType,
+      fileSize
+    })
+
     // Set headers for download
     res.setHeader('Content-Type', contentType)
     res.setHeader('Content-Length', fileSize)
@@ -192,7 +207,7 @@ export const downloadResource = async (req: Request, res: Response, next: NextFu
     fileStream.pipe(res)
 
     fileStream.on('error', (error) => {
-      console.error('File stream error:', error)
+      console.error('❌ File stream error:', error)
       if (!res.headersSent) {
         res.status(500).json({ success: false, error: 'Error reading file' })
       }
@@ -202,7 +217,7 @@ export const downloadResource = async (req: Request, res: Response, next: NextFu
     if (error instanceof AppError) {
       return res.status(error.statusCode).json({ success: false, error: error.message })
     }
-    console.error('Download resource error:', error)
+    console.error('❌ Download resource error:', error)
     next(error)
   }
 }
