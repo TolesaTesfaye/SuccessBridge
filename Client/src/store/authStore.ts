@@ -34,6 +34,8 @@ export const useAuthStore = create<AuthState>((set, get) => {
     },
 
     initialize: async () => {
+      if (get().isInitialized) return;
+      set({ isInitialized: true });
       console.log("🔄 Auth store initializing...");
       const storedToken = localStorage.getItem('token')
       const storedUser = localStorage.getItem('user')

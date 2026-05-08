@@ -29,9 +29,11 @@ export const SuperAdminApprovals: React.FC = () => {
   const fetchRequests = async () => {
     try {
       setLoading(true)
-      const response = await authService.getAdminRequests()
-      if (response.success && response.data) {
-        setRequests(response.data.requests || [])
+      const response = await authService.getAdminRequests() as any
+      if (response.success) {
+        // Handle both possible structures depending on interceptors
+        const requestsList = response.requests || response.data?.requests || []
+        setRequests(requestsList)
       }
     } catch (err: any) {
       setError(err.userFriendlyError || 'Failed to fetch requests')

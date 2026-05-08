@@ -1,8 +1,13 @@
-import { Router } from 'express'
-import { authMiddleware, requireRole } from '../middleware/auth.js'
-import { getUsers, getUserById, updateUser, deleteUser } from '../controllers/userController.js'
+import { Router } from "express";
+import { authMiddleware, requireRole } from "../middleware/auth.js";
+import {
+  getUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+} from "../controllers/userController.js";
 
-const router = Router()
+const router = Router();
 
 /**
  * @swagger
@@ -11,16 +16,21 @@ const router = Router()
  *   description: User management endpoints
  */
 
-// Get all users (super admin only)
-router.get('/', authMiddleware, requireRole('super_admin'), getUsers)
+// Get all users (admin and super admin)
+router.get("/", authMiddleware, requireRole("admin", "super_admin"), getUsers);
 
 // Get user by ID
-router.get('/:id', authMiddleware, getUserById)
+router.get("/:id", authMiddleware, getUserById);
 
 // Update user (admin only)
-router.put('/:id', authMiddleware, requireRole('admin', 'super_admin'), updateUser)
+router.put(
+  "/:id",
+  authMiddleware,
+  requireRole("admin", "super_admin"),
+  updateUser,
+);
 
 // Delete user (super admin only)
-router.delete('/:id', authMiddleware, requireRole('super_admin'), deleteUser)
+router.delete("/:id", authMiddleware, requireRole("super_admin"), deleteUser);
 
-export default router
+export default router;

@@ -1,5 +1,5 @@
 import React from 'react'
-import logo from '@/assets/AppLogo.jpg'
+import logo from '@/assets/SuccessBridgeLogo.png'
 
 interface AppLogoProps {
     className?: string
@@ -19,7 +19,7 @@ export const AppLogo: React.FC<AppLogoProps> = ({ className = '', size = 'md' })
             <img
                 src={logo}
                 alt="SuccessBridge Logo"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain bg-white dark:bg-slate-900"
             />
         </div>
     )

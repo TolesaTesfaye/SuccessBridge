@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
+import { Footer } from "@components/common/Footer";
 import { resourceService } from "@services/resourceService";
 import { useAuthStore } from "@store/authStore";
 import { BookOpen, Home, Library } from "lucide-react";
@@ -8,6 +9,7 @@ import { HighSchoolOverview } from "./components/HighSchoolOverview";
 import { HighSchoolResourceHub } from "./components/HighSchoolResourceHub";
 
 import { HIGH_SCHOOL } from "@utils/constants";
+import { getAvailableSubjects } from "@utils/highSchoolSubjectRegistry";
 
 type Grade = "grade_9" | "grade_10" | "grade_11" | "grade_12";
 type Stream = "natural" | "social";
@@ -33,24 +35,9 @@ export const HighSchoolDashboard: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [homeLoading, setHomeLoading] = useState(false);
 
+  // Get subjects dynamically based on grade and stream
   const getSubjects = (): string[] => {
-    if (activeGrade === "grade_9" || activeGrade === "grade_10") {
-      return HIGH_SCHOOL.GRADES_9_10.subjects;
-    }
-
-    if (!selectedStream) {
-      const naturalSubjects = HIGH_SCHOOL.GRADES_11_12.natural.subjects;
-      const socialSubjects = HIGH_SCHOOL.GRADES_11_12.social.subjects;
-      return [...new Set([...naturalSubjects, ...socialSubjects])];
-    }
-
-    if (selectedStream === "natural") {
-      return HIGH_SCHOOL.GRADES_11_12.natural.subjects;
-    }
-    if (selectedStream === "social") {
-      return HIGH_SCHOOL.GRADES_11_12.social.subjects;
-    }
-    return [];
+    return getAvailableSubjects(activeGrade, selectedStream);
   };
 
   const getResourceTypes = (): string[] => {
@@ -145,12 +132,23 @@ export const HighSchoolDashboard: React.FC = () => {
     <DashboardLayout
       title=""
       noPadding={activeTab === "learning"}
+      showFooter={false}
       headerNav={
         <div className="flex items-center gap-0.5 md:gap-1">
           {[
             { id: "home", label: "Home", shortLabel: "Home", icon: Home },
-            { id: "learning", label: "Learning Center", shortLabel: "Learning", icon: BookOpen },
-            { id: "hub", label: "Resource Hub", shortLabel: "Resource", icon: Library },
+            {
+              id: "learning",
+              label: "Learning Center",
+              shortLabel: "Learning",
+              icon: BookOpen,
+            },
+            {
+              id: "hub",
+              label: "Resource Hub",
+              shortLabel: "Resource",
+              icon: Library,
+            },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -170,7 +168,7 @@ export const HighSchoolDashboard: React.FC = () => {
       }
     >
       {activeTab === "home" ? (
-        <div className="max-w-7xl mx-auto p-6 lg:p-8 space-y-10">
+        <>
           <HighSchoolOverview
             user={user}
             activeGrade={activeGrade}
@@ -179,31 +177,39 @@ export const HighSchoolDashboard: React.FC = () => {
             homeResources={homeResources}
             setActiveTab={setActiveTab}
           />
-        </div>
+          <Footer />
+        </>
       ) : activeTab === "learning" ? (
-        <HighSchoolLearningCenter
-          grade={activeGrade}
-          stream={selectedStream}
-          subjects={subjects}
-          learningSubject={learningSubject}
-          setLearningSubject={setLearningSubject}
-          setActiveTab={setActiveTab}
-        />
+        <div className="flex flex-col h-full min-h-0">
+          <div className="flex-1 min-h-0">
+            <HighSchoolLearningCenter
+              grade={activeGrade}
+              stream={selectedStream}
+              subjects={subjects}
+              learningSubject={learningSubject}
+              setLearningSubject={setLearningSubject}
+              setActiveTab={setActiveTab}
+            />
+          </div>
+        </div>
       ) : (
-        <HighSchoolResourceHub
-          activeGrade={activeGrade}
-          selectedStream={selectedStream}
-          handleStreamChange={handleStreamChange}
-          selectedSubject={selectedSubject}
-          setSelectedSubject={setSelectedSubject}
-          subjects={subjects}
-          selectedResourceType={selectedResourceType}
-          setSelectedResourceType={setSelectedResourceType}
-          resourceTypes={resourceTypes}
-          loading={loading}
-          resources={resources}
-          onRefresh={fetchResources}
-        />
+        <>
+          <HighSchoolResourceHub
+            activeGrade={activeGrade}
+            selectedStream={selectedStream}
+            handleStreamChange={handleStreamChange}
+            selectedSubject={selectedSubject}
+            setSelectedSubject={setSelectedSubject}
+            subjects={subjects}
+            selectedResourceType={selectedResourceType}
+            setSelectedResourceType={setSelectedResourceType}
+            resourceTypes={resourceTypes}
+            loading={loading}
+            resources={resources}
+            onRefresh={fetchResources}
+          />
+          <Footer />
+        </>
       )}
     </DashboardLayout>
   );

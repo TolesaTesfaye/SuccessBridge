@@ -1,4 +1,5 @@
 import { Router } from "express";
+import rateLimit from "express-rate-limit";
 import { authMiddleware, requireRole } from "../middleware/auth.js";
 import {
   register,
@@ -24,6 +25,15 @@ import {
   getPendingUsers,
 } from "../controllers/authController.js";
 import passport from "passport";
+
+const authAttemptLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message:
+    "Too many authentication attempts. Please wait a moment and try again.",
+});
 
 const router = Router();
 
@@ -105,7 +115,7 @@ const router = Router();
  */
 
 // Register
-router.post("/register", register);
+router.post("/register", authAttemptLimiter, register);
 
 /**
  * @swagger
@@ -157,7 +167,7 @@ router.post("/register", register);
  *               $ref: '#/components/schemas/Error'
  */
 // Login
-router.post("/login", login);
+router.post("/login", authAttemptLimiter, login);
 
 /**
  * @swagger
@@ -672,17 +682,20 @@ router.get("/pending-users", getPendingUsers);
 // Google OAuth - Register (create new users)
 router.get(
   "/google/register",
-  passport.authenticate("google", { 
+  passport.authenticate("google", {
     scope: ["profile", "email"],
     prompt: "select_account",
-    state: "register" // Pass mode as state
+    state: "register", // Pass mode as state
   }),
 );
 
 // Google OAuth - Callback
 router.get(
   "/google/callback",
-  passport.authenticate("google", { session: false, failureRedirect: '/login?error=oauth_failed' }),
+  passport.authenticate("google", {
+    session: false,
+    failureRedirect: "/login?error=oauth_failed",
+  }),
   oauthSuccess,
 );
 

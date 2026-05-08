@@ -34,3 +34,5 @@ export const Chapter6: React.FC = () => {
     </div>
   );
 };
+
+export default Chapter6;

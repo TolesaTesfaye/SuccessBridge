@@ -106,6 +106,9 @@ export interface Quiz {
   id: string;
   title: string;
   description: string;
+  educationLevel: "high_school" | "university";
+  grade?: string;
+  stream?: string;
   subjectId: string;
   questions: Question[];
   timeLimit: number;
@@ -164,4 +167,64 @@ export interface PaginatedResponse<T> {
   total: number;
   page: number;
   limit: number;
+}
+
+// Payment Types
+export interface Payment {
+  id: string;
+  userId: string;
+  subjectId: string;
+  amount: number;
+  currency: string;
+  paymentMethod: 'bank_transfer' | 'telebirr' | 'cbe_birr' | 'mpesa' | 'other';
+  screenshotUrl: string;
+  transactionReference?: string;
+  status: 'pending' | 'approved' | 'rejected';
+  approvedBy?: string;
+  approvedAt?: Date;
+  rejectionReason?: string;
+  notes?: string;
+  educationLevel: 'high_school' | 'university';
+  grade?: string;
+  stream?: string;
+  universityId?: string;
+  departmentId?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  user?: {
+    id: string;
+    name: string;
+    email: string;
+    studentType: string;
+  };
+  subject?: {
+    id: string;
+    name: string;
+  };
+}
+
+export interface SubjectAccess {
+  id: string;
+  userId: string;
+  subjectId: string;
+  paymentId: string;
+  accessGrantedAt: Date;
+  expiresAt?: Date;
+  subject?: {
+    id: string;
+    name: string;
+  };
+}
+
+// Notification Types
+export interface Notification {
+  id: string;
+  userId: string;
+  type: 'payment_request' | 'payment_approved' | 'payment_rejected';
+  title: string;
+  message: string;
+  data?: any;
+  isRead: boolean;
+  createdAt: string;
+  updatedAt: string;
 }

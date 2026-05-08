@@ -93,7 +93,16 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   };
 
   const renderThumbnail = () => {
-    if (!resource.fileUrl) return null;
+    if (!resource.fileUrl) {
+      // Show default thumbnail based on type when no file URL
+      return (
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center h-16 md:h-20 lg:h-32">
+          <div className="text-slate-400 dark:text-slate-600">
+            {getResourceIcon(resource.type)}
+          </div>
+        </div>
+      );
+    }
 
     const fullUrl = getFullUrl(resource.fileUrl);
     const lowerUrl = resource.fileUrl.toLowerCase();
@@ -108,6 +117,20 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
             className="w-full h-16 md:h-20 lg:h-32 bg-white pointer-events-none"
             scrolling="no"
             loading="lazy"
+            onError={(e) => {
+              // Fallback if PDF preview fails
+              e.currentTarget.style.display = 'none';
+              const parent = e.currentTarget.parentElement;
+              if (parent) {
+                parent.innerHTML = `
+                  <div class="w-full h-16 md:h-20 lg:h-32 bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
+                    </svg>
+                  </div>
+                `;
+              }
+            }}
           />
         </div>
       );
@@ -128,13 +151,27 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
             alt={resource.title}
             className="w-full h-16 md:h-20 lg:h-32 object-cover"
             loading="lazy"
+            onError={(e) => {
+              // Fallback if image fails to load
+              e.currentTarget.style.display = 'none';
+              const parent = e.currentTarget.parentElement;
+              if (parent) {
+                parent.innerHTML = `
+                  <div class="w-full h-16 md:h-20 lg:h-32 bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                `;
+              }
+            }}
           />
         </div>
       );
     }
 
     // Simple thumbnail-style preview for videos
-    if (resource.type === "video") {
+    if (resource.type === "video" || lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".webm") || lowerUrl.endsWith(".mov")) {
       return (
         <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-black/80">
           <video
@@ -144,12 +181,36 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
             muted
             playsInline
             preload="metadata"
+            onError={(e) => {
+              // Fallback if video fails to load
+              e.currentTarget.style.display = 'none';
+              const parent = e.currentTarget.parentElement;
+              if (parent) {
+                parent.innerHTML = `
+                  <div class="w-full h-16 md:h-20 lg:h-32 bg-slate-900 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+                    </svg>
+                  </div>
+                `;
+              }
+            }}
           />
         </div>
       );
     }
 
-    return null;
+    // Fallback thumbnail for other file types (Word, Excel, PowerPoint, etc.)
+    return (
+      <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
+        <div className="text-blue-500 dark:text-blue-400 scale-150">
+          {getResourceIcon(resource.type)}
+        </div>
+        <span className="text-[8px] md:text-[9px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
+          {lowerUrl.split('.').pop() || 'File'}
+        </span>
+      </div>
+    );
   };
 
   const handleOpen = async () => {

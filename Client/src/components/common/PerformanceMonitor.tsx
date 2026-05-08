@@ -14,8 +14,9 @@ export const PerformanceMonitor: React.FC = () => {
           console.log('TCP Connection:', `${(perfData.connectEnd - perfData.connectStart).toFixed(2)}ms`)
           console.log('Request Time:', `${(perfData.responseStart - perfData.requestStart).toFixed(2)}ms`)
           console.log('Response Time:', `${(perfData.responseEnd - perfData.responseStart).toFixed(2)}ms`)
-          console.log('DOM Processing:', `${(perfData.domComplete - perfData.domInteractive).toFixed(2)}ms`)
-          console.log('Total Load Time:', `${(perfData.loadEventEnd - perfData.fetchStart).toFixed(2)}ms`)
+          console.log('DOM Processing:', `${Math.max(0, perfData.domComplete - perfData.domInteractive).toFixed(2)}ms`)
+          console.log('Total Load Time:', `${Math.max(0, perfData.loadEventEnd - perfData.startTime).toFixed(2)}ms`)
+
           console.groupEnd()
         }
       })

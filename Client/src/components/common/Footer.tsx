@@ -1,18 +1,19 @@
 import React from 'react'
 import { Mail, Phone } from 'lucide-react'
 import { FaFacebook, FaInstagram, FaTelegram, FaTiktok, FaYoutube, FaGithub, FaLinkedin } from 'react-icons/fa'
+import logo from '@/assets/SuccessBridgeLogo.png'
 
 export const Footer: React.FC = () => {
     return (
-        <footer className="bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 pt-8 md:pt-16 pb-6 md:pb-8 border-t border-slate-200 dark:border-slate-800">
+        <footer className="relative z-10 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 pt-8 md:pt-16 pb-6 md:pb-8 border-t border-slate-200 dark:border-slate-800">
             <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
                 {/* Main Content Grid with more spacing */}
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 md:gap-12 mb-6 md:mb-16">
                     {/* Brand Identity - 25% width (1 column) */}
                     <div className="space-y-3 md:space-y-4">
                         <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 md:w-10 md:h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
-                                <span className="text-white font-bold text-sm md:text-lg">S</span>
+                            <div className="w-7 h-7 md:w-10 md:h-10 bg-white dark:bg-slate-800 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20 p-1">
+                                <img src={logo} alt="SuccessBridge" className="w-full h-full object-contain" />
                             </div>
                             <span className="text-base md:text-xl font-bold text-slate-900 dark:text-white tracking-tight">SuccessBridge</span>
                         </div>

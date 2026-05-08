@@ -1,30 +1,49 @@
 import React, { useMemo, useState } from "react";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
-import { Card, CardBody, CardHeader } from "@components/common/Card";
-import { Button } from "@components/common/Button";
+import {
+  ResourceUploadForm,
+  UploadFormData,
+} from "@components/resources/ResourceUploadForm";
 import { subjectService } from "@services/subjectService";
 import { departmentService } from "@services/departmentService";
 import { universityService } from "@services/universityService";
 import { resourceService } from "@services/resourceService";
 import { quizService } from "@services/quizService";
+import { userService } from "@services/userService";
+import { AdminDashboardOverview } from "./AdminDashboardOverview";
+import { AdminDashboardResources } from "./AdminDashboardResources";
+import { AdminDashboardStudents } from "./AdminDashboardStudents";
+import { AdminDashboardSubjects } from "./AdminDashboardSubjects";
+import { AdminDashboardDepartments } from "./AdminDashboardDepartments";
+import { AdminDashboardUniversities } from "./AdminDashboardUniversities";
+import { AdminDashboardQuizzes } from "./AdminDashboardQuizzes";
+import { AdminDashboardAnalytics } from "./AdminDashboardAnalytics";
+import { AdminDashboardUpload } from "./AdminDashboardUpload";
+import { AdminDashboardPromotion } from "./AdminDashboardPromotion";
 import {
   AlertTriangle,
   BarChart3,
   BookOpenCheck,
   Building2,
   GraduationCap,
-  PlusCircle,
-  RefreshCcw,
+  FileText,
+  Upload,
+  Users,
   School,
 } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 type TabKey =
   | "overview"
+  | "resources"
+  | "students"
   | "subjects"
   | "departments"
   | "universities"
-  | "reports";
+  | "quizzes"
+  | "upload"
+  | "reports"
+  | "promotion";
 
 type DashboardState = {
   loading: boolean;
@@ -34,6 +53,7 @@ type DashboardState = {
   universities: any[];
   quizzes: any[];
   resourceStats: any | null;
+  studentCount: number;
 };
 
 const initialState: DashboardState = {
@@ -44,6 +64,7 @@ const initialState: DashboardState = {
   universities: [],
   quizzes: [],
   resourceStats: null,
+  studentCount: 0,
 };
 
 const parseArrayData = (value: any): any[] => {
@@ -69,43 +90,25 @@ const parseError = (err: any): string => {
   );
 };
 
-export const AdminDashboard: React.FC = () => {
+export const AdminDashboardContent: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
   const [state, setState] = useState<DashboardState>(initialState);
-  const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [uploadFormKey, setUploadFormKey] = useState(0);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
-
-  const [subjectForm, setSubjectForm] = useState({
-    name: "",
-    code: "",
-    departmentId: "",
-    gradeId: "",
-    streamId: "",
-  });
-
-  const [departmentForm, setDepartmentForm] = useState({
-    name: "",
-    universityId: "",
-  });
-
-  const [universityForm, setUniversityForm] = useState({
-    name: "",
-    location: "",
-    email: "",
-  });
 
   const fetchDashboardData = React.useCallback(async () => {
     setState((prev) => ({ ...prev, loading: true, error: null }));
 
     const results = await Promise.allSettled([
-      subjectService.getAll(),
+      subjectService.getSubjects(),
       departmentService.getAll(),
       universityService.getUniversities(),
       quizService.getAll({ limit: 200 }),
       resourceService.getResourceStats(),
+      userService.getAllUsers(1, 1, "student"),
     ]);
 
     const [
@@ -114,6 +117,7 @@ export const AdminDashboard: React.FC = () => {
       universitiesRes,
       quizzesRes,
       resourceStatsRes,
+      studentsRes,
     ] = results;
 
     const subjects =
@@ -134,6 +138,8 @@ export const AdminDashboard: React.FC = () => {
       resourceStatsRes.status === "fulfilled"
         ? resourceStatsRes.value?.data || {}
         : null;
+    const studentCount =
+      studentsRes.status === "fulfilled" ? studentsRes.value?.total || 0 : 0;
 
     const hardFailures = [
       subjectsRes,
@@ -141,6 +147,7 @@ export const AdminDashboard: React.FC = () => {
       universitiesRes,
       quizzesRes,
       resourceStatsRes,
+      studentsRes,
     ].filter((result) => result.status === "rejected").length;
 
     setState({
@@ -154,6 +161,7 @@ export const AdminDashboard: React.FC = () => {
       universities,
       quizzes,
       resourceStats,
+      studentCount,
     });
   }, []);
 
@@ -161,57 +169,66 @@ export const AdminDashboard: React.FC = () => {
     fetchDashboardData();
   }, [fetchDashboardData]);
 
-  const overviewStats = useMemo(
+  const dashboardTabs = useMemo(
     () => [
-      {
-        label: "Subjects",
-        value: state.subjects.length,
-        icon: BookOpenCheck,
-        color: "text-emerald-600",
-      },
-      {
-        label: "Departments",
-        value: state.departments.length,
-        icon: Building2,
-        color: "text-violet-600",
-      },
-      {
-        label: "Universities",
-        value: state.universities.length,
-        icon: School,
-        color: "text-amber-600",
-      },
-      {
-        label: "Quizzes",
-        value: state.quizzes.length,
-        icon: GraduationCap,
-        color: "text-pink-600",
-      },
-      {
-        label: "Resources",
-        value: Number(
-          state.resourceStats?.totalResources ||
-            state.resourceStats?.total ||
-            0,
-        ),
-        icon: BarChart3,
-        color: "text-cyan-600",
-      },
+      { id: "overview" as TabKey, label: "Overview", icon: BarChart3 },
+      { id: "resources" as TabKey, label: "Resources", icon: FileText },
+      { id: "students" as TabKey, label: "Students", icon: Users },
+      { id: "subjects" as TabKey, label: "Subjects", icon: BookOpenCheck },
+      { id: "departments" as TabKey, label: "Departments", icon: Building2 },
+      { id: "universities" as TabKey, label: "Universities", icon: School },
+      { id: "quizzes" as TabKey, label: "Quizzes", icon: GraduationCap },
+      { id: "upload" as TabKey, label: " Upload", icon: Upload },
+      { id: "reports" as TabKey, label: "Analytics", icon: BarChart3 },
     ],
-    [state],
+    [],
   );
 
-  const tabButton = (id: TabKey, label: string) => (
+  const handleNavigateToTab = (tab: string) => {
+    const valid: TabKey[] = [
+      "overview",
+      "resources",
+      "students",
+      "subjects",
+      "departments",
+      "universities",
+      "quizzes",
+      "upload",
+      "reports",
+      "promotion",
+    ];
+    if (valid.includes(tab as TabKey)) {
+      setActiveTab(tab as TabKey);
+    }
+  };
+
+  const tabButton = ({
+    id,
+    label,
+    icon: Icon,
+  }: (typeof dashboardTabs)[number]) => (
     <button
       key={id}
-      className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${
+      className={`group relative inline-flex shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-4 py-3.5 text-left text-sm font-semibold transition-all duration-300 ${
         activeTab === id
-          ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-          : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
+          ? "border-blue-400 text-white"
+          : "border-transparent text-slate-400 hover:border-slate-500 hover:text-white"
       }`}
       onClick={() => setActiveTab(id)}
     >
-      {label}
+      <Icon
+        className={`h-4 w-4 transition-colors duration-300 ${
+          activeTab === id
+            ? "text-blue-300"
+            : "text-slate-500 group-hover:text-slate-200"
+        }`}
+        strokeWidth={2.2}
+      />
+      <span className="flex min-w-0 flex-col">
+        <span className="leading-none tracking-[0.08em] uppercase">
+          {label}
+        </span>
+      </span>
     </button>
   );
 
@@ -220,398 +237,115 @@ export const AdminDashboard: React.FC = () => {
     setActionError(null);
   };
 
-  const handleCreateSubject = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!subjectForm.name.trim() || !subjectForm.code.trim()) return;
+  const handleUploadSubmit = async (data: UploadFormData) => {
     resetAlerts();
-    setSubmitting(true);
+    setUploading(true);
     try {
-      await subjectService.create({
-        name: subjectForm.name.trim(),
-        code: subjectForm.code.trim(),
-        departmentId: subjectForm.departmentId || undefined,
-        gradeId: subjectForm.gradeId || undefined,
-        streamId: subjectForm.streamId || undefined,
-      });
-      setSubjectForm({
-        name: "",
-        code: "",
-        departmentId: "",
-        gradeId: "",
-        streamId: "",
-      });
-      setActionMessage("Subject created successfully.");
+      const formData = new FormData();
+      formData.append("title", data.title);
+      formData.append("description", data.description);
+      formData.append("educationLevel", data.educationLevel);
+      formData.append("type", data.type);
+      formData.append("subject", data.subject);
+      formData.append("tags", data.tags);
+      if (data.file) formData.append("file", data.file);
+      if (data.grade) formData.append("gradeId", data.grade);
+      if (data.stream) formData.append("stream", data.stream);
+      if (data.universityId) formData.append("universityId", data.universityId);
+      if (data.departmentId) formData.append("departmentId", data.departmentId);
+      if (data.category) formData.append("category", data.category);
+      await resourceService.uploadResource(formData);
       await fetchDashboardData();
+      setActionMessage("Resource uploaded successfully.");
+      setUploadFormKey((prev) => prev + 1);
     } catch (err: any) {
       setActionError(parseError(err));
     } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleCreateDepartment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!departmentForm.name.trim() || !departmentForm.universityId.trim())
-      return;
-    resetAlerts();
-    setSubmitting(true);
-    try {
-      await departmentService.create({
-        name: departmentForm.name.trim(),
-        universityId: departmentForm.universityId.trim(),
-      });
-      setDepartmentForm({ name: "", universityId: "" });
-      setActionMessage("Department created successfully.");
-      await fetchDashboardData();
-    } catch (err: any) {
-      setActionError(parseError(err));
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleCreateUniversity = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!universityForm.name.trim() || !universityForm.location.trim()) return;
-    resetAlerts();
-    setSubmitting(true);
-    try {
-      await universityService.createUniversity({
-        name: universityForm.name.trim(),
-        location: universityForm.location.trim(),
-        email: universityForm.email.trim() || undefined,
-      });
-      setUniversityForm({ name: "", location: "", email: "" });
-      setActionMessage("University created successfully.");
-      await fetchDashboardData();
-    } catch (err: any) {
-      setActionError(parseError(err));
-    } finally {
-      setSubmitting(false);
+      setUploading(false);
     }
   };
 
   return (
+    <div className="space-y-0 pb-8 w-full pt-4 md:pt-6">
+      {/* Top Tab Bar — Sticky at top */}
+      <div className="sticky top-0 z-40 -mx-4 md:-mx-6 overflow-x-auto border-b border-slate-700 bg-[#20212b] shadow-[0_10px_30px_-20px_rgba(0,0,0,0.55)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex w-max min-w-full flex-nowrap items-end gap-1 px-4 md:px-6 py-1">
+          {dashboardTabs.map((tab) => tabButton(tab))}
+        </div>
+      </div>
+
+      {state.error && (
+        <div className="border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800 text-sm flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4" /> {state.error}
+        </div>
+      )}
+      {actionMessage && (
+        <div className="border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-800 text-sm">
+          {actionMessage}
+        </div>
+      )}
+      {actionError && (
+        <div className="border border-rose-200 bg-rose-50 px-4 py-3 text-rose-800 text-sm">
+          {actionError}
+        </div>
+      )}
+
+      {activeTab === "overview" && (
+        <AdminDashboardOverview
+          state={state}
+          onRefresh={fetchDashboardData}
+          onNavigateToTab={handleNavigateToTab}
+        />
+      )}
+
+      {activeTab === "resources" && (
+        <AdminDashboardResources
+          onUpload={() => setActiveTab("upload")}
+          onNavigateToTab={handleNavigateToTab}
+        />
+      )}
+
+      {activeTab === "students" && (
+        <AdminDashboardStudents onNavigateToTab={handleNavigateToTab} />
+      )}
+
+      {activeTab === "subjects" && (
+        <AdminDashboardSubjects onNavigateToTab={handleNavigateToTab} />
+      )}
+
+      {activeTab === "departments" && <AdminDashboardDepartments />}
+
+      {activeTab === "universities" && <AdminDashboardUniversities />}
+
+      {activeTab === "quizzes" && (
+        <AdminDashboardQuizzes onNavigateToTab={handleNavigateToTab} />
+      )}
+
+      {activeTab === "upload" && (
+        <AdminDashboardUpload
+          onUploadSubmit={handleUploadSubmit}
+          uploading={uploading}
+          uploadFormKey={uploadFormKey}
+        />
+      )}
+
+      {activeTab === "reports" && <AdminDashboardAnalytics />}
+
+      {/* Promotion is only accessible via sidebar → /admin/promotion */}
+      {activeTab === "promotion" && <AdminDashboardPromotion />}
+    </div>
+  );
+};
+
+export const AdminDashboard: React.FC = () => {
+  return (
     <DashboardLayout
       title="Admin Dashboard"
       subtitle="Manage structures with live database data"
+      showFooter={true}
+      disableTopPadding={true}
     >
-      <div className="space-y-6">
-        <div className="border-b-2 border-gray-200 dark:border-slate-700 flex gap-0 overflow-x-auto -mx-6 px-6">
-          {tabButton("overview", "Overview")}
-          {tabButton("subjects", "Subjects")}
-          {tabButton("departments", "Departments")}
-          {tabButton("universities", "Universities")}
-          {tabButton("reports", "Reports")}
-        </div>
-
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            {state.loading
-              ? "Refreshing data..."
-              : "Synced with latest database records"}
-          </p>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={fetchDashboardData}
-            loading={state.loading}
-            icon={<RefreshCcw className="w-4 h-4" />}
-          >
-            Refresh
-          </Button>
-        </div>
-
-        {state.error && (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800 text-sm flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4" /> {state.error}
-          </div>
-        )}
-        {actionMessage && (
-          <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-800 text-sm">
-            {actionMessage}
-          </div>
-        )}
-        {actionError && (
-          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-red-800 text-sm">
-            {actionError}
-          </div>
-        )}
-
-        {activeTab === "overview" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {overviewStats.map((item) => (
-              <Card key={item.label}>
-                <CardBody className="p-5">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-xs uppercase tracking-widest text-slate-500">
-                        {item.label}
-                      </p>
-                      <p className="text-3xl font-black text-slate-900 dark:text-white mt-2">
-                        {item.value}
-                      </p>
-                    </div>
-                    <item.icon className={`w-6 h-6 ${item.color}`} />
-                  </div>
-                </CardBody>
-              </Card>
-            ))}
-          </div>
-        )}
-
-        {activeTab === "subjects" && (
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>Add Subject</CardHeader>
-              <CardBody>
-                <form className="space-y-3" onSubmit={handleCreateSubject}>
-                  <input
-                    value={subjectForm.name}
-                    onChange={(e) =>
-                      setSubjectForm((prev) => ({
-                        ...prev,
-                        name: e.target.value,
-                      }))
-                    }
-                    placeholder="Subject name"
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white dark:bg-slate-900"
-                    required
-                  />
-                  <input
-                    value={subjectForm.code}
-                    onChange={(e) =>
-                      setSubjectForm((prev) => ({
-                        ...prev,
-                        code: e.target.value,
-                      }))
-                    }
-                    placeholder="Subject code"
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white dark:bg-slate-900"
-                    required
-                  />
-                  <input
-                    value={subjectForm.departmentId}
-                    onChange={(e) =>
-                      setSubjectForm((prev) => ({
-                        ...prev,
-                        departmentId: e.target.value,
-                      }))
-                    }
-                    placeholder="Department ID (optional)"
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white dark:bg-slate-900"
-                  />
-                  <input
-                    value={subjectForm.gradeId}
-                    onChange={(e) =>
-                      setSubjectForm((prev) => ({
-                        ...prev,
-                        gradeId: e.target.value,
-                      }))
-                    }
-                    placeholder="Grade ID (optional)"
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white dark:bg-slate-900"
-                  />
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    fullWidth
-                    loading={submitting}
-                    icon={<PlusCircle className="w-4 h-4" />}
-                  >
-                    Create Subject
-                  </Button>
-                </form>
-              </CardBody>
-            </Card>
-          </div>
-        )}
-
-        {activeTab === "departments" && (
-          <div className="max-w-xl">
-            <Card>
-              <CardHeader>Add Department</CardHeader>
-              <CardBody>
-                <form className="space-y-3" onSubmit={handleCreateDepartment}>
-                  <input
-                    value={departmentForm.name}
-                    onChange={(e) =>
-                      setDepartmentForm((prev) => ({
-                        ...prev,
-                        name: e.target.value,
-                      }))
-                    }
-                    placeholder="Department name"
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white dark:bg-slate-900"
-                    required
-                  />
-                  <select
-                    value={departmentForm.universityId}
-                    onChange={(e) =>
-                      setDepartmentForm((prev) => ({
-                        ...prev,
-                        universityId: e.target.value,
-                      }))
-                    }
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white dark:bg-slate-900"
-                    required
-                  >
-                    <option value="">Select university</option>
-                    {state.universities.map((university: any) => (
-                      <option key={university.id} value={university.id}>
-                        {university.name}
-                      </option>
-                    ))}
-                  </select>
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    fullWidth
-                    loading={submitting}
-                    icon={<PlusCircle className="w-4 h-4" />}
-                  >
-                    Create Department
-                  </Button>
-                </form>
-              </CardBody>
-            </Card>
-          </div>
-        )}
-
-        {activeTab === "universities" && (
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <Card>
-              <CardHeader>Add University</CardHeader>
-              <CardBody>
-                <form className="space-y-3" onSubmit={handleCreateUniversity}>
-                  <input
-                    value={universityForm.name}
-                    onChange={(e) =>
-                      setUniversityForm((prev) => ({
-                        ...prev,
-                        name: e.target.value,
-                      }))
-                    }
-                    placeholder="University name"
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white dark:bg-slate-900"
-                    required
-                  />
-                  <input
-                    value={universityForm.location}
-                    onChange={(e) =>
-                      setUniversityForm((prev) => ({
-                        ...prev,
-                        location: e.target.value,
-                      }))
-                    }
-                    placeholder="Location"
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white dark:bg-slate-900"
-                    required
-                  />
-                  <input
-                    value={universityForm.email}
-                    onChange={(e) =>
-                      setUniversityForm((prev) => ({
-                        ...prev,
-                        email: e.target.value,
-                      }))
-                    }
-                    placeholder="Email (optional)"
-                    className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm bg-white dark:bg-slate-900"
-                  />
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    fullWidth
-                    loading={submitting}
-                    icon={<PlusCircle className="w-4 h-4" />}
-                  >
-                    Create University
-                  </Button>
-                </form>
-              </CardBody>
-            </Card>
-          </div>
-        )}
-
-        {activeTab === "reports" && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>Academic Coverage Report</CardHeader>
-              <CardBody>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-600">Total Subjects</span>
-                    <span className="font-black text-slate-900 dark:text-white">
-                      {state.subjects.length}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-600">Total Departments</span>
-                    <span className="font-black text-slate-900 dark:text-white">
-                      {state.departments.length}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-600">Total Universities</span>
-                    <span className="font-black text-slate-900 dark:text-white">
-                      {state.universities.length}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-600">Total Quizzes</span>
-                    <span className="font-black text-slate-900 dark:text-white">
-                      {state.quizzes.length}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-slate-600">Total Resources</span>
-                    <span className="font-black text-slate-900 dark:text-white">
-                      {Number(
-                        state.resourceStats?.totalResources ||
-                          state.resourceStats?.total ||
-                          0,
-                      )}
-                    </span>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-
-            <Card>
-              <CardHeader>Structure Summary</CardHeader>
-              <CardBody>
-                <div className="space-y-4">
-                  <div className="rounded-xl bg-blue-50 dark:bg-blue-900/20 p-4">
-                    <p className="text-xs uppercase tracking-widest text-blue-600 dark:text-blue-300">
-                      Avg Subjects / Department
-                    </p>
-                    <p className="text-2xl font-black text-blue-700 dark:text-blue-200">
-                      {state.departments.length > 0
-                        ? (
-                            state.subjects.length / state.departments.length
-                          ).toFixed(1)
-                        : "0.0"}
-                    </p>
-                  </div>
-                  <div className="rounded-xl bg-emerald-50 dark:bg-emerald-900/20 p-4">
-                    <p className="text-xs uppercase tracking-widest text-emerald-600 dark:text-emerald-300">
-                      Avg Departments / University
-                    </p>
-                    <p className="text-2xl font-black text-emerald-700 dark:text-emerald-200">
-                      {state.universities.length > 0
-                        ? (
-                            state.departments.length / state.universities.length
-                          ).toFixed(1)
-                        : "0.0"}
-                    </p>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-          </div>
-        )}
-      </div>
+      <AdminDashboardContent />
     </DashboardLayout>
   );
 };

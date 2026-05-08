@@ -1,5 +1,5 @@
 #!/bin/bash
-# Set environment variables for Vercel build
+# Set environment variables for Cloudflare build
 export VITE_API_URL="https://successbridge-tolesa-api.onrender.com/api"
 export VITE_APP_NAME="SuccessBridge"
 export VITE_APP_VERSION="1.0.0"

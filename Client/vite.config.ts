@@ -5,8 +5,6 @@ import path from 'path'
 export default defineConfig({
   plugins: [
     react({
-      // Enable Fast Refresh
-      fastRefresh: true,
       // Babel configuration for better HMR
       babel: {
         plugins: [
@@ -14,6 +12,7 @@ export default defineConfig({
         ],
       },
     }),
+
   ],
   resolve: {
     alias: {
@@ -27,14 +26,20 @@ export default defineConfig({
       '@utils': path.resolve(__dirname, './src/utils'),
       '@types': path.resolve(__dirname, './src/types/index.ts'),
       '@store': path.resolve(__dirname, './src/store'),
+      '@learningCenter': path.resolve(__dirname, './src/dashboards/student/learning center'),
     },
   },
   server: {
     port: 3000,
-    host: true, // Listen on all addresses
+    strictPort: true,
+    host: '127.0.0.1',
     hmr: {
-      overlay: true, // Show errors as overlay
+      protocol: 'ws',
+      host: '127.0.0.1',
+      port: 3000,
     },
+
+
     proxy: {
       '/api': {
         target: 'http://localhost:5000',

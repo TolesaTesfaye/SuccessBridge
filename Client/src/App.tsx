@@ -74,56 +74,21 @@ const StudentProfile = lazy(() =>
     default: m.StudentProfile,
   })),
 );
+const StudentPayments = lazy(() =>
+  import("@pages/PaymentTrackingPage").then((m) => ({
+    default: m.PaymentTrackingPage,
+  })),
+);
 const UniversityCourseViewer = lazy(() =>
   import("@pages/student/UniversityCourseViewer").then((m) => ({
     default: m.UniversityCourseViewer,
   })),
 );
 
-// Lazy load Psychology chapters
-const PsychologyChapter1 = lazy(() =>
-  import("@dashboards/student/learning center/University/Freshman/Psychology/chapters/Chapter1/Chapter1").then((m) => ({
-    default: m.default,
-  })),
-);
-const PsychologyChapter2 = lazy(() =>
-  import("@dashboards/student/learning center/University/Freshman/Psychology/chapters/Chapter2/Chapter2").then((m) => ({
-    default: m.default,
-  })),
-);
-const PsychologyChapter3 = lazy(() =>
-  import("@dashboards/student/learning center/University/Freshman/Psychology/chapters/Chapter3/Chapter3").then((m) => ({
-    default: m.default,
-  })),
-);
-const PsychologyChapter4 = lazy(() =>
-  import("@dashboards/student/learning center/University/Freshman/Psychology/chapters/Chapter4/Chapter4").then((m) => ({
-    default: m.default,
-  })),
-);
-const PsychologyChapter5 = lazy(() =>
-  import("@dashboards/student/learning center/University/Freshman/Psychology/chapters/Chapter5/Chapter5").then((m) => ({
-    default: m.default,
-  })),
-);
-const PsychologyChapter6 = lazy(() =>
-  import("@dashboards/student/learning center/University/Freshman/Psychology/chapters/Chapter6/Chapter6").then((m) => ({
-    default: m.default,
-  })),
-);
-const PsychologyChapter7 = lazy(() =>
-  import("@dashboards/student/learning center/University/Freshman/Psychology/chapters/Chapter7/Chapter7").then((m) => ({
-    default: m.default,
-  })),
-);
-const PsychologyChapter8 = lazy(() =>
-  import("@dashboards/student/learning center/University/Freshman/Psychology/chapters/Chapter8/Chapter8").then((m) => ({
-    default: m.default,
-  })),
-);
-const PsychologyChapter9 = lazy(() =>
-  import("@dashboards/student/learning center/University/Freshman/Psychology/chapters/Chapter9/Chapter9").then((m) => ({
-    default: m.default,
+// Learning Center deep-link route (keeps dashboard layout)
+const UniversityLearningCenterRoute = lazy(() =>
+  import("@pages/student/UniversityLearningCenterRoute").then((m) => ({
+    default: m.UniversityLearningCenterRoute,
   })),
 );
 
@@ -151,6 +116,11 @@ const AdminAnalytics = lazy(() =>
 const AdminSettings = lazy(() =>
   import("@pages/admin/AdminSettings").then((m) => ({
     default: m.AdminSettings,
+  })),
+);
+const PromotionPage = lazy(() =>
+  import("@pages/PromotionPage").then((m) => ({
+    default: m.PromotionPage,
   })),
 );
 
@@ -289,7 +259,7 @@ const AppContent: React.FC = () => {
   return (
     <>
       <PerformanceMonitor />
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Layout>
           <Suspense fallback={<div className="min-h-screen" />}>
             <Routes>
@@ -303,11 +273,15 @@ const AppContent: React.FC = () => {
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+
               <Route path="/terms-of-service" element={<TermsOfService />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/verify-email" element={<VerifyEmail />} />
-              <Route path="/resend-verification" element={<ResendVerification />} />
+              <Route
+                path="/resend-verification"
+                element={<ResendVerification />}
+              />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/oauth-callback" element={<OAuthCallback />} />
@@ -369,6 +343,14 @@ const AppContent: React.FC = () => {
                   </ProtectedRoute>
                 }
               />
+              <Route
+                path="/student/payments"
+                element={
+                  <ProtectedRoute requiredRole="student">
+                    <StudentPayments />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* University Student Routes */}
               <Route
@@ -380,76 +362,12 @@ const AppContent: React.FC = () => {
                 }
               />
 
-              {/* Psychology Learning Center Routes */}
+              {/* Learning Center Deep Links (embedded in dashboard layout) */}
               <Route
-                path="/student/learning-center/psychology/chapter1"
+                path="/student/learning-center/:subject/:chapterId"
                 element={
                   <ProtectedRoute requiredRole="student">
-                    <PsychologyChapter1 />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/student/learning-center/psychology/chapter2"
-                element={
-                  <ProtectedRoute requiredRole="student">
-                    <PsychologyChapter2 />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/student/learning-center/psychology/chapter3"
-                element={
-                  <ProtectedRoute requiredRole="student">
-                    <PsychologyChapter3 />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/student/learning-center/psychology/chapter4"
-                element={
-                  <ProtectedRoute requiredRole="student">
-                    <PsychologyChapter4 />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/student/learning-center/psychology/chapter5"
-                element={
-                  <ProtectedRoute requiredRole="student">
-                    <PsychologyChapter5 />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/student/learning-center/psychology/chapter6"
-                element={
-                  <ProtectedRoute requiredRole="student">
-                    <PsychologyChapter6 />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/student/learning-center/psychology/chapter7"
-                element={
-                  <ProtectedRoute requiredRole="student">
-                    <PsychologyChapter7 />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/student/learning-center/psychology/chapter8"
-                element={
-                  <ProtectedRoute requiredRole="student">
-                    <PsychologyChapter8 />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/student/learning-center/psychology/chapter9"
-                element={
-                  <ProtectedRoute requiredRole="student">
-                    <PsychologyChapter9 />
+                    <UniversityLearningCenterRoute />
                   </ProtectedRoute>
                 }
               />
@@ -509,6 +427,14 @@ const AppContent: React.FC = () => {
                 element={
                   <ProtectedRoute requiredRole="admin">
                     <AdminSettings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/promotion"
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <PromotionPage />
                   </ProtectedRoute>
                 }
               />
@@ -599,6 +525,14 @@ const AppContent: React.FC = () => {
                 element={
                   <ProtectedRoute requiredRole="super_admin">
                     <SuperAdminAboutProject />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/superadmin/promotion"
+                element={
+                  <ProtectedRoute requiredRole="super_admin">
+                    <PromotionPage />
                   </ProtectedRoute>
                 }
               />

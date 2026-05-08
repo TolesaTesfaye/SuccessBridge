@@ -17,6 +17,7 @@ import {
   Server,
   ShieldCheck,
   Megaphone,
+  CreditCard,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -63,6 +64,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       emoji: "📈",
     },
     {
+      label: "Payments",
+      path: "/student/payments",
+      icon: <CreditCard className="w-5 h-5" />,
+      emoji: "💳",
+    },
+    {
       label: "Profile",
       path: "/student/profile",
       icon: <User className="w-5 h-5" />,
@@ -101,6 +108,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       path: "/admin/settings",
       icon: <Settings className="w-5 h-5" />,
       emoji: "⚙️",
+    },
+    {
+      label: "Promotion",
+      path: "/admin/promotion",
+      icon: <Megaphone className="w-5 h-5" />,
+      emoji: "📢",
     },
   ];
 
@@ -154,6 +167,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: <Settings className="w-5 h-5" />,
       emoji: "⚙️",
     },
+    {
+      label: "Promotion",
+      path: "/superadmin/promotion",
+      icon: <Megaphone className="w-5 h-5" />,
+      emoji: "📢",
+    },
   ];
 
   // Select nav items based on user role
@@ -171,7 +190,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div
-      className={`flex flex-col h-full bg-[#0B1121] transition-all duration-300 overflow-hidden w-full`}
+      className={`flex flex-col h-full bg-white dark:bg-[#0B1121] transition-all duration-300 overflow-hidden w-full`}
     >
       {/* Mobile Close Button */}
       {onClose && (
@@ -184,7 +203,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       {/* Navigation Items */}
-      <nav className="flex-1 py-2 md:py-4 space-y-1 overflow-y-auto custom-scrollbar">
+      <nav className="flex-1 pt-0 pb-2 md:pb-4 space-y-1 overflow-y-auto custom-scrollbar">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
@@ -195,7 +214,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               className={`w-full flex items-center gap-3 md:gap-4 py-2.5 md:py-3.5 transition-all duration-200 group relative
                                 ${
                                   isActive
-                                    ? "bg-[#1E56A0] text-white"
+                                    ? "bg-blue-400 text-white"
                                     : "text-slate-400 hover:bg-white/5 hover:text-white"
                                 }
                                 ${collapsed ? "justify-center px-0" : "px-3 md:px-5"}

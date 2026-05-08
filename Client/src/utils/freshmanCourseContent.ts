@@ -19,8 +19,8 @@ export interface CourseContent {
 }
 
 export const FRESHMAN_COURSE_CONTENT: Record<string, CourseContent> = {
-  Psychology: PSYCHOLOGY_CONTENT,
-  Logic: LOGIC_CONTENT,
+  // Psychology and Logic now use a dedicated, premium chapter structure
+  // and are handled directly in UniversityLearningCenter
   // Physics uses new chapter structure - no content file needed
   // Math (Natural Science) uses new chapter structure - no content file needed
   // Math (Social Science) uses new chapter structure - no content file needed

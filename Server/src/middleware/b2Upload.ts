@@ -38,35 +38,49 @@ export const b2Upload = multer({
 });
 
 // Middleware to upload file to B2 after multer processes it
-export async function uploadToB2(req: Request, file: Express.Multer.File): Promise<string> {
-  if (!file || !file.buffer) {
+// Supports two signatures for backward compatibility:
+// 1. uploadToB2(req, file) - for routes with multer
+// 2. uploadToB2(data, file) - for services (data is ignored, kept for compatibility)
+export async function uploadToB2(reqOrData: Request | any, file: Express.Multer.File, folder: string = 'resources'): Promise<string> {
+  if (!file) {
+    console.error('❌ No file provided to uploadToB2');
+    throw new Error('No file provided');
+  }
+
+  if (!file.buffer) {
+    console.error('❌ File has no buffer:', {
+      fieldname: file.fieldname,
+      originalname: file.originalname,
+      mimetype: file.mimetype,
+      size: file.size,
+    });
     throw new Error('No file buffer available');
   }
 
   const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
   const ext = path.extname(file.originalname);
-  const key = `resources/${uniqueSuffix}${ext}`;
+  const key = `${folder}/${uniqueSuffix}${ext}`;
 
-  console.log('Uploading to B2 with key:', key);
-  console.log('File size:', file.buffer.length, 'bytes');
-  console.log('Content type:', file.mimetype);
+  console.log('📤 Uploading to B2 with key:', key);
+  console.log('📊 File size:', file.buffer.length, 'bytes');
+  console.log('📄 Content type:', file.mimetype);
 
   const command = new PutObjectCommand({
     Bucket: B2_BUCKET,
     Key: key,
     Body: file.buffer,
     ContentType: file.mimetype,
-    // Make file publicly readable
-    ACL: 'public-read',
+    // Note: B2 doesn't support ACL parameter like AWS S3
+    // Files are public based on bucket settings
   });
 
   try {
     await b2Client.send(command);
     const publicUrl = getB2PublicUrl(key);
-    console.log('File uploaded successfully to B2:', publicUrl);
+    console.log('✅ File uploaded successfully to B2:', publicUrl);
     return publicUrl;
   } catch (error) {
-    console.error('B2 upload error:', error);
+    console.error('❌ B2 upload error:', error);
     throw new Error(`Failed to upload file to B2: ${error}`);
   }
 }

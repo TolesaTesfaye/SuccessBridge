@@ -7,13 +7,8 @@ import { GRADE_11_ENGLISH_CONTENT } from '../dashboards/student/learning center/
 import { GRADE_11_HISTORY_CONTENT } from '../dashboards/student/learning center/highschool/grade 11/history/historyContent';
 import { GRADE_11_GEOGRAPHY_CONTENT } from '../dashboards/student/learning center/highschool/grade 11/geography/geographyContent';
 
-// Grade 12 Content
-import { GRADE_12_MATH_CONTENT } from '../dashboards/student/learning center/highschool/grade 12/math/mathContent';
-import { GRADE_12_PHYSICS_CONTENT } from '../dashboards/student/learning center/highschool/grade 12/physics/physicsContent';
-import { GRADE_12_CHEMISTRY_CONTENT } from '../dashboards/student/learning center/highschool/grade 12/chemistry/chemistryContent';
-import { GRADE_12_BIOLOGY_CONTENT } from '../dashboards/student/learning center/highschool/grade 12/biology/biologyContent';
-import { GRADE_12_HISTORY_CONTENT } from '../dashboards/student/learning center/highschool/grade 12/history/historyContent';
-import { GRADE_12_GEOGRAPHY_CONTENT } from '../dashboards/student/learning center/highschool/grade 12/geography/geographyContent';
+// NOTE: Grade 12 now uses component-based approach (see grade 12/subjectRegistry.ts)
+// No content imports needed here
 
 // Placeholder content for other subjects
 const createPlaceholderContent = (subject: string, grade: string) => ({
@@ -46,15 +41,8 @@ export const GRADE_11_CONTENT = {
   Geography: GRADE_11_GEOGRAPHY_CONTENT,
 };
 
-// Grade 12 Courses
-export const GRADE_12_CONTENT = {
-  Mathematics: GRADE_12_MATH_CONTENT,
-  Physics: GRADE_12_PHYSICS_CONTENT,
-  Chemistry: GRADE_12_CHEMISTRY_CONTENT,
-  Biology: GRADE_12_BIOLOGY_CONTENT,
-  History: GRADE_12_HISTORY_CONTENT,
-  Geography: GRADE_12_GEOGRAPHY_CONTENT,
-};
+// NOTE: Grade 12 uses component-based rendering (see grade 12/subjectRegistry.ts)
+// No content export needed here
 
 // Grade 9 & 10 Courses
 export const GRADE_9_CONTENT = {
@@ -83,7 +71,8 @@ export const getHighSchoolContent = (grade: string) => {
     case 'grade_11':
       return GRADE_11_CONTENT;
     case 'grade_12':
-      return GRADE_12_CONTENT;
+      // Grade 12 uses component-based rendering
+      return {};
     default:
       return GRADE_9_CONTENT;
   }

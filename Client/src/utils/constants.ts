@@ -132,7 +132,7 @@ export const HIGH_SCHOOL = {
   },
   GRADES_11_12: {
     natural: {
-      subjects: ["Math", "Physics", "Chemistry", "Biology", "English", "ICT"],
+      subjects: ["Biology", "Math", "Physics", "Chemistry", "English", "ICT"],
       resources: [
         "Textbooks",
         "Reference books",
@@ -146,7 +146,7 @@ export const HIGH_SCHOOL = {
       ],
     },
     social: {
-      subjects: ["History", "Geography", "Economics", "English", "ICT"],
+      subjects: ["Biology", "History", "Geography", "Economics", "English", "ICT"],
       resources: [
         "Textbooks",
         "Reference books",

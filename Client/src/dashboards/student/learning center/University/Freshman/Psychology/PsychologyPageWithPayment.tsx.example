@@ -1,0 +1,182 @@
+/**
+ * EXAMPLE: How to add payment protection to Psychology subject
+ * 
+ * This file shows how to wrap existing Psychology content with payment protection.
+ * Copy this pattern to any subject that requires payment.
+ */
+
+import React from 'react'
+import { SubjectAccessGuard } from '@components/payment/SubjectAccessGuard'
+import { SubjectChapterRenderer } from '@dashboards/student/components/SubjectChapterRenderer'
+import { psychologyConfig } from './psychologyConfig'
+import { psychologyContent } from './psychologyContent'
+
+export const PsychologyPageWithPayment: React.FC = () => {
+  // Get the subject ID from your subject registry or database
+  // You'll need to fetch this from your subjects API or hardcode it
+  const PSYCHOLOGY_SUBJECT_ID = 'your-psychology-subject-id-here'
+  
+  return (
+    <SubjectAccessGuard
+      subjectId={PSYCHOLOGY_SUBJECT_ID}
+      subjectName="Psychology"
+      educationLevel="university"
+      grade="freshman"
+      // Optional: List subjects that are free (don't require payment)
+      freeSubjects={['English']} // English is free for freshman
+    >
+      {/* Your existing Psychology content goes here */}
+      <SubjectChapterRenderer
+        config={psychologyConfig}
+        content={psychologyContent}
+      />
+    </SubjectAccessGuard>
+  )
+}
+
+/**
+ * INTEGRATION STEPS:
+ * 
+ * 1. Get Subject ID:
+ *    - Query your subjects API to get the Psychology subject ID
+ *    - Or create a subject registry that maps subject names to IDs
+ * 
+ * 2. Replace Original Component:
+ *    - Find where PsychologyPage is used in your routes
+ *    - Replace it with PsychologyPageWithPayment
+ * 
+ * 3. Configure Free Subjects:
+ *    - Update the freeSubjects array with subjects that don't require payment
+ *    - For example: ['English', 'Mathematics'] for freshman
+ * 
+ * 4. Test:
+ *    - As a student, navigate to Psychology
+ *    - You should see the payment prompt
+ *    - Submit a payment request
+ *    - As admin, approve the payment
+ *    - As student, verify you can now access the content
+ */
+
+/**
+ * ALTERNATIVE: Protect at Route Level
+ * 
+ * Instead of wrapping individual pages, you can protect at the route level:
+ */
+
+// In your routes file (e.g., App.tsx or routes.tsx):
+/*
+import { SubjectAccessGuard } from '@components/payment/SubjectAccessGuard'
+
+<Route 
+  path="/dashboard/learning/psychology" 
+  element={
+    <SubjectAccessGuard
+      subjectId="psychology-id"
+      subjectName="Psychology"
+      educationLevel="university"
+      grade="freshman"
+      freeSubjects={['English']}
+    >
+      <PsychologyPage />
+    </SubjectAccessGuard>
+  } 
+/>
+*/
+
+/**
+ * SUBJECT ID REGISTRY EXAMPLE:
+ * 
+ * Create a file: Client/src/utils/subjectRegistry.ts
+ */
+
+/*
+export const SUBJECT_IDS = {
+  // Freshman subjects
+  PSYCHOLOGY: 'psychology-subject-id',
+  PHYSICS: 'physics-subject-id',
+  HISTORY: 'history-subject-id',
+  GEOGRAPHY: 'geography-subject-id',
+  LOGIC: 'logic-subject-id',
+  MATH_NATURAL: 'math-natural-subject-id',
+  MATH_SOCIAL: 'math-social-subject-id',
+  ENGLISH: 'english-subject-id',
+  
+  // High school subjects
+  BIOLOGY_11: 'biology-11-subject-id',
+  CHEMISTRY_11: 'chemistry-11-subject-id',
+  // ... more subjects
+}
+
+export const FREE_SUBJECTS = {
+  FRESHMAN: ['English'], // English is free for freshman
+  GRADE_11_NATURAL: ['Mathematics'], // Math is free for grade 11 natural
+  GRADE_11_SOCIAL: ['Mathematics'], // Math is free for grade 11 social
+}
+
+// Usage:
+import { SUBJECT_IDS, FREE_SUBJECTS } from '@utils/subjectRegistry'
+
+<SubjectAccessGuard
+  subjectId={SUBJECT_IDS.PSYCHOLOGY}
+  subjectName="Psychology"
+  educationLevel="university"
+  grade="freshman"
+  freeSubjects={FREE_SUBJECTS.FRESHMAN}
+>
+  <PsychologyContent />
+</SubjectAccessGuard>
+*/
+
+/**
+ * FETCHING SUBJECT ID DYNAMICALLY:
+ * 
+ * If you want to fetch the subject ID from the API:
+ */
+
+/*
+import { useState, useEffect } from 'react'
+import { subjectService } from '@services/subjectService'
+
+export const PsychologyPageDynamic: React.FC = () => {
+  const [subjectId, setSubjectId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
+  
+  useEffect(() => {
+    const fetchSubjectId = async () => {
+      try {
+        const subjects = await subjectService.getAll()
+        const psychology = subjects.find(s => s.name.toLowerCase() === 'psychology')
+        if (psychology) {
+          setSubjectId(psychology.id)
+        }
+      } catch (error) {
+        console.error('Failed to fetch subject ID:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchSubjectId()
+  }, [])
+  
+  if (loading) {
+    return <div>Loading...</div>
+  }
+  
+  if (!subjectId) {
+    return <div>Subject not found</div>
+  }
+  
+  return (
+    <SubjectAccessGuard
+      subjectId={subjectId}
+      subjectName="Psychology"
+      educationLevel="university"
+      grade="freshman"
+      freeSubjects={['English']}
+    >
+      <PsychologyContent />
+    </SubjectAccessGuard>
+  )
+}
+*/

@@ -1,64 +1,66 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate, Link, useLocation } from 'react-router-dom'
-import { useAuth } from '@hooks/useAuth'
-import { FormInput } from '@components/forms/FormInput'
-import { AppLogo } from '@components/common/AppLogo'
-import { ThemeToggle } from '@components/common/ThemeToggle'
-import { useToast } from '@components/common/Toast'
-import { LogIn, AlertCircle } from 'lucide-react'
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useAuth } from "@hooks/useAuth";
+import { FormInput } from "@components/forms/FormInput";
+import { AppLogo } from "@components/common/AppLogo";
+import { ThemeToggle } from "@components/common/ThemeToggle";
+import { useToast } from "@components/common/Toast";
+import { LogIn, AlertCircle } from "lucide-react";
 
 export const Login: React.FC = () => {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const toast = useToast()
-  const { login, loading } = useAuth()
+  const navigate = useNavigate();
+  const location = useLocation();
+  const toast = useToast();
+  const { login, loading } = useAuth();
+  const lastToastMessageRef = useRef<string>("");
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  })
-  const [formError, setFormError] = useState<string | null>(null)
+    email: "",
+    password: "",
+  });
+  const [formError, setFormError] = useState<string | null>(null);
 
   // Show message from navigation state (e.g., from registration)
   useEffect(() => {
-    const state = location.state as any
-    if (state?.message) {
-      if (state.type === 'info') {
-        toast.info(state.message, 8000)
+    const state = location.state as any;
+    if (state?.message && lastToastMessageRef.current !== state.message) {
+      lastToastMessageRef.current = state.message;
+      if (state.type === "info") {
+        toast.info(state.message, 8000);
       } else {
-        toast.success(state.message)
+        toast.success(state.message);
       }
       // Clear the state to prevent showing message again on refresh
-      navigate(location.pathname, { replace: true, state: {} })
+      navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location.state, toast, navigate, location.pathname])
+  }, [location.state, toast, navigate, location.pathname]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-    setFormError(null)
-  }
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormError(null);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!formData.email || !formData.password) {
-      setFormError('Please fill in all fields')
-      return
+      setFormError("Please fill in all fields");
+      return;
     }
 
-    if (!formData.email.includes('@')) {
-      setFormError('Please enter a valid email address')
-      return
+    if (!formData.email.includes("@")) {
+      setFormError("Please enter a valid email address");
+      return;
     }
 
     try {
-      await login(formData.email, formData.password)
-      navigate('/dashboard')
+      await login(formData.email, formData.password);
+      navigate("/dashboard");
     } catch (err) {
       // Error handling is now done in useAuth hook with toast notifications
-      console.error('Login error:', err)
+      console.error("Login error:", err);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen relative overflow-hidden flex flex-col justify-center py-6 md:py-12 bg-slate-50 dark:bg-[#0a0f1c]">
@@ -118,7 +120,10 @@ export const Login: React.FC = () => {
                   required
                 />
                 <div className="text-right">
-                  <Link to="/forgot-password" className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
+                  <Link
+                    to="/forgot-password"
+                    className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+                  >
                     Forgot your password?
                   </Link>
                 </div>
@@ -131,22 +136,23 @@ export const Login: React.FC = () => {
               className="w-full flex justify-center items-center gap-2 py-3 md:py-3 px-4 border border-transparent rounded-lg md:rounded-xl shadow-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all shadow-blue-600/30"
             >
               <LogIn className="w-4 h-4" />
-              {loading ? 'Authenticating...' : 'Sign In'}
+              {loading ? "Authenticating..." : "Sign In"}
             </button>
           </form>
 
           <div className="mt-6 md:mt-8 pt-5 md:pt-6 border-t border-slate-200 dark:border-slate-600 text-center transition-colors">
             <p className="text-xs md:text-sm text-slate-600 dark:text-slate-300">
-              Don't have an account?{' '}
-              <Link to="/register" className="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
+              Don't have an account?{" "}
+              <Link
+                to="/register"
+                className="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
+              >
                 Create a free account
               </Link>
             </p>
           </div>
-
         </div>
-
       </div>
     </div>
-  )
-}
+  );
+};

@@ -1,454 +1,576 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import PsychologySidebar from '../../components/PsychologySidebar';
+import React, { useEffect } from 'react';
+import { ExerciseQuestion } from '../../../components/ExerciseQuestion';
 
-const Chapter1: React.FC = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [expandedChapters, setExpandedChapters] = useState<number[]>([1]);
+interface Chapter1Props {
+  selectedSubtopic?: string;
+  onNavigateChapter?: (chapterId: string) => void;
+  currentChapterId?: string;
+}
 
-  const toggleChapter = (chapterId: number) => {
-    setExpandedChapters(prev =>
-      prev.includes(chapterId)
-        ? prev.filter(id => id !== chapterId)
-        : [...prev, chapterId]
-    );
-  };
+const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter }) => {
+  useEffect(() => {
+    if (selectedSubtopic) {
+      const subtopicId = selectedSubtopic.split('.').slice(0, 2).join('.').trim();
+      const element = document.getElementById(`subtopic-${subtopicId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }, [selectedSubtopic]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-      {/* Sidebar */}
-      <PsychologySidebar 
-        isOpen={sidebarOpen}
-        expandedChapters={expandedChapters}
-        onToggleChapter={toggleChapter}
-      />
+    <div className="w-full">
+      {/* Hero Section */}
+      <div className="relative mb-12 px-4 md:px-8 py-8">
+        <span className="inline-block px-4 py-1.5 bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 text-xs font-bold tracking-widest uppercase mb-4">
+          Chapter 1
+        </span>
+        <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white leading-tight mb-6 tracking-tight">
+          ESSENCE OF PSYCHOLOGY
+        </h1>
+        <div className="h-1.5 w-24 bg-gradient-to-r from-pink-600 to-purple-600" />
+        <p className="mt-6 text-lg text-slate-600 dark:text-slate-400">
+          Welcome to the fascinating world of Psychology! In this chapter, you'll discover what psychology is, its goals, historical development, and modern perspectives.
+        </p>
+      </div>
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-6">
-          {/* Toggle Sidebar Button */}
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="mb-4 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
-          >
-            {sidebarOpen ? '◀ Hide TOC' : '▶ Show TOC'}
-          </button>
-
-          <div className="max-w-5xl mx-auto">
-            {/* Navigation */}
-            <div className="flex gap-4 mb-6">
-              <Link 
-                to="/student/learning-center/psychology"
-                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
-              >
-                ❮ Back to Module
-              </Link>
-              <Link 
-                to="/student/learning-center/psychology/chapter2"
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
-              >
-                Next Chapter ❯
-              </Link>
-            </div>
-
-        {/* Chapter Header */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 mb-6">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-            CHAPTER ONE
-          </h1>
-          <h2 className="text-3xl font-semibold text-pink-600 dark:text-pink-400 mb-4">
-            ESSENCE OF PSYCHOLOGY
+      <div className="space-y-16 pb-20 px-4 md:px-8">
+        
+        {/* SUBTOPIC 1.1: Definition of Psychology */}
+        <section id="subtopic-1.1" className="scroll-mt-8">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-pink-600 pl-4">
+            1.1. Definition of Psychology and Related Concepts
           </h2>
-        </div>
+          
+          <div className="space-y-6">
+            <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed">
+              <strong className="text-pink-600 dark:text-pink-400">Psychology</strong> is the <strong>scientific study of behavior and mental processes</strong>. 
+              The word "psychology" comes from two Greek words:
+            </p>
 
-        {/* Chapter Content */}
-        <div className="space-y-6">
-          {/* Section 1.1 */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              1.1. Definition of Psychology and Related Concepts
-            </h3>
-            <div className="prose dark:prose-invert max-w-none">
-              <p className="text-gray-700 dark:text-gray-300 mb-4">
-                <strong>Psychology</strong> is the scientific study of behavior and mental processes. The word "psychology" 
-                comes from the Greek words "psyche" (meaning soul or mind) and "logos" (meaning study).
-              </p>
-              
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg mb-4">
-                <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Key Components:</h4>
-                <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
-                  <li><strong>Behavior:</strong> Observable actions that can be measured and recorded</li>
-                  <li><strong>Mental Processes:</strong> Internal experiences like thoughts, feelings, and sensations</li>
-                  <li><strong>Scientific Method:</strong> Psychology uses empirical research to understand human behavior</li>
-                </ul>
+            <div className="grid md:grid-cols-2 gap-4 my-6">
+              <div className="p-4 border-l-4 border-pink-500">
+                <p className="font-bold text-slate-900 dark:text-white">Psyche (ψυχή)</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Meaning: Soul, Mind, or Spirit</p>
               </div>
-
-              <p className="text-gray-700 dark:text-gray-300 mb-4">
-                Psychology differs from philosophy and common sense because it relies on systematic observation 
-                and experimentation rather than speculation or intuition.
-              </p>
-
-              <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
-                <h4 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-2">Related Concepts:</h4>
-                <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
-                  <li><strong>Cognition:</strong> Mental processes involved in gaining knowledge and comprehension</li>
-                  <li><strong>Consciousness:</strong> Awareness of internal and external stimuli</li>
-                  <li><strong>Perception:</strong> The process of organizing and interpreting sensory information</li>
-                  <li><strong>Motivation:</strong> Internal states that activate and direct behavior</li>
-                </ul>
+              <div className="p-4 border-l-4 border-blue-500">
+                <p className="font-bold text-slate-900 dark:text-white">Logos (λόγος)</p>
+                <p className="text-sm text-slate-600 dark:text-slate-400">Meaning: Study or Knowledge</p>
               </div>
             </div>
-          </div>
 
-          {/* Section 1.2 */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              1.2. Goals of Psychology
-            </h3>
-            <div className="prose dark:prose-invert max-w-none">
-              <p className="text-gray-700 dark:text-gray-300 mb-4">
-                Psychology has four primary goals that guide research and practice:
-              </p>
-
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                  <h4 className="font-bold text-blue-900 dark:text-blue-100 mb-2">1. Description</h4>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                    <em>What is happening?</em>
-                  </p>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">
-                    Accurately observing and recording behavior to understand what is occurring.
-                  </p>
-                  <div className="mt-2 p-2 bg-white dark:bg-gray-700 rounded text-sm">
-                    <strong>Example:</strong> Describing symptoms of depression
-                  </div>
-                </div>
-
-                <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-                  <h4 className="font-bold text-green-900 dark:text-green-100 mb-2">2. Explanation</h4>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                    <em>Why is it happening?</em>
-                  </p>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">
-                    Understanding the causes and mechanisms behind behavior.
-                  </p>
-                  <div className="mt-2 p-2 bg-white dark:bg-gray-700 rounded text-sm">
-                    <strong>Example:</strong> Explaining depression through brain chemistry
-                  </div>
-                </div>
-
-                <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
-                  <h4 className="font-bold text-orange-900 dark:text-orange-100 mb-2">3. Prediction</h4>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                    <em>When will it happen again?</em>
-                  </p>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">
-                    Forecasting future behavior based on current knowledge.
-                  </p>
-                  <div className="mt-2 p-2 bg-white dark:bg-gray-700 rounded text-sm">
-                    <strong>Example:</strong> Predicting depression risk factors
-                  </div>
-                </div>
-
-                <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
-                  <h4 className="font-bold text-purple-900 dark:text-purple-100 mb-2">4. Control/Influence</h4>
-                  <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                    <em>How can we change it?</em>
-                  </p>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">
-                    Developing interventions to modify behavior.
-                  </p>
-                  <div className="mt-2 p-2 bg-white dark:bg-gray-700 rounded text-sm">
-                    <strong>Example:</strong> Using therapy to treat depression
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Section 1.3 */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              1.3. Historical Background and Major Perspectives in Psychology
-            </h3>
-            <div className="prose dark:prose-invert max-w-none">
-              <p className="text-gray-700 dark:text-gray-300 mb-4">
-                Psychology has evolved from philosophical roots to become a scientific discipline.
-              </p>
-
-              <h4 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                1.3.1. Early Schools of Psychology
-              </h4>
-
-              <div className="space-y-4 mb-6">
-                <div className="border-l-4 border-blue-500 pl-4">
-                  <h5 className="font-bold text-gray-900 dark:text-white">Structuralism (1879)</h5>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm mb-1">
-                    <strong>Founder:</strong> Wilhelm Wundt & Edward Titchener
-                  </p>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    Breaking down mental processes into basic elements through introspection. 
-                    Wundt established the first psychology laboratory in Leipzig, Germany in 1879.
-                  </p>
-                </div>
-
-                <div className="border-l-4 border-green-500 pl-4">
-                  <h5 className="font-bold text-gray-900 dark:text-white">Functionalism (1890s)</h5>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm mb-1">
-                    <strong>Founder:</strong> William James
-                  </p>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    Studying the purpose and adaptation of mental processes. Focused on how mental 
-                    processes help organisms adapt to their environment.
-                  </p>
-                </div>
-
-                <div className="border-l-4 border-red-500 pl-4">
-                  <h5 className="font-bold text-gray-900 dark:text-white">Behaviorism (1913)</h5>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm mb-1">
-                    <strong>Founder:</strong> John Watson
-                  </p>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    Focusing only on observable behavior, rejecting the study of consciousness. 
-                    "Give me a dozen healthy infants..."
-                  </p>
-                </div>
-
-                <div className="border-l-4 border-purple-500 pl-4">
-                  <h5 className="font-bold text-gray-900 dark:text-white">Gestalt Psychology (1912)</h5>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm mb-1">
-                    <strong>Founders:</strong> Max Wertheimer, Kurt Koffka, Wolfgang Köhler
-                  </p>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    "The whole is greater than the sum of its parts." Emphasized perception and 
-                    problem-solving as organized wholes.
-                  </p>
-                </div>
-
-                <div className="border-l-4 border-yellow-500 pl-4">
-                  <h5 className="font-bold text-gray-900 dark:text-white">Psychoanalysis (1900)</h5>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm mb-1">
-                    <strong>Founder:</strong> Sigmund Freud
-                  </p>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    Emphasized the unconscious mind, early childhood experiences, and internal conflicts 
-                    in shaping behavior and personality.
-                  </p>
-                </div>
-              </div>
-
-              <h4 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                1.3.2. Modern Schools of Psychology
-              </h4>
-
-              <div className="space-y-4">
-                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                  <h5 className="font-bold text-blue-900 dark:text-blue-100 mb-2">Biological Perspective</h5>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    Focuses on the role of the brain, nervous system, and genetics in behavior. 
-                    Studies how neurotransmitters, hormones, and brain structures influence behavior.
-                  </p>
-                </div>
-
-                <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-                  <h5 className="font-bold text-green-900 dark:text-green-100 mb-2">Cognitive Perspective</h5>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    Emphasizes mental processes like thinking, memory, and problem-solving. 
-                    Views the mind as an information-processing system.
-                  </p>
-                </div>
-
-                <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
-                  <h5 className="font-bold text-orange-900 dark:text-orange-100 mb-2">Behavioral Perspective</h5>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    Focuses on observable behavior and environmental influences. 
-                    Emphasizes learning through conditioning and reinforcement.
-                  </p>
-                </div>
-
-                <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
-                  <h5 className="font-bold text-purple-900 dark:text-purple-100 mb-2">Humanistic Perspective</h5>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    Emphasizes human potential, free will, and personal growth. 
-                    Focuses on subjective experiences and self-actualization (Maslow, Rogers).
-                  </p>
-                </div>
-
-                <div className="bg-pink-50 dark:bg-pink-900/20 p-4 rounded-lg">
-                  <h5 className="font-bold text-pink-900 dark:text-pink-100 mb-2">Psychodynamic Perspective</h5>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    Based on Freud's theories about the unconscious mind. 
-                    Emphasizes early childhood experiences and internal conflicts.
-                  </p>
-                </div>
-
-                <div className="bg-teal-50 dark:bg-teal-900/20 p-4 rounded-lg">
-                  <h5 className="font-bold text-teal-900 dark:text-teal-100 mb-2">Sociocultural Perspective</h5>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    Examines how social and cultural factors influence behavior. 
-                    Considers the impact of society, culture, and social groups.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Section 1.4 */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              1.4. Branches/Sub Fields of Psychology
-            </h3>
-            <div className="prose dark:prose-invert max-w-none">
-              <p className="text-gray-700 dark:text-gray-300 mb-4">
-                Psychology has many specialized areas of study and application:
-              </p>
-
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="border border-gray-300 dark:border-gray-600 p-4 rounded-lg">
-                  <h5 className="font-bold text-gray-900 dark:text-white mb-2">Clinical Psychology</h5>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">
-                    Diagnosis and treatment of mental health disorders
-                  </p>
-                </div>
-
-                <div className="border border-gray-300 dark:border-gray-600 p-4 rounded-lg">
-                  <h5 className="font-bold text-gray-900 dark:text-white mb-2">Counseling Psychology</h5>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">
-                    Helps people cope with everyday problems and life transitions
-                  </p>
-                </div>
-
-                <div className="border border-gray-300 dark:border-gray-600 p-4 rounded-lg">
-                  <h5 className="font-bold text-gray-900 dark:text-white mb-2">Developmental Psychology</h5>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">
-                    Studies human development across the lifespan
-                  </p>
-                </div>
-
-                <div className="border border-gray-300 dark:border-gray-600 p-4 rounded-lg">
-                  <h5 className="font-bold text-gray-900 dark:text-white mb-2">Social Psychology</h5>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">
-                    Studies how people think about, influence, and relate to others
-                  </p>
-                </div>
-
-                <div className="border border-gray-300 dark:border-gray-600 p-4 rounded-lg">
-                  <h5 className="font-bold text-gray-900 dark:text-white mb-2">Cognitive Psychology</h5>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">
-                    Studies mental processes like memory, thinking, and problem-solving
-                  </p>
-                </div>
-
-                <div className="border border-gray-300 dark:border-gray-600 p-4 rounded-lg">
-                  <h5 className="font-bold text-gray-900 dark:text-white mb-2">Educational Psychology</h5>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">
-                    Applies psychological principles to education and learning
-                  </p>
-                </div>
-
-                <div className="border border-gray-300 dark:border-gray-600 p-4 rounded-lg">
-                  <h5 className="font-bold text-gray-900 dark:text-white mb-2">Industrial/Organizational</h5>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">
-                    Applies psychology to workplace issues and organizational dynamics
-                  </p>
-                </div>
-
-                <div className="border border-gray-300 dark:border-gray-600 p-4 rounded-lg">
-                  <h5 className="font-bold text-gray-900 dark:text-white mb-2">Health Psychology</h5>
-                  <p className="text-gray-700 dark:text-gray-300 text-sm">
-                    Studies psychological factors in health and illness
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Section 1.5 */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              1.5. Research Methods in Psychology
-            </h3>
-            <div className="prose dark:prose-invert max-w-none">
-              <p className="text-gray-700 dark:text-gray-300 mb-4">
-                Psychology uses scientific methods to study behavior and mental processes objectively.
-              </p>
-
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg mb-4">
-                <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-3">The Scientific Method:</h4>
-                <ol className="list-decimal list-inside space-y-2 text-gray-700 dark:text-gray-300">
-                  <li><strong>Observation:</strong> Notice patterns or phenomena</li>
-                  <li><strong>Hypothesis:</strong> Form a testable prediction</li>
-                  <li><strong>Experimentation:</strong> Test the hypothesis systematically</li>
-                  <li><strong>Analysis:</strong> Examine the data collected</li>
-                  <li><strong>Conclusion:</strong> Draw conclusions and refine theories</li>
-                </ol>
-              </div>
-
-              <h4 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                Types of Research Methods:
-              </h4>
-
-              <div className="space-y-4">
-                <div className="border-l-4 border-green-500 pl-4">
-                  <h5 className="font-bold text-gray-900 dark:text-white mb-2">Descriptive Methods</h5>
-                  <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
-                    <li><strong>Naturalistic Observation:</strong> Observing behavior in natural settings</li>
-                    <li><strong>Case Studies:</strong> In-depth study of individual cases</li>
-                    <li><strong>Surveys:</strong> Collecting data through questionnaires or interviews</li>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">Key Components of Psychology</h3>
+            
+            <div className="space-y-4">
+              <div className="p-6 border-l-4 border-blue-600">
+                <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-2">1. Behavior</h4>
+                <p className="text-slate-600 dark:text-slate-400 mb-3">
+                  Behavior refers to <strong>observable actions</strong> that can be measured and recorded systematically. 
+                  This includes anything we can see, hear, or measure directly.
+                </p>
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded">
+                  <p className="text-sm font-semibold text-blue-900 dark:text-blue-300">Examples:</p>
+                  <ul className="text-sm text-slate-700 dark:text-slate-300 list-disc list-inside mt-1">
+                    <li>Walking, talking, eating</li>
+                    <li>Facial expressions and body language</li>
+                    <li>Performance on tests or tasks</li>
+                    <li>Reaction time to stimuli</li>
                   </ul>
                 </div>
+              </div>
 
-                <div className="border-l-4 border-yellow-500 pl-4">
-                  <h5 className="font-bold text-gray-900 dark:text-white mb-2">Correlational Studies</h5>
-                  <p className="text-gray-700 dark:text-gray-300 mb-2">
-                    Examine relationships between variables but cannot establish cause and effect.
-                  </p>
-                  <div className="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded">
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
-                      <strong>Example:</strong> Studying the relationship between sleep and academic performance
-                    </p>
-                  </div>
-                </div>
-
-                <div className="border-l-4 border-purple-500 pl-4">
-                  <h5 className="font-bold text-gray-900 dark:text-white mb-2">Experimental Method</h5>
-                  <p className="text-gray-700 dark:text-gray-300 mb-2">
-                    Manipulates one variable to observe effects on another. Can establish cause-and-effect relationships.
-                  </p>
-                  <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300 mb-2">
-                    <li><strong>Independent Variable:</strong> The variable manipulated by the researcher</li>
-                    <li><strong>Dependent Variable:</strong> The variable measured/observed</li>
-                    <li><strong>Control Group:</strong> Group that doesn't receive the treatment</li>
-                    <li><strong>Experimental Group:</strong> Group that receives the treatment</li>
+              <div className="p-6 border-l-4 border-purple-600">
+                <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-2">2. Mental Processes</h4>
+                <p className="text-slate-600 dark:text-slate-400 mb-3">
+                  Mental processes are <strong>internal, subjective experiences</strong> that cannot be directly observed. 
+                  These include thoughts, feelings, dreams, perceptions, and memories.
+                </p>
+                <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded">
+                  <p className="text-sm font-semibold text-purple-900 dark:text-purple-300">Examples:</p>
+                  <ul className="text-sm text-slate-700 dark:text-slate-300 list-disc list-inside mt-1">
+                    <li>Thinking and problem-solving</li>
+                    <li>Emotions and feelings</li>
+                    <li>Memories and imagination</li>
+                    <li>Beliefs and attitudes</li>
                   </ul>
-                  <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded">
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
-                      <strong>Example:</strong> Testing whether a new therapy reduces anxiety symptoms
-                    </p>
-                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 border-l-4 border-emerald-600">
+                <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-2">3. Scientific Method</h4>
+                <p className="text-slate-600 dark:text-slate-400 mb-3">
+                  Psychology uses <strong>empirical research</strong> and systematic observation to understand human behavior objectively. 
+                  This distinguishes psychology from philosophy or common sense.
+                </p>
+                <div className="bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded">
+                  <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-300">Scientific Approach Includes:</p>
+                  <ul className="text-sm text-slate-700 dark:text-slate-300 list-disc list-inside mt-1">
+                    <li>Systematic observation and measurement</li>
+                    <li>Controlled experiments</li>
+                    <li>Data collection and analysis</li>
+                    <li>Peer review and replication</li>
+                  </ul>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-            {/* Bottom Navigation */}
-            <div className="flex gap-4 mt-8">
-              <Link 
-                to="/student/learning-center/psychology"
-                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
-              >
-                ❮ Back to Module
-              </Link>
-              <Link 
-                to="/student/learning-center/psychology/chapter2"
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
-              >
-                Next Chapter ❯
-              </Link>
+            {/* Quick Check: Behavior vs Mental Process */}
+            <div className="mt-8 p-6 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-600">
+              <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🤔 Quick Check</h4>
+              <ExerciseQuestion 
+                question="True or False: A person's heartbeat increasing when they see someone they love is an example of a mental process."
+                options={[
+                  'True',
+                  'False'
+                ]}
+                correctAnswer={1}
+                explanation="FALSE. An increased heartbeat is a BEHAVIOR because it's a physiological response that can be measured and observed (using medical equipment). The FEELING of love would be the mental process, as it's internal and subjective. This distinction is important: behaviors are observable, mental processes are not."
+              />
             </div>
           </div>
+
+          {/* Exercise for Subtopic 1.1 */}
+          <div className="mt-10 p-8 border-t-4 border-pink-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Definition of Psychology</h3>
+            <ExerciseQuestion 
+              question="Which of the following is an example of a 'mental process' rather than 'behavior'?"
+              options={[
+                'A student raising their hand in class',
+                'A person thinking about what to eat for dinner',
+                'An athlete running a marathon',
+                'A child crying loudly'
+              ]}
+              correctAnswer={1}
+              explanation="Thinking about what to eat is a mental process because it's an internal, subjective experience that cannot be directly observed. The other options are all observable behaviors that can be seen and measured by others."
+            />
+          </div>
+        </section>
+
+        {/* SUBTOPIC 1.2: Goals of Psychology */}
+        <section id="subtopic-1.2" className="scroll-mt-8">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-pink-600 pl-4">
+            1.2. The Four Goals of Psychology
+          </h2>
+
+          <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed mb-8">
+            Psychology has <strong>four main goals</strong> that guide research and practice. These goals help psychologists understand, predict, and improve human behavior and mental processes.
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {[
+              {
+                number: '1',
+                title: 'Description',
+                question: 'What is happening?',
+                content: 'The first goal is to accurately observe and record behavior. Psychologists describe what they see in detail, creating a clear picture of the phenomenon being studied.',
+                example: 'Describing the symptoms of depression: loss of interest, fatigue, changes in sleep patterns, difficulty concentrating.',
+                methods: ['Observation', 'Case studies', 'Surveys', 'Naturalistic observation'],
+                icon: '🔍'
+              },
+              {
+                number: '2',
+                title: 'Explanation',
+                question: 'Why is it happening?',
+                content: 'After describing behavior, psychologists seek to explain why it occurs. This involves identifying the causes and underlying mechanisms.',
+                example: 'Explaining depression through neurotransmitter imbalances (low serotonin), genetic factors, or negative thinking patterns.',
+                methods: ['Experiments', 'Correlational studies', 'Brain imaging', 'Theory development'],
+                icon: '💡'
+              },
+              {
+                number: '3',
+                title: 'Prediction',
+                question: 'When will it happen again?',
+                content: 'Once we understand why something happens, we can predict when, where, and under what conditions it will occur in the future.',
+                example: 'Predicting that individuals with a family history of depression and high stress levels are more likely to develop depression.',
+                methods: ['Statistical analysis', 'Longitudinal studies', 'Risk assessment', 'Pattern recognition'],
+                icon: '🔮'
+              },
+              {
+                number: '4',
+                title: 'Control/Influence',
+                question: 'How can we change it?',
+                content: 'The ultimate goal is to use psychological knowledge to control or influence behavior in beneficial ways, improving people\'s lives.',
+                example: 'Using cognitive-behavioral therapy (CBT) to treat depression by changing negative thought patterns and behaviors.',
+                methods: ['Therapy', 'Interventions', 'Prevention programs', 'Behavior modification'],
+                icon: '🎯'
+              }
+            ].map((goal, i) => (
+              <div key={i} className="p-6 border-l-4 border-pink-500">
+                <div className="flex justify-between items-start mb-4">
+                  <span className="text-4xl">{goal.icon}</span>
+                  <span className="text-xs font-black bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 px-3 py-1 rounded-full">
+                    GOAL {goal.number}
+                  </span>
+                </div>
+                <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-2 uppercase">{goal.title}</h3>
+                <p className="text-pink-600 dark:text-pink-400 font-bold text-sm italic mb-4">{goal.question}</p>
+                <p className="text-slate-600 dark:text-slate-300 text-sm mb-4 leading-relaxed">{goal.content}</p>
+                
+                <div className="mb-4 p-3 bg-slate-50 dark:bg-slate-800/50 rounded">
+                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">Example:</p>
+                  <p className="text-sm text-slate-700 dark:text-slate-200">{goal.example}</p>
+                </div>
+
+                <div className="p-3 border-l-2 border-pink-300 dark:border-pink-700">
+                  <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2">Methods Used:</p>
+                  <ul className="text-xs text-slate-600 dark:text-slate-400 space-y-1">
+                    {goal.methods.map((method, idx) => (
+                      <li key={idx}>• {method}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Mid-Section Exercise: Applying the Goals */}
+          <div className="mt-8 p-6 bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-600">
+            <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🎯 Apply Your Knowledge</h4>
+            <ExerciseQuestion 
+              question="A researcher notices that children who watch violent TV shows tend to be more aggressive on the playground. She then develops a program to reduce violent TV watching. Which TWO goals of psychology is she demonstrating?"
+              options={[
+                'Description and Explanation',
+                'Description and Control',
+                'Prediction and Explanation',
+                'Explanation and Control'
+              ]}
+              correctAnswer={1}
+              explanation="The answer is DESCRIPTION and CONTROL. First, she DESCRIBED the relationship between violent TV and aggressive behavior (what is happening). Then she developed an intervention to CONTROL/reduce the behavior. She didn't explain WHY this relationship exists (that would be explanation), and while she observed a pattern, the question doesn't indicate she made formal predictions about future behavior."
+            />
+          </div>
+
+          {/* Exercise for Subtopic 1.2 */}
+          <div className="mt-10 p-8 border-t-4 border-blue-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Goals of Psychology</h3>
+            <ExerciseQuestion 
+              question="A psychologist observes that students who study in quiet environments tend to perform better on exams. Based on this, she predicts that students in her new study will also perform better if they study in quiet places. Which goal of psychology is she demonstrating?"
+              options={[
+                'Description',
+                'Explanation',
+                'Prediction',
+                'Control'
+              ]}
+              correctAnswer={2}
+              explanation="This is an example of PREDICTION. The psychologist is using her previous observations to forecast future behavior (that students in the new study will perform better in quiet environments). She's not just describing what she sees (description), explaining why it happens (explanation), or trying to change behavior (control)."
+            />
+          </div>
+        </section>
+
+        {/* SUBTOPIC 1.3: Historical Evolution */}
+        <section id="subtopic-1.3" className="scroll-mt-8">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-pink-600 pl-4">
+            1.3. Historical Evolution of Psychology
+          </h2>
+
+          <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed mb-8">
+            Psychology has evolved significantly since its inception. Understanding its history helps us appreciate how different perspectives emerged and shaped modern psychology.
+          </p>
+
+          <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Early Schools of Thought</h3>
+
+          <div className="space-y-6">
+            {[
+              {
+                name: 'Structuralism',
+                date: '1879',
+                founder: 'Wilhelm Wundt',
+                location: 'Leipzig, Germany',
+                focus: 'Structure of the mind',
+                method: 'Introspection',
+                description: 'The first formal school of psychology. Wundt established the first psychology laboratory and sought to break down mental processes into their most basic elements, similar to how chemists break down compounds into elements.',
+                keyIdea: 'Consciousness can be broken down into basic elements like sensations, feelings, and images.',
+                limitation: 'Introspection was too subjective and unreliable. Different people reported different experiences for the same stimulus.'
+              },
+              {
+                name: 'Functionalism',
+                date: '1890s',
+                founder: 'William James',
+                location: 'United States',
+                focus: 'Function of the mind',
+                method: 'Observation of behavior',
+                description: 'Influenced by Darwin\'s theory of evolution, functionalists asked "What is the purpose of consciousness?" rather than "What is consciousness made of?" They focused on how mental processes help organisms adapt to their environment.',
+                keyIdea: 'Mental processes exist because they serve a function in helping us adapt and survive.',
+                limitation: 'Too broad and difficult to test scientifically.'
+              },
+              {
+                name: 'Behaviorism',
+                date: '1913',
+                founder: 'John B. Watson',
+                location: 'United States',
+                focus: 'Observable behavior only',
+                method: 'Experimental study of behavior',
+                description: 'Rejected the study of consciousness and mental processes entirely. Watson argued that psychology should only study what can be directly observed and measured - behavior. "Give me a dozen healthy infants..." became his famous claim.',
+                keyIdea: 'Psychology should be the science of observable behavior, not invisible mental processes.',
+                limitation: 'Ignored the role of mental processes, emotions, and consciousness in understanding behavior.'
+              },
+              {
+                name: 'Gestalt Psychology',
+                date: '1912',
+                founder: 'Max Wertheimer',
+                location: 'Germany',
+                focus: 'Perception and whole experience',
+                method: 'Study of perception',
+                description: 'Opposed structuralism\'s approach of breaking things down. Gestalt psychologists argued that "the whole is greater than the sum of its parts." They focused on how we perceive patterns and organize sensory information.',
+                keyIdea: 'We perceive objects as whole patterns, not as collections of separate parts.',
+                limitation: 'Focused mainly on perception and didn\'t address other areas of psychology comprehensively.'
+              }
+            ].map((school, i) => (
+              <div key={i} className="p-6 border-l-4 border-pink-500">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h4 className="text-2xl font-bold text-slate-900 dark:text-white">{school.name}</h4>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                      <strong>Founded:</strong> {school.date} | <strong>Founder:</strong> {school.founder}
+                    </p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                      <strong>Location:</strong> {school.location}
+                    </p>
+                  </div>
+                  <span className="text-xs font-black bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 px-3 py-1 rounded-full whitespace-nowrap">
+                    {school.date}
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Focus:</p>
+                    <p className="text-slate-600 dark:text-slate-400">{school.focus}</p>
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Description:</p>
+                    <p className="text-slate-600 dark:text-slate-400">{school.description}</p>
+                  </div>
+
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded">
+                    <p className="text-sm font-bold text-blue-900 dark:text-blue-300 mb-1">Key Idea:</p>
+                    <p className="text-sm text-slate-700 dark:text-slate-300">{school.keyIdea}</p>
+                  </div>
+
+                  <div className="bg-red-50 dark:bg-red-900/20 p-3 rounded">
+                    <p className="text-sm font-bold text-red-900 dark:text-red-300 mb-1">Limitation:</p>
+                    <p className="text-sm text-slate-700 dark:text-slate-300">{school.limitation}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Comparison Exercise */}
+          <div className="mt-8 p-6 bg-emerald-50 dark:bg-emerald-900/20 border-l-4 border-emerald-600">
+            <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🔄 Compare and Contrast</h4>
+            <ExerciseQuestion 
+              question="Which school of psychology would MOST likely agree with this statement: 'We should only study what we can directly observe and measure, not invisible thoughts and feelings'?"
+              options={[
+                'Structuralism',
+                'Functionalism',
+                'Behaviorism',
+                'Gestalt Psychology'
+              ]}
+              correctAnswer={2}
+              explanation="BEHAVIORISM is the correct answer. John B. Watson and behaviorists believed psychology should be a purely objective science, studying only observable behavior. They rejected the study of consciousness, thoughts, and feelings because these cannot be directly observed. Structuralism actually focused heavily on internal mental experiences through introspection, Functionalism studied the purpose of consciousness, and Gestalt Psychology studied perception and mental organization."
+            />
+          </div>
+
+          {/* Exercise for Subtopic 1.3 */}
+          <div className="mt-10 p-8 border-t-4 border-purple-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Historical Evolution</h3>
+            <ExerciseQuestion 
+              question="A researcher asks participants to carefully observe and report their own thoughts and feelings while looking at a painting. Which early school of psychology does this research method represent?"
+              options={[
+                'Behaviorism',
+                'Structuralism',
+                'Functionalism',
+                'Gestalt Psychology'
+              ]}
+              correctAnswer={1}
+              explanation="This is STRUCTURALISM. The method described is 'introspection' - having people look inward and report their conscious experiences. This was the primary research method used by Wilhelm Wundt and the structuralists. Behaviorists would reject this method entirely because thoughts and feelings cannot be directly observed. Functionalists would focus on the purpose of the thoughts, and Gestalt psychologists would focus on the overall perception of the painting as a whole."
+            />
+          </div>
+        </section>
+
+        {/* SUBTOPIC 1.4: Modern Perspectives */}
+        <section id="subtopic-1.4" className="scroll-mt-8">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-pink-600 pl-4">
+            1.4. Modern Perspectives in Psychology
+          </h2>
+
+          <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed mb-8">
+            Modern psychology doesn't follow just one school of thought. Instead, psychologists use multiple perspectives to understand behavior and mental processes. Each perspective offers a unique lens through which to view human psychology.
+          </p>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {[
+              {
+                name: 'Biological Perspective',
+                icon: '🧬',
+                focus: 'Brain, nervous system, genetics, and biochemistry',
+                keyQuestion: 'How do biological processes influence behavior?',
+                example: 'Studying how neurotransmitter imbalances contribute to depression, or how brain damage affects memory.',
+                applications: ['Psychopharmacology', 'Neuropsychology', 'Behavioral genetics'],
+                color: 'red'
+              },
+              {
+                name: 'Cognitive Perspective',
+                icon: '🧠',
+                focus: 'Mental processes like thinking, memory, and problem-solving',
+                keyQuestion: 'How do we process, store, and retrieve information?',
+                example: 'Studying how people make decisions, solve problems, or why we forget information.',
+                applications: ['Cognitive therapy', 'Educational psychology', 'Artificial intelligence'],
+                color: 'blue'
+              },
+              {
+                name: 'Behavioral Perspective',
+                icon: '🎯',
+                focus: 'Observable behavior and environmental influences',
+                keyQuestion: 'How does the environment shape behavior through learning?',
+                example: 'Using rewards and punishments to modify behavior, or studying how phobias are learned.',
+                applications: ['Behavior modification', 'Applied behavior analysis', 'Training programs'],
+                color: 'green'
+              },
+              {
+                name: 'Humanistic Perspective',
+                icon: '🌟',
+                focus: 'Personal growth, free will, and self-actualization',
+                keyQuestion: 'How can people reach their full potential?',
+                example: 'Studying what makes people happy, fulfilled, and motivated to grow.',
+                applications: ['Person-centered therapy', 'Positive psychology', 'Counseling'],
+                color: 'yellow'
+              },
+              {
+                name: 'Psychodynamic Perspective',
+                icon: '🎭',
+                focus: 'Unconscious processes and childhood experiences',
+                keyQuestion: 'How do unconscious forces influence behavior?',
+                example: 'Exploring how childhood trauma affects adult relationships, or analyzing dreams for hidden meanings.',
+                applications: ['Psychoanalysis', 'Psychodynamic therapy', 'Personality assessment'],
+                color: 'purple'
+              },
+              {
+                name: 'Sociocultural Perspective',
+                icon: '🌍',
+                focus: 'Social and cultural influences on behavior',
+                keyQuestion: 'How do culture and society shape who we are?',
+                example: 'Studying how cultural values affect parenting styles, or how social norms influence behavior.',
+                applications: ['Cross-cultural psychology', 'Social psychology', 'Community psychology'],
+                color: 'orange'
+              }
+            ].map((perspective, i) => (
+              <div key={i} className="p-6 border-l-4 border-blue-500">
+                <div className="flex items-start gap-4 mb-4">
+                  <span className="text-4xl">{perspective.icon}</span>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">{perspective.name}</h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 italic mt-1">{perspective.focus}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded">
+                    <p className="text-xs font-bold text-blue-900 dark:text-blue-300 mb-1">KEY QUESTION:</p>
+                    <p className="text-sm text-slate-700 dark:text-slate-300">{perspective.keyQuestion}</p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">EXAMPLE:</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">{perspective.example}</p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">APPLICATIONS:</p>
+                    <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1">
+                      {perspective.applications.map((app, idx) => (
+                        <li key={idx}>• {app}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 p-6 bg-emerald-50 dark:bg-emerald-900/20 border-l-4 border-emerald-600">
+            <h4 className="font-bold text-emerald-900 dark:text-emerald-300 mb-2">💡 Important Note:</h4>
+            <p className="text-slate-700 dark:text-slate-300">
+              Modern psychologists often use an <strong>eclectic approach</strong>, combining insights from multiple perspectives to get a more complete understanding of behavior. 
+              For example, understanding depression might involve looking at biological factors (neurotransmitters), cognitive factors (negative thinking), behavioral factors (lack of activity), 
+              and sociocultural factors (social support).
+            </p>
+          </div>
+
+          {/* Real-World Application Exercise */}
+          <div className="mt-8 p-6 bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-600">
+            <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🌍 Real-World Application</h4>
+            <ExerciseQuestion 
+              question="A teenager is struggling with anxiety. A psychologist examines: (1) their brain chemistry, (2) their negative thought patterns, (3) their family's communication style, and (4) cultural pressures from social media. This psychologist is using:"
+              options={[
+                'Only the Biological Perspective',
+                'Only the Cognitive Perspective',
+                'An Eclectic Approach combining multiple perspectives',
+                'Only the Sociocultural Perspective'
+              ]}
+              correctAnswer={2}
+              explanation="The correct answer is AN ECLECTIC APPROACH. The psychologist is combining insights from multiple perspectives: Biological (brain chemistry), Cognitive (thought patterns), Sociocultural (family communication and cultural pressures). This is how modern psychology typically works - using multiple perspectives together provides a more complete understanding than any single perspective alone. This comprehensive approach leads to more effective treatment."
+            />
+          </div>
+
+          {/* Exercise for Subtopic 1.4 */}
+          <div className="mt-10 p-8 border-t-4 border-emerald-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Modern Perspectives</h3>
+            <ExerciseQuestion 
+              question="Dr. Martinez is studying how low levels of serotonin in the brain are related to symptoms of depression. She uses brain imaging technology to observe neurotransmitter activity. Which modern perspective is Dr. Martinez using?"
+              options={[
+                'Cognitive Perspective',
+                'Behavioral Perspective',
+                'Biological Perspective',
+                'Sociocultural Perspective'
+              ]}
+              correctAnswer={2}
+              explanation="This is the BIOLOGICAL PERSPECTIVE. Dr. Martinez is focusing on biological processes (neurotransmitters and brain activity) to understand behavior. The biological perspective examines how the brain, nervous system, genetics, and biochemistry influence behavior and mental processes. The cognitive perspective would focus on thought processes, the behavioral perspective on observable actions and environmental influences, and the sociocultural perspective on cultural and social factors."
+            />
+          </div>
+        </section>
+
+        {/* Chapter Summary */}
+        <section className="p-8 bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 border-l-4 border-pink-600">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">📚 Chapter 1 Summary</h2>
+          <div className="space-y-3 text-slate-700 dark:text-slate-300">
+            <p><strong>✓ Definition:</strong> Psychology is the scientific study of behavior and mental processes.</p>
+            <p><strong>✓ Four Goals:</strong> Description, Explanation, Prediction, and Control/Influence.</p>
+            <p><strong>✓ Historical Schools:</strong> Structuralism, Functionalism, Behaviorism, and Gestalt Psychology shaped early psychology.</p>
+            <p><strong>✓ Modern Perspectives:</strong> Biological, Cognitive, Behavioral, Humanistic, Psychodynamic, and Sociocultural perspectives provide different lenses for understanding behavior.</p>
+            <p><strong>✓ Key Insight:</strong> Modern psychology uses an eclectic approach, combining multiple perspectives for a comprehensive understanding.</p>
+          </div>
+        </section>
+
+        {/* Navigation Buttons */}
+        <div className="flex justify-between items-center pt-8 border-t border-slate-200 dark:border-slate-700">
+          <button
+            disabled
+            className="flex items-center gap-2 px-6 py-3 bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 rounded-lg cursor-not-allowed"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Previous
+          </button>
+          
+          <button
+            onClick={() => {
+              if (onNavigateChapter) {
+                onNavigateChapter('chapter2');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            className="flex items-center gap-2 px-6 py-3 bg-pink-600 hover:bg-pink-700 text-white rounded-lg transition-colors font-medium"
+          >
+            Next: Chapter 2
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
         </div>
+
       </div>
     </div>
   );

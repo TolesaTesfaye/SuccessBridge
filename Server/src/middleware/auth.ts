@@ -11,7 +11,9 @@ declare global {
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1]
+    const authHeader = req.headers.authorization
+    
+    const token = authHeader?.split(' ')[1]
 
     if (!token) {
       return res.status(401).json({ success: false, error: 'No token provided' })
@@ -27,14 +29,16 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       }
     } catch (redisError) {
       // Silently continue without blacklist check if Redis is not available
-      // Only log in development mode
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('Redis not available for blacklist checking')
-      }
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret') as IAuthPayload
-    req.user = decoded
+    
+    // Map userId to id for consistency with req.user.id usage
+    req.user = {
+      ...decoded,
+      id: decoded.userId, // Add id field from userId
+    } as any
+    
     next()
   } catch (error) {
     res.status(401).json({ success: false, error: 'Invalid token' })

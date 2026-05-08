@@ -13,13 +13,8 @@ import { GRADE_11_HISTORY_CONTENT } from '../dashboards/student/learning center/
 import { GRADE_11_MATH_CONTENT } from '../dashboards/student/learning center/highschool/grade 11/math/mathContent';
 import { GRADE_11_PHYSICS_CONTENT } from '../dashboards/student/learning center/highschool/grade 11/physics/physicsContent';
 
-// Grade 12 content imports
-import { GRADE_12_BIOLOGY_CONTENT } from '../dashboards/student/learning center/highschool/grade 12/biology/biologyContent';
-import { GRADE_12_CHEMISTRY_CONTENT } from '../dashboards/student/learning center/highschool/grade 12/chemistry/chemistryContent';
-import { GRADE_12_GEOGRAPHY_CONTENT } from '../dashboards/student/learning center/highschool/grade 12/geography/geographyContent';
-import { GRADE_12_HISTORY_CONTENT } from '../dashboards/student/learning center/highschool/grade 12/history/historyContent';
-import { GRADE_12_MATH_CONTENT } from '../dashboards/student/learning center/highschool/grade 12/math/mathContent';
-import { GRADE_12_PHYSICS_CONTENT } from '../dashboards/student/learning center/highschool/grade 12/physics/physicsContent';
+// NOTE: Grade 12 subjects now use component-based approach (see grade 12/subjectRegistry.ts)
+// No content imports needed here
 
 // Content mapping by grade and subject
 const GRADE_CONTENT_MAP = {
@@ -33,15 +28,7 @@ const GRADE_CONTENT_MAP = {
     Mathematics: GRADE_11_MATH_CONTENT, // Alias
     Physics: GRADE_11_PHYSICS_CONTENT,
   },
-  grade_12: {
-    Biology: GRADE_12_BIOLOGY_CONTENT,
-    Chemistry: GRADE_12_CHEMISTRY_CONTENT,
-    Geography: GRADE_12_GEOGRAPHY_CONTENT,
-    History: GRADE_12_HISTORY_CONTENT,
-    Math: GRADE_12_MATH_CONTENT,
-    Mathematics: GRADE_12_MATH_CONTENT, // Alias
-    Physics: GRADE_12_PHYSICS_CONTENT,
-  },
+  // Grade 12 uses component-based rendering - no data-driven content needed
 };
 
 /**
@@ -72,22 +59,9 @@ export const getGradeSpecificContent = (grade: Grade, subject: string) => {
   }
 
   if (grade === 'grade_12') {
-    const gradeContent = GRADE_CONTENT_MAP.grade_12;
-    
-    // Try exact match first
-    if (gradeContent[subject as keyof typeof gradeContent]) {
-      return gradeContent[subject as keyof typeof gradeContent];
-    }
-
-    // Try case-insensitive match
-    const normalizedSubject = subject.toLowerCase();
-    const matchingKey = Object.keys(gradeContent).find(
-      key => key.toLowerCase() === normalizedSubject
-    );
-
-    if (matchingKey) {
-      return gradeContent[matchingKey as keyof typeof gradeContent];
-    }
+    // Grade 12 uses component-based rendering
+    // Return null to trigger component-based rendering in HighSchoolLearningCenter
+    return null;
   }
 
   // For grades 9 and 10, fall back to the existing system
@@ -127,7 +101,9 @@ export const getAvailableSubjects = (grade: Grade): string[] => {
     return Object.keys(GRADE_CONTENT_MAP.grade_11);
   }
   if (grade === 'grade_12') {
-    return Object.keys(GRADE_CONTENT_MAP.grade_12);
+    // Grade 12 uses component-based rendering
+    // Subjects are managed in grade 12/subjectRegistry.ts
+    return [];
   }
   if (grade === 'grade_9' || grade === 'grade_10') {
     const gradeContent = getHighSchoolContent(grade as string);

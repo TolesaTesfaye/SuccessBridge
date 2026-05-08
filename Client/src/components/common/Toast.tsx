@@ -129,7 +129,7 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onRemove }) => {
     },
   }
 
-  const { icon, bgColor, textColor, borderColor } = config[toast.type]
+  const { icon, bgColor, textColor, borderColor } = config[toast.type] || config.info // Fallback to info if type is invalid
 
   return (
     <div

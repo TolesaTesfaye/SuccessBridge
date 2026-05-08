@@ -5,6 +5,7 @@ import { Button } from './common/Button'
 import { ThemeToggle } from './common/ThemeToggle'
 import { Footer } from './common/Footer'
 import { AppLogo } from './common/AppLogo'
+import NotificationBell from './notifications/NotificationBell'
 
 interface LayoutProps {
   children: React.ReactNode
@@ -50,6 +51,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           <div className="flex items-center space-x-4">
             {isAuthenticated && user ? (
               <>
+                <NotificationBell />
                 <div className="flex items-center space-x-3">
                   <div className="text-right">
                     <p className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</p>

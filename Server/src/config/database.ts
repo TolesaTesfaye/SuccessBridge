@@ -71,15 +71,17 @@ const createSequelizeInstance = () => {
     },
   };
 
-  // HARDCODED SUPABASE CONNECTION (TEMPORARY FIX)
-  // This ensures the connection works even if env vars aren't loading
-  const SUPABASE_URL = "postgresql://postgres.oxnntnvtkngfoorkleay:702512Tol_Database@aws-1-eu-west-1.pooler.supabase.com:5432/postgres";
+  // Use DATABASE_URL from environment variables
+  const databaseUrl = process.env.DATABASE_URL;
   
-  // Try DATABASE_URL first, then fall back to hardcoded Supabase
-  const databaseUrl = process.env.DATABASE_URL || SUPABASE_URL;
-  
+  if (!databaseUrl) {
+    console.error("❌ DATABASE_URL is not defined in environment variables!");
+    throw new Error("DATABASE_URL is required for database connection");
+  }
+
   console.log("🔄 Attempting database connection...");
   console.log(`📍 Using URL: ${databaseUrl.substring(0, 30)}...`);
+
   
   return new Sequelize(databaseUrl, {
     dialect: "postgres",

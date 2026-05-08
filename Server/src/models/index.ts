@@ -10,6 +10,9 @@ import Stream from './Stream.js'
 import Department from './Department.js'
 import StudentProgress from './StudentProgress.js'
 import ResourceAccess from './ResourceAccess.js'
+import Payment from './Payment.js'
+import SubjectAccess from './SubjectAccess.js'
+import Notification from './Notification.js'
 
 // Define relationships
 export const setupAssociations = () => {
@@ -23,6 +26,9 @@ export const setupAssociations = () => {
   User.hasMany(QuizResult, { foreignKey: 'studentId', as: 'quizResults' })
   User.hasMany(StudentProgress, { foreignKey: 'studentId', as: 'progress' })
   User.hasMany(ResourceAccess, { foreignKey: 'studentId', as: 'resourceAccess' })
+  User.hasMany(Payment, { foreignKey: 'userId', as: 'payments' })
+  User.hasMany(SubjectAccess, { foreignKey: 'userId', as: 'subjectAccess' })
+  User.hasMany(Notification, { foreignKey: 'userId', as: 'notifications' })
 
   // University relationships
   University.hasMany(Department, { foreignKey: 'universityId', as: 'departments' })
@@ -52,6 +58,8 @@ export const setupAssociations = () => {
   Subject.hasMany(Quiz, { foreignKey: 'subjectId', as: 'quizzes' })
   Subject.hasMany(Resource, { foreignKey: 'subjectId', as: 'resources' })
   Subject.hasMany(StudentProgress, { foreignKey: 'subjectId', as: 'progress' })
+  Subject.hasMany(Payment, { foreignKey: 'subjectId', as: 'payments' })
+  Subject.hasMany(SubjectAccess, { foreignKey: 'subjectId', as: 'subjectAccess' })
 
   // Quiz relationships
   Quiz.belongsTo(Subject, { foreignKey: 'subjectId', as: 'subject' })
@@ -76,6 +84,20 @@ export const setupAssociations = () => {
   // ResourceAccess relationships
   ResourceAccess.belongsTo(User, { foreignKey: 'studentId', as: 'student' })
   ResourceAccess.belongsTo(Resource, { foreignKey: 'resourceId', as: 'resource' })
+
+  // Payment relationships
+  Payment.belongsTo(User, { foreignKey: 'userId', as: 'user' })
+  Payment.belongsTo(Subject, { foreignKey: 'subjectId', as: 'subject' })
+  Payment.belongsTo(User, { foreignKey: 'approvedBy', as: 'approver' })
+  Payment.hasOne(SubjectAccess, { foreignKey: 'paymentId', as: 'subjectAccess' })
+
+  // SubjectAccess relationships
+  SubjectAccess.belongsTo(User, { foreignKey: 'userId', as: 'user' })
+  SubjectAccess.belongsTo(Subject, { foreignKey: 'subjectId', as: 'subject' })
+  SubjectAccess.belongsTo(Payment, { foreignKey: 'paymentId', as: 'payment' })
+
+  // Notification relationships
+  Notification.belongsTo(User, { foreignKey: 'userId', as: 'user' })
 }
 
 export {
@@ -91,4 +113,7 @@ export {
   Department,
   StudentProgress,
   ResourceAccess,
+  Payment,
+  SubjectAccess,
+  Notification,
 }

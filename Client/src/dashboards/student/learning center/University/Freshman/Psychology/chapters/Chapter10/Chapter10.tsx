@@ -1,222 +1,87 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import PsychologySidebar from '../../components/PsychologySidebar';
+import React from 'react';
+import { ExerciseQuestion } from '../../../components/ExerciseQuestion';
 
 const Chapter10: React.FC = () => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [expandedChapters, setExpandedChapters] = useState<number[]>([10]);
-
-  const toggleChapter = (chapterId: number) => {
-    setExpandedChapters(prev =>
-      prev.includes(chapterId)
-        ? prev.filter(id => id !== chapterId)
-        : [...prev, chapterId]
-    );
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
-      {/* Sidebar */}
-      <PsychologySidebar 
-        isOpen={sidebarOpen}
-        expandedChapters={expandedChapters}
-        onToggleChapter={toggleChapter}
-      />
-
-      {/* Main Content */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-6">
-          {/* Toggle Sidebar Button */}
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="mb-4 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
-          >
-            {sidebarOpen ? '◀ Hide TOC' : '▶ Show TOC'}
-          </button>
-
-          <div className="max-w-5xl mx-auto">
-            {/* Navigation */}
-            <div className="flex gap-4 mb-6">
-              <Link 
-                to="/student/learning-center/psychology/chapter9"
-                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
-              >
-                ❮ Previous Chapter
-              </Link>
-              <Link 
-                to="/student/learning-center/psychology/chapter11"
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
-              >
-                Next Chapter ❯
-              </Link>
-            </div>
-
-            {/* Chapter Header */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 mb-6">
-              <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                CHAPTER TEN
-              </h1>
-              <h2 className="text-3xl font-semibold text-pink-600 dark:text-pink-400 mb-4">
-                ACADEMIC SKILLS
-              </h2>
-            </div>
-
-            {/* Chapter Content */}
-            <div className="space-y-6">
-              {/* Section 10.1 */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                  10.1. Time Management
-                </h3>
-                <div className="prose dark:prose-invert max-w-none">
-                  <p className="text-gray-700 dark:text-gray-300 mb-4">
-                    Time management is the ability to use time effectively and productively to accomplish goals and tasks.
-                  </p>
-                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                    <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Key Strategies:</h4>
-                    <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
-                      <li>Prioritize tasks using the Eisenhower Matrix</li>
-                      <li>Create daily and weekly schedules</li>
-                      <li>Avoid procrastination</li>
-                      <li>Use time-blocking techniques</li>
-                    </ul>
-                  </div>
+    <div className="w-full">
+      <div className="relative mb-12 px-4 md:px-8 py-8">
+        <span className="inline-block px-4 py-1.5 bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 rounded-full text-xs font-bold tracking-widest uppercase mb-4">
+          Chapter 10
+        </span>
+        <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white leading-tight mb-6 tracking-tight">
+          ACADEMIC SKILLS
+        </h1>
+        <div className="h-1.5 w-24 bg-gradient-to-r from-pink-600 to-purple-600 rounded-full" />
+      </div>
+      <div className="space-y-12 pb-20 px-4 md:px-8">
+        
+        {/* Section 10.1: Time Management */}
+        <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-pink-600 pl-4">
+            10.1. Time Management
+          </h2>
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-sm border border-slate-200 dark:border-slate-800 relative overflow-hidden">
+             <div className="absolute top-0 right-0 p-8 text-6xl opacity-5">⏰</div>
+             <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed mb-8">
+               Time management is the process of planning and exercising conscious control over the amount of time spent on specific activities, especially to increase effectiveness, efficiency, or productivity.
+             </p>
+             <div className="grid md:grid-cols-2 gap-6">
+                <div className="p-5 bg-blue-50 dark:bg-blue-900/20 rounded-2xl">
+                  <h4 className="font-bold text-blue-900 dark:text-blue-300 mb-2">The Eisenhower Matrix</h4>
+                  <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-2 list-none p-0">
+                    <li>• <span className="font-bold">Urgent & Important:</span> Do First.</li>
+                    <li>• <span className="font-bold">Not Urgent & Important:</span> Schedule.</li>
+                  </ul>
                 </div>
-              </div>
-
-              {/* Section 10.2 */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                  10.2. Note-taking and Study Skills
-                </h3>
-                <div className="prose dark:prose-invert max-w-none">
-                  <p className="text-gray-700 dark:text-gray-300 mb-4">
-                    Effective note-taking and study skills are essential for academic success.
-                  </p>
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-                      <h4 className="font-bold text-green-900 dark:text-green-100 mb-2">Note-taking Methods:</h4>
-                      <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
-                        <li>Cornell Method</li>
-                        <li>Mind Mapping</li>
-                        <li>Outline Method</li>
-                      </ul>
-                    </div>
-                    <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg">
-                      <h4 className="font-bold text-purple-900 dark:text-purple-100 mb-2">Study Techniques:</h4>
-                      <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
-                        <li>Active Recall</li>
-                        <li>Spaced Repetition</li>
-                        <li>Pomodoro Technique</li>
-                      </ul>
-                    </div>
-                  </div>
+                <div className="p-5 bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl">
+                  <h4 className="font-bold text-emerald-900 dark:text-emerald-300 mb-2">SMART Goals</h4>
+                  <p className="text-xs text-slate-600 dark:text-slate-400">Specific, Measurable, Achievable, Relevant, and Time-bound.</p>
                 </div>
-              </div>
-
-              {/* Section 10.3 */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                  10.3. Test-Taking Skill
-                </h3>
-                <div className="prose dark:prose-invert max-w-none">
-                  <p className="text-gray-700 dark:text-gray-300 mb-4">
-                    Effective test-taking strategies can significantly improve academic performance.
-                  </p>
-                  <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded-lg">
-                    <h4 className="font-semibold text-orange-900 dark:text-orange-100 mb-2">Test-Taking Strategies:</h4>
-                    <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
-                      <li>Read instructions carefully</li>
-                      <li>Answer easy questions first</li>
-                      <li>Manage time during the test</li>
-                      <li>Review answers before submitting</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              {/* Section 10.4 */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                  10.4. Test Anxiety and Overcoming Test Anxiety
-                </h3>
-                <div className="prose dark:prose-invert max-w-none">
-                  <p className="text-gray-700 dark:text-gray-300 mb-4">
-                    Test anxiety is excessive worry about performance on exams that can interfere with test-taking ability.
-                  </p>
-                  <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
-                    <h4 className="font-semibold text-red-900 dark:text-red-100 mb-2">Coping Strategies:</h4>
-                    <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
-                      <li>Practice relaxation techniques</li>
-                      <li>Prepare thoroughly in advance</li>
-                      <li>Use positive self-talk</li>
-                      <li>Get adequate sleep before exams</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              {/* Section 10.5 */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                  10.5. Goal Setting
-                </h3>
-                <div className="prose dark:prose-invert max-w-none">
-                  <p className="text-gray-700 dark:text-gray-300 mb-4">
-                    Goal setting is the process of identifying specific objectives and creating plans to achieve them.
-                  </p>
-                  <div className="bg-teal-50 dark:bg-teal-900/20 p-4 rounded-lg">
-                    <h4 className="font-semibold text-teal-900 dark:text-teal-100 mb-2">SMART Goals:</h4>
-                    <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
-                      <li><strong>S</strong>pecific - Clear and well-defined</li>
-                      <li><strong>M</strong>easurable - Quantifiable progress</li>
-                      <li><strong>A</strong>chievable - Realistic and attainable</li>
-                      <li><strong>R</strong>elevant - Aligned with values</li>
-                      <li><strong>T</strong>ime-bound - Has a deadline</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
-              {/* Section 10.6 */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                  10.6. Career Development Skill
-                </h3>
-                <div className="prose dark:prose-invert max-w-none">
-                  <p className="text-gray-700 dark:text-gray-300 mb-4">
-                    Career development involves planning and managing your professional growth and advancement.
-                  </p>
-                  <div className="bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg">
-                    <h4 className="font-semibold text-indigo-900 dark:text-indigo-100 mb-2">Key Components:</h4>
-                    <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
-                      <li>Self-assessment and career exploration</li>
-                      <li>Networking and building professional relationships</li>
-                      <li>Resume and interview preparation</li>
-                      <li>Continuous learning and skill development</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom Navigation */}
-            <div className="flex gap-4 mt-8">
-              <Link 
-                to="/student/learning-center/psychology/chapter9"
-                className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
-              >
-                ❮ Previous Chapter
-              </Link>
-              <Link 
-                to="/student/learning-center/psychology/chapter11"
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
-              >
-                Next Chapter ❯
-              </Link>
-            </div>
+             </div>
           </div>
-        </div>
+        </section>
+
+        {/* Section 10.4: Test Anxiety */}
+        <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-pink-600 pl-4">
+            10.4. Overcoming Test Anxiety
+          </h2>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { title: 'Preparation', desc: 'Starting early and using active recall reduces the fear of the unknown.', icon: '📚' },
+              { title: 'Relaxation', icon: '🧘', desc: 'Deep breathing and visualization can lower physical stress symptoms.' },
+              { title: 'Positive Talk', icon: '🗣️', desc: 'Replacing "I will fail" with "I have prepared and will do my best."' }
+            ].map((tip, i) => (
+              <div key={i} className="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-center hover:border-pink-500 transition-colors">
+                <div className="text-3xl mb-3">{tip.icon}</div>
+                <h4 className="font-bold text-slate-900 dark:text-white mb-2">{tip.title}</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400">{tip.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Knowledge Check */}
+        <section className="bg-slate-900 rounded-3xl p-10 text-white shadow-xl relative overflow-hidden">
+          <div className="flex flex-col md:flex-row items-center gap-10">
+            <div className="flex-1">
+              <h3 className="text-2xl font-bold mb-4">Academic Success Quiz</h3>
+              <p className="text-slate-400">Master your study habits for the upcoming exams.</p>
+            </div>
+            <ExerciseQuestion 
+              question="In the SMART goal framework, what does the 'T' stand for?"
+              options={[
+                'Theoretical',
+                'Time-bound',
+                'Technical',
+                'Targeted'
+              ]}
+              correctAnswer={1}
+              explanation="Goals must have a deadline (Time-bound) to create a sense of urgency and track progress."
+            />
+          </div>
+        </section>
+
       </div>
     </div>
   );

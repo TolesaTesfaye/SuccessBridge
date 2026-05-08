@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
+import { Footer } from "@components/common/Footer";
 import { resourceService } from "@services/resourceService";
 import { universityService } from "@services/universityService";
 import { useAuthStore } from "@store/authStore";
 import { BookOpen, Library, Home } from "lucide-react";
 
 import { UNIVERSITY_CATEGORIES } from "@utils/constants";
-import { FRESHMAN_COURSE_CONTENT } from "@utils/freshmanCourseContent";
-import { REMEDIAL_COURSE_CONTENT } from "@utils/remedialCourseContent";
 
 // Modular Components
 import { UniversityOverview } from "./components/UniversityOverview";
@@ -109,21 +108,51 @@ export const UniversityDashboard: React.FC = () => {
     try {
       const params: any = {
         educationLevel: "university",
-        grade: activeCategory, // This works for the current backend
-        category: activeCategory, // Add this as backup parameter
+        grade: activeCategory, // Backend stores university category in grade field
       };
-      if (selectedUniversity) params.universityName = selectedUniversity;
-      if (!isIntroductory && selectedDepartment)
+      
+      // Add university filter - try both universityName and university
+      if (selectedUniversity) {
+        params.university = selectedUniversity;
+        params.universityName = selectedUniversity;
+      }
+      
+      // Add department filter
+      if (!isIntroductory && selectedDepartment) {
         params.department = selectedDepartment;
-      if (selectedSubject) params.subject = selectedSubject;
-      if (selectedStream) params.stream = selectedStream;
-      if (selectedResourceType) params.type = selectedResourceType;
+      }
+      
+      // Add subject filter
+      if (selectedSubject) {
+        params.subject = selectedSubject;
+      }
+      
+      // Add stream filter
+      if (selectedStream) {
+        params.stream = selectedStream;
+      }
+      
+      // Add resource type filter
+      if (selectedResourceType) {
+        params.type = selectedResourceType;
+      }
 
+      console.log("🔍 Fetching university resources with params:", params);
       const response = await resourceService.getResources(params);
+      console.log("📦 Full API response:", response);
+      console.log("📊 Response data structure:", response.data);
+      
       const resourcesData = response.data?.data || [];
+      console.log("✅ Extracted resources array:", resourcesData);
+      console.log("📈 Total resources found:", resourcesData.length);
+      
+      if (resourcesData.length > 0) {
+        console.log("📝 First resource sample:", resourcesData[0]);
+      }
+      
       setResources(resourcesData);
     } catch (err) {
-      console.error("Failed to fetch resources:", err);
+      console.error("❌ Failed to fetch resources:", err);
       setResources([]);
     } finally {
       setLoading(false);
@@ -181,27 +210,42 @@ export const UniversityDashboard: React.FC = () => {
     }
   }, [activeCategory]);
 
-  const learningContent =
-    activeCategory === "freshman"
-      ? (FRESHMAN_COURSE_CONTENT as any)[learningSubject]
-      : activeCategory === "remedial"
-        ? (REMEDIAL_COURSE_CONTENT as any)[learningSubject]
-        : null;
+  const handleLearningCenterClick = () => {
+    // Always stay in the learning tab, don't navigate away
+    setActiveTab("learning");
+  };
 
   return (
     <DashboardLayout
       title=""
       noPadding={activeTab === "learning"}
+      showFooter={false}
       headerNav={
         <div className="flex items-center gap-0.5 md:gap-1">
           {[
             { id: "home", label: "Home", shortLabel: "Home", icon: Home },
-            { id: "learning", label: "Learning Center", shortLabel: "Learning", icon: BookOpen },
-            { id: "hub", label: "Resource Hub", shortLabel: "Resource", icon: Library },
+            {
+              id: "learning",
+              label: "Learning Center",
+              shortLabel: "Learning",
+              icon: BookOpen,
+            },
+            {
+              id: "hub",
+              label: "Resource Hub",
+              shortLabel: "Resource",
+              icon: Library,
+            },
           ].map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => {
+                if (tab.id === "learning") {
+                  handleLearningCenterClick();
+                } else {
+                  setActiveTab(tab.id as any);
+                }
+              }}
               className={`px-1.5 md:px-4 py-1 md:py-2 text-[7px] md:text-[10px] font-black uppercase tracking-wider md:tracking-widest transition-all flex items-center gap-1 md:gap-2 rounded-lg md:rounded-xl ${
                 activeTab === tab.id
                   ? "bg-blue-600 text-white shadow-lg shadow-blue-500/25 scale-105"
@@ -217,45 +261,53 @@ export const UniversityDashboard: React.FC = () => {
       }
     >
       {activeTab === "home" ? (
-        <div className="space-y-10">
+        <>
           <UniversityOverview
             user={user}
             activeCategory={activeCategory}
             homeLoading={homeLoading}
             homeResources={homeResources}
             setActiveTab={setActiveTab}
+            handleLearningCenterClick={handleLearningCenterClick}
           />
-        </div>
+          <Footer />
+        </>
       ) : activeTab === "learning" ? (
-        <UniversityLearningCenter
-          subjects={subjects}
-          learningSubject={learningSubject}
-          setLearningSubject={setLearningSubject}
-          learningContent={learningContent}
-          navigate={navigate}
-          setActiveTab={setActiveTab}
-        />
+        <div className="flex flex-col h-full min-h-0">
+          <div className="flex-1 min-h-0">
+            <UniversityLearningCenter
+              subjects={subjects}
+              learningSubject={learningSubject}
+              setLearningSubject={setLearningSubject}
+              setActiveTab={setActiveTab}
+              category={activeCategory}
+            />
+          </div>
+        </div>
       ) : (
-        <UniversityResourceHub
-          selectedUniversity={selectedUniversity}
-          setSelectedUniversity={setSelectedUniversity}
-          availableUniversities={availableUniversities}
-          selectedStream={selectedStream}
-          setSelectedStream={setSelectedStream}
-          isIntroductory={isIntroductory}
-          selectedDepartment={selectedDepartment}
-          setSelectedDepartment={setSelectedDepartment}
-          selectedResourceType={selectedResourceType}
-          setSelectedResourceType={setSelectedResourceType}
-          resourceTypes={resourceTypes}
-          selectedSubject={selectedSubject}
-          setSelectedSubject={setSelectedSubject}
-          subjects={subjects}
-          loading={loading}
-          resources={resources}
-          activeCategory={activeCategory}
-          onRefresh={fetchResources}
-        />
+        <>
+          <UniversityResourceHub
+            selectedUniversity={selectedUniversity}
+            setSelectedUniversity={setSelectedUniversity}
+            availableUniversities={availableUniversities}
+            selectedStream={selectedStream}
+            setSelectedStream={setSelectedStream}
+            isIntroductory={isIntroductory}
+            selectedDepartment={selectedDepartment}
+            setSelectedDepartment={setSelectedDepartment}
+            selectedResourceType={selectedResourceType}
+            setSelectedResourceType={setSelectedResourceType}
+            resourceTypes={resourceTypes}
+            selectedSubject={selectedSubject}
+            setSelectedSubject={setSelectedSubject}
+            subjects={subjects}
+            loading={loading}
+            resources={resources}
+            activeCategory={activeCategory}
+            onRefresh={fetchResources}
+          />
+          <Footer />
+        </>
       )}
     </DashboardLayout>
   );

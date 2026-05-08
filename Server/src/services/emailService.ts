@@ -1,49 +1,123 @@
-// Email service using Resend HTTP API (works perfectly on cloud platforms like Render)
+// Email service supporting both Resend HTTP API and SMTP
 import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-// Resend client (lazy initialization)
+// Clients
 let resendClient: Resend | null = null;
-let resendReady = false;
+let smtpTransporter: nodemailer.Transporter | null = null;
 let initialized = false;
+let serviceType: 'resend' | 'smtp' | 'none' = 'none';
 
 /**
- * Initialize Resend client
+ * Initialize Email Service
  */
-async function initializeResend() {
-  if (initialized) {
-    return;
-  }
-  
+async function initializeEmailService() {
+  if (initialized) return;
   initialized = true;
   
   const resendApiKey = process.env.RESEND_API_KEY;
-  
-  console.log('🔧 Initializing Resend email service...');
-  console.log('📧 RESEND_API_KEY:', resendApiKey ? 'SET ✅' : 'NOT SET ❌');
-  
-  if (!resendApiKey) {
-    console.warn('⚠️ RESEND_API_KEY not configured. Emails will be logged to console.');
-    return;
+  const smtpHost = process.env.SMTP_HOST;
+  const smtpPort = parseInt(process.env.SMTP_PORT || '587');
+  const smtpUser = process.env.SMTP_USER;
+  const smtpPass = process.env.SMTP_PASS;
+
+  console.log('🔧 Initializing email service...');
+
+  // 1. Try SMTP first (if configured)
+  if (smtpHost && smtpUser && smtpPass) {
+    try {
+      smtpTransporter = nodemailer.createTransport({
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpPort === 465,
+        auth: {
+          user: smtpUser,
+          pass: smtpPass,
+        },
+      });
+      
+      await smtpTransporter.verify();
+      serviceType = 'smtp';
+      console.log('✅ SMTP email service initialized successfully');
+      return;
+    } catch (error) {
+      console.error('❌ Failed to initialize SMTP:', error);
+    }
   }
-  
-  try {
-    resendClient = new Resend(resendApiKey);
-    resendReady = true;
-    console.log('✅ Resend HTTP API initialized successfully');
-  } catch (error) {
-    console.error('❌ Failed to initialize Resend:', error);
-    resendClient = null;
-    resendReady = false;
+
+  // 2. Try Resend if SMTP failed or not configured
+  if (resendApiKey) {
+    try {
+      resendClient = new Resend(resendApiKey);
+      serviceType = 'resend';
+      console.log('✅ Resend HTTP API initialized successfully');
+      return;
+    } catch (error) {
+      console.error('❌ Failed to initialize Resend:', error);
+    }
   }
+
+  console.warn('⚠️ No email service configured. Emails will be logged to console.');
+  serviceType = 'none';
 }
 
 export class EmailService {
   /**
+   * Helper to send email via available service
+   */
+  private static async sendEmail(options: { to: string, subject: string, html: string, text?: string }) {
+    await initializeEmailService();
+    
+    const fromName = process.env.FROM_NAME || 'SuccessBridge Team';
+    const fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev';
+
+    if (serviceType === 'smtp' && smtpTransporter) {
+      try {
+        await smtpTransporter.sendMail({
+          from: `"${fromName}" <${fromEmail}>`,
+          to: options.to,
+          subject: options.subject,
+          text: options.text,
+          html: options.html,
+        });
+        console.log(`✅ Email sent to ${options.to} via SMTP`);
+        return true;
+      } catch (error) {
+        console.error('❌ SMTP send failed:', error);
+      }
+    }
+
+    if (serviceType === 'resend' && resendClient) {
+      try {
+        await resendClient.emails.send({
+          from: fromEmail.includes('@resend.dev') 
+            ? `${fromName} <${fromEmail}>`
+            : `${fromName} <onboarding@resend.dev>`,
+          to: options.to,
+          subject: options.subject,
+          html: options.html,
+          text: options.text,
+        });
+        console.log(`✅ Email sent to ${options.to} via Resend`);
+        return true;
+      } catch (error) {
+        console.error('❌ Resend send failed:', error);
+      }
+    }
+
+    console.log(`
+📧 CONSOLE FALLBACK:
+To: ${options.to}
+Subject: ${options.subject}
+Content: ${options.text || 'See HTML content'}
+    `);
+    return false;
+  }
+
+  /**
    * Send email verification code (6-digit)
    */
   static async sendVerificationCodeEmail(email: string, name: string, code: string) {
-    await initializeResend();
-    
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -67,19 +141,13 @@ export class EmailService {
           <div class="content">
             <h2>Hi ${name},</h2>
             <p>Thank you for registering with SuccessBridge! We're excited to have you join our learning community.</p>
-            
             <p>To complete your registration, please enter the following 6-digit verification code:</p>
-            
             <div class="code-box">
               <div class="code">${code}</div>
             </div>
-            
             <div class="warning">
               <strong>⚠️ Important:</strong> This verification code will expire in 15 minutes.
             </div>
-            
-            <p>If you didn't create an account with SuccessBridge, please ignore this email.</p>
-            
             <p>Best regards,<br>The SuccessBridge Team</p>
           </div>
           <div class="footer">
@@ -90,180 +158,58 @@ export class EmailService {
       </html>
     `;
 
-    const textContent = `
-Hi ${name},
+    const textContent = `Hi ${name},\n\nThank you for registering! Your code is: ${code}\n\nExpires in 15 mins.`;
 
-Thank you for registering with SuccessBridge!
-
-To complete your registration, please enter the following 6-digit verification code:
-
-${code}
-
-⚠️ Important: This verification code will expire in 15 minutes.
-
-If you didn't create an account with SuccessBridge, please ignore this email.
-
-Best regards,
-The SuccessBridge Team
-    `;
-
-    if (resendClient && resendReady) {
-      try {
-        console.log(`📧 Sending verification email to ${email} via Resend HTTP API...`);
-        console.log(`📧 From: ${process.env.FROM_EMAIL || 'onboarding@resend.dev'}`);
-        
-        const result = await resendClient.emails.send({
-          from: process.env.FROM_EMAIL && process.env.FROM_EMAIL.includes('@resend.dev') 
-            ? `${process.env.FROM_NAME || 'SuccessBridge Team'} <${process.env.FROM_EMAIL}>`
-            : 'SuccessBridge Team <onboarding@resend.dev>',
-          to: email,
-          subject: '✅ Your Verification Code - SuccessBridge',
-          html: htmlContent,
-          text: textContent,
-        });
-        
-        console.log(`✅ Verification code sent to ${email}`);
-        console.log(`📧 Resend response:`, JSON.stringify(result, null, 2));
-        if (result.data) {
-          console.log(`📬 Email ID: ${result.data.id}`);
-        }
-        if (result.error) {
-          console.error(`❌ Resend error:`, result.error);
-        }
-        return true;
-      } catch (error: any) {
-        console.error('❌ Failed to send verification email:', error);
-        console.error('❌ Error details:', error.message);
-        
-        // Log to console as fallback
-        console.log(`
-📧 FALLBACK - Verification code for ${email}:
-Code: ${code}
-Expires: 15 minutes
-        `);
-        return false;
-      }
-    } else {
-      // Fallback to console logging
-      console.log(`
-📧 EMAIL NOTIFICATION (Verification Code):
-To: ${email}
-Subject: ✅ Your Verification Code - SuccessBridge
-Verification Code: ${code}
-Expires: 15 minutes
-      `);
-      console.log(`⚠️ Resend not configured. Code logged to console.`);
-      return false;
-    }
+    return this.sendEmail({
+      to: email,
+      subject: '✅ Your Verification Code - SuccessBridge',
+      html: htmlContent,
+      text: textContent
+    });
   }
 
   /**
    * Send admin approval notification email
    */
   static async sendAdminApprovalEmail(adminEmail: string, adminName: string) {
-    await initializeResend();
-    
     const loginUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/login`;
-    
     const htmlContent = `
-      <!DOCTYPE html>
-      <html>
-      <body style="font-family: Arial, sans-serif;">
-        <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-          <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-            <h1>🎉 Congratulations!</h1>
-          </div>
-          <div style="background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px;">
-            <h2>Hi ${adminName},</h2>
-            <p>Great news! Your admin account has been approved.</p>
-            <p style="text-align: center;">
-              <a href="${loginUrl}" style="display: inline-block; padding: 15px 30px; background: #10b981; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Login to Dashboard</a>
-            </p>
-            <p>Best regards,<br>The SuccessBridge Team</p>
-          </div>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: #10b981; color: white; padding: 20px; text-align: center;">
+          <h1>🎉 Congratulations!</h1>
         </div>
-      </body>
-      </html>
+        <p>Hi ${adminName}, your admin account has been approved.</p>
+        <p><a href="${loginUrl}">Login to Dashboard</a></p>
+      </div>
     `;
-
-    if (resendClient && resendReady) {
-      try {
-        await resendClient.emails.send({
-          from: `${process.env.FROM_NAME || 'SuccessBridge Team'} <${process.env.FROM_EMAIL || 'onboarding@resend.dev'}>`,
-          to: adminEmail,
-          subject: '🎉 Admin Account Approved - Welcome!',
-          html: htmlContent,
-        });
-        console.log(`✅ Approval notification sent to ${adminEmail}`);
-      } catch (error) {
-        console.error('❌ Failed to send approval notification:', error);
-      }
-    }
+    return this.sendEmail({ to: adminEmail, subject: '🎉 Admin Account Approved', html: htmlContent });
   }
 
   /**
    * Send admin rejection notification email
    */
   static async sendAdminRejectionEmail(adminEmail: string, adminName: string, reason: string) {
-    await initializeResend();
-    
-    if (resendClient && resendReady) {
-      try {
-        await resendClient.emails.send({
-          from: `${process.env.FROM_NAME || 'SuccessBridge Team'} <${process.env.FROM_EMAIL || 'onboarding@resend.dev'}>`,
-          to: adminEmail,
-          subject: '❌ Admin Account Request - Update Required',
-          html: `<p>Hi ${adminName},</p><p>Feedback: ${reason}</p>`,
-        });
-        console.log(`✅ Rejection notification sent to ${adminEmail}`);
-      } catch (error) {
-        console.error('❌ Failed to send rejection notification:', error);
-      }
-    }
+    return this.sendEmail({
+      to: adminEmail,
+      subject: '❌ Admin Account Request Update',
+      html: `<p>Hi ${adminName},</p><p>Your request was not approved. Feedback: ${reason}</p>`
+    });
   }
 
   /**
-   * Send password reset email with 6-digit code
+   * Send password reset email
    */
   static async sendPasswordResetEmail(email: string, name: string, code: string) {
-    await initializeResend();
-    
     const htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2>Password Reset Request</h2>
-        <p>Hi ${name},</p>
-        <p>Your password reset code is:</p>
-        <div style="background: #f0f0f0; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 8px;">
-          ${code}
-        </div>
-        <p>This code expires in 10 minutes.</p>
+        <h2>Password Reset</h2>
+        <p>Hi ${name}, your code is: <strong>${code}</strong></p>
       </div>
     `;
-
-    if (resendClient && resendReady) {
-      try {
-        await resendClient.emails.send({
-          from: `${process.env.FROM_NAME || 'SuccessBridge Team'} <${process.env.FROM_EMAIL || 'onboarding@resend.dev'}>`,
-          to: email,
-          subject: '🔑 Password Reset Code - SuccessBridge',
-          html: htmlContent,
-        });
-        console.log(`✅ Password reset code sent to ${email}`);
-        return true;
-      } catch (error) {
-        console.error('❌ Failed to send password reset email:', error);
-        return false;
-      }
-    }
-    
-    console.log(`📧 Password reset code for ${email}: ${code}`);
-    return false;
+    return this.sendEmail({ to: email, subject: '🔑 Password Reset - SuccessBridge', html: htmlContent });
   }
 
-  /**
-   * Send invitation email (stub)
-   */
   static async sendInvitationEmail(adminEmail: string, adminName: string, token: string) {
-    console.log(`📧 Invitation email for ${adminEmail} (token: ${token})`);
+    console.log(`📧 Invitation for ${adminEmail} (token: ${token})`);
   }
 }

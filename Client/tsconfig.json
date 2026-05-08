@@ -4,6 +4,7 @@
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
+    "ignoreDeprecations": "6.0",
     "jsx": "react-jsx",
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -28,7 +29,8 @@
       "@hooks/*": ["src/hooks/*"],
       "@utils/*": ["src/utils/*"],
       "@types": ["src/types/index.ts"],
-      "@store/*": ["src/store/*"]
+      "@store/*": ["src/store/*"],
+      "@learningCenter/*": ["src/dashboards/student/learning center/*"]
     }
   },
   "include": ["src"],

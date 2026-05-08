@@ -18,16 +18,16 @@ services:
       - key: PORT
         value: 10000
       - key: FRONTEND_URL
-        value: https://success-bridge-black.vercel.app
+        value: https://successbridge.pages.dev # Cloudflare Pages URL
       - key: DATABASE_URL
-        value: postgresql://postgres.oxnntnvtkngfoorkleay:702512Tol_Database@aws-1-eu-west-1.pooler.supabase.com:5432/postgres
+        sync: false # Set in Render Dashboard
       - key: JWT_SECRET
-        value: SuccessBridge-Super-Secret-JWT-Key-For-Production-2024-Deployment-32-Characters
+        sync: false # Set in Render Dashboard (minimum 32 characters)
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: SUPABASE_URL
-        value: https://oxnntnvtkngfoorkleay.supabase.co
+        sync: false # Set in Render Dashboard
       - key: SUPABASE_ANON_KEY
-        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94bm50bnZ0a25nZm9vcmtsZWF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY2NzU5NzQsImV4cCI6MjA1MjI1MTk3NH0.sb_publishable_7cmmPTJwl0Nj7-nQWpWrvA_YgvBKTum
+        sync: false # Set in Render Dashboard
       - key: SUPABASE_SERVICE_KEY
-        value: sb_secret_BnVbahCrOQufviYpHZewjw_6p9ykmQl
+        sync: false # Set in Render Dashboard
