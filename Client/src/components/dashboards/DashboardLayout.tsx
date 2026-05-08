@@ -40,7 +40,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f1c] flex flex-col transition-colors duration-300 overflow-hidden h-screen m-0 p-0">
       {/* 1. Full-Width Header at the Top */}
-      <header className="h-12 md:h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-1 md:px-3 flex-shrink-0 z-30 transition-colors duration-300 shadow-sm">
+      <header className="h-12 md:h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-0 md:px-3 flex-shrink-0 z-30 transition-colors duration-300 shadow-sm">
         <div className="flex items-center gap-1 md:gap-4">
           {/* Logo - Mobile First */}
           <div
@@ -151,7 +151,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           <div className="flex items-center">
             <button
               onClick={handleLogout}
-              className="px-1.5 md:px-3 py-0.5 md:py-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg transition-all duration-300 font-semibold text-[9px] md:text-xs uppercase tracking-wide border border-rose-500/20 hover:border-rose-500"
+              className="px-1.5 md:px-3 py-1 md:py-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg transition-all duration-300 font-semibold text-[9px] md:text-xs normal-case tracking-normal border border-rose-500/20 hover:border-rose-500 h-7 md:h-auto"
               title="Sign Out"
             >
               <span>Logout</span>
