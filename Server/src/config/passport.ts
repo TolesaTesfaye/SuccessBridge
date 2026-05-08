@@ -74,6 +74,7 @@ passport.deserializeUser(async (id: string, done) => {
     if (user) {
       done(null, {
         userId: user.id,
+        id: user.id, // Added for consistency with IAuthPayload
         email: user.email,
         role: user.role
       })
