@@ -195,7 +195,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             // For normal mode, use proper spacing for footer
             <div className="min-h-full flex flex-col">
               <div
-                className={`flex-1 ${disableTopPadding ? "" : "pt-4 md:pt-6"} px-4 md:px-6`}
+                className={`flex-1 ${disableTopPadding ? "" : "pt-1 md:pt-2"} pl-1 md:pl-2`}
               >
                 {children}
               </div>
