@@ -177,6 +177,7 @@ export interface PaginatedResponse<T> {
 // Auth Types
 export interface IAuthPayload {
   userId: string;
+  id: string; // Added for consistency with req.user.id usage
   email: string;
   role: string;
 }

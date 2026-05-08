@@ -161,7 +161,7 @@ export class PaymentService {
     })
 
     if (!payment) {
-      throw new AppError('Payment not found', 404)
+      throw new AppError(404, 'Payment not found')
     }
 
     return payment
@@ -229,11 +229,11 @@ export class PaymentService {
     const payment = await Payment.findByPk(paymentId)
 
     if (!payment) {
-      throw new AppError('Payment not found', 404)
+      throw new AppError(404, 'Payment not found')
     }
 
     if (payment.status !== 'pending') {
-      throw new AppError('Payment has already been processed', 400)
+      throw new AppError(400, 'Payment has already been processed')
     }
 
     // Update payment status
