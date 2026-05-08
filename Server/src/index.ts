@@ -110,11 +110,19 @@ const corsOptions = {
     const isLocalhost =
       origin && (origin.includes("localhost") || origin.includes("127.0.0.1"));
 
-    // Allow requests with no origin (like mobile apps, curl) or if origin is in allowed list, or if it's a pages domain, or localhost in dev
+    // Allow requests with no origin (like mobile apps, curl) or if origin is in allowed list
+    // Also allow: Cloudflare Pages (.pages.dev), Vercel (.vercel.app), Netlify (.netlify.app), GitHub Pages (.github.io)
+    const isAllowedDomain = origin && (
+      origin.endsWith(".pages.dev") ||
+      origin.endsWith(".vercel.app") ||
+      origin.endsWith(".netlify.app") ||
+      origin.includes(".github.io")
+    );
+
     if (
       !origin ||
       allowedOrigins.includes(origin) ||
-      origin.endsWith(".pages.dev") ||
+      isAllowedDomain ||
       (isDevelopment && isLocalhost)
     ) {
       callback(null, true);
