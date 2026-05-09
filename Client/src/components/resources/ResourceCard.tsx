@@ -222,15 +222,20 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     setIsOpening(true);
 
     try {
-      // Try the direct file URL first
-      const url = getFullUrl(resource.fileUrl);
-      console.log("Opening resource:", url);
+      // Use the download endpoint which will redirect to the signed URL
+      const baseUrl =
+        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+      const downloadUrl = `${baseUrl}/resources/${resource.id}/download`;
 
-      // Open in new tab (single attempt)
-      window.open(url, "_blank", "noopener,noreferrer");
+      console.log("Opening resource:", downloadUrl);
+
+      // Open in new tab - browser will follow the redirect
+      window.open(downloadUrl, "_blank", "noopener,noreferrer");
+      
+      toast.success("Opening file in new tab...");
     } catch (error) {
       console.error("Failed to open resource:", error);
-      alert("Unable to open the file. Please try downloading it instead.");
+      toast.error("Unable to open the file. Please try downloading it instead.");
     } finally {
       setIsOpening(false);
     }
@@ -247,118 +252,37 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     setIsDownloading(true);
 
     try {
-      // First try the dedicated download endpoint if available
+      // Use the dedicated download endpoint
       const baseUrl =
         import.meta.env.VITE_API_URL || "http://localhost:5000/api";
       const downloadUrl = `${baseUrl}/resources/${resource.id}/download`;
 
-      console.log("Attempting download from:", downloadUrl);
+      console.log("Downloading from:", downloadUrl);
 
-      // Try to fetch the download endpoint first
-      const response = await fetch(downloadUrl, {
-        method: "GET",
-        headers: {
-          Accept: "application/octet-stream",
-        },
-      });
-
-      if (response.ok) {
-        // If the endpoint works, use it
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-
-        // Extract filename from response headers or use fallback
-        const contentDisposition = response.headers.get("content-disposition");
-        let filename = resource.title;
-
-        if (contentDisposition) {
-          const filenameMatch = contentDisposition.match(
-            /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/,
-          );
-          if (filenameMatch && filenameMatch[1]) {
-            filename = filenameMatch[1].replace(/['"]/g, "");
-          }
-        } else {
-          // Fallback: extract from fileUrl or use title
-          const urlFilename = resource.fileUrl.split("/").pop();
-          if (urlFilename && urlFilename.includes(".")) {
-            filename = urlFilename;
-          } else {
-            // Add appropriate extension based on type
-            const extension = resource.type === "video" ? ".mp4" : ".pdf";
-            filename = `${resource.title}${extension}`;
-          }
-        }
-
-        // Create download link
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        // Clean up
-        window.URL.revokeObjectURL(url);
-        console.log("Download completed:", filename);
-        toast.success("Download started. Check your browser downloads.");
-      } else {
-        throw new Error(`Download endpoint failed: ${response.status}`);
+      // Create a temporary link and click it to trigger download
+      // This allows the browser to follow redirects naturally
+      const link = document.createElement("a");
+      link.href = downloadUrl;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      
+      // Extract filename from resource
+      let filename = resource.fileUrl.split("/").pop() || resource.title;
+      if (!filename.includes(".")) {
+        const extension = resource.type === "video" ? ".mp4" : ".pdf";
+        filename += extension;
       }
+      link.download = filename;
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      console.log("Download initiated:", filename);
+      toast.success("Download started. Check your browser downloads.");
     } catch (error) {
-      console.warn("Download endpoint failed, trying direct file URL:", error);
-
-      // Fallback to direct file URL download
-      try {
-        const directUrl = getFullUrl(resource.fileUrl);
-        console.log("Fallback download from:", directUrl);
-
-        // Try to fetch the file directly
-        const response = await fetch(directUrl);
-
-        if (response.ok) {
-          const blob = await response.blob();
-          const url = window.URL.createObjectURL(blob);
-
-          // Extract filename
-          let filename = resource.fileUrl.split("/").pop() || resource.title;
-          if (!filename.includes(".")) {
-            const extension = resource.type === "video" ? ".mp4" : ".pdf";
-            filename += extension;
-          }
-
-          // Create download link
-          const link = document.createElement("a");
-          link.href = url;
-          link.download = filename;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-
-          // Clean up
-          window.URL.revokeObjectURL(url);
-          console.log("Fallback download completed:", filename);
-          toast.success("Download started. Check your browser downloads.");
-        } else {
-          throw new Error(`Direct file access failed: ${response.status}`);
-        }
-      } catch (fallbackError) {
-        console.error("All download methods failed:", fallbackError);
-
-        // Last resort: try to open the file in a new tab
-        try {
-          const url = getFullUrl(resource.fileUrl);
-          window.open(url, "_blank");
-          toast.info(
-            "Download failed, but the file was opened in a new tab. You can save it from there.",
-          );
-        } catch (openError) {
-          console.error("Even opening failed:", openError);
-          toast.error(
-            "Unable to download or open the file. Please try again or contact support.",
-          );
-        }
-      }
+      console.error("Download failed:", error);
+      toast.error("Unable to download the file. Please try again or contact support.");
     } finally {
       setIsDownloading(false);
     }
