@@ -14,6 +14,7 @@ import {
   ClipboardList,
   Target,
 } from "lucide-react";
+import { ResourceViewer } from "./ResourceViewer";
 
 interface ResourceCardProps {
   resource: Resource;
@@ -29,7 +30,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   showAdminActions = false,
 }) => {
   const [isDownloading, setIsDownloading] = useState(false);
-  const [isOpening, setIsOpening] = useState(false);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const toast = useToast();
@@ -341,36 +342,14 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     );
   };
 
-  const handleOpen = async () => {
-    if (!resource.fileUrl || isOpening) {
-      if (!resource.fileUrl) alert("No file URL available for this resource");
+  const handleOpen = () => {
+    if (!resource.fileUrl) {
+      toast.error("No file URL available for this resource");
       return;
     }
 
-    setIsOpening(true);
-
-    try {
-      // Use the download endpoint which will redirect to the signed URL
-      const baseUrl =
-        import.meta.env.VITE_API_URL || 
-        (window.location.hostname === 'localhost' 
-          ? "http://localhost:5000/api"
-          : "https://successbridge-tolesa-api.onrender.com/api");
-      const downloadUrl = `${baseUrl}/resources/${resource.id}/download`;
-
-      console.log("Opening resource:", downloadUrl);
-      console.log("Environment API URL:", import.meta.env.VITE_API_URL);
-
-      // Open in new tab - browser will follow the redirect
-      window.open(downloadUrl, "_blank", "noopener,noreferrer");
-      
-      toast.success("Opening file in new tab...");
-    } catch (error) {
-      console.error("Failed to open resource:", error);
-      toast.error("Unable to open the file. Please try downloading it instead.");
-    } finally {
-      setIsOpening(false);
-    }
+    // Open the resource viewer modal
+    setIsViewerOpen(true);
   };
 
   const handleDownload = async () => {
@@ -444,12 +423,13 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   };
 
   return (
-    <div className="resource-card relative group bg-white dark:bg-slate-800/80 rounded-lg md:rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 transition-all duration-300">
-      {isNew && (
-        <div className="absolute top-1 right-1 z-10 px-2 py-0.5 bg-rose-600 text-white text-[9px] md:text-[8px] font-semibold uppercase tracking-wide rounded shadow-sm">
-          New
-        </div>
-      )}
+    <>
+      <div className="resource-card relative group bg-white dark:bg-slate-800/80 rounded-lg md:rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 transition-all duration-300">
+        {isNew && (
+          <div className="absolute top-1 right-1 z-10 px-2 py-0.5 bg-rose-600 text-white text-[9px] md:text-[8px] font-semibold uppercase tracking-wide rounded shadow-sm">
+            New
+          </div>
+        )}
       {/* Card Header - Type Badge */}
       <div
         className={`px-2 py-1 md:px-1.5 md:py-0.5 flex items-center gap-1 border-b border-slate-100 dark:border-slate-700/50 ${getTypeColor(resource.type)} bg-opacity-50`}
@@ -491,23 +471,14 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         <div className="flex gap-1">
           <button
             onClick={handleOpen}
-            disabled={!resource.fileUrl || isOpening}
+            disabled={!resource.fileUrl}
             className="flex-1 flex items-center justify-center gap-0.5 py-0.5 md:py-0.5 md:px-1.5 rounded-md bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-[8px] md:text-[8px] font-bold md:font-semibold transition-all duration-200 active:scale-95"
             title={
-              resource.fileUrl ? "Open file in new tab" : "No file available"
+              resource.fileUrl ? "View file" : "No file available"
             }
           >
-            {isOpening ? (
-              <>
-                <div className="w-2.5 h-2.5 md:w-2 md:h-2 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span className="hidden md:inline">Opening...</span>
-              </>
-            ) : (
-              <>
-                <ExternalLink className="w-2.5 h-2.5 md:w-2 md:h-2" />
-                Open
-              </>
-            )}
+            <ExternalLink className="w-2.5 h-2.5 md:w-2 md:h-2" />
+            Open
           </button>
           <button
             onClick={handleDownload}
@@ -551,6 +522,14 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           </div>
         )}
       </div>
-    </div>
+
+      {/* Resource Viewer Modal */}
+      <ResourceViewer
+        resource={resource}
+        isOpen={isViewerOpen}
+        onClose={() => setIsViewerOpen(false)}
+        onDownload={handleDownload}
+      />
+    </>
   );
 };
