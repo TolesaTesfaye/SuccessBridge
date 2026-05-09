@@ -397,26 +397,55 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         filename += extension;
       }
       
-      // Create a temporary anchor element with download attribute
-      // This triggers the browser's native "Save As" dialog
-      const link = document.createElement("a");
-      link.href = data.url; // Use the signed URL directly
-      link.download = filename; // This attribute triggers download dialog
-      link.style.display = 'none';
-      
-      document.body.appendChild(link);
-      link.click();
-      
-      // Cleanup after a short delay
-      setTimeout(() => {
-        document.body.removeChild(link);
-      }, 100);
-
-      console.log("Download initiated:", filename);
-      toast.success("Download started. Check your browser's download location.");
+      // Mobile-friendly download approach: fetch as blob then download
+      try {
+        // Fetch the file as blob
+        const fileResponse = await fetch(data.url);
+        if (!fileResponse.ok) {
+          throw new Error('Failed to fetch file');
+        }
+        
+        const blob = await fileResponse.blob();
+        
+        // Create blob URL and download
+        const blobUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = filename;
+        link.style.display = 'none';
+        
+        document.body.appendChild(link);
+        link.click();
+        
+        // Cleanup
+        setTimeout(() => {
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(blobUrl);
+        }, 100);
+        
+        console.log("Download initiated:", filename);
+        toast.success("Download started successfully!");
+      } catch (blobError) {
+        // Fallback: direct link approach
+        console.warn("Blob download failed, using fallback:", blobError);
+        const link = document.createElement("a");
+        link.href = data.url;
+        link.download = filename;
+        link.target = "_blank";
+        link.style.display = 'none';
+        
+        document.body.appendChild(link);
+        link.click();
+        
+        setTimeout(() => {
+          document.body.removeChild(link);
+        }, 100);
+        
+        toast.success("Download started. Check your downloads.");
+      }
     } catch (error) {
       console.error("Download failed:", error);
-      toast.error("Unable to download the file. Please try the Open button instead.");
+      toast.error("Unable to download the file. Please try again.");
     } finally {
       setIsDownloading(false);
     }

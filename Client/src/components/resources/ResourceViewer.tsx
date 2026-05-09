@@ -72,6 +72,9 @@ export const ResourceViewer: React.FC<ResourceViewerProps> = ({
   const isPDF = fileExtension === "pdf";
   const isImage = ["jpg", "jpeg", "png", "gif", "webp"].includes(fileExtension);
   const isVideo = ["mp4", "webm", "mov"].includes(fileExtension);
+  
+  // Detect if mobile device
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
   const handleOpenInNewTab = () => {
     if (signedUrl) {
@@ -150,33 +153,77 @@ export const ResourceViewer: React.FC<ResourceViewerProps> = ({
             <>
               {/* PDF Viewer */}
               {isPDF && (
-                <iframe
-                  src={signedUrl}
-                  title={resource.title}
-                  className="w-full h-full"
-                  style={{ border: "none" }}
-                />
+                <>
+                  {isMobile ? (
+                    // Mobile: Use Google Docs Viewer or direct link
+                    <div className="w-full h-full flex flex-col items-center justify-center gap-4 p-4 bg-slate-100 dark:bg-slate-900">
+                      <div className="text-center">
+                        <p className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                          PDF Document
+                        </p>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                          Tap below to view or download the PDF
+                        </p>
+                      </div>
+                      <div className="flex flex-col gap-3 w-full max-w-sm">
+                        <a
+                          href={signedUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+                        >
+                          <ExternalLink className="w-5 h-5" />
+                          Open PDF
+                        </a>
+                        <button
+                          onClick={onDownload}
+                          className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold transition-colors flex items-center justify-center gap-2"
+                        >
+                          <Download className="w-5 h-5" />
+                          Download PDF
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    // Desktop: Use iframe
+                    <iframe
+                      src={signedUrl}
+                      title={resource.title}
+                      className="w-full h-full"
+                      style={{ border: "none" }}
+                    />
+                  )}
+                </>
               )}
 
               {/* Image Viewer */}
               {isImage && (
-                <div className="w-full h-full flex items-center justify-center p-4 overflow-auto">
+                <div className="w-full h-full flex items-center justify-center p-2 md:p-4 overflow-auto bg-slate-100 dark:bg-slate-900">
                   <img
                     src={signedUrl}
                     alt={resource.title}
                     className="max-w-full max-h-full object-contain"
+                    onError={(e) => {
+                      console.error("Image failed to load");
+                      setError("Failed to load image. Please try downloading.");
+                    }}
                   />
                 </div>
               )}
 
               {/* Video Viewer */}
               {isVideo && (
-                <div className="w-full h-full flex items-center justify-center bg-black">
+                <div className="w-full h-full flex items-center justify-center bg-black p-2 md:p-4">
                   <video
                     src={signedUrl}
                     controls
+                    playsInline
                     className="max-w-full max-h-full"
-                    controlsList="nodownload"
+                    preload="metadata"
+                    onError={(e) => {
+                      console.error("Video failed to load");
+                      setError("Failed to load video. Please try downloading.");
+                    }}
                   >
                     Your browser does not support the video tag.
                   </video>
