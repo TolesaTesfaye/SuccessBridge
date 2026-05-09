@@ -118,13 +118,26 @@ export const downloadResource = async (req: Request, res: Response, next: NextFu
       if (fileUrl.includes('backblazeb2.com')) {
         // Extract the key from the URL
         // Format: https://f833.backblazeb2.com/file/successbridge-resources/resources/123-file.pdf
+        let key = '';
+        
         const urlParts = fileUrl.split('/file/')
         if (urlParts.length > 1) {
           const fullPath = urlParts[1] // successbridge-resources/resources/123-file.pdf
           const pathParts = fullPath.split('/')
           pathParts.shift() // Remove bucket name
-          const key = pathParts.join('/') // resources/123-file.pdf
-          
+          key = pathParts.join('/') // resources/123-file.pdf
+        } else {
+          // Alternative format: try to extract from URL path
+          const url = new URL(fileUrl);
+          const pathname = url.pathname; // /successbridge-resources/resources/123-file.pdf
+          const pathParts = pathname.split('/').filter(p => p); // Remove empty parts
+          if (pathParts.length > 1) {
+            pathParts.shift(); // Remove bucket name
+            key = pathParts.join('/');
+          }
+        }
+        
+        if (key) {
           console.log('🔐 Generating signed URL for private bucket, key:', key)
           
           // Import the signed URL function
@@ -135,6 +148,9 @@ export const downloadResource = async (req: Request, res: Response, next: NextFu
           
           console.log('✅ Redirecting to signed URL (valid for 1 hour)')
           return res.redirect(302, signedUrl)
+        } else {
+          console.error('❌ Could not extract key from URL:', fileUrl)
+          throw new AppError(404, 'Invalid file URL format')
         }
       }
       
@@ -238,10 +254,19 @@ export const downloadResource = async (req: Request, res: Response, next: NextFu
     })
 
   } catch (error) {
+    console.error('❌ Download resource error:', error)
+    
     if (error instanceof AppError) {
       return res.status(error.statusCode).json({ success: false, error: error.message })
     }
-    console.error('❌ Download resource error:', error)
+    
+    // Log detailed error for debugging
+    console.error('❌ Download error details:', {
+      message: (error as Error).message,
+      stack: (error as Error).stack,
+      resourceId: req.params.id
+    })
+    
     next(error)
   }
 }
