@@ -182,6 +182,9 @@ export const downloadResource = async (req: Request, res: Response, next: NextFu
       fileUrl: fileUrl
     })
 
+    // Check if client wants JSON response (for fetch API) or redirect (for direct link)
+    const acceptsJson = req.headers.accept?.includes('application/json');
+
     // Check if it's a B2/S3 URL (starts with https://)
     if (fileUrl.startsWith('https://') || fileUrl.startsWith('http://')) {
       // Check if URL contains B2 domain (indicating it's stored in B2)
@@ -216,6 +219,13 @@ export const downloadResource = async (req: Request, res: Response, next: NextFu
           // Generate signed URL (valid for 1 hour)
           const signedUrl = await getB2SignedUrl(key, 3600)
           
+          // If client accepts JSON, return the URL (for fetch API)
+          if (acceptsJson) {
+            console.log('✅ Returning signed URL as JSON')
+            return res.json({ success: true, url: signedUrl })
+          }
+          
+          // Otherwise redirect (for direct browser access)
           console.log('✅ Redirecting to signed URL (valid for 1 hour)')
           return res.redirect(302, signedUrl)
         } else {
@@ -224,7 +234,10 @@ export const downloadResource = async (req: Request, res: Response, next: NextFu
         }
       }
       
-      // If not B2 or can't extract key, redirect to original URL
+      // If not B2, return or redirect to original URL
+      if (acceptsJson) {
+        return res.json({ success: true, url: fileUrl })
+      }
       console.log('✅ Redirecting to original URL:', fileUrl)
       return res.redirect(302, fileUrl)
     }

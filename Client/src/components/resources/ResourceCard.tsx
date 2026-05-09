@@ -393,32 +393,51 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       const downloadUrl = `${baseUrl}/resources/${resource.id}/download`;
 
       console.log("Downloading from:", downloadUrl);
-      console.log("Environment API URL:", import.meta.env.VITE_API_URL);
 
-      // Create a temporary link and click it to trigger download
-      // This allows the browser to follow redirects naturally
-      const link = document.createElement("a");
-      link.href = downloadUrl;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
+      // Fetch the signed URL from backend
+      const response = await fetch(downloadUrl, {
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
       
+      if (!response.ok) {
+        throw new Error(`Download failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data.success || !data.url) {
+        throw new Error('Invalid response from server');
+      }
+
       // Extract filename from resource
       let filename = resource.fileUrl.split("/").pop() || resource.title;
       if (!filename.includes(".")) {
         const extension = resource.type === "video" ? ".mp4" : ".pdf";
         filename += extension;
       }
-      link.download = filename;
+      
+      // Create a temporary anchor element with download attribute
+      // This triggers the browser's native "Save As" dialog
+      const link = document.createElement("a");
+      link.href = data.url; // Use the signed URL directly
+      link.download = filename; // This attribute triggers download dialog
+      link.style.display = 'none';
       
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
+      
+      // Cleanup after a short delay
+      setTimeout(() => {
+        document.body.removeChild(link);
+      }, 100);
 
       console.log("Download initiated:", filename);
-      toast.success("Download started. Check your browser downloads.");
+      toast.success("Download started. Check your browser's download location.");
     } catch (error) {
       console.error("Download failed:", error);
-      toast.error("Unable to download the file. Please try again or contact support.");
+      toast.error("Unable to download the file. Please try the Open button instead.");
     } finally {
       setIsDownloading(false);
     }
