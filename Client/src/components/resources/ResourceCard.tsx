@@ -145,7 +145,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         return (
           <div className="mb-1 md:mb-1 -mx-2 md:mx-0 md:rounded-md overflow-hidden border-y md:border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
             <iframe
-              src={`${previewUrl}#page=1&view=fitH`}
+              src={`${previewUrl}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=FitH`}
               title={resource.title}
               className="w-full h-16 md:h-20 lg:h-32 bg-white pointer-events-none"
               scrolling="no"
