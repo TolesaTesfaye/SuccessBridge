@@ -14,7 +14,6 @@ import {
   ClipboardList,
   Target,
 } from "lucide-react";
-import { ResourceViewer } from "./ResourceViewer";
 
 interface ResourceCardProps {
   resource: Resource;
@@ -30,7 +29,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   showAdminActions = false,
 }) => {
   const [isDownloading, setIsDownloading] = useState(false);
-  const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [isOpening, setIsOpening] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const toast = useToast();
@@ -128,7 +127,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     if (!resource.fileUrl) {
       // Show default thumbnail based on type when no file URL
       return (
-        <div className="mb-1 md:mb-1 -mx-2 md:mx-0 md:rounded-md overflow-hidden border-y md:border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center h-16 md:h-20 lg:h-32">
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center h-16 md:h-20 lg:h-32">
           <div className="text-slate-400 dark:text-slate-600">
             {getResourceIcon(resource.type)}
           </div>
@@ -143,9 +142,9 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       // PDF preview
       if (lowerUrl.endsWith(".pdf")) {
         return (
-          <div className="mb-1 md:mb-1 -mx-2 md:mx-0 md:rounded-md overflow-hidden border-y md:border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+          <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
             <iframe
-              src={`${previewUrl}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=FitH`}
+              src={`${previewUrl}#page=1&view=fitH`}
               title={resource.title}
               className="w-full h-16 md:h-20 lg:h-32 bg-white pointer-events-none"
               scrolling="no"
@@ -179,7 +178,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         lowerUrl.endsWith(".webp")
       ) {
         return (
-          <div className="mb-1 md:mb-1 -mx-2 md:mx-0 md:rounded-md overflow-hidden border-y md:border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900">
+          <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900">
             <img
               src={previewUrl}
               alt={resource.title}
@@ -208,7 +207,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       // Video preview
       if (resource.type === "video" || lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".webm") || lowerUrl.endsWith(".mov")) {
         return (
-          <div className="mb-1 md:mb-1 -mx-2 md:mx-0 md:rounded-md overflow-hidden border-y md:border border-slate-200 dark:border-slate-700 bg-black/80">
+          <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-black/80">
             <video
               src={previewUrl}
               className="w-full h-16 md:h-20 lg:h-32 object-cover pointer-events-none"
@@ -242,7 +241,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     // PDF thumbnail
     if (lowerUrl.endsWith(".pdf")) {
       return (
-        <div className="mb-1 md:mb-1 -mx-2 md:mx-0 md:rounded-md overflow-hidden border-y md:border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
           <svg className="w-8 h-8 md:w-10 md:h-10 text-red-500 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
             <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
           </svg>
@@ -262,7 +261,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       lowerUrl.endsWith(".webp")
     ) {
       return (
-        <div className="mb-1 md:mb-1 -mx-2 md:mx-0 md:rounded-md overflow-hidden border-y md:border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
           <svg className="w-8 h-8 md:w-10 md:h-10 text-blue-500 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd"/>
           </svg>
@@ -276,7 +275,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     // Video thumbnail
     if (resource.type === "video" || lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".webm") || lowerUrl.endsWith(".mov")) {
       return (
-        <div className="mb-1 md:mb-1 -mx-2 md:mx-0 md:rounded-md overflow-hidden border-y md:border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
           <svg className="w-8 h-8 md:w-10 md:h-10 text-purple-500 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
             <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
           </svg>
@@ -290,7 +289,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     // Word document thumbnail
     if (lowerUrl.endsWith(".doc") || lowerUrl.endsWith(".docx")) {
       return (
-        <div className="mb-1 md:mb-1 -mx-2 md:mx-0 md:rounded-md overflow-hidden border-y md:border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
           <svg className="w-8 h-8 md:w-10 md:h-10 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
             <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
           </svg>
@@ -304,7 +303,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     // Excel document thumbnail
     if (lowerUrl.endsWith(".xls") || lowerUrl.endsWith(".xlsx")) {
       return (
-        <div className="mb-1 md:mb-1 -mx-2 md:mx-0 md:rounded-md overflow-hidden border-y md:border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
           <svg className="w-8 h-8 md:w-10 md:h-10 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
             <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
           </svg>
@@ -318,7 +317,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     // PowerPoint document thumbnail
     if (lowerUrl.endsWith(".ppt") || lowerUrl.endsWith(".pptx")) {
       return (
-        <div className="mb-1 md:mb-1 -mx-2 md:mx-0 md:rounded-md overflow-hidden border-y md:border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
           <svg className="w-8 h-8 md:w-10 md:h-10 text-orange-600 dark:text-orange-400" fill="currentColor" viewBox="0 0 20 20">
             <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
           </svg>
@@ -331,7 +330,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
 
     // Fallback thumbnail for other file types
     return (
-      <div className="mb-1 md:mb-1 -mx-2 md:mx-0 md:rounded-md overflow-hidden border-y md:border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
+      <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
         <div className="text-slate-500 dark:text-slate-400 scale-150">
           {getResourceIcon(resource.type)}
         </div>
@@ -342,14 +341,36 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     );
   };
 
-  const handleOpen = () => {
-    if (!resource.fileUrl) {
-      toast.error("No file URL available for this resource");
+  const handleOpen = async () => {
+    if (!resource.fileUrl || isOpening) {
+      if (!resource.fileUrl) alert("No file URL available for this resource");
       return;
     }
 
-    // Open the resource viewer modal
-    setIsViewerOpen(true);
+    setIsOpening(true);
+
+    try {
+      // Use the download endpoint which will redirect to the signed URL
+      const baseUrl =
+        import.meta.env.VITE_API_URL || 
+        (window.location.hostname === 'localhost' 
+          ? "http://localhost:5000/api"
+          : "https://successbridge-tolesa-api.onrender.com/api");
+      const downloadUrl = `${baseUrl}/resources/${resource.id}/download`;
+
+      console.log("Opening resource:", downloadUrl);
+      console.log("Environment API URL:", import.meta.env.VITE_API_URL);
+
+      // Open in new tab - browser will follow the redirect
+      window.open(downloadUrl, "_blank", "noopener,noreferrer");
+      
+      toast.success("Opening file in new tab...");
+    } catch (error) {
+      console.error("Failed to open resource:", error);
+      toast.error("Unable to open the file. Please try downloading it instead.");
+    } finally {
+      setIsOpening(false);
+    }
   };
 
   const handleDownload = async () => {
@@ -390,6 +411,19 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         throw new Error('Invalid response from server');
       }
 
+      // Now fetch the actual file from the signed URL
+      const fileResponse = await fetch(data.url);
+      
+      if (!fileResponse.ok) {
+        throw new Error(`File fetch failed: ${fileResponse.status}`);
+      }
+
+      // Get the blob from response
+      const blob = await fileResponse.blob();
+      
+      // Create object URL from blob
+      const url = window.URL.createObjectURL(blob);
+      
       // Extract filename from resource
       let filename = resource.fileUrl.split("/").pop() || resource.title;
       if (!filename.includes(".")) {
@@ -397,68 +431,34 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         filename += extension;
       }
       
-      // Mobile-friendly download approach: fetch as blob then download
-      try {
-        // Fetch the file as blob
-        const fileResponse = await fetch(data.url);
-        if (!fileResponse.ok) {
-          throw new Error('Failed to fetch file');
-        }
-        
-        const blob = await fileResponse.blob();
-        
-        // Create blob URL and download
-        const blobUrl = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = blobUrl;
-        link.download = filename;
-        link.style.display = 'none';
-        
-        document.body.appendChild(link);
-        link.click();
-        
-        // Cleanup
-        setTimeout(() => {
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(blobUrl);
-        }, 100);
-        
-        console.log("Download initiated:", filename);
-        toast.success("Download started successfully!");
-      } catch (blobError) {
-        // Fallback: direct link approach
-        console.warn("Blob download failed, using fallback:", blobError);
-        const link = document.createElement("a");
-        link.href = data.url;
-        link.download = filename;
-        link.target = "_blank";
-        link.style.display = 'none';
-        
-        document.body.appendChild(link);
-        link.click();
-        
-        setTimeout(() => {
-          document.body.removeChild(link);
-        }, 100);
-        
-        toast.success("Download started. Check your downloads.");
-      }
+      // Create temporary link and trigger download
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      console.log("Download completed:", filename);
+      toast.success("Download started. Check your browser downloads.");
     } catch (error) {
       console.error("Download failed:", error);
-      toast.error("Unable to download the file. Please try again.");
+      toast.error("Unable to download the file. Please try the Open button instead.");
     } finally {
       setIsDownloading(false);
     }
   };
 
   return (
-    <>
-      <div className="resource-card relative group bg-white dark:bg-slate-800/80 rounded-lg md:rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 transition-all duration-300">
-        {isNew && (
-          <div className="absolute top-1 right-1 z-10 px-2 py-0.5 bg-rose-600 text-white text-[9px] md:text-[8px] font-semibold uppercase tracking-wide rounded shadow-sm">
-            New
-          </div>
-        )}
+    <div className="resource-card relative group bg-white dark:bg-slate-800/80 rounded-lg md:rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 transition-all duration-300">
+      {isNew && (
+        <div className="absolute top-1 right-1 z-10 px-2 py-0.5 bg-rose-600 text-white text-[9px] md:text-[8px] font-semibold uppercase tracking-wide rounded shadow-sm">
+          New
+        </div>
+      )}
       {/* Card Header - Type Badge */}
       <div
         className={`px-2 py-1 md:px-1.5 md:py-0.5 flex items-center gap-1 border-b border-slate-100 dark:border-slate-700/50 ${getTypeColor(resource.type)} bg-opacity-50`}
@@ -500,14 +500,23 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         <div className="flex gap-1">
           <button
             onClick={handleOpen}
-            disabled={!resource.fileUrl}
+            disabled={!resource.fileUrl || isOpening}
             className="flex-1 flex items-center justify-center gap-0.5 py-0.5 md:py-0.5 md:px-1.5 rounded-md bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-[8px] md:text-[8px] font-bold md:font-semibold transition-all duration-200 active:scale-95"
             title={
-              resource.fileUrl ? "View file" : "No file available"
+              resource.fileUrl ? "Open file in new tab" : "No file available"
             }
           >
-            <ExternalLink className="w-2.5 h-2.5 md:w-2 md:h-2" />
-            Open
+            {isOpening ? (
+              <>
+                <div className="w-2.5 h-2.5 md:w-2 md:h-2 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span className="hidden md:inline">Opening...</span>
+              </>
+            ) : (
+              <>
+                <ExternalLink className="w-2.5 h-2.5 md:w-2 md:h-2" />
+                Open
+              </>
+            )}
           </button>
           <button
             onClick={handleDownload}
@@ -551,15 +560,6 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           </div>
         )}
       </div>
-      </div>
-
-      {/* Resource Viewer Modal */}
-      <ResourceViewer
-        resource={resource}
-        isOpen={isViewerOpen}
-        onClose={() => setIsViewerOpen(false)}
-        onDownload={handleDownload}
-      />
-    </>
+    </div>
   );
 };
