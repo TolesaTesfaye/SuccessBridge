@@ -104,39 +104,26 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       );
     }
 
-    const fullUrl = getFullUrl(resource.fileUrl);
     const lowerUrl = resource.fileUrl.toLowerCase();
 
-    // Show first-page preview for PDFs
+    // For private B2 buckets, we can't show live previews (would need signed URLs)
+    // Instead, show nice fallback thumbnails based on file type
+    
+    // PDF thumbnail
     if (lowerUrl.endsWith(".pdf")) {
       return (
-        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-          <iframe
-            src={`${fullUrl}#page=1&view=fitH`}
-            title={resource.title}
-            className="w-full h-16 md:h-20 lg:h-32 bg-white pointer-events-none"
-            scrolling="no"
-            loading="lazy"
-            onError={(e) => {
-              // Fallback if PDF preview fails
-              e.currentTarget.style.display = 'none';
-              const parent = e.currentTarget.parentElement;
-              if (parent) {
-                parent.innerHTML = `
-                  <div class="w-full h-16 md:h-20 lg:h-32 bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
-                    <svg class="w-8 h-8 text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
-                    </svg>
-                  </div>
-                `;
-              }
-            }}
-          />
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
+          <svg className="w-8 h-8 md:w-10 md:h-10 text-red-500 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
+          </svg>
+          <span className="text-[8px] md:text-[9px] font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">
+            PDF
+          </span>
         </div>
       );
     }
 
-    // Image preview for common image formats
+    // Image thumbnail
     if (
       lowerUrl.endsWith(".jpg") ||
       lowerUrl.endsWith(".jpeg") ||
@@ -145,68 +132,80 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       lowerUrl.endsWith(".webp")
     ) {
       return (
-        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900">
-          <img
-            src={fullUrl}
-            alt={resource.title}
-            className="w-full h-16 md:h-20 lg:h-32 object-cover"
-            loading="lazy"
-            onError={(e) => {
-              // Fallback if image fails to load
-              e.currentTarget.style.display = 'none';
-              const parent = e.currentTarget.parentElement;
-              if (parent) {
-                parent.innerHTML = `
-                  <div class="w-full h-16 md:h-20 lg:h-32 bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                    <svg class="w-8 h-8 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-                    </svg>
-                  </div>
-                `;
-              }
-            }}
-          />
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
+          <svg className="w-8 h-8 md:w-10 md:h-10 text-blue-500 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd"/>
+          </svg>
+          <span className="text-[8px] md:text-[9px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
+            Image
+          </span>
         </div>
       );
     }
 
-    // Simple thumbnail-style preview for videos
+    // Video thumbnail
     if (resource.type === "video" || lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".webm") || lowerUrl.endsWith(".mov")) {
       return (
-        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-black/80">
-          <video
-            src={fullUrl}
-            className="w-full h-16 md:h-20 lg:h-32 object-cover pointer-events-none"
-            controls={false}
-            muted
-            playsInline
-            preload="metadata"
-            onError={(e) => {
-              // Fallback if video fails to load
-              e.currentTarget.style.display = 'none';
-              const parent = e.currentTarget.parentElement;
-              if (parent) {
-                parent.innerHTML = `
-                  <div class="w-full h-16 md:h-20 lg:h-32 bg-slate-900 flex items-center justify-center">
-                    <svg class="w-8 h-8 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
-                    </svg>
-                  </div>
-                `;
-              }
-            }}
-          />
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
+          <svg className="w-8 h-8 md:w-10 md:h-10 text-purple-500 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+          </svg>
+          <span className="text-[8px] md:text-[9px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide">
+            Video
+          </span>
         </div>
       );
     }
 
-    // Fallback thumbnail for other file types (Word, Excel, PowerPoint, etc.)
+    // Word document thumbnail
+    if (lowerUrl.endsWith(".doc") || lowerUrl.endsWith(".docx")) {
+      return (
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
+          <svg className="w-8 h-8 md:w-10 md:h-10 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
+          </svg>
+          <span className="text-[8px] md:text-[9px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
+            Word
+          </span>
+        </div>
+      );
+    }
+
+    // Excel document thumbnail
+    if (lowerUrl.endsWith(".xls") || lowerUrl.endsWith(".xlsx")) {
+      return (
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
+          <svg className="w-8 h-8 md:w-10 md:h-10 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
+          </svg>
+          <span className="text-[8px] md:text-[9px] font-semibold text-green-600 dark:text-green-400 uppercase tracking-wide">
+            Excel
+          </span>
+        </div>
+      );
+    }
+
+    // PowerPoint document thumbnail
+    if (lowerUrl.endsWith(".ppt") || lowerUrl.endsWith(".pptx")) {
+      return (
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
+          <svg className="w-8 h-8 md:w-10 md:h-10 text-orange-600 dark:text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
+          </svg>
+          <span className="text-[8px] md:text-[9px] font-semibold text-orange-600 dark:text-orange-400 uppercase tracking-wide">
+            PowerPoint
+          </span>
+        </div>
+      );
+    }
+
+    // Fallback thumbnail for other file types
     return (
-      <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
-        <div className="text-blue-500 dark:text-blue-400 scale-150">
+      <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
+        <div className="text-slate-500 dark:text-slate-400 scale-150">
           {getResourceIcon(resource.type)}
         </div>
-        <span className="text-[8px] md:text-[9px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
+        <span className="text-[8px] md:text-[9px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
           {lowerUrl.split('.').pop() || 'File'}
         </span>
       </div>
@@ -224,10 +223,14 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     try {
       // Use the download endpoint which will redirect to the signed URL
       const baseUrl =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        import.meta.env.VITE_API_URL || 
+        (window.location.hostname === 'localhost' 
+          ? "http://localhost:5000/api"
+          : "https://successbridge-tolesa-api.onrender.com/api");
       const downloadUrl = `${baseUrl}/resources/${resource.id}/download`;
 
       console.log("Opening resource:", downloadUrl);
+      console.log("Environment API URL:", import.meta.env.VITE_API_URL);
 
       // Open in new tab - browser will follow the redirect
       window.open(downloadUrl, "_blank", "noopener,noreferrer");
@@ -254,10 +257,14 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     try {
       // Use the dedicated download endpoint
       const baseUrl =
-        import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+        import.meta.env.VITE_API_URL || 
+        (window.location.hostname === 'localhost' 
+          ? "http://localhost:5000/api"
+          : "https://successbridge-tolesa-api.onrender.com/api");
       const downloadUrl = `${baseUrl}/resources/${resource.id}/download`;
 
       console.log("Downloading from:", downloadUrl);
+      console.log("Environment API URL:", import.meta.env.VITE_API_URL);
 
       // Create a temporary link and click it to trigger download
       // This allows the browser to follow redirects naturally
