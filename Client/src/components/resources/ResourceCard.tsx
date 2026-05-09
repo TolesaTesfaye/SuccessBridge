@@ -522,6 +522,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           </div>
         )}
       </div>
+      </div>
 
       {/* Resource Viewer Modal */}
       <ResourceViewer
