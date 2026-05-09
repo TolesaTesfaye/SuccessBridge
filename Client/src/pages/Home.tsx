@@ -404,6 +404,114 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
+      {/* Featured Resources Section */}
+      <section className="py-12 md:py-20 bg-white dark:bg-slate-900 transition-colors">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-white mb-3 md:mb-4">
+              Featured Study Resources
+            </h2>
+            <p className="text-sm md:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              Get a glimpse of our high-quality learning materials
+            </p>
+          </div>
+
+          {/* 2 Resources Grid - No horizontal scroll on mobile */}
+          <div className="grid grid-cols-2 gap-3 md:gap-6 max-w-4xl mx-auto">
+            {/* Resource Card 1 - Sample */}
+            <div className="bg-white dark:bg-slate-800 rounded-lg md:rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg transition-all">
+              {/* Type Badge */}
+              <div className="px-2 py-1 md:px-3 md:py-1.5 bg-blue-50 dark:bg-blue-500/10 border-b border-slate-100 dark:border-slate-700/50">
+                <span className="text-[8px] md:text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider flex items-center gap-1">
+                  <BookOpen className="w-3 h-3 md:w-4 md:h-4" />
+                  Textbook
+                </span>
+              </div>
+              
+              {/* Thumbnail */}
+              <div className="aspect-[4/3] bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 flex flex-col items-center justify-center border-b border-slate-100 dark:border-slate-700">
+                <svg className="w-12 h-12 md:w-16 md:h-16 text-red-500 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
+                </svg>
+                <span className="text-[10px] md:text-sm font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide mt-2">
+                  PDF
+                </span>
+              </div>
+              
+              {/* Content */}
+              <div className="p-2 md:p-4">
+                <h4 className="font-bold text-[11px] md:text-base text-slate-900 dark:text-white mb-1 md:mb-2 line-clamp-2">
+                  Mathematics Grade 12
+                </h4>
+                <p className="text-[9px] md:text-sm text-slate-600 dark:text-slate-400 mb-2 md:mb-3 line-clamp-2">
+                  Comprehensive textbook covering all topics
+                </p>
+                
+                {/* Action Button */}
+                <button
+                  onClick={() => navigate("/register")}
+                  className="w-full py-1.5 md:py-2 bg-blue-600 hover:bg-blue-700 text-white text-[9px] md:text-sm font-bold rounded-md transition-colors flex items-center justify-center gap-1"
+                >
+                  <span>Sign Up to Access</span>
+                  <ChevronRight className="w-3 h-3 md:w-4 md:h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Resource Card 2 - Sample */}
+            <div className="bg-white dark:bg-slate-800 rounded-lg md:rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-lg transition-all">
+              {/* Type Badge */}
+              <div className="px-2 py-1 md:px-3 md:py-1.5 bg-purple-50 dark:bg-purple-500/10 border-b border-slate-100 dark:border-slate-700/50">
+                <span className="text-[8px] md:text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider flex items-center gap-1">
+                  <BrainCircuit className="w-3 h-3 md:w-4 md:h-4" />
+                  Video
+                </span>
+              </div>
+              
+              {/* Thumbnail */}
+              <div className="aspect-[4/3] bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 flex flex-col items-center justify-center border-b border-slate-100 dark:border-slate-700">
+                <svg className="w-12 h-12 md:w-16 md:h-16 text-purple-500 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+                </svg>
+                <span className="text-[10px] md:text-sm font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide mt-2">
+                  Video
+                </span>
+              </div>
+              
+              {/* Content */}
+              <div className="p-2 md:p-4">
+                <h4 className="font-bold text-[11px] md:text-base text-slate-900 dark:text-white mb-1 md:mb-2 line-clamp-2">
+                  Physics Lecture Series
+                </h4>
+                <p className="text-[9px] md:text-sm text-slate-600 dark:text-slate-400 mb-2 md:mb-3 line-clamp-2">
+                  Expert explanations of complex concepts
+                </p>
+                
+                {/* Action Button */}
+                <button
+                  onClick={() => navigate("/register")}
+                  className="w-full py-1.5 md:py-2 bg-purple-600 hover:bg-purple-700 text-white text-[9px] md:text-sm font-bold rounded-md transition-colors flex items-center justify-center gap-1"
+                >
+                  <span>Sign Up to Access</span>
+                  <ChevronRight className="w-3 h-3 md:w-4 md:h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* View All Button */}
+          <div className="text-center mt-6 md:mt-10">
+            <button
+              onClick={() => navigate("/register")}
+              className="px-6 md:px-8 py-2.5 md:py-3 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white font-bold rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-all inline-flex items-center gap-2 text-sm md:text-base"
+            >
+              <span>View All Resources</span>
+              <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonials Section */}
       <section className="py-12 md:py-24 bg-slate-50 dark:bg-slate-950 transition-colors">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
