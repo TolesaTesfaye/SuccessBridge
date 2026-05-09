@@ -21,7 +21,10 @@ export const useNotifications = (pollingInterval: number = 60000) => {
       setError(null)
     } catch (err: any) {
       console.error('Failed to fetch notifications:', err)
-      setError(err.response?.data?.message || 'Failed to load notifications')
+      // Don't show error for aborted requests or network errors on initial load
+      if (err.code !== 'ERR_CANCELED' && err.code !== 'ECONNABORTED') {
+        setError(err.response?.data?.message || 'Failed to load notifications')
+      }
     } finally {
       setLoading(false)
     }
@@ -33,7 +36,10 @@ export const useNotifications = (pollingInterval: number = 60000) => {
       const count = await getUnreadCount()
       setUnreadCount(count)
     } catch (err: any) {
-      console.error('Failed to fetch unread count:', err)
+      // Silently fail for unread count - not critical
+      if (err.code !== 'ERR_CANCELED' && err.code !== 'ECONNABORTED') {
+        console.error('Failed to fetch unread count:', err)
+      }
     }
   }, [])
 

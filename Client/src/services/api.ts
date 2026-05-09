@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance, AxiosError } from "axios";
 import { useAuthStore } from "@store/authStore";
 import { parseApiError } from "@utils/errorHandler";
 
@@ -12,7 +12,7 @@ const api: AxiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 30000, // 30 second timeout for file uploads
+  timeout: 60000, // 60 second timeout (Render free tier can take 30-50s to wake up)
 });
 
 const inFlightGetRequests = new Map<string, Promise<any>>();
@@ -75,7 +75,25 @@ api.interceptors.request.use(
   },
 );
 
-// Response interceptor for error handling
+// Retry configuration
+const MAX_RETRIES = 2;
+const RETRY_DELAY = 2000; // 2 seconds
+
+// Helper function to check if error is retryable
+const isRetryableError = (error: AxiosError): boolean => {
+  // Retry on network errors, timeouts, and 5xx server errors
+  return (
+    !error.response || // Network error
+    error.code === 'ECONNABORTED' || // Timeout
+    error.code === 'ERR_NETWORK' || // Network error
+    (error.response.status >= 500 && error.response.status < 600) // Server error
+  );
+};
+
+// Helper function to delay
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Response interceptor for error handling with retry logic
 api.interceptors.response.use(
   (response) => {
     // Log responses in development
@@ -87,7 +105,29 @@ api.interceptors.response.use(
     }
     return response;
   },
-  async (error) => {
+  async (error: AxiosError) => {
+    const config = error.config as any;
+
+    // Initialize retry count
+    if (!config.__retryCount) {
+      config.__retryCount = 0;
+    }
+
+    // Check if we should retry
+    if (config.__retryCount < MAX_RETRIES && isRetryableError(error)) {
+      config.__retryCount += 1;
+
+      console.log(
+        `🔄 Retrying request (${config.__retryCount}/${MAX_RETRIES}): ${config.method?.toUpperCase()} ${config.url}`
+      );
+
+      // Wait before retrying
+      await delay(RETRY_DELAY * config.__retryCount);
+
+      // Retry the request
+      return api.request(config);
+    }
+
     // Better error logging (only in development)
     if (import.meta.env.DEV) {
       if (error.response) {
@@ -95,13 +135,13 @@ api.interceptors.response.use(
           status: error.response.status,
           statusText: error.response.statusText,
           data: error.response.data,
-          url: error.config?.url,
+          url: config?.url,
         });
       } else if (error.request) {
         console.error("❌ Network Error:", {
           message: error.message,
           code: error.code,
-          url: error.config?.url,
+          url: config?.url,
         });
       } else {
         console.error("❌ Request Setup Error:", error.message);
@@ -114,7 +154,7 @@ api.interceptors.response.use(
     // Handle 401 errors (but not during auth initialization)
     if (
       error.response?.status === 401 &&
-      !error.config?.url?.includes("/auth/me")
+      !config?.url?.includes("/auth/me")
     ) {
       // Clear auth state and redirect to login
       const { logout } = useAuthStore.getState();
@@ -130,7 +170,7 @@ api.interceptors.response.use(
     }
 
     // Attach user-friendly error to the error object
-    error.userFriendlyError = userError;
+    (error as any).userFriendlyError = userError;
 
     return Promise.reject(error);
   },
