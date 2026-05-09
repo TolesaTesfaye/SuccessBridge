@@ -9,6 +9,7 @@ import {
   updateResource,
   deleteResource,
   downloadResource,
+  getResourcePreview,
   debugResource,
 } from '../controllers/resourceController.js'
 
@@ -193,6 +194,9 @@ router.delete('/:id', authMiddleware, requireRole('admin', 'super_admin'), delet
 
 // Download resource file
 router.get('/:id/download', downloadResource)
+
+// Get preview URL (signed URL for private buckets)
+router.get('/:id/preview', getResourcePreview)
 
 // Debug resource (development only)
 if (process.env.NODE_ENV === 'development') {

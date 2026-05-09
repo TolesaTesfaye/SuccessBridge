@@ -31,9 +31,40 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   const [isDownloading, setIsDownloading] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const toast = useToast();
   const createdTime = new Date(resource.createdAt).getTime();
   const isNew = Date.now() - createdTime < 7 * 24 * 60 * 60 * 1000; // last 7 days
+  
+  // Fetch preview URL for private bucket resources
+  React.useEffect(() => {
+    const fetchPreviewUrl = async () => {
+      if (!resource.fileUrl || !resource.fileUrl.includes('backblazeb2.com')) {
+        return; // Not a B2 file or no file
+      }
+      
+      try {
+        const baseUrl =
+          import.meta.env.VITE_API_URL || 
+          (window.location.hostname === 'localhost' 
+            ? "http://localhost:5000/api"
+            : "https://successbridge-tolesa-api.onrender.com/api");
+        
+        const response = await fetch(`${baseUrl}/resources/${resource.id}/preview`);
+        const data = await response.json();
+        
+        if (data.success && data.url) {
+          setPreviewUrl(data.url);
+        }
+      } catch (error) {
+        console.error('Failed to fetch preview URL:', error);
+        // Silently fail - will show icon thumbnail instead
+      }
+    };
+    
+    fetchPreviewUrl();
+  }, [resource.id, resource.fileUrl]);
+  
   const getResourceIcon = (type: string) => {
     const icons: Record<string, React.ReactNode> = {
       textbook: <BookOpen className="w-3.5 h-3.5 md:w-4 md:h-4" />,
@@ -106,8 +137,106 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
 
     const lowerUrl = resource.fileUrl.toLowerCase();
 
-    // For private B2 buckets, we can't show live previews (would need signed URLs)
-    // Instead, show nice fallback thumbnails based on file type
+    // If we have a preview URL (signed URL for private bucket), show actual preview
+    if (previewUrl) {
+      // PDF preview
+      if (lowerUrl.endsWith(".pdf")) {
+        return (
+          <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+            <iframe
+              src={`${previewUrl}#page=1&view=fitH`}
+              title={resource.title}
+              className="w-full h-16 md:h-20 lg:h-32 bg-white pointer-events-none"
+              scrolling="no"
+              loading="lazy"
+              onError={(e) => {
+                // Fallback to icon if preview fails
+                e.currentTarget.style.display = 'none';
+                const parent = e.currentTarget.parentElement;
+                if (parent) {
+                  parent.innerHTML = `
+                    <div class="w-full h-16 md:h-20 lg:h-32 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 flex flex-col items-center justify-center gap-1">
+                      <svg class="w-8 h-8 md:w-10 md:h-10 text-red-500 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
+                      </svg>
+                      <span class="text-[8px] md:text-[9px] font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">PDF</span>
+                    </div>
+                  `;
+                }
+              }}
+            />
+          </div>
+        );
+      }
+
+      // Image preview
+      if (
+        lowerUrl.endsWith(".jpg") ||
+        lowerUrl.endsWith(".jpeg") ||
+        lowerUrl.endsWith(".png") ||
+        lowerUrl.endsWith(".gif") ||
+        lowerUrl.endsWith(".webp")
+      ) {
+        return (
+          <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900">
+            <img
+              src={previewUrl}
+              alt={resource.title}
+              className="w-full h-16 md:h-20 lg:h-32 object-cover"
+              loading="lazy"
+              onError={(e) => {
+                // Fallback to icon if image fails
+                e.currentTarget.style.display = 'none';
+                const parent = e.currentTarget.parentElement;
+                if (parent) {
+                  parent.innerHTML = `
+                    <div class="w-full h-16 md:h-20 lg:h-32 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 flex flex-col items-center justify-center gap-1">
+                      <svg class="w-8 h-8 md:w-10 md:h-10 text-blue-500 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                      </svg>
+                      <span class="text-[8px] md:text-[9px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Image</span>
+                    </div>
+                  `;
+                }
+              }}
+            />
+          </div>
+        );
+      }
+
+      // Video preview
+      if (resource.type === "video" || lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".webm") || lowerUrl.endsWith(".mov")) {
+        return (
+          <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-black/80">
+            <video
+              src={previewUrl}
+              className="w-full h-16 md:h-20 lg:h-32 object-cover pointer-events-none"
+              controls={false}
+              muted
+              playsInline
+              preload="metadata"
+              onError={(e) => {
+                // Fallback to icon if video fails
+                e.currentTarget.style.display = 'none';
+                const parent = e.currentTarget.parentElement;
+                if (parent) {
+                  parent.innerHTML = `
+                    <div class="w-full h-16 md:h-20 lg:h-32 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 flex flex-col items-center justify-center gap-1">
+                      <svg class="w-8 h-8 md:w-10 md:h-10 text-purple-500 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+                      </svg>
+                      <span class="text-[8px] md:text-[9px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide">Video</span>
+                    </div>
+                  `;
+                }
+              }}
+            />
+          </div>
+        );
+      }
+    }
+
+    // Fallback: Icon-based thumbnails (when preview URL not available yet or for other file types)
     
     // PDF thumbnail
     if (lowerUrl.endsWith(".pdf")) {

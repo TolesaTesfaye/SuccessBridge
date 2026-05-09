@@ -94,6 +94,76 @@ export const deleteResource = async (req: Request, res: Response, next: NextFunc
   }
 }
 
+export const getResourcePreview = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.params
+    
+    // Get resource from database
+    const resource = await ResourceService.getResourceById(id)
+    if (!resource) {
+      throw new AppError(404, 'Resource not found')
+    }
+
+    const fileUrl = resource.fileUrl
+
+    console.log('🖼️ Preview request for resource:', {
+      id: resource.id,
+      title: resource.title,
+      fileUrl: fileUrl
+    })
+
+    // Check if it's a B2 URL
+    if (fileUrl.includes('backblazeb2.com')) {
+      // Extract the key from the URL
+      let key = '';
+      
+      const urlParts = fileUrl.split('/file/')
+      if (urlParts.length > 1) {
+        const fullPath = urlParts[1]
+        const pathParts = fullPath.split('/')
+        pathParts.shift() // Remove bucket name
+        key = pathParts.join('/')
+      } else {
+        const url = new URL(fileUrl);
+        const pathname = url.pathname;
+        const pathParts = pathname.split('/').filter(p => p);
+        if (pathParts.length > 1) {
+          pathParts.shift();
+          key = pathParts.join('/');
+        }
+      }
+      
+      if (key) {
+        console.log('🔐 Generating signed URL for preview, key:', key)
+        
+        // Import the signed URL function
+        const { getB2SignedUrl } = await import('../middleware/b2Upload.js')
+        
+        // Generate signed URL (valid for 1 hour)
+        const signedUrl = await getB2SignedUrl(key, 3600)
+        
+        console.log('✅ Returning signed URL for preview')
+        return res.json({ success: true, url: signedUrl })
+      } else {
+        console.error('❌ Could not extract key from URL:', fileUrl)
+        throw new AppError(404, 'Invalid file URL format')
+      }
+    }
+    
+    // If not B2, return original URL
+    return res.json({ success: true, url: fileUrl })
+    
+  } catch (error) {
+    console.error('❌ Preview error:', error)
+    
+    if (error instanceof AppError) {
+      return res.status(error.statusCode).json({ success: false, error: error.message })
+    }
+    
+    next(error)
+  }
+}
+
 export const downloadResource = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params
