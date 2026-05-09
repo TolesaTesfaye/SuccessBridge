@@ -16,7 +16,8 @@ export const B2_BUCKET_ID = process.env.B2_BUCKET_ID || '';
 // Get public URL for files
 export function getB2PublicUrl(filename: string): string {
   const bucketName = B2_BUCKET;
+  const bucketIdPrefix = B2_BUCKET_ID ? B2_BUCKET_ID.substring(0, 4) : 'f004';
+  
   // B2 public URL format: https://f{bucket_id_prefix}.backblazeb2.com/file/{bucket_name}/{filename}
-  // Or use custom domain if configured
-  return `https://f004.backblazeb2.com/file/${bucketName}/${filename}`;
+  return `https://${bucketIdPrefix}.backblazeb2.com/file/${bucketName}/${filename}`;
 }
