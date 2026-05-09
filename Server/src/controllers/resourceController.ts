@@ -114,8 +114,32 @@ export const downloadResource = async (req: Request, res: Response, next: NextFu
 
     // Check if it's a B2/S3 URL (starts with https://)
     if (fileUrl.startsWith('https://') || fileUrl.startsWith('http://')) {
-      console.log('✅ Redirecting to B2 URL:', fileUrl)
-      // Redirect to the B2 URL directly - browser will handle the download
+      // Check if URL contains B2 domain (indicating it's stored in B2)
+      if (fileUrl.includes('backblazeb2.com')) {
+        // Extract the key from the URL
+        // Format: https://f833.backblazeb2.com/file/successbridge-resources/resources/123-file.pdf
+        const urlParts = fileUrl.split('/file/')
+        if (urlParts.length > 1) {
+          const fullPath = urlParts[1] // successbridge-resources/resources/123-file.pdf
+          const pathParts = fullPath.split('/')
+          pathParts.shift() // Remove bucket name
+          const key = pathParts.join('/') // resources/123-file.pdf
+          
+          console.log('🔐 Generating signed URL for private bucket, key:', key)
+          
+          // Import the signed URL function
+          const { getB2SignedUrl } = await import('../middleware/b2Upload.js')
+          
+          // Generate signed URL (valid for 1 hour)
+          const signedUrl = await getB2SignedUrl(key, 3600)
+          
+          console.log('✅ Redirecting to signed URL (valid for 1 hour)')
+          return res.redirect(302, signedUrl)
+        }
+      }
+      
+      // If not B2 or can't extract key, redirect to original URL
+      console.log('✅ Redirecting to original URL:', fileUrl)
       return res.redirect(302, fileUrl)
     }
 

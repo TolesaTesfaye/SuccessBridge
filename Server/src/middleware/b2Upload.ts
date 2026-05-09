@@ -1,10 +1,11 @@
 import multer from 'multer';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
+import { PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { b2Client, B2_BUCKET, B2_BUCKET_ID } from '../config/b2.js';
 import path from 'path';
 import { Request } from 'express';
 
-// Get B2 public URL for a file
+// Get B2 public URL for a file (for public buckets)
 export function getB2PublicUrl(key: string): string {
   const bucketName = B2_BUCKET;
   
@@ -13,6 +14,24 @@ export function getB2PublicUrl(key: string): string {
   
   // B2 public URL format: https://f{bucket_id_prefix}.backblazeb2.com/file/{bucket_name}/{key}
   return `https://f${bucketIdPrefix}.backblazeb2.com/file/${bucketName}/${key}`;
+}
+
+// Get B2 signed URL for a file (for private buckets)
+// Signed URLs work with private buckets and expire after a set time
+export async function getB2SignedUrl(key: string, expiresIn: number = 3600): Promise<string> {
+  const command = new GetObjectCommand({
+    Bucket: B2_BUCKET,
+    Key: key,
+  });
+
+  try {
+    // Generate signed URL that expires in 'expiresIn' seconds (default 1 hour)
+    const signedUrl = await getSignedUrl(b2Client, command, { expiresIn });
+    return signedUrl;
+  } catch (error) {
+    console.error('❌ Failed to generate signed URL:', error);
+    throw new Error(`Failed to generate signed URL: ${error}`);
+  }
 }
 
 // Use memory storage for multer, then manually upload to B2
