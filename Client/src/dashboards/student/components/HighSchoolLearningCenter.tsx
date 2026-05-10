@@ -949,7 +949,6 @@ export const HighSchoolLearningCenter: React.FC<
                 </div>
               </div>
             )}
-            </div>
           ) : (
             <div className="max-w-4xl mx-auto px-4 md:px-8 py-4 md:py-8">
               <div className="flex justify-end mb-4">
