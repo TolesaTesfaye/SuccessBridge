@@ -115,7 +115,7 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
             </div>
 
             {/* Quick Check: Behavior vs Mental Process */}
-            <div className="mt-8 p-6 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-600 mr-4">
+            <div className="mt-8 p-6 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-600">
               <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🤔 Quick Check</h4>
               <ExerciseQuestion 
                 question="True or False: A person's heartbeat increasing when they see someone they love is an example of a mental process."
@@ -130,7 +130,7 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
           </div>
 
           {/* Exercise for Subtopic 1.1 */}
-          <div className="mt-10 p-8 border-t-4 border-pink-600 mr-4">
+          <div className="mt-10 p-8 border-t-4 border-pink-600">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Definition of Psychology</h3>
             <ExerciseQuestion 
               question="Which of the following is an example of a 'mental process' rather than 'behavior'?"
@@ -224,7 +224,7 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
           </div>
 
           {/* Mid-Section Exercise: Applying the Goals */}
-          <div className="mt-8 p-6 bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-600 mr-4">
+          <div className="mt-8 p-6 bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-600">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🎯 Apply Your Knowledge</h4>
             <ExerciseQuestion 
               question="A researcher notices that children who watch violent TV shows tend to be more aggressive on the playground. She then develops a program to reduce violent TV watching. Which TWO goals of psychology is she demonstrating?"
@@ -240,7 +240,7 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
           </div>
 
           {/* Exercise for Subtopic 1.2 */}
-          <div className="mt-10 p-8 border-t-4 border-blue-600 mr-4">
+          <div className="mt-10 p-8 border-t-4 border-blue-600">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Goals of Psychology</h3>
             <ExerciseQuestion 
               question="A psychologist observes that students who study in quiet environments tend to perform better on exams. Based on this, she predicts that students in her new study will also perform better if they study in quiet places. Which goal of psychology is she demonstrating?"
@@ -357,7 +357,7 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
           </div>
 
           {/* Comparison Exercise */}
-          <div className="mt-8 p-6 bg-emerald-50 dark:bg-emerald-900/20 border-l-4 border-emerald-600 mr-4">
+          <div className="mt-8 p-6 bg-emerald-50 dark:bg-emerald-900/20 border-l-4 border-emerald-600">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🔄 Compare and Contrast</h4>
             <ExerciseQuestion 
               question="Which school of psychology would MOST likely agree with this statement: 'We should only study what we can directly observe and measure, not invisible thoughts and feelings'?"
@@ -373,7 +373,7 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
           </div>
 
           {/* Exercise for Subtopic 1.3 */}
-          <div className="mt-10 p-8 border-t-4 border-purple-600 mr-4">
+          <div className="mt-10 p-8 border-t-4 border-purple-600">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Historical Evolution</h3>
             <ExerciseQuestion 
               question="A researcher asks participants to carefully observe and report their own thoughts and feelings while looking at a painting. Which early school of psychology does this research method represent?"
@@ -499,7 +499,7 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
           </div>
 
           {/* Real-World Application Exercise */}
-          <div className="mt-8 p-6 bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-600 mr-4">
+          <div className="mt-8 p-6 bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-600">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🌍 Real-World Application</h4>
             <ExerciseQuestion 
               question="A teenager is struggling with anxiety. A psychologist examines: (1) their brain chemistry, (2) their negative thought patterns, (3) their family's communication style, and (4) cultural pressures from social media. This psychologist is using:"
@@ -515,7 +515,7 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
           </div>
 
           {/* Exercise for Subtopic 1.4 */}
-          <div className="mt-10 p-8 border-t-4 border-emerald-600 mr-4">
+          <div className="mt-10 p-8 border-t-4 border-emerald-600">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Modern Perspectives</h3>
             <ExerciseQuestion 
               question="Dr. Martinez is studying how low levels of serotonin in the brain are related to symptoms of depression. She uses brain imaging technology to observe neurotransmitter activity. Which modern perspective is Dr. Martinez using?"
