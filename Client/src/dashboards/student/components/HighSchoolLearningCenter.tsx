@@ -152,7 +152,7 @@ export const HighSchoolLearningCenter: React.FC<
 
       // Default: Subject introduction
       return (
-        <div className="max-w-4xl mx-auto pl-2 pr-0 md:px-6 py-4 md:py-8">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 py-4 md:py-8">
           <h1 className="text-lg md:text-4xl font-bold text-slate-900 dark:text-white mb-3 md:mb-8">
             {learningSubject} Introduction
           </h1>
@@ -602,13 +602,13 @@ export const HighSchoolLearningCenter: React.FC<
               stream={stream || undefined}
               freeSubjects={freeSubjects}
             >
-              <div className="max-w-4xl mx-auto pl-2 pr-0 md:px-8 py-4 md:py-8">
+              <div className="max-w-4xl mx-auto px-4 md:px-8 py-4 md:py-8">
                 <div className="flex justify-end mb-4">
                   <BookmarkIcon className="w-6 h-6 text-slate-400 hover:text-blue-600 cursor-pointer transition-colors" />
                 </div>
 
                 {!learningContent ? (
-                  <div className="text-center py-12 md:py-20 pl-2 pr-0 md:px-4">
+                  <div className="text-center py-12 md:py-20 px-4 md:px-4">
                     <h2 className="text-lg md:text-2xl font-bold text-slate-900 dark:text-white mb-3 md:mb-4">
                       Content Not Available
                     </h2>
@@ -951,13 +951,13 @@ export const HighSchoolLearningCenter: React.FC<
             )}
             </div>
           ) : (
-            <div className="max-w-4xl mx-auto pl-2 pr-0 md:px-8 py-4 md:py-8">
+            <div className="max-w-4xl mx-auto px-4 md:px-8 py-4 md:py-8">
               <div className="flex justify-end mb-4">
                 <BookmarkIcon className="w-6 h-6 text-slate-400 hover:text-blue-600 cursor-pointer transition-colors" />
               </div>
 
               {!learningContent ? (
-                <div className="text-center py-12 md:py-20 pl-2 pr-0 md:px-4">
+                <div className="text-center py-12 md:py-20 px-4 md:px-4">
                   <h2 className="text-lg md:text-2xl font-bold text-slate-900 dark:text-white mb-3 md:mb-4">
                     Content Not Available
                   </h2>
