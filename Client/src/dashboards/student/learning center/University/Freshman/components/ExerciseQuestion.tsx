@@ -30,18 +30,18 @@ export const ExerciseQuestion: React.FC<ExerciseQuestionProps> = ({
   const isCorrect = selectedAnswer === correctAnswer;
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-      <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
+    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 md:p-4 max-w-5xl mx-auto">
+      <h4 className="font-semibold text-xs md:text-base text-gray-900 dark:text-white mb-2 md:mb-3">
         {question}
       </h4>
 
-      <div className="space-y-2 mb-4">
+      <div className="space-y-1.5 md:space-y-2 mb-3 md:mb-4">
         {options.map((option, index) => (
           <button
             key={index}
             onClick={() => !showResult && setSelectedAnswer(index)}
             disabled={showResult}
-            className={`w-full text-left p-3 rounded-lg border transition-colors ${
+            className={`w-full text-left p-2 md:p-3 rounded-lg border transition-colors text-xs md:text-base ${
               showResult
                 ? index === correctAnswer
                   ? 'bg-green-100 dark:bg-green-900/30 border-green-500 text-green-900 dark:text-green-100'
@@ -54,8 +54,8 @@ export const ExerciseQuestion: React.FC<ExerciseQuestionProps> = ({
             }`}
           >
             <div className="flex items-center">
-              <span className="font-semibold mr-2">{String.fromCharCode(65 + index)}.</span>
-              <span>{option}</span>
+              <span className="font-semibold mr-2 text-xs md:text-sm">{String.fromCharCode(65 + index)}.</span>
+              <span className="text-xs md:text-base">{option}</span>
               {showResult && index === correctAnswer && (
                 <span className="ml-auto text-green-600 dark:text-green-400">✓</span>
               )}
@@ -71,7 +71,7 @@ export const ExerciseQuestion: React.FC<ExerciseQuestionProps> = ({
         <button
           onClick={handleSubmit}
           disabled={selectedAnswer === null}
-          className={`px-4 py-2 rounded font-medium transition-colors ${
+          className={`px-3 md:px-4 py-1.5 md:py-2 rounded font-medium transition-colors text-xs md:text-sm ${
             selectedAnswer === null
               ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
               : 'bg-blue-600 hover:bg-blue-700 text-white'
@@ -81,21 +81,21 @@ export const ExerciseQuestion: React.FC<ExerciseQuestionProps> = ({
         </button>
       ) : (
         <div>
-          <div className={`p-3 rounded-lg mb-3 ${
+          <div className={`p-2 md:p-3 rounded-lg mb-2 md:mb-3 ${
             isCorrect
               ? 'bg-green-100 dark:bg-green-900/30 text-green-900 dark:text-green-100'
               : 'bg-red-100 dark:bg-red-900/30 text-red-900 dark:text-red-100'
           }`}>
-            <p className="font-semibold">
+            <p className="font-semibold text-xs md:text-sm">
               {isCorrect ? '✓ Correct!' : '✗ Incorrect'}
             </p>
             {explanation && (
-              <p className="mt-2 text-sm">{explanation}</p>
+              <p className="mt-1 md:mt-2 text-[10px] md:text-sm">{explanation}</p>
             )}
           </div>
           <button
             onClick={handleReset}
-            className="px-4 py-2 rounded font-medium bg-gray-600 hover:bg-gray-700 text-white transition-colors"
+            className="px-3 md:px-4 py-1.5 md:py-2 rounded font-medium bg-gray-600 hover:bg-gray-700 text-white transition-colors text-xs md:text-sm"
           >
             Try Again
           </button>

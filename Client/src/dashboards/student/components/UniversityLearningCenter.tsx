@@ -110,12 +110,12 @@ export const UniversityLearningCenter: React.FC<
         onNavigateChapter={handleChapterClick}
       />
     ) : (
-      <div className="max-w-4xl mx-auto px-6 py-8">
-        <h1 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 md:mb-8">
+      <div className="max-w-4xl mx-auto pl-2 pr-0 md:px-6 py-4 md:py-8">
+        <h1 className="text-lg md:text-4xl font-bold text-slate-900 dark:text-white mb-3 md:mb-8">
           {learningSubject} Introduction
         </h1>
-        <div className="prose prose-slate dark:prose-invert max-w-none mb-8 md:mb-12">
-          <p className="text-sm md:text-lg text-slate-700 dark:text-slate-300 mb-4 md:mb-6">
+        <div className="prose prose-slate dark:prose-invert max-w-none mb-6 md:mb-12">
+          <p className="text-xs md:text-lg text-slate-700 dark:text-slate-300 mb-3 md:mb-6">
             Welcome to {learningSubject}. Select a chapter from the sidebar to
             begin learning.
           </p>

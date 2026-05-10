@@ -152,12 +152,12 @@ export const HighSchoolLearningCenter: React.FC<
 
       // Default: Subject introduction
       return (
-        <div className="max-w-4xl mx-auto px-6 py-8">
-          <h1 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 md:mb-8">
+        <div className="max-w-4xl mx-auto pl-2 pr-0 md:px-6 py-4 md:py-8">
+          <h1 className="text-lg md:text-4xl font-bold text-slate-900 dark:text-white mb-3 md:mb-8">
             {learningSubject} Introduction
           </h1>
-          <div className="prose prose-slate dark:prose-invert max-w-none mb-8 md:mb-12">
-            <p className="text-sm md:text-lg text-slate-700 dark:text-slate-300 mb-4 md:mb-6">
+          <div className="prose prose-slate dark:prose-invert max-w-none mb-6 md:mb-12">
+            <p className="text-xs md:text-lg text-slate-700 dark:text-slate-300 mb-3 md:mb-6">
               Welcome to {learningSubject}. Select a chapter from the sidebar to
               begin learning.
             </p>
@@ -416,15 +416,15 @@ export const HighSchoolLearningCenter: React.FC<
   const renderTopicContent = (content: string | string[]) => {
     const paragraphs = Array.isArray(content) ? content : [content];
     return paragraphs.map((paragraph, index) => (
-      <div key={index} className="mb-3 md:mb-4">
+      <div key={index} className="mb-2 md:mb-4">
         {paragraph.startsWith("- **") || paragraph.startsWith("• ") ? (
           <div
-            className="ml-4 text-sm md:text-base text-slate-700 dark:text-slate-300"
+            className="ml-4 text-xs md:text-base text-slate-700 dark:text-slate-300"
             dangerouslySetInnerHTML={{ __html: paragraph }}
           />
         ) : paragraph.includes("**") ? (
           <p
-            className="text-sm md:text-base text-slate-700 dark:text-slate-300"
+            className="text-xs md:text-base text-slate-700 dark:text-slate-300"
             dangerouslySetInnerHTML={{
               __html: paragraph.replace(
                 /\*\*(.*?)\*\*/g,
@@ -433,7 +433,7 @@ export const HighSchoolLearningCenter: React.FC<
             }}
           />
         ) : (
-          <p className="text-sm md:text-base text-slate-700 dark:text-slate-300">
+          <p className="text-xs md:text-base text-slate-700 dark:text-slate-300">
             {paragraph}
           </p>
         )}
@@ -602,17 +602,17 @@ export const HighSchoolLearningCenter: React.FC<
               stream={stream || undefined}
               freeSubjects={freeSubjects}
             >
-              <div className="max-w-4xl mx-auto p-4 md:p-8">
+              <div className="max-w-4xl mx-auto pl-2 pr-0 md:px-8 py-4 md:py-8">
                 <div className="flex justify-end mb-4">
                   <BookmarkIcon className="w-6 h-6 text-slate-400 hover:text-blue-600 cursor-pointer transition-colors" />
                 </div>
 
                 {!learningContent ? (
-                  <div className="text-center py-12 md:py-20 px-4">
-                    <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white mb-3 md:mb-4">
+                  <div className="text-center py-12 md:py-20 pl-2 pr-0 md:px-4">
+                    <h2 className="text-lg md:text-2xl font-bold text-slate-900 dark:text-white mb-3 md:mb-4">
                       Content Not Available
                     </h2>
-                    <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mb-4 md:mb-6">
+                    <p className="text-xs md:text-base text-slate-600 dark:text-slate-400 mb-3 md:mb-6">
                       Content for {learningSubject} in{" "}
                       {grade.replace("_", " ").toUpperCase()} is being prepared.
                     </p>
@@ -625,21 +625,21 @@ export const HighSchoolLearningCenter: React.FC<
                   </div>
                 ) : !selectedChapter ? (
                   <div>
-                    <h1 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 md:mb-8">
+                    <h1 className="text-lg md:text-4xl font-bold text-slate-900 dark:text-white mb-3 md:mb-8">
                       {learningContent.title || `${learningSubject} Introduction`}
                     </h1>
 
-                    <div className="prose prose-slate dark:prose-invert max-w-none mb-8 md:mb-12">
-                      <p className="text-sm md:text-lg text-slate-700 dark:text-slate-300 mb-4 md:mb-6">
+                    <div className="prose prose-slate dark:prose-invert max-w-none mb-6 md:mb-12">
+                      <p className="text-xs md:text-lg text-slate-700 dark:text-slate-300 mb-3 md:mb-6">
                         {learningContent.introduction ||
                           `${learningSubject} is an essential high school subject.`}
                       </p>
 
-                      <h2 className="text-lg md:text-2xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-3 md:mb-4">
+                      <h2 className="text-base md:text-2xl font-bold text-slate-900 dark:text-white mt-4 md:mt-8 mb-2 md:mb-4">
                         Course Coverage
                       </h2>
 
-                      <p className="text-sm md:text-base text-slate-700 dark:text-slate-300 mb-3 md:mb-4">
+                      <p className="text-xs md:text-base text-slate-700 dark:text-slate-300 mb-2 md:mb-4">
                         {grade.replace("_", " ").toUpperCase()}
                         {stream
                           ? ` • ${stream.charAt(0).toUpperCase()}${stream.slice(1)} stream`
@@ -651,7 +651,7 @@ export const HighSchoolLearningCenter: React.FC<
                           {learningContent.chapters.map((chapter: any) => (
                             <li
                               key={chapter.id}
-                              className="text-sm md:text-base text-slate-700 dark:text-slate-300"
+                              className="text-xs md:text-base text-slate-700 dark:text-slate-300"
                             >
                               • {chapter.title}
                             </li>
@@ -688,11 +688,11 @@ export const HighSchoolLearningCenter: React.FC<
                   </div>
                 ) : currentTopic ? (
                   <div>
-                    <h1 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 md:mb-8">
+                    <h1 className="text-lg md:text-4xl font-bold text-slate-900 dark:text-white mb-3 md:mb-8">
                       {currentTopic.title}
                     </h1>
 
-                    <div className="prose prose-slate dark:prose-invert max-w-none mb-8 md:mb-12 text-sm md:text-base">
+                    <div className="prose prose-slate dark:prose-invert max-w-none mb-6 md:mb-12 text-xs md:text-base">
                       {renderTopicContent(currentTopic.content)}
                     </div>
 
@@ -724,12 +724,12 @@ export const HighSchoolLearningCenter: React.FC<
                   </div>
                 ) : (
                   <div>
-                    <h1 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 md:mb-8">
+                    <h1 className="text-lg md:text-4xl font-bold text-slate-900 dark:text-white mb-3 md:mb-8">
                       {currentChapter?.title}
                     </h1>
 
-                    <div className="prose prose-slate dark:prose-invert max-w-none mb-8 md:mb-12">
-                      <p className="text-sm md:text-lg text-slate-700 dark:text-slate-300 mb-4 md:mb-6">
+                    <div className="prose prose-slate dark:prose-invert max-w-none mb-6 md:mb-12">
+                      <p className="text-xs md:text-lg text-slate-700 dark:text-slate-300 mb-3 md:mb-6">
                         This chapter covers the following topics:
                       </p>
 
@@ -738,7 +738,7 @@ export const HighSchoolLearningCenter: React.FC<
                           <li key={topic.id}>
                             <button
                               onClick={() => setSelectedTopic(topic.id)}
-                              className="text-sm md:text-base text-blue-600 hover:underline font-medium"
+                              className="text-xs md:text-base text-blue-600 hover:underline font-medium"
                             >
                               {topic.title}
                             </button>
@@ -863,11 +863,11 @@ export const HighSchoolLearningCenter: React.FC<
               </div>
             ) : currentTopic ? (
               <div>
-                <h1 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 md:mb-8">
+                <h1 className="text-lg md:text-4xl font-bold text-slate-900 dark:text-white mb-3 md:mb-8">
                   {currentTopic.title}
                 </h1>
 
-                <div className="prose prose-slate dark:prose-invert max-w-none mb-8 md:mb-12 text-sm md:text-base">
+                <div className="prose prose-slate dark:prose-invert max-w-none mb-6 md:mb-12 text-xs md:text-base">
                   {renderTopicContent(currentTopic.content)}
                 </div>
 
@@ -899,12 +899,12 @@ export const HighSchoolLearningCenter: React.FC<
               </div>
             ) : (
               <div>
-                <h1 className="text-2xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4 md:mb-8">
+                <h1 className="text-lg md:text-4xl font-bold text-slate-900 dark:text-white mb-3 md:mb-8">
                   {currentChapter?.title}
                 </h1>
 
-                <div className="prose prose-slate dark:prose-invert max-w-none mb-8 md:mb-12">
-                  <p className="text-sm md:text-lg text-slate-700 dark:text-slate-300 mb-4 md:mb-6">
+                <div className="prose prose-slate dark:prose-invert max-w-none mb-6 md:mb-12">
+                  <p className="text-xs md:text-lg text-slate-700 dark:text-slate-300 mb-3 md:mb-6">
                     This chapter covers the following topics:
                   </p>
 
@@ -913,7 +913,181 @@ export const HighSchoolLearningCenter: React.FC<
                       <li key={topic.id}>
                         <button
                           onClick={() => setSelectedTopic(topic.id)}
-                          className="text-sm md:text-base text-blue-600 hover:underline font-medium"
+                          className="text-xs md:text-base text-blue-600 hover:underline font-medium"
+                        >
+                          {topic.title}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="flex justify-between items-center pt-8 border-t border-slate-200 dark:border-slate-700">
+                  <button
+                    onClick={goToPrevious}
+                    disabled={!canGoPrevious()}
+                    className={`px-6 py-3 rounded text-sm font-medium transition-colors ${
+                      canGoPrevious()
+                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                        : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                    }`}
+                  >
+                    ❮ Previous
+                  </button>
+
+                  <button
+                    onClick={goToNext}
+                    disabled={!canGoNext()}
+                    className={`px-6 py-3 rounded text-sm font-medium transition-colors ${
+                      canGoNext()
+                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                        : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                    }`}
+                  >
+                    Next ❯
+                  </button>
+                </div>
+              </div>
+            )}
+            </div>
+          ) : (
+            <div className="max-w-4xl mx-auto pl-2 pr-0 md:px-8 py-4 md:py-8">
+              <div className="flex justify-end mb-4">
+                <BookmarkIcon className="w-6 h-6 text-slate-400 hover:text-blue-600 cursor-pointer transition-colors" />
+              </div>
+
+              {!learningContent ? (
+                <div className="text-center py-12 md:py-20 pl-2 pr-0 md:px-4">
+                  <h2 className="text-lg md:text-2xl font-bold text-slate-900 dark:text-white mb-3 md:mb-4">
+                    Content Not Available
+                  </h2>
+                  <p className="text-xs md:text-base text-slate-600 dark:text-slate-400 mb-3 md:mb-6">
+                    Content for {learningSubject} in{" "}
+                    {grade.replace("_", " ").toUpperCase()} is being prepared.
+                  </p>
+                  <button
+                    onClick={() => setActiveTab("hub")}
+                    className="px-4 md:px-6 py-2 text-sm md:text-base bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                  >
+                    Go to Resource Hub
+                  </button>
+                </div>
+              ) : !selectedChapter ? (
+                <div>
+                <h1 className="text-lg md:text-4xl font-bold text-slate-900 dark:text-white mb-3 md:mb-8">
+                  {learningContent.title || `${learningSubject} Introduction`}
+                </h1>
+
+                <div className="prose prose-slate dark:prose-invert max-w-none mb-6 md:mb-12">
+                  <p className="text-xs md:text-lg text-slate-700 dark:text-slate-300 mb-3 md:mb-6">
+                    {learningContent.introduction ||
+                      `${learningSubject} is an essential high school subject.`}
+                  </p>
+
+                  <h2 className="text-base md:text-2xl font-bold text-slate-900 dark:text-white mt-4 md:mt-8 mb-2 md:mb-4">
+                    Course Coverage
+                  </h2>
+
+                  <p className="text-xs md:text-base text-slate-700 dark:text-slate-300 mb-2 md:mb-4">
+                    {grade.replace("_", " ").toUpperCase()}
+                    {stream
+                      ? ` • ${stream.charAt(0).toUpperCase()}${stream.slice(1)} stream`
+                      : ""}
+                  </p>
+
+                  {learningContent?.chapters?.length > 0 && (
+                    <ul className="space-y-1 md:space-y-2">
+                      {learningContent.chapters.map((chapter: any) => (
+                        <li
+                          key={chapter.id}
+                          className="text-xs md:text-base text-slate-700 dark:text-slate-300"
+                        >
+                          • {chapter.title}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                <div className="flex justify-between items-center pt-8 border-t border-slate-200 dark:border-slate-700">
+                  <button
+                    onClick={goToPrevious}
+                    disabled={!canGoPrevious()}
+                    className={`px-6 py-3 rounded text-sm font-medium transition-colors ${
+                      canGoPrevious()
+                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                        : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                    }`}
+                  >
+                    ❮ Previous
+                  </button>
+
+                  <button
+                    onClick={goToNext}
+                    disabled={!canGoNext()}
+                    className={`px-6 py-3 rounded text-sm font-medium transition-colors ${
+                      canGoNext()
+                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                        : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                    }`}
+                  >
+                    Next ❯
+                  </button>
+                </div>
+              </div>
+            ) : currentTopic ? (
+              <div>
+                <h1 className="text-lg md:text-4xl font-bold text-slate-900 dark:text-white mb-3 md:mb-8">
+                  {currentTopic.title}
+                </h1>
+
+                <div className="prose prose-slate dark:prose-invert max-w-none mb-6 md:mb-12 text-xs md:text-base">
+                  {renderTopicContent(currentTopic.content)}
+                </div>
+
+                <div className="flex justify-between items-center pt-8 border-t border-slate-200 dark:border-slate-700">
+                  <button
+                    onClick={goToPrevious}
+                    disabled={!canGoPrevious()}
+                    className={`px-6 py-3 rounded text-sm font-medium transition-colors ${
+                      canGoPrevious()
+                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                        : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                    }`}
+                  >
+                    ❮ Previous
+                  </button>
+
+                  <button
+                    onClick={goToNext}
+                    disabled={!canGoNext()}
+                    className={`px-6 py-3 rounded text-sm font-medium transition-colors ${
+                      canGoNext()
+                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                        : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                    }`}
+                  >
+                    Next ❯
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <h1 className="text-lg md:text-4xl font-bold text-slate-900 dark:text-white mb-3 md:mb-8">
+                  {currentChapter?.title}
+                </h1>
+
+                <div className="prose prose-slate dark:prose-invert max-w-none mb-6 md:mb-12">
+                  <p className="text-xs md:text-lg text-slate-700 dark:text-slate-300 mb-3 md:mb-6">
+                    This chapter covers the following topics:
+                  </p>
+
+                  <ul className="space-y-1 md:space-y-2">
+                    {currentChapter?.topics?.map((topic: any) => (
+                      <li key={topic.id}>
+                        <button
+                          onClick={() => setSelectedTopic(topic.id)}
+                          className="text-xs md:text-base text-blue-600 hover:underline font-medium"
                         >
                           {topic.title}
                         </button>

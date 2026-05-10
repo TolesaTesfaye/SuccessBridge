@@ -83,21 +83,21 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-0 md:p-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Progress Header */}
         <div className="bg-white dark:bg-slate-900 p-3 md:p-6 md:rounded-2xl shadow-sm mb-0 md:mb-6">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 md:px-3 md:py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full text-[10px] md:text-sm font-semibold">
+              <span className="px-2 py-0.5 md:px-3 md:py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full text-[10px] md:text-xs font-semibold">
                 Step {currentIdx + 1} of {quiz.questions.length}
               </span>
-              <span className="text-slate-600 dark:text-slate-400 font-medium text-xs hidden md:inline">
+              <span className="text-slate-600 dark:text-slate-400 font-medium text-[10px] md:text-xs hidden md:inline">
                 {quiz.title}
               </span>
             </div>
             <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
               <Timer size={14} className="md:w-[18px] md:h-[18px]" />
-              <span className="font-mono font-bold text-xs md:text-base">{formatTime(timeLeft)}</span>
+              <span className="font-mono font-bold text-xs md:text-sm">{formatTime(timeLeft)}</span>
             </div>
           </div>
           
@@ -114,7 +114,7 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
         <div className="bg-white dark:bg-slate-900 p-4 md:p-12 md:rounded-2xl shadow-sm">
           <div className="space-y-5 md:space-y-8">
             {/* Question */}
-            <h2 className="text-base md:text-3xl font-bold text-slate-800 dark:text-slate-200 leading-tight">
+            <h2 className="text-sm md:text-2xl font-bold text-slate-800 dark:text-slate-200 leading-tight">
               {currentQuestion.text}
             </h2>
 
@@ -129,13 +129,13 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
                       <button
                         key={idx}
                         onClick={() => handleAnswer(option)}
-                        className={`w-full p-3 md:p-5 rounded-lg md:rounded-xl text-left transition-all duration-200 border-2 ${
+                        className={`w-full p-2.5 md:p-5 rounded-lg md:rounded-xl text-left transition-all duration-200 border-2 ${
                           isSelected
                             ? 'bg-slate-800 dark:bg-slate-200 border-slate-800 dark:border-slate-200 text-white dark:text-slate-900'
                             : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600'
                         }`}
                       >
-                        <span className="text-sm md:text-lg font-medium">{option}</span>
+                        <span className="text-xs md:text-base font-medium">{option}</span>
                       </button>
                     )
                   })}
@@ -145,7 +145,7 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
               {currentQuestion.type === 'short_answer' && (
                 <input
                   type="text"
-                  className="w-full p-3 md:p-5 rounded-lg md:rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 focus:border-slate-400 dark:focus:border-slate-500 outline-none text-sm md:text-lg text-slate-900 dark:text-white transition-colors"
+                  className="w-full p-2.5 md:p-5 rounded-lg md:rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 focus:border-slate-400 dark:focus:border-slate-500 outline-none text-xs md:text-base text-slate-900 dark:text-white transition-colors"
                   placeholder="Type your answer here..."
                   value={answers[currentQuestion.id] || ''}
                   onChange={(e) => handleAnswer(e.target.value)}
@@ -154,7 +154,7 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
 
               {currentQuestion.type === 'essay' && (
                 <textarea
-                  className="w-full p-3 md:p-5 rounded-lg md:rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 focus:border-slate-400 dark:focus:border-slate-500 outline-none text-sm md:text-lg text-slate-900 dark:text-white transition-colors min-h-[150px] md:min-h-[200px] resize-none"
+                  className="w-full p-2.5 md:p-5 rounded-lg md:rounded-xl bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 focus:border-slate-400 dark:focus:border-slate-500 outline-none text-xs md:text-base text-slate-900 dark:text-white transition-colors min-h-[120px] md:min-h-[200px] resize-none"
                   placeholder="Share your detailed thoughts here..."
                   value={answers[currentQuestion.id] || ''}
                   onChange={(e) => handleAnswer(e.target.value)}
@@ -167,10 +167,10 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
               <button
                 onClick={handleNext}
                 disabled={!answers[currentQuestion.id]}
-                className="px-5 py-2.5 md:px-8 md:py-3 bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900 rounded-lg md:rounded-xl font-semibold text-sm md:text-base flex items-center gap-1.5 md:gap-2 hover:bg-slate-700 dark:hover:bg-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                className="px-4 py-2 md:px-8 md:py-3 bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900 rounded-lg md:rounded-xl font-semibold text-xs md:text-sm flex items-center gap-1.5 md:gap-2 hover:bg-slate-700 dark:hover:bg-slate-300 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
               >
                 {currentIdx === quiz.questions.length - 1 ? 'Submit Quiz' : 'Next Question'}
-                <ChevronRight size={16} className="md:w-5 md:h-5" />
+                <ChevronRight size={14} className="md:w-5 md:h-5" />
               </button>
             </div>
           </div>
@@ -180,14 +180,14 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
       {/* Confirmation Modal */}
       {showConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-slate-900 max-w-md w-full p-6 md:p-8 rounded-xl md:rounded-2xl shadow-2xl">
-            <div className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-full mx-auto mb-3 md:mb-4">
-              <AlertCircle size={24} className="md:w-8 md:h-8" />
+          <div className="bg-white dark:bg-slate-900 max-w-md w-full p-5 md:p-8 rounded-xl md:rounded-2xl shadow-2xl">
+            <div className="flex items-center justify-center w-10 h-10 md:w-16 md:h-16 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-full mx-auto mb-2 md:mb-4">
+              <AlertCircle size={20} className="md:w-8 md:h-8" />
             </div>
-            <h3 className="text-lg md:text-xl font-bold text-slate-900 dark:text-white text-center mb-2">
+            <h3 className="text-base md:text-xl font-bold text-slate-900 dark:text-white text-center mb-2">
               Incomplete Quiz
             </h3>
-            <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 text-center mb-5 md:mb-6">
+            <p className="text-xs md:text-base text-slate-600 dark:text-slate-400 text-center mb-4 md:mb-6">
               You've answered {Object.keys(answers).length} of {quiz.questions.length} questions. 
               Submit anyway?
             </p>
@@ -195,14 +195,14 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
               <Button 
                 variant="secondary" 
                 onClick={() => setShowConfirm(false)} 
-                className="flex-1 text-sm md:text-base py-2 md:py-2.5"
+                className="flex-1 text-xs md:text-sm py-2 md:py-2.5"
               >
                 Continue Quiz
               </Button>
               <Button 
                 variant="primary" 
                 onClick={() => calculateAndSubmit()} 
-                className="flex-1 bg-slate-800 hover:bg-slate-700 text-sm md:text-base py-2 md:py-2.5"
+                className="flex-1 bg-slate-800 hover:bg-slate-700 text-xs md:text-sm py-2 md:py-2.5"
               >
                 Submit Now
               </Button>

@@ -34,10 +34,10 @@ const Chapter2: React.FC<Chapter2Props> = ({ selectedSubtopic }) => {
         
         {/* Section 2.1: Basics */}
         <section id="subtopic-2.1" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-pink-600 pl-4">
+          <h2 className="text-base md:text-3xl font-bold text-slate-900 dark:text-white mb-3 md:mb-6 border-l-4 border-pink-600 pl-2 md:pl-4">
             2.1. Basics of Human Development
           </h2>
-          <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed mb-6">
+          <p className="text-xs md:text-lg text-slate-700 dark:text-slate-300 leading-relaxed mb-3 md:mb-6">
             Development refers to the pattern of movement or change that begins at conception and continues through the human life span. 
             It is a <span className="font-bold text-pink-600">lifelong process</span> that is multi-dimensional, multi-directional, plastic, multidisciplinary, and contextual.
           </p>
@@ -55,7 +55,7 @@ const Chapter2: React.FC<Chapter2Props> = ({ selectedSubtopic }) => {
 
         {/* Section 2.2: Principles */}
         <section id="subtopic-2.2" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-pink-600 pl-4">
+          <h2 className="text-base md:text-3xl font-bold text-slate-900 dark:text-white mb-3 md:mb-6 border-l-4 border-pink-600 pl-2 md:pl-4">
             2.2. Principles of Development
           </h2>
           <div className="space-y-4">
@@ -80,7 +80,7 @@ const Chapter2: React.FC<Chapter2Props> = ({ selectedSubtopic }) => {
 
         {/* Section 2.3: Aspects */}
         <section id="subtopic-2.3" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-pink-600 pl-4">
+          <h2 className="text-base md:text-3xl font-bold text-slate-900 dark:text-white mb-3 md:mb-6 border-l-4 border-pink-600 pl-2 md:pl-4">
             2.3. Aspects of Development
           </h2>
           <div className="grid md:grid-cols-3 gap-6">
@@ -104,7 +104,7 @@ const Chapter2: React.FC<Chapter2Props> = ({ selectedSubtopic }) => {
 
         {/* Section 2.4: Theories */}
         <section id="subtopic-2.4" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-pink-600 pl-4">
+          <h2 className="text-base md:text-3xl font-bold text-slate-900 dark:text-white mb-3 md:mb-6 border-l-4 border-pink-600 pl-2 md:pl-4">
             2.4. Theories of Development
           </h2>
           <div className="p-8 border-t-4 border-slate-700">

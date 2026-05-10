@@ -21,56 +21,56 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <div className="relative mb-12 px-4 md:px-8 py-8">
-        <span className="inline-block px-4 py-1.5 bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 text-xs font-bold tracking-widest uppercase mb-4">
+      <div className="relative mb-6 md:mb-12 px-4 md:px-8 py-4 md:py-8">
+        <span className="inline-block px-3 md:px-4 py-1 md:py-1.5 bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 text-[10px] md:text-xs font-bold tracking-widest uppercase mb-2 md:mb-4">
           Chapter 1
         </span>
-        <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white leading-tight mb-6 tracking-tight">
+        <h1 className="text-xl md:text-5xl font-black text-slate-900 dark:text-white leading-tight mb-3 md:mb-6 tracking-tight">
           ESSENCE OF PSYCHOLOGY
         </h1>
-        <div className="h-1.5 w-24 bg-gradient-to-r from-pink-600 to-purple-600" />
-        <p className="mt-6 text-lg text-slate-600 dark:text-slate-400">
+        <div className="h-1 md:h-1.5 w-16 md:w-24 bg-gradient-to-r from-pink-600 to-purple-600" />
+        <p className="mt-3 md:mt-6 text-xs md:text-lg text-slate-600 dark:text-slate-400">
           Welcome to the fascinating world of Psychology! In this chapter, you'll discover what psychology is, its goals, historical development, and modern perspectives.
         </p>
       </div>
 
-      <div className="space-y-16 pb-20 px-4 md:px-8">
+      <div className="space-y-8 md:space-y-16 pb-10 md:pb-20 px-4 md:px-8">
         
         {/* SUBTOPIC 1.1: Definition of Psychology */}
         <section id="subtopic-1.1" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-pink-600 pl-4">
+          <h2 className="text-base md:text-3xl font-bold text-slate-900 dark:text-white mb-3 md:mb-6 border-l-4 border-pink-600 pl-2 md:pl-4">
             1.1. Definition of Psychology and Related Concepts
           </h2>
           
-          <div className="space-y-6">
-            <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed">
+          <div className="space-y-3 md:space-y-6">
+            <p className="text-xs md:text-lg text-slate-700 dark:text-slate-300 leading-relaxed">
               <strong className="text-pink-600 dark:text-pink-400">Psychology</strong> is the <strong>scientific study of behavior and mental processes</strong>. 
               The word "psychology" comes from two Greek words:
             </p>
 
-            <div className="grid md:grid-cols-2 gap-4 my-6">
-              <div className="p-4 border-l-4 border-pink-500">
-                <p className="font-bold text-slate-900 dark:text-white">Psyche (ψυχή)</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Meaning: Soul, Mind, or Spirit</p>
+            <div className="grid md:grid-cols-2 gap-2 md:gap-4 my-3 md:my-6">
+              <div className="p-2 md:p-4 border-l-4 border-pink-500">
+                <p className="font-bold text-xs md:text-base text-slate-900 dark:text-white">Psyche (ψυχή)</p>
+                <p className="text-[10px] md:text-sm text-slate-600 dark:text-slate-400">Meaning: Soul, Mind, or Spirit</p>
               </div>
-              <div className="p-4 border-l-4 border-blue-500">
-                <p className="font-bold text-slate-900 dark:text-white">Logos (λόγος)</p>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Meaning: Study or Knowledge</p>
+              <div className="p-2 md:p-4 border-l-4 border-blue-500">
+                <p className="font-bold text-xs md:text-base text-slate-900 dark:text-white">Logos (λόγος)</p>
+                <p className="text-[10px] md:text-sm text-slate-600 dark:text-slate-400">Meaning: Study or Knowledge</p>
               </div>
             </div>
 
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">Key Components of Psychology</h3>
+            <h3 className="text-sm md:text-xl font-bold text-slate-900 dark:text-white mt-4 md:mt-8 mb-2 md:mb-4">Key Components of Psychology</h3>
             
-            <div className="space-y-4">
-              <div className="p-6 border-l-4 border-blue-600">
-                <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-2">1. Behavior</h4>
-                <p className="text-slate-600 dark:text-slate-400 mb-3">
+            <div className="space-y-2 md:space-y-4">
+              <div className="p-3 md:p-6 border-l-4 border-blue-600">
+                <h4 className="font-bold text-xs md:text-lg text-slate-900 dark:text-white mb-1 md:mb-2">1. Behavior</h4>
+                <p className="text-xs md:text-base text-slate-600 dark:text-slate-400 mb-2 md:mb-3">
                   Behavior refers to <strong>observable actions</strong> that can be measured and recorded systematically. 
                   This includes anything we can see, hear, or measure directly.
                 </p>
-                <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded">
-                  <p className="text-sm font-semibold text-blue-900 dark:text-blue-300">Examples:</p>
-                  <ul className="text-sm text-slate-700 dark:text-slate-300 list-disc list-inside mt-1">
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-2 md:p-3 rounded">
+                  <p className="text-[10px] md:text-sm font-semibold text-blue-900 dark:text-blue-300">Examples:</p>
+                  <ul className="text-[10px] md:text-sm text-slate-700 dark:text-slate-300 list-disc list-inside mt-1">
                     <li>Walking, talking, eating</li>
                     <li>Facial expressions and body language</li>
                     <li>Performance on tests or tasks</li>
@@ -79,15 +79,15 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
                 </div>
               </div>
 
-              <div className="p-6 border-l-4 border-purple-600">
-                <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-2">2. Mental Processes</h4>
-                <p className="text-slate-600 dark:text-slate-400 mb-3">
+              <div className="p-3 md:p-6 border-l-4 border-purple-600">
+                <h4 className="font-bold text-xs md:text-lg text-slate-900 dark:text-white mb-1 md:mb-2">2. Mental Processes</h4>
+                <p className="text-xs md:text-base text-slate-600 dark:text-slate-400 mb-2 md:mb-3">
                   Mental processes are <strong>internal, subjective experiences</strong> that cannot be directly observed. 
                   These include thoughts, feelings, dreams, perceptions, and memories.
                 </p>
-                <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded">
-                  <p className="text-sm font-semibold text-purple-900 dark:text-purple-300">Examples:</p>
-                  <ul className="text-sm text-slate-700 dark:text-slate-300 list-disc list-inside mt-1">
+                <div className="bg-purple-50 dark:bg-purple-900/20 p-2 md:p-3 rounded">
+                  <p className="text-[10px] md:text-sm font-semibold text-purple-900 dark:text-purple-300">Examples:</p>
+                  <ul className="text-[10px] md:text-sm text-slate-700 dark:text-slate-300 list-disc list-inside mt-1">
                     <li>Thinking and problem-solving</li>
                     <li>Emotions and feelings</li>
                     <li>Memories and imagination</li>
@@ -96,8 +96,8 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
                 </div>
               </div>
 
-              <div className="p-6 border-l-4 border-emerald-600">
-                <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-2">3. Scientific Method</h4>
+              <div className="p-3 md:p-6 border-l-4 border-emerald-600">
+                <h4 className="font-bold text-xs md:text-lg text-slate-900 dark:text-white mb-1 md:mb-2">3. Scientific Method</h4>
                 <p className="text-slate-600 dark:text-slate-400 mb-3">
                   Psychology uses <strong>empirical research</strong> and systematic observation to understand human behavior objectively. 
                   This distinguishes psychology from philosophy or common sense.
@@ -115,7 +115,7 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
             </div>
 
             {/* Quick Check: Behavior vs Mental Process */}
-            <div className="mt-8 p-6 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-600">
+            <div className="mt-8 p-6 bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-600 mr-4">
               <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🤔 Quick Check</h4>
               <ExerciseQuestion 
                 question="True or False: A person's heartbeat increasing when they see someone they love is an example of a mental process."
@@ -130,7 +130,7 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
           </div>
 
           {/* Exercise for Subtopic 1.1 */}
-          <div className="mt-10 p-8 border-t-4 border-pink-600">
+          <div className="mt-10 p-8 border-t-4 border-pink-600 mr-4">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Definition of Psychology</h3>
             <ExerciseQuestion 
               question="Which of the following is an example of a 'mental process' rather than 'behavior'?"
@@ -148,11 +148,11 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
 
         {/* SUBTOPIC 1.2: Goals of Psychology */}
         <section id="subtopic-1.2" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-pink-600 pl-4">
+          <h2 className="text-base md:text-3xl font-bold text-slate-900 dark:text-white mb-3 md:mb-6 border-l-4 border-pink-600 pl-2 md:pl-4">
             1.2. The Four Goals of Psychology
           </h2>
 
-          <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed mb-8">
+          <p className="text-xs md:text-lg text-slate-700 dark:text-slate-300 leading-relaxed mb-4 md:mb-8">
             Psychology has <strong>four main goals</strong> that guide research and practice. These goals help psychologists understand, predict, and improve human behavior and mental processes.
           </p>
 
@@ -224,7 +224,7 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
           </div>
 
           {/* Mid-Section Exercise: Applying the Goals */}
-          <div className="mt-8 p-6 bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-600">
+          <div className="mt-8 p-6 bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-600 mr-4">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🎯 Apply Your Knowledge</h4>
             <ExerciseQuestion 
               question="A researcher notices that children who watch violent TV shows tend to be more aggressive on the playground. She then develops a program to reduce violent TV watching. Which TWO goals of psychology is she demonstrating?"
@@ -240,7 +240,7 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
           </div>
 
           {/* Exercise for Subtopic 1.2 */}
-          <div className="mt-10 p-8 border-t-4 border-blue-600">
+          <div className="mt-10 p-8 border-t-4 border-blue-600 mr-4">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Goals of Psychology</h3>
             <ExerciseQuestion 
               question="A psychologist observes that students who study in quiet environments tend to perform better on exams. Based on this, she predicts that students in her new study will also perform better if they study in quiet places. Which goal of psychology is she demonstrating?"
@@ -258,7 +258,7 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
 
         {/* SUBTOPIC 1.3: Historical Evolution */}
         <section id="subtopic-1.3" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-pink-600 pl-4">
+          <h2 className="text-base md:text-3xl font-bold text-slate-900 dark:text-white mb-3 md:mb-6 border-l-4 border-pink-600 pl-2 md:pl-4">
             1.3. Historical Evolution of Psychology
           </h2>
 
@@ -357,7 +357,7 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
           </div>
 
           {/* Comparison Exercise */}
-          <div className="mt-8 p-6 bg-emerald-50 dark:bg-emerald-900/20 border-l-4 border-emerald-600">
+          <div className="mt-8 p-6 bg-emerald-50 dark:bg-emerald-900/20 border-l-4 border-emerald-600 mr-4">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🔄 Compare and Contrast</h4>
             <ExerciseQuestion 
               question="Which school of psychology would MOST likely agree with this statement: 'We should only study what we can directly observe and measure, not invisible thoughts and feelings'?"
@@ -373,7 +373,7 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
           </div>
 
           {/* Exercise for Subtopic 1.3 */}
-          <div className="mt-10 p-8 border-t-4 border-purple-600">
+          <div className="mt-10 p-8 border-t-4 border-purple-600 mr-4">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Historical Evolution</h3>
             <ExerciseQuestion 
               question="A researcher asks participants to carefully observe and report their own thoughts and feelings while looking at a painting. Which early school of psychology does this research method represent?"
@@ -391,7 +391,7 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
 
         {/* SUBTOPIC 1.4: Modern Perspectives */}
         <section id="subtopic-1.4" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-pink-600 pl-4">
+          <h2 className="text-base md:text-3xl font-bold text-slate-900 dark:text-white mb-3 md:mb-6 border-l-4 border-pink-600 pl-2 md:pl-4">
             1.4. Modern Perspectives in Psychology
           </h2>
 
@@ -499,7 +499,7 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
           </div>
 
           {/* Real-World Application Exercise */}
-          <div className="mt-8 p-6 bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-600">
+          <div className="mt-8 p-6 bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-600 mr-4">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🌍 Real-World Application</h4>
             <ExerciseQuestion 
               question="A teenager is struggling with anxiety. A psychologist examines: (1) their brain chemistry, (2) their negative thought patterns, (3) their family's communication style, and (4) cultural pressures from social media. This psychologist is using:"
@@ -515,7 +515,7 @@ const Chapter1: React.FC<Chapter1Props> = ({ selectedSubtopic, onNavigateChapter
           </div>
 
           {/* Exercise for Subtopic 1.4 */}
-          <div className="mt-10 p-8 border-t-4 border-emerald-600">
+          <div className="mt-10 p-8 border-t-4 border-emerald-600 mr-4">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Modern Perspectives</h3>
             <ExerciseQuestion 
               question="Dr. Martinez is studying how low levels of serotonin in the brain are related to symptoms of depression. She uses brain imaging technology to observe neurotransmitter activity. Which modern perspective is Dr. Martinez using?"
