@@ -362,19 +362,35 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     setIsOpening(true);
 
     try {
-      // Use the download endpoint which will redirect to the signed URL
+      // Use the preview endpoint to get signed URL for viewing
       const baseUrl =
         import.meta.env.VITE_API_URL || 
         (window.location.hostname === 'localhost' 
           ? "http://localhost:5000/api"
           : "https://successbridge-tolesa-api.onrender.com/api");
-      const downloadUrl = `${baseUrl}/resources/${resource.id}/download`;
+      const previewUrl = `${baseUrl}/resources/${resource.id}/preview`;
 
-      console.log("Opening resource:", downloadUrl);
-      console.log("Environment API URL:", import.meta.env.VITE_API_URL);
+      console.log("Opening resource for preview:", previewUrl);
 
-      // Open in new tab - browser will follow the redirect
-      window.open(downloadUrl, "_blank", "noopener,noreferrer");
+      // Fetch the signed URL for preview
+      const response = await fetch(previewUrl, {
+        headers: {
+          'Accept': 'application/json',
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Preview failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (!data.success || !data.url) {
+        throw new Error('Invalid response from server');
+      }
+
+      // Open the signed URL in new tab for viewing
+      window.open(data.url, "_blank", "noopener,noreferrer");
       
       toast.success("Opening file in new tab...");
     } catch (error) {

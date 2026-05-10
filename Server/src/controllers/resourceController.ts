@@ -139,8 +139,8 @@ export const getResourcePreview = async (req: Request, res: Response, next: Next
         // Import the signed URL function
         const { getB2SignedUrl } = await import('../middleware/b2Upload.js')
         
-        // Generate signed URL (valid for 1 hour)
-        const signedUrl = await getB2SignedUrl(key, 3600)
+        // Generate signed URL for preview (no force download, valid for 1 hour)
+        const signedUrl = await getB2SignedUrl(key, 3600, false)
         
         console.log('✅ Returning signed URL for preview')
         return res.json({ success: true, url: signedUrl })
