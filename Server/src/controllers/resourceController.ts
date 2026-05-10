@@ -216,8 +216,8 @@ export const downloadResource = async (req: Request, res: Response, next: NextFu
           // Import the signed URL function
           const { getB2SignedUrl } = await import('../middleware/b2Upload.js')
           
-          // Generate signed URL (valid for 1 hour)
-          const signedUrl = await getB2SignedUrl(key, 3600)
+          // Generate signed URL with force download (valid for 1 hour)
+          const signedUrl = await getB2SignedUrl(key, 3600, true)
           
           // If client accepts JSON, return the URL (for fetch API)
           if (acceptsJson) {

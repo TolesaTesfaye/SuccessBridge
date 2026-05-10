@@ -423,19 +423,6 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         throw new Error('Invalid response from server');
       }
 
-      // Now fetch the actual file from the signed URL
-      const fileResponse = await fetch(data.url);
-      
-      if (!fileResponse.ok) {
-        throw new Error(`File fetch failed: ${fileResponse.status}`);
-      }
-
-      // Get the blob from response
-      const blob = await fileResponse.blob();
-      
-      // Create object URL from blob
-      const url = window.URL.createObjectURL(blob);
-      
       // Extract filename from resource
       let filename = resource.fileUrl.split("/").pop() || resource.title;
       if (!filename.includes(".")) {
@@ -443,18 +430,20 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         filename += extension;
       }
       
-      // Create temporary link and trigger download
+      // Use the signed URL directly to trigger download
+      // This avoids CORS issues with B2 bucket
       const link = document.createElement("a");
-      link.href = url;
+      link.href = data.url;
       link.download = filename;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
       document.body.appendChild(link);
       link.click();
       
       // Cleanup
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
 
-      console.log("Download completed:", filename);
+      console.log("Download initiated:", filename);
       toast.success("Download started. Check your browser downloads.");
     } catch (error) {
       console.error("Download failed:", error);

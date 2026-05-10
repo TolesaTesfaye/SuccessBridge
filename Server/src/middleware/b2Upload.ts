@@ -18,11 +18,20 @@ export function getB2PublicUrl(key: string): string {
 
 // Get B2 signed URL for a file (for private buckets)
 // Signed URLs work with private buckets and expire after a set time
-export async function getB2SignedUrl(key: string, expiresIn: number = 3600): Promise<string> {
-  const command = new GetObjectCommand({
+export async function getB2SignedUrl(key: string, expiresIn: number = 3600, forceDownload: boolean = false): Promise<string> {
+  const commandParams: any = {
     Bucket: B2_BUCKET,
     Key: key,
-  });
+  };
+
+  // Add Content-Disposition header to force download
+  if (forceDownload) {
+    // Extract filename from key
+    const filename = key.split('/').pop() || 'download';
+    commandParams.ResponseContentDisposition = `attachment; filename="${filename}"`;
+  }
+
+  const command = new GetObjectCommand(commandParams);
 
   try {
     // Generate signed URL that expires in 'expiresIn' seconds (default 1 hour)
