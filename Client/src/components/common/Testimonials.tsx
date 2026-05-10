@@ -36,64 +36,52 @@ export const Testimonials: React.FC = () => {
         </p>
       </div>
 
-      {/* Mobile: Horizontal Scroll, Desktop: Grid */}
-      <div className="w-full overflow-x-auto md:overflow-x-visible px-3 md:px-4 -mx-3 md:mx-0">
-        <div className="flex md:grid md:grid-cols-3 gap-3 md:gap-4 lg:gap-6 min-w-max md:min-w-0">
-          {testimonials.map((testimonial, index) => (
-            <div
-              key={index}
-              className="group bg-white dark:bg-slate-900 rounded-xl md:rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 active:scale-[0.98] md:hover:scale-[1.02] w-[280px] md:w-auto flex-shrink-0 md:flex-shrink"
-            >
-              {/* Image Section */}
-              <div className="relative h-36 md:h-40 lg:h-48 overflow-hidden bg-slate-100 dark:bg-slate-800">
-                <img
-                  src={testimonial.image}
-                  alt={testimonial.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                
-                {/* Title Overlay on Image */}
-                <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4">
-                  <h3 className="text-sm md:text-base lg:text-lg font-black text-white drop-shadow-lg">
-                    {testimonial.title}
-                  </h3>
-                </div>
-              </div>
-
-              {/* Content Section */}
-              <div className="p-3 md:p-4 lg:p-5">
-                <div className="flex items-start gap-2 mb-2">
-                  <svg className="w-4 h-4 md:w-5 md:h-5 text-blue-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
-                  </svg>
-                  <p className="text-xs md:text-sm lg:text-base text-slate-700 dark:text-slate-300 leading-relaxed flex-1">
-                    {testimonial.quote}
-                  </p>
-                </div>
-                
-                {/* Rating Stars */}
-                <div className="flex gap-0.5 mt-3">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-3 h-3 md:w-4 md:h-4 text-amber-400 fill-current" viewBox="0 0 20 20">
-                      <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                    </svg>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Mobile Scroll Indicator */}
-      <div className="md:hidden flex justify-center gap-1.5 px-3">
-        {testimonials.map((_, index) => (
+      {/* Grid Layout - 3 columns on all screen sizes */}
+      <div className="grid grid-cols-3 md:grid-cols-3 gap-2 md:gap-4 lg:gap-6 px-3 md:px-4">
+        {testimonials.map((testimonial, index) => (
           <div
             key={index}
-            className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"
-          />
+            className="group bg-white dark:bg-slate-900 rounded-xl md:rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 active:scale-[0.98] md:hover:scale-[1.02]"
+          >
+            {/* Image Section */}
+            <div className="relative h-24 md:h-40 lg:h-48 overflow-hidden bg-slate-100 dark:bg-slate-800">
+              <img
+                src={testimonial.image}
+                alt={testimonial.title}
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              
+              {/* Title Overlay on Image */}
+              <div className="absolute bottom-0 left-0 right-0 p-2 md:p-4">
+                <h3 className="text-[10px] md:text-base lg:text-lg font-black text-white drop-shadow-lg leading-tight">
+                  {testimonial.title}
+                </h3>
+              </div>
+            </div>
+
+            {/* Content Section */}
+            <div className="p-2 md:p-4 lg:p-5">
+              <div className="flex items-start gap-1 md:gap-2 mb-2">
+                <svg className="w-3 h-3 md:w-5 md:h-5 text-blue-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/>
+                </svg>
+                <p className="text-[9px] md:text-sm lg:text-base text-slate-700 dark:text-slate-300 leading-relaxed flex-1 line-clamp-3 md:line-clamp-none">
+                  {testimonial.quote}
+                </p>
+              </div>
+              
+              {/* Rating Stars */}
+              <div className="flex gap-0.5 mt-2 md:mt-3">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="w-2.5 h-2.5 md:w-4 md:h-4 text-amber-400 fill-current" viewBox="0 0 20 20">
+                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                  </svg>
+                ))}
+              </div>
+            </div>
+          </div>
         ))}
       </div>
 

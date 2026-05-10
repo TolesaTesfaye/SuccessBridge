@@ -137,16 +137,16 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
       </div>
 
       {/* Action Cards */}
-      <div className="grid grid-cols-3 md:grid-cols-3 gap-1.5 md:gap-4 px-2 md:px-4">
+      <div className="grid grid-cols-3 md:grid-cols-3 gap-2 md:gap-4 px-2 md:px-4">
         {tracks.map((track) => (
           <button
             key={track.title}
             onClick={track.action}
-            className={`text-left p-2 md:p-5 rounded-lg md:rounded-2xl bg-gradient-to-br ${track.color} text-white shadow-lg hover:shadow-xl active:scale-95 transition-all`}
+            className={`text-left p-3 md:p-5 rounded-xl md:rounded-2xl bg-gradient-to-br ${track.color} text-white shadow-lg hover:shadow-xl active:scale-95 transition-all min-h-[140px] md:min-h-[160px] flex flex-col`}
           >
-            <track.icon className="w-3 h-3 md:w-6 md:h-6 mb-1 md:mb-3" />
-            <h3 className="font-bold text-[9px] md:text-lg mb-0.5 md:mb-1 leading-tight">{track.title}</h3>
-            <p className="text-[8px] md:text-sm text-white/90 leading-tight line-clamp-2">{track.subtitle}</p>
+            <track.icon className="w-6 h-6 md:w-6 md:h-6 mb-2 md:mb-3" />
+            <h3 className="font-bold text-xs md:text-lg mb-1 md:mb-1 leading-tight">{track.title}</h3>
+            <p className="text-[10px] md:text-sm text-white/90 leading-relaxed">{track.subtitle}</p>
           </button>
         ))}
       </div>
@@ -164,9 +164,9 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
         </div>
 
         {homeLoading ? (
-          <div className="flex md:grid md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 overflow-x-auto md:overflow-x-visible -mx-3 px-3 md:mx-0 md:px-0 snap-x snap-mandatory md:snap-none scrollbar-hide">
+          <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4">
             {[1, 2, 3].map((n) => (
-              <div key={n} className="min-w-[260px] md:min-w-0 h-[280px] md:h-[350px] rounded-lg md:rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse snap-start" />
+              <div key={n} className="h-[200px] md:h-[350px] rounded-xl md:rounded-xl bg-slate-100 dark:bg-slate-800 animate-pulse" />
             ))}
           </div>
         ) : homeResources.length === 0 ? (
@@ -175,45 +175,23 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
             <p className="text-slate-500 text-xs md:text-base">No resources yet. New content will appear here.</p>
           </div>
         ) : (
-          <>
-            {/* Mobile: Horizontal Scroll */}
-            <div className="flex md:hidden gap-3 overflow-x-auto -mx-3 px-3 snap-x snap-mandatory scrollbar-hide pb-2">
-              {homeResources.slice(0, 6).map((resource: any) => (
-                <div key={resource.id} className="min-w-[260px] snap-start">
-                  <ResourceCard resource={resource} />
-                </div>
-              ))}
-            </div>
-            
-            {/* Desktop: Grid */}
-            <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-              {homeResources.slice(0, 3).map((resource: any) => (
-                <ResourceCard key={resource.id} resource={resource} />
-              ))}
-            </div>
-
-            {/* Mobile Scroll Indicator */}
-            <div className="md:hidden flex justify-center gap-1.5 mt-3">
-              {homeResources.slice(0, 6).map((_, index) => (
-                <div
-                  key={index}
-                  className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-700"
-                />
-              ))}
-            </div>
-          </>
+          <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4">
+            {homeResources.slice(0, 3).map((resource: any) => (
+              <ResourceCard key={resource.id} resource={resource} />
+            ))}
+          </div>
         )}
       </div>
 
       {/* Progress Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 px-2 md:px-4">
+      <div className="grid grid-cols-3 md:grid-cols-3 gap-2 md:gap-4 px-2 md:px-4">
         {achievements.map((achievement, index) => (
           <div key={index} className="border-t border-b border-slate-200 dark:border-slate-800 p-3 md:p-5 bg-white dark:bg-slate-900/60 rounded-lg hover:shadow-lg transition-all">
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-1 md:gap-3 mb-2">
               <achievement.icon className={`w-5 h-5 md:w-6 md:h-6 ${achievement.color}`} />
-              <h4 className="text-[10px] md:text-xs font-semibold uppercase tracking-wide text-slate-500">{achievement.label}</h4>
+              <h4 className="text-[9px] md:text-xs font-semibold uppercase tracking-wide text-slate-500 leading-tight">{achievement.label}</h4>
             </div>
-            <p className="text-xl md:text-3xl font-black text-slate-900 dark:text-white">{achievement.value}</p>
+            <p className="text-base md:text-3xl font-black text-slate-900 dark:text-white">{achievement.value}</p>
           </div>
         ))}
       </div>
