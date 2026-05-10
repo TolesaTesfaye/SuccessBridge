@@ -110,7 +110,7 @@ export const UniversityLearningCenter: React.FC<
         onNavigateChapter={handleChapterClick}
       />
     ) : (
-      <div className="max-w-4xl mx-auto px-4 md:px-6 py-4 md:py-8">
+      <div className="max-w-4xl mx-auto pl-2 pr-0 md:px-6 py-4 md:py-8">
         <h1 className="text-lg md:text-4xl font-bold text-slate-900 dark:text-white mb-3 md:mb-8">
           {learningSubject} Introduction
         </h1>
