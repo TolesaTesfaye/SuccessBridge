@@ -28,7 +28,18 @@ export async function getB2SignedUrl(key: string, expiresIn: number = 3600, forc
   if (forceDownload) {
     // Extract filename from key
     const filename = key.split('/').pop() || 'download';
-    commandParams.ResponseContentDisposition = `attachment; filename="${filename}"`;
+    
+    // Encode filename for mobile compatibility (handle special characters)
+    const encodedFilename = encodeURIComponent(filename);
+    
+    // Use both filename and filename* for better mobile browser support
+    // filename* is RFC 5987 encoding for international characters
+    commandParams.ResponseContentDisposition = `attachment; filename="${filename}"; filename*=UTF-8''${encodedFilename}`;
+  } else {
+    // For preview/open: use inline disposition
+    const filename = key.split('/').pop() || 'file';
+    const encodedFilename = encodeURIComponent(filename);
+    commandParams.ResponseContentDisposition = `inline; filename="${filename}"; filename*=UTF-8''${encodedFilename}`;
   }
 
   const command = new GetObjectCommand(commandParams);

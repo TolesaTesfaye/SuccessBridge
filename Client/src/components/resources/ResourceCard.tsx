@@ -389,8 +389,21 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         throw new Error('Invalid response from server');
       }
 
-      // Open the signed URL in new tab for viewing
-      window.open(data.url, "_blank", "noopener,noreferrer");
+      // Mobile-friendly: Use anchor tag instead of window.open for better compatibility
+      const link = document.createElement("a");
+      link.href = data.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      
+      // For mobile: Add to DOM temporarily to ensure click works
+      link.style.display = "none";
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup after a short delay
+      setTimeout(() => {
+        document.body.removeChild(link);
+      }, 100);
       
       toast.success("Opening file in new tab...");
     } catch (error) {
@@ -446,23 +459,32 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         filename += extension;
       }
       
-      // Use the signed URL directly to trigger download
-      // This avoids CORS issues with B2 bucket
+      // Mobile-friendly download approach
       const link = document.createElement("a");
       link.href = data.url;
       link.download = filename;
-      link.target = "_blank";
-      link.rel = "noopener noreferrer";
+      
+      // For mobile browsers: Some require the link to be in the DOM
+      link.style.display = "none";
       document.body.appendChild(link);
+      
+      // Trigger download
       link.click();
       
-      // Cleanup
-      document.body.removeChild(link);
+      // Cleanup after a short delay to ensure download starts
+      setTimeout(() => {
+        document.body.removeChild(link);
+      }, 100);
 
       console.log("Download initiated:", filename);
       toast.success("Download started. Check your browser downloads.");
     } catch (error) {
       console.error("Download failed:", error);
+      toast.error("Unable to download the file. Please try the Open button instead.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
       toast.error("Unable to download the file. Please try the Open button instead.");
     } finally {
       setIsDownloading(false);
