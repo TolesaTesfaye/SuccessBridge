@@ -127,7 +127,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     if (!resource.fileUrl) {
       // Show default thumbnail based on type when no file URL
       return (
-        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center h-16 md:h-20 lg:h-32">
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center h-24 md:h-32 lg:h-40">
           <div className="text-slate-400 dark:text-slate-600">
             {getResourceIcon(resource.type)}
           </div>
@@ -136,30 +136,33 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     }
 
     const lowerUrl = resource.fileUrl.toLowerCase();
+    
+    // For mobile: Always show icon-based thumbnails (better performance and compatibility)
+    // For desktop: Show actual previews when available
+    const isMobile = window.innerWidth < 768;
 
-    // If we have a preview URL (signed URL for private bucket), show actual preview
-    if (previewUrl) {
-      // PDF preview
+    // If we have a preview URL and NOT on mobile, show actual preview
+    if (previewUrl && !isMobile) {
+      // PDF preview (desktop only)
       if (lowerUrl.endsWith(".pdf")) {
         return (
           <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
             <iframe
               src={`${previewUrl}#page=1&view=fitH`}
               title={resource.title}
-              className="w-full h-16 md:h-20 lg:h-32 bg-white pointer-events-none"
+              className="w-full h-32 lg:h-40 bg-white"
               scrolling="no"
               loading="lazy"
               onError={(e) => {
-                // Fallback to icon if preview fails
                 e.currentTarget.style.display = 'none';
                 const parent = e.currentTarget.parentElement;
                 if (parent) {
                   parent.innerHTML = `
-                    <div class="w-full h-16 md:h-20 lg:h-32 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 flex flex-col items-center justify-center gap-1">
-                      <svg class="w-8 h-8 md:w-10 md:h-10 text-red-500 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                    <div class="w-full h-32 lg:h-40 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 flex flex-col items-center justify-center gap-2">
+                      <svg class="w-12 h-12 text-red-500 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
                       </svg>
-                      <span class="text-[8px] md:text-[9px] font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">PDF</span>
+                      <span class="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">PDF</span>
                     </div>
                   `;
                 }
@@ -169,7 +172,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         );
       }
 
-      // Image preview
+      // Image preview (desktop only)
       if (
         lowerUrl.endsWith(".jpg") ||
         lowerUrl.endsWith(".jpeg") ||
@@ -182,19 +185,18 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
             <img
               src={previewUrl}
               alt={resource.title}
-              className="w-full h-16 md:h-20 lg:h-32 object-cover"
+              className="w-full h-32 lg:h-40 object-cover"
               loading="lazy"
               onError={(e) => {
-                // Fallback to icon if image fails
                 e.currentTarget.style.display = 'none';
                 const parent = e.currentTarget.parentElement;
                 if (parent) {
                   parent.innerHTML = `
-                    <div class="w-full h-16 md:h-20 lg:h-32 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 flex flex-col items-center justify-center gap-1">
-                      <svg class="w-8 h-8 md:w-10 md:h-10 text-blue-500 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                    <div class="w-full h-32 lg:h-40 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 flex flex-col items-center justify-center gap-2">
+                      <svg class="w-12 h-12 text-blue-500 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
                       </svg>
-                      <span class="text-[8px] md:text-[9px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Image</span>
+                      <span class="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Image</span>
                     </div>
                   `;
                 }
@@ -204,49 +206,54 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         );
       }
 
-      // Video preview
+      // Video preview (desktop only - show poster/thumbnail)
       if (resource.type === "video" || lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".webm") || lowerUrl.endsWith(".mov")) {
         return (
-          <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-black/80">
+          <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-black/80 relative">
             <video
               src={previewUrl}
-              className="w-full h-16 md:h-20 lg:h-32 object-cover pointer-events-none"
-              controls={false}
+              className="w-full h-32 lg:h-40 object-cover"
               muted
               playsInline
               preload="metadata"
               onError={(e) => {
-                // Fallback to icon if video fails
                 e.currentTarget.style.display = 'none';
                 const parent = e.currentTarget.parentElement;
                 if (parent) {
                   parent.innerHTML = `
-                    <div class="w-full h-16 md:h-20 lg:h-32 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 flex flex-col items-center justify-center gap-1">
-                      <svg class="w-8 h-8 md:w-10 md:h-10 text-purple-500 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                    <div class="w-full h-32 lg:h-40 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 flex flex-col items-center justify-center gap-2">
+                      <svg class="w-12 h-12 text-purple-500 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
                       </svg>
-                      <span class="text-[8px] md:text-[9px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide">Video</span>
+                      <span class="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide">Video</span>
                     </div>
                   `;
                 }
               }}
             />
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
+                <svg className="w-6 h-6 text-slate-900 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                </svg>
+              </div>
+            </div>
           </div>
         );
       }
     }
 
-    // Fallback: Icon-based thumbnails (when preview URL not available yet or for other file types)
+    // Mobile-friendly icon-based thumbnails (always on mobile, fallback on desktop)
     
     // PDF thumbnail
     if (lowerUrl.endsWith(".pdf")) {
       return (
-        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
-          <svg className="w-8 h-8 md:w-10 md:h-10 text-red-500 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 flex flex-col items-center justify-center h-24 md:h-32 lg:h-40 gap-1.5">
+          <svg className="w-10 h-10 md:w-12 md:h-12 text-red-500 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
             <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
           </svg>
-          <span className="text-[8px] md:text-[9px] font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">
-            PDF
+          <span className="text-[10px] md:text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">
+            PDF Document
           </span>
         </div>
       );
@@ -261,12 +268,12 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       lowerUrl.endsWith(".webp")
     ) {
       return (
-        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
-          <svg className="w-8 h-8 md:w-10 md:h-10 text-blue-500 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 flex flex-col items-center justify-center h-24 md:h-32 lg:h-40 gap-1.5">
+          <svg className="w-10 h-10 md:w-12 md:h-12 text-blue-500 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd"/>
           </svg>
-          <span className="text-[8px] md:text-[9px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
-            Image
+          <span className="text-[10px] md:text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
+            Image File
           </span>
         </div>
       );
@@ -275,13 +282,18 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     // Video thumbnail
     if (resource.type === "video" || lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".webm") || lowerUrl.endsWith(".mov")) {
       return (
-        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
-          <svg className="w-8 h-8 md:w-10 md:h-10 text-purple-500 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 flex flex-col items-center justify-center h-24 md:h-32 lg:h-40 gap-1.5 relative">
+          <svg className="w-10 h-10 md:w-12 md:h-12 text-purple-500 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
             <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
           </svg>
-          <span className="text-[8px] md:text-[9px] font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide">
-            Video
+          <span className="text-[10px] md:text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide">
+            Video File
           </span>
+          <div className="absolute top-2 right-2 w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
+            <svg className="w-4 h-4 text-purple-600 dark:text-purple-400 ml-0.5" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+            </svg>
+          </div>
         </div>
       );
     }
@@ -289,12 +301,12 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     // Word document thumbnail
     if (lowerUrl.endsWith(".doc") || lowerUrl.endsWith(".docx")) {
       return (
-        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
-          <svg className="w-8 h-8 md:w-10 md:h-10 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 flex flex-col items-center justify-center h-24 md:h-32 lg:h-40 gap-1.5">
+          <svg className="w-10 h-10 md:w-12 md:h-12 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
             <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
           </svg>
-          <span className="text-[8px] md:text-[9px] font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
-            Word
+          <span className="text-[10px] md:text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
+            Word Document
           </span>
         </div>
       );
@@ -303,12 +315,12 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     // Excel document thumbnail
     if (lowerUrl.endsWith(".xls") || lowerUrl.endsWith(".xlsx")) {
       return (
-        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
-          <svg className="w-8 h-8 md:w-10 md:h-10 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 flex flex-col items-center justify-center h-24 md:h-32 lg:h-40 gap-1.5">
+          <svg className="w-10 h-10 md:w-12 md:h-12 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
             <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
           </svg>
-          <span className="text-[8px] md:text-[9px] font-semibold text-green-600 dark:text-green-400 uppercase tracking-wide">
-            Excel
+          <span className="text-[10px] md:text-xs font-semibold text-green-600 dark:text-green-400 uppercase tracking-wide">
+            Excel Spreadsheet
           </span>
         </div>
       );
@@ -317,11 +329,11 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     // PowerPoint document thumbnail
     if (lowerUrl.endsWith(".ppt") || lowerUrl.endsWith(".pptx")) {
       return (
-        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
-          <svg className="w-8 h-8 md:w-10 md:h-10 text-orange-600 dark:text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+        <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 flex flex-col items-center justify-center h-24 md:h-32 lg:h-40 gap-1.5">
+          <svg className="w-10 h-10 md:w-12 md:h-12 text-orange-600 dark:text-orange-400" fill="currentColor" viewBox="0 0 20 20">
             <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
           </svg>
-          <span className="text-[8px] md:text-[9px] font-semibold text-orange-600 dark:text-orange-400 uppercase tracking-wide">
+          <span className="text-[10px] md:text-xs font-semibold text-orange-600 dark:text-orange-400 uppercase tracking-wide">
             PowerPoint
           </span>
         </div>
@@ -330,12 +342,12 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
 
     // Fallback thumbnail for other file types
     return (
-      <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 flex flex-col items-center justify-center h-16 md:h-20 lg:h-32 gap-1">
+      <div className="mb-1 rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 flex flex-col items-center justify-center h-24 md:h-32 lg:h-40 gap-1.5">
         <div className="text-slate-500 dark:text-slate-400 scale-150">
           {getResourceIcon(resource.type)}
         </div>
-        <span className="text-[8px] md:text-[9px] font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
-          {lowerUrl.split('.').pop() || 'File'}
+        <span className="text-[10px] md:text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
+          {lowerUrl.split('.').pop()?.toUpperCase() || 'File'}
         </span>
       </div>
     );
