@@ -485,11 +485,6 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       setIsDownloading(false);
     }
   };
-      toast.error("Unable to download the file. Please try the Open button instead.");
-    } finally {
-      setIsDownloading(false);
-    }
-  };
 
   return (
     <div className="resource-card relative group bg-white dark:bg-slate-800/80 rounded-lg md:rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 transition-all duration-300">
