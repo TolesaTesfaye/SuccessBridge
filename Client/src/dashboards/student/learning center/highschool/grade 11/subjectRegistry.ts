@@ -1,11 +1,19 @@
 // Grade 11 Subject Registry
 // This file automatically registers all available subjects for Grade 11
-// Currently using data-driven approach, but can be migrated to component-based
+// Add new subjects by importing their configurations here
+
+import { biologyConfig } from './biology/Biologyconfig';
+import { chemistryConfig } from './chemistry/Chemistryconfig';
+import { englishConfig } from './english/Englishconfig';
+import { geographyConfig } from './geography/Geographyconfig';
+import { historyConfig } from './history/Historyconfig';
+import { mathConfig } from './math/Mathconfig';
+import { physicsConfig } from './physics/Physicsconfig';
 
 export interface SubjectConfig {
   name: string;
   grade: string;
-  color?: {
+  color: {
     primary: string;
     secondary: string;
     gradient: string;
@@ -13,18 +21,30 @@ export interface SubjectConfig {
   chapters: any[];
 }
 
-// Registry of all Grade 11 subjects
-// Currently empty - subjects use the old data-driven approach from gradeSpecificContent
+// Registry of all Grade 11 subjects with component-based rendering
 export const GRADE_11_SUBJECTS: Record<string, SubjectConfig> = {
-  // Add component-based subjects here as they are developed:
-  // 'Biology': biologyConfig,
-  // 'Chemistry': chemistryConfig,
-  // etc.
+  'Biology': biologyConfig,
+  'Chemistry': chemistryConfig,
+  'English': englishConfig,
+  'Geography': geographyConfig,
+  'History': historyConfig,
+  'Math': mathConfig,
+  'Physics': physicsConfig,
 };
 
+// List of subjects that use the OLD data-driven approach (have *Content.ts files)
+// These subjects exist in folders but haven't been migrated to component-based yet
+const DATA_DRIVEN_SUBJECTS: string[] = [
+  // All subjects have been migrated to component-based approach
+];
+
 // Get list of available subject names for Grade 11
+// Includes both component-based and data-driven subjects
 export const getGrade11AvailableSubjects = (): string[] => {
-  return Object.keys(GRADE_11_SUBJECTS);
+  const componentSubjects = Object.keys(GRADE_11_SUBJECTS);
+  const allSubjects = [...componentSubjects, ...DATA_DRIVEN_SUBJECTS];
+  // Remove duplicates and return
+  return [...new Set(allSubjects)];
 };
 
 // Get subject configuration by name
