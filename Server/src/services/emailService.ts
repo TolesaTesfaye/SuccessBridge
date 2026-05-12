@@ -1,12 +1,10 @@
-// Email service supporting both Resend HTTP API and SMTP
-import { Resend } from 'resend';
+// Email service using SMTP only
 import nodemailer from 'nodemailer';
 
 // Clients
-let resendClient: Resend | null = null;
 let smtpTransporter: nodemailer.Transporter | null = null;
 let initialized = false;
-let serviceType: 'resend' | 'smtp' | 'none' = 'none';
+let serviceType: 'smtp' | 'none' = 'none';
 
 /**
  * Initialize Email Service
@@ -15,7 +13,6 @@ async function initializeEmailService() {
   if (initialized) return;
   initialized = true;
   
-  const resendApiKey = process.env.RESEND_API_KEY;
   const smtpHost = process.env.SMTP_HOST;
   const smtpPort = parseInt(process.env.SMTP_PORT || '587');
   const smtpUser = process.env.SMTP_USER;
@@ -23,7 +20,7 @@ async function initializeEmailService() {
 
   console.log('🔧 Initializing email service...');
 
-  // 1. Try SMTP first (if configured)
+  // Try SMTP
   if (smtpHost && smtpUser && smtpPass) {
     try {
       smtpTransporter = nodemailer.createTransport({
@@ -39,22 +36,18 @@ async function initializeEmailService() {
       await smtpTransporter.verify();
       serviceType = 'smtp';
       console.log('✅ SMTP email service initialized successfully');
+      console.log(`   Host: ${smtpHost}:${smtpPort}`);
+      console.log(`   User: ${smtpUser}`);
       return;
     } catch (error) {
       console.error('❌ Failed to initialize SMTP:', error);
+      console.error('   Please check your SMTP credentials in environment variables');
     }
-  }
-
-  // 2. Try Resend if SMTP failed or not configured
-  if (resendApiKey) {
-    try {
-      resendClient = new Resend(resendApiKey);
-      serviceType = 'resend';
-      console.log('✅ Resend HTTP API initialized successfully');
-      return;
-    } catch (error) {
-      console.error('❌ Failed to initialize Resend:', error);
-    }
+  } else {
+    console.warn('⚠️ SMTP configuration incomplete:');
+    console.warn(`   SMTP_HOST: ${smtpHost ? '✅ SET' : '❌ NOT SET'}`);
+    console.warn(`   SMTP_USER: ${smtpUser ? '✅ SET' : '❌ NOT SET'}`);
+    console.warn(`   SMTP_PASS: ${smtpPass ? '✅ SET' : '❌ NOT SET'}`);
   }
 
   console.warn('⚠️ No email service configured. Emails will be logged to console.');
@@ -69,7 +62,7 @@ export class EmailService {
     await initializeEmailService();
     
     const fromName = process.env.FROM_NAME || 'SuccessBridge Team';
-    const fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev';
+    const fromEmail = process.env.FROM_EMAIL || process.env.SMTP_USER || 'noreply@successbridge.com';
 
     console.log(`📧 Attempting to send email via ${serviceType}:`);
     console.log(`   To: ${options.to}`);
@@ -96,29 +89,6 @@ export class EmailService {
           response: error.response,
           responseCode: error.responseCode
         });
-        throw error; // Re-throw to let caller handle
-      }
-    }
-
-    if (serviceType === 'resend' && resendClient) {
-      try {
-        const result = await resendClient.emails.send({
-          from: fromEmail.includes('@resend.dev') 
-            ? `${fromName} <${fromEmail}>`
-            : `${fromName} <onboarding@resend.dev>`,
-          to: options.to,
-          subject: options.subject,
-          html: options.html,
-          text: options.text,
-        });
-        console.log(`✅ Email sent successfully to ${options.to} via Resend`);
-        // Handle both response formats (data.id or direct id)
-        const emailId = result.data?.id || (result as any).id || 'unknown';
-        console.log(`   Email ID: ${emailId}`);
-        return true;
-      } catch (error: any) {
-        console.error('❌ Resend send failed:', error);
-        console.error('   Error details:', error.message);
         throw error; // Re-throw to let caller handle
       }
     }
