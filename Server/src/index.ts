@@ -28,6 +28,7 @@ import gradesRoutes from "./routes/grades.js";
 import systemRoutes from "./routes/system.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import diagnosticRoutes from "./routes/diagnostic.js";
 
 // Import all models to ensure they are registered with Sequelize
 import User from "./models/User.js";
@@ -201,6 +202,7 @@ app.use("/api/grades", gradesRoutes);
 app.use("/api/system", systemRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/diagnostic", diagnosticRoutes);
 
 // Health check
 app.get("/health", async (req, res) => {
