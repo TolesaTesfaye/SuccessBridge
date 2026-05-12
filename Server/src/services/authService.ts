@@ -696,17 +696,23 @@ export class AuthService {
    * Request password reset - send 6-digit code via email
    */
   static async requestPasswordReset(email: string) {
+    console.log(`🔑 Password reset requested for: ${email}`);
+    
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
+      console.log(`⚠️ No user found with email: ${email}`);
       // Don't reveal if user exists or not for security
       return {
         message: 'If an account exists with this email, a password reset code has been sent.',
       };
     }
 
+    console.log(`✅ User found: ${user.name} (ID: ${user.id})`);
+
     // OAuth users without password cannot reset password
     if (!user.password) {
+      console.log(`❌ OAuth user attempted password reset: ${email}`);
       throw new AppError(
         400,
         'This account uses OAuth authentication (Google). Please sign in with your OAuth provider.',
@@ -717,12 +723,17 @@ export class AuthService {
     const resetCode = this.generateVerificationCode();
     const resetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
+    console.log(`📝 Generated reset code for ${email}: ${resetCode} (expires at ${resetExpires.toISOString()})`);
+
     await user.update({
       passwordResetToken: resetCode,
       passwordResetExpires: resetExpires,
     });
 
+    console.log(`💾 Reset code saved to database for user: ${email}`);
+
     try {
+      console.log(`📧 Attempting to send password reset email to: ${email}`);
       // Use Promise.race to timeout after 5 seconds
       await Promise.race([
         EmailService.sendPasswordResetEmail(email, user.name, resetCode),
@@ -730,9 +741,11 @@ export class AuthService {
           setTimeout(() => reject(new Error('Email timeout')), 5000)
         )
       ]);
+      console.log(`✅ Password reset email sent successfully to: ${email}`);
     } catch (error) {
-      console.error('Failed to send password reset email (non-blocking):', error);
+      console.error(`❌ Failed to send password reset email to ${email}:`, error);
       // Don't throw - allow password reset to continue even if email fails
+      // The code is still saved in the database and can be used
     }
 
     return {

@@ -71,25 +71,38 @@ export class EmailService {
     const fromName = process.env.FROM_NAME || 'SuccessBridge Team';
     const fromEmail = process.env.FROM_EMAIL || 'onboarding@resend.dev';
 
+    console.log(`📧 Attempting to send email via ${serviceType}:`);
+    console.log(`   To: ${options.to}`);
+    console.log(`   Subject: ${options.subject}`);
+    console.log(`   From: ${fromName} <${fromEmail}>`);
+
     if (serviceType === 'smtp' && smtpTransporter) {
       try {
-        await smtpTransporter.sendMail({
+        const info = await smtpTransporter.sendMail({
           from: `"${fromName}" <${fromEmail}>`,
           to: options.to,
           subject: options.subject,
           text: options.text,
           html: options.html,
         });
-        console.log(`✅ Email sent to ${options.to} via SMTP`);
+        console.log(`✅ Email sent successfully to ${options.to} via SMTP`);
+        console.log(`   Message ID: ${info.messageId}`);
         return true;
-      } catch (error) {
+      } catch (error: any) {
         console.error('❌ SMTP send failed:', error);
+        console.error('   Error details:', {
+          code: error.code,
+          command: error.command,
+          response: error.response,
+          responseCode: error.responseCode
+        });
+        throw error; // Re-throw to let caller handle
       }
     }
 
     if (serviceType === 'resend' && resendClient) {
       try {
-        await resendClient.emails.send({
+        const result = await resendClient.emails.send({
           from: fromEmail.includes('@resend.dev') 
             ? `${fromName} <${fromEmail}>`
             : `${fromName} <onboarding@resend.dev>`,
@@ -98,18 +111,28 @@ export class EmailService {
           html: options.html,
           text: options.text,
         });
-        console.log(`✅ Email sent to ${options.to} via Resend`);
+        console.log(`✅ Email sent successfully to ${options.to} via Resend`);
+        console.log(`   Email ID: ${result.id}`);
         return true;
-      } catch (error) {
+      } catch (error: any) {
         console.error('❌ Resend send failed:', error);
+        console.error('   Error details:', error.message);
+        throw error; // Re-throw to let caller handle
       }
     }
 
+    console.warn(`⚠️ No email service available - logging to console only`);
     console.log(`
-📧 CONSOLE FALLBACK:
+📧 CONSOLE FALLBACK EMAIL:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 To: ${options.to}
 Subject: ${options.subject}
-Content: ${options.text || 'See HTML content'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${options.text || 'See HTML content below'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HTML Content:
+${options.html}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     `);
     return false;
   }
@@ -201,12 +224,58 @@ Content: ${options.text || 'See HTML content'}
    */
   static async sendPasswordResetEmail(email: string, name: string, code: string) {
     const htmlContent = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2>Password Reset</h2>
-        <p>Hi ${name}, your code is: <strong>${code}</strong></p>
-      </div>
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
+          .code-box { background: #ffffff; border: 2px dashed #f59e0b; padding: 20px; margin: 20px 0; text-align: center; border-radius: 8px; }
+          .code { font-size: 32px; font-weight: bold; color: #f59e0b; letter-spacing: 8px; font-family: 'Courier New', monospace; }
+          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }
+          .warning { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0; border-radius: 4px; }
+          .security-note { background: #fee2e2; border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0; border-radius: 4px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🔑 Password Reset Request</h1>
+          </div>
+          <div class="content">
+            <h2>Hi ${name},</h2>
+            <p>We received a request to reset your password for your SuccessBridge account.</p>
+            <p>To reset your password, please enter the following 6-digit verification code:</p>
+            <div class="code-box">
+              <div class="code">${code}</div>
+            </div>
+            <div class="warning">
+              <strong>⚠️ Important:</strong> This password reset code will expire in 10 minutes.
+            </div>
+            <div class="security-note">
+              <strong>🔒 Security Notice:</strong> If you did not request a password reset, please ignore this email and your password will remain unchanged. Consider changing your password if you suspect unauthorized access.
+            </div>
+            <p>Best regards,<br>The SuccessBridge Team</p>
+          </div>
+          <div class="footer">
+            <p>© ${new Date().getFullYear()} SuccessBridge. All rights reserved.</p>
+            <p>This is an automated message, please do not reply to this email.</p>
+          </div>
+        </div>
+      </body>
+      </html>
     `;
-    return this.sendEmail({ to: email, subject: '🔑 Password Reset - SuccessBridge', html: htmlContent });
+
+    const textContent = `Hi ${name},\n\nWe received a request to reset your password.\n\nYour password reset code is: ${code}\n\nThis code will expire in 10 minutes.\n\nIf you did not request this, please ignore this email.\n\nBest regards,\nThe SuccessBridge Team`;
+
+    return this.sendEmail({
+      to: email,
+      subject: '🔑 Password Reset Code - SuccessBridge',
+      html: htmlContent,
+      text: textContent
+    });
   }
 
   static async sendInvitationEmail(adminEmail: string, adminName: string, token: string) {

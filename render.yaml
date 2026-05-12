@@ -31,3 +31,49 @@ services:
         sync: false # Set in Render Dashboard
       - key: SUPABASE_SERVICE_KEY
         sync: false # Set in Render Dashboard
+      
+      # Email Configuration (SMTP)
+      - key: SMTP_HOST
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        sync: false # Set in Render Dashboard - Your Gmail address
+      - key: SMTP_PASS
+        sync: false # Set in Render Dashboard - Gmail App Password
+      - key: FROM_EMAIL
+        sync: false # Set in Render Dashboard - Same as SMTP_USER
+      - key: FROM_NAME
+        value: SuccessBridge Team
+      
+      # OAuth Configuration
+      - key: GOOGLE_CLIENT_ID
+        sync: false # Set in Render Dashboard
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false # Set in Render Dashboard
+      - key: MICROSOFT_CLIENT_ID
+        sync: false # Set in Render Dashboard
+      - key: MICROSOFT_CLIENT_SECRET
+        sync: false # Set in Render Dashboard
+      
+      # Storage Configuration (Backblaze B2)
+      - key: B2_KEY_ID
+        sync: false # Set in Render Dashboard
+      - key: B2_APPLICATION_KEY
+        sync: false # Set in Render Dashboard
+      - key: B2_BUCKET_NAME
+        sync: false # Set in Render Dashboard
+      - key: B2_BUCKET_ID
+        sync: false # Set in Render Dashboard
+      - key: B2_ENDPOINT
+        value: s3.us-east-005.backblazeb2.com
+      - key: B2_REGION
+        value: us-east-005
+      
+      # Admin Configuration
+      - key: SUPER_ADMIN_EMAIL
+        sync: false # Set in Render Dashboard
+      - key: SUPER_ADMIN_PASSWORD
+        sync: false # Set in Render Dashboard
+      - key: SUPER_ADMIN_NAME
+        sync: false # Set in Render Dashboard
