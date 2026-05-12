@@ -31,16 +31,26 @@ async function initializeEmailService() {
           user: smtpUser,
           pass: smtpPass,
         },
+        // Add connection timeout settings
+        connectionTimeout: 10000, // 10 seconds
+        greetingTimeout: 10000, // 10 seconds
+        socketTimeout: 10000, // 10 seconds
       });
       
+      console.log(`🔌 Attempting to connect to SMTP server: ${smtpHost}:${smtpPort}`);
       await smtpTransporter.verify();
       serviceType = 'smtp';
       console.log('✅ SMTP email service initialized successfully');
       console.log(`   Host: ${smtpHost}:${smtpPort}`);
       console.log(`   User: ${smtpUser}`);
       return;
-    } catch (error) {
+    } catch (error: any) {
       console.error('❌ Failed to initialize SMTP:', error);
+      console.error('   Error details:', {
+        message: error.message,
+        code: error.code,
+        command: error.command,
+      });
       console.error('   Please check your SMTP credentials in environment variables');
     }
   } else {

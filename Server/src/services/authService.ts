@@ -734,16 +734,21 @@ export class AuthService {
 
     try {
       console.log(`📧 Attempting to send password reset email to: ${email}`);
-      // Use Promise.race to timeout after 5 seconds
+      // Use Promise.race to timeout after 15 seconds (increased for slower networks)
       await Promise.race([
         EmailService.sendPasswordResetEmail(email, user.name, resetCode),
         new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Email timeout')), 5000)
+          setTimeout(() => reject(new Error('Email timeout - SMTP connection took too long')), 15000)
         )
       ]);
       console.log(`✅ Password reset email sent successfully to: ${email}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error(`❌ Failed to send password reset email to ${email}:`, error);
+      console.error(`   Error type: ${error.name}`);
+      console.error(`   Error message: ${error.message}`);
+      if (error.code) {
+        console.error(`   Error code: ${error.code}`);
+      }
       // Don't throw - allow password reset to continue even if email fails
       // The code is still saved in the database and can be used
     }
