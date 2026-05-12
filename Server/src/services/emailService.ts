@@ -112,7 +112,9 @@ export class EmailService {
           text: options.text,
         });
         console.log(`✅ Email sent successfully to ${options.to} via Resend`);
-        console.log(`   Email ID: ${result.id}`);
+        // Handle both response formats (data.id or direct id)
+        const emailId = result.data?.id || (result as any).id || 'unknown';
+        console.log(`   Email ID: ${emailId}`);
         return true;
       } catch (error: any) {
         console.error('❌ Resend send failed:', error);
