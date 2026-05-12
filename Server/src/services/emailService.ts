@@ -1,10 +1,11 @@
-// Email service using SMTP only
+// Email service using SMTP and Brevo API
 import nodemailer from 'nodemailer';
+import fetch from 'node-fetch';
 
 // Clients
 let smtpTransporter: nodemailer.Transporter | null = null;
 let initialized = false;
-let serviceType: 'smtp' | 'none' = 'none';
+let serviceType: 'smtp' | 'brevo' | 'none' = 'none';
 
 /**
  * Initialize Email Service
@@ -13,6 +14,7 @@ async function initializeEmailService() {
   if (initialized) return;
   initialized = true;
   
+  const brevoApiKey = process.env.BREVO_API_KEY;
   const smtpHost = process.env.SMTP_HOST;
   const smtpPort = parseInt(process.env.SMTP_PORT || '587');
   const smtpUser = process.env.SMTP_USER;
@@ -20,7 +22,31 @@ async function initializeEmailService() {
 
   console.log('🔧 Initializing email service...');
 
-  // Try SMTP
+  // 1. Try Brevo first (if configured)
+  if (brevoApiKey) {
+    try {
+      // Test Brevo API connection
+      const response = await fetch('https://api.brevo.com/v3/account', {
+        headers: {
+          'api-key': brevoApiKey,
+        },
+      });
+      
+      if (response.ok) {
+        serviceType = 'brevo';
+        console.log('✅ Brevo email service initialized successfully');
+        const data = await response.json() as any;
+        console.log(`   Account: ${data.email || 'Connected'}`);
+        return;
+      } else {
+        console.error('❌ Failed to initialize Brevo: Invalid API key');
+      }
+    } catch (error: any) {
+      console.error('❌ Failed to initialize Brevo:', error.message);
+    }
+  }
+
+  // 2. Try SMTP (if configured)
   if (smtpHost && smtpUser && smtpPass) {
     try {
       smtpTransporter = nodemailer.createTransport({
@@ -53,7 +79,7 @@ async function initializeEmailService() {
       });
       console.error('   Please check your SMTP credentials in environment variables');
     }
-  } else {
+  } else if (smtpHost || smtpUser || smtpPass) {
     console.warn('⚠️ SMTP configuration incomplete:');
     console.warn(`   SMTP_HOST: ${smtpHost ? '✅ SET' : '❌ NOT SET'}`);
     console.warn(`   SMTP_USER: ${smtpUser ? '✅ SET' : '❌ NOT SET'}`);
@@ -79,6 +105,51 @@ export class EmailService {
     console.log(`   Subject: ${options.subject}`);
     console.log(`   From: ${fromName} <${fromEmail}>`);
 
+    // Try Brevo API
+    if (serviceType === 'brevo') {
+      try {
+        const brevoApiKey = process.env.BREVO_API_KEY;
+        const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+          method: 'POST',
+          headers: {
+            'accept': 'application/json',
+            'api-key': brevoApiKey!,
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify({
+            sender: {
+              name: fromName,
+              email: fromEmail,
+            },
+            to: [
+              {
+                email: options.to,
+              },
+            ],
+            subject: options.subject,
+            htmlContent: options.html,
+            textContent: options.text,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json() as any;
+          console.log(`✅ Email sent successfully to ${options.to} via Brevo`);
+          console.log(`   Message ID: ${data.messageId || 'sent'}`);
+          return true;
+        } else {
+          const error = await response.json() as any;
+          console.error('❌ Brevo send failed:', error);
+          throw new Error(`Brevo API error: ${error.message || response.statusText}`);
+        }
+      } catch (error: any) {
+        console.error('❌ Brevo send failed:', error);
+        console.error('   Error details:', error.message);
+        throw error;
+      }
+    }
+
+    // Try SMTP
     if (serviceType === 'smtp' && smtpTransporter) {
       try {
         const info = await smtpTransporter.sendMail({
@@ -99,7 +170,7 @@ export class EmailService {
           response: error.response,
           responseCode: error.responseCode
         });
-        throw error; // Re-throw to let caller handle
+        throw error;
       }
     }
 
