@@ -7,6 +7,8 @@ import { ThemeToggle } from "@components/common/ThemeToggle";
 import { useToast } from "@components/common/Toast";
 import { LogIn, AlertCircle } from "lucide-react";
 
+const OAUTH_ERR_DEDUPE_KEY = "sb_login_oauth_err";
+
 export const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -38,7 +40,14 @@ export const Login: React.FC = () => {
   // OAuth / Google redirect errors (e.g. account already exists)
   useEffect(() => {
     const error = searchParams.get("error");
-    if (!error) return;
+    if (!error) {
+      try {
+        sessionStorage.removeItem(OAUTH_ERR_DEDUPE_KEY);
+      } catch {
+        /* ignore */
+      }
+      return;
+    }
 
     const messages: Record<string, string> = {
       account_exists:
@@ -51,6 +60,26 @@ export const Login: React.FC = () => {
     };
 
     const msg = messages[error] || messages.oauth_failed;
+
+    const clearQuery = () =>
+      navigate({ pathname: location.pathname, search: "" }, { replace: true });
+
+    // Strict Mode remount + any re-entrancy before the URL clears: at most one toast per burst.
+    try {
+      const raw = sessionStorage.getItem(OAUTH_ERR_DEDUPE_KEY);
+      if (raw) {
+        const { code, at } = JSON.parse(raw) as { code: string; at: number };
+        if (code === error && Date.now() - at < 4000) {
+          setFormError(msg);
+          clearQuery();
+          return;
+        }
+      }
+      sessionStorage.setItem(OAUTH_ERR_DEDUPE_KEY, JSON.stringify({ code: error, at: Date.now() }));
+    } catch {
+      /* ignore */
+    }
+
     if (error === "account_exists") {
       toast.info(msg, 8000);
       setFormError(msg);
@@ -59,7 +88,7 @@ export const Login: React.FC = () => {
       setFormError(msg);
     }
 
-    navigate(location.pathname, { replace: true });
+    clearQuery();
   }, [searchParams, navigate, location.pathname, toast]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
