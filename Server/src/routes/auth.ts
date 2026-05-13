@@ -690,13 +690,39 @@ router.get(
 );
 
 // Google OAuth - Callback
-router.get(
-  "/google/callback",
-  passport.authenticate("google", {
-    session: false,
-    failureRedirect: "/login?error=oauth_failed",
-  }),
-  oauthSuccess,
-);
+router.get("/google/callback", (req, res, next) => {
+  passport.authenticate(
+    "google",
+    { session: false },
+    (error: any, user: any) => {
+      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+      const getOAuthErrorCode = (err: any) => {
+        if (!err) return "oauth_failed";
+        if (err.code === "account_exists") return "account_exists";
+        if (err.code === "redirect_uri_mismatch") return "redirect_uri_mismatch";
+        if (err.code === "invalid_grant") return "invalid_grant";
+        return "oauth_failed";
+      };
+
+      if (error) {
+        const errorCode = getOAuthErrorCode(error);
+        console.error("Google OAuth callback error:", {
+          code: errorCode,
+          message: error.message,
+        });
+        return res.redirect(
+          `${frontendUrl}/login?error=${encodeURIComponent(errorCode)}`,
+        );
+      }
+
+      if (!user) {
+        return res.redirect(`${frontendUrl}/login?error=oauth_failed`);
+      }
+
+      req.user = user;
+      return oauthSuccess(req, res);
+    },
+  )(req, res, next);
+});
 
 export default router;

@@ -6,13 +6,25 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
+const getGoogleCallbackUrl = () => {
+  if (process.env.GOOGLE_CALLBACK_URL) {
+    return process.env.GOOGLE_CALLBACK_URL
+  }
+
+  if (process.env.BACKEND_URL) {
+    return `${process.env.BACKEND_URL}/api/auth/google/callback`
+  }
+
+  return 'http://localhost:5000/api/auth/google/callback'
+}
+
 // Google Strategy
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID || 'dummy',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'dummy',
-      callbackURL: `${process.env.BACKEND_URL || 'http://localhost:5000'}/api/auth/google/callback`,
+      callbackURL: getGoogleCallbackUrl(),
       proxy: true,
       passReqToCallback: true,
     },
@@ -43,7 +55,11 @@ passport.use(
         // REGISTER MODE: Only allow new users
         if (user) {
           console.log('Google OAuth Register - User already exists')
-          return done(new Error('Account already exists. Please login with your email and password instead.'), undefined)
+          const accountExistsError = Object.assign(
+            new Error('Account already exists. Please login with your email and password instead.'),
+            { code: 'account_exists' }
+          )
+          return done(accountExistsError, undefined)
         }
 
         console.log('Google OAuth Register - Redirecting to registration form')

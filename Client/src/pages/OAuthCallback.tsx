@@ -23,8 +23,22 @@ export const OAuthCallback: React.FC = () => {
 
         if (error) {
           console.error('OAuth Callback - Error received:', error)
-          toast.error('Authentication failed. Please try again.')
-          navigate('/login')
+          const messages: Record<string, string> = {
+            account_exists:
+              'This Google account is already registered. Please sign in with your email and password.',
+            redirect_uri_mismatch:
+              'Google sign-in failed: redirect URL mismatch. Check server and Google OAuth settings.',
+            invalid_grant:
+              'Google sign-in failed: the authorization expired or was reused. Please try again.',
+            oauth_failed: 'Authentication failed. Please try again.',
+          }
+          const msg = messages[error] || messages.oauth_failed
+          if (error === 'account_exists') {
+            toast.info(msg, 8000)
+          } else {
+            toast.error(msg, 8000)
+          }
+          navigate(`/login?error=${encodeURIComponent(error)}`)
           return
         }
 

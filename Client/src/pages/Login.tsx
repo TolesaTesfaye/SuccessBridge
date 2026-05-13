@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useNavigate, Link, useLocation, useSearchParams } from "react-router-dom";
 import { useAuth } from "@hooks/useAuth";
 import { FormInput } from "@components/forms/FormInput";
 import { AppLogo } from "@components/common/AppLogo";
@@ -10,6 +10,7 @@ import { LogIn, AlertCircle } from "lucide-react";
 export const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const toast = useToast();
   const { login, loading } = useAuth();
   const lastToastMessageRef = useRef<string>("");
@@ -33,6 +34,33 @@ export const Login: React.FC = () => {
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location.state, toast, navigate, location.pathname]);
+
+  // OAuth / Google redirect errors (e.g. account already exists)
+  useEffect(() => {
+    const error = searchParams.get("error");
+    if (!error) return;
+
+    const messages: Record<string, string> = {
+      account_exists:
+        "This Google account is already registered. Please sign in with your email and password, or use Google sign-in from the login page if available.",
+      redirect_uri_mismatch:
+        "Google sign-in failed: redirect URL mismatch. Check BACKEND_URL / GOOGLE_CALLBACK_URL and Google Console redirect URIs.",
+      invalid_grant:
+        "Google sign-in failed: the authorization expired or was reused. Please try again.",
+      oauth_failed: "Google sign-in failed. Please try again.",
+    };
+
+    const msg = messages[error] || messages.oauth_failed;
+    if (error === "account_exists") {
+      toast.info(msg, 8000);
+      setFormError(msg);
+    } else {
+      toast.error(msg, 8000);
+      setFormError(msg);
+    }
+
+    navigate(location.pathname, { replace: true });
+  }, [searchParams, navigate, location.pathname, toast]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
