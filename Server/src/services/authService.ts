@@ -463,25 +463,35 @@ export class AuthService {
       );
     }
 
-    // Prevent duplicates
+    // Check if user currently exists
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
       throw new AppError(400, "User already exists");
     }
 
+    // Check for existing admin request
     const existingRequest = await AdminRequest.findOne({ where: { email } });
     if (existingRequest) {
+      // If there's a pending request, don't allow duplicate
       if (existingRequest.status === "pending") {
         throw new AppError(
           400,
           "Admin registration request already submitted and pending approval",
         );
       }
+      
+      // If previous request was rejected, don't allow re-registration
       if (existingRequest.status === "rejected") {
         throw new AppError(
           400,
           `Previous admin request was rejected. Reason: ${existingRequest.rejectionReason || "No reason provided"}`,
         );
+      }
+      
+      // If previous request was approved but user was deleted, allow re-registration
+      // by deleting the old request and creating a new one
+      if (existingRequest.status === "approved") {
+        await existingRequest.destroy();
       }
     }
 
