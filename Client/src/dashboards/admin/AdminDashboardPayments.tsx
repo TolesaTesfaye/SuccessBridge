@@ -4,6 +4,7 @@ import { useToast } from '@components/common/Toast'
 import { Pagination } from '@components/common/Pagination'
 import { Button } from '@components/common/Button'
 import { FormSelect } from '@components/forms/FormSelect'
+import { Card, CardBody } from '@components/common/Card'
 import {
   CreditCard,
   CheckCircle,
@@ -163,56 +164,146 @@ export const AdminDashboardPayments: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Payments</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{stats.totalPayments}</p>
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
+        {/* Total Payments Card */}
+        <Card className="overflow-hidden relative group hover:shadow-xl transition-all duration-300">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-blue-400/5 to-transparent"></div>
+          <CardBody className="p-4 md:p-5 relative">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 md:hidden bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg">
+                    <CreditCard className="w-4 h-4" />
+                  </div>
+                  <p className="text-xs md:text-sm text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wide">
+                    Total Payments
+                  </p>
+                </div>
+                <p className="text-3xl md:text-4xl font-extrabold bg-gradient-to-br from-blue-600 to-blue-800 dark:from-blue-400 dark:to-blue-600 bg-clip-text text-transparent">
+                  {stats.totalPayments}
+                </p>
+                <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                  All transactions
+                </p>
+              </div>
+              <div className="hidden md:flex w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <CreditCard className="w-7 h-7 text-white" />
+              </div>
             </div>
-            <CreditCard className="text-blue-500" size={32} />
-          </div>
-        </div>
+          </CardBody>
+        </Card>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Pending</p>
-              <p className="text-2xl font-bold text-yellow-600">{stats.pendingPayments}</p>
+        {/* Pending Card */}
+        <Card className="overflow-hidden relative group hover:shadow-xl transition-all duration-300">
+          <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 via-yellow-400/5 to-transparent"></div>
+          <CardBody className="p-4 md:p-5 relative">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 md:hidden bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center text-white shadow-lg">
+                    <Clock className="w-4 h-4" />
+                  </div>
+                  <p className="text-xs md:text-sm text-yellow-600 dark:text-yellow-400 font-bold uppercase tracking-wide">
+                    Pending
+                  </p>
+                </div>
+                <p className="text-3xl md:text-4xl font-extrabold bg-gradient-to-br from-yellow-600 to-yellow-800 dark:from-yellow-400 dark:to-yellow-600 bg-clip-text text-transparent">
+                  {stats.pendingPayments}
+                </p>
+                <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                  Awaiting approval
+                </p>
+              </div>
+              <div className="hidden md:flex w-14 h-14 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <Clock className="w-7 h-7 text-white" />
+              </div>
             </div>
-            <Clock className="text-yellow-500" size={32} />
-          </div>
-        </div>
+          </CardBody>
+        </Card>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Approved</p>
-              <p className="text-2xl font-bold text-green-600">{stats.approvedPayments}</p>
+        {/* Approved Card */}
+        <Card className="overflow-hidden relative group hover:shadow-xl transition-all duration-300">
+          <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-green-400/5 to-transparent"></div>
+          <CardBody className="p-4 md:p-5 relative">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 md:hidden bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center text-white shadow-lg">
+                    <CheckCircle className="w-4 h-4" />
+                  </div>
+                  <p className="text-xs md:text-sm text-green-600 dark:text-green-400 font-bold uppercase tracking-wide">
+                    Approved
+                  </p>
+                </div>
+                <p className="text-3xl md:text-4xl font-extrabold bg-gradient-to-br from-green-600 to-green-800 dark:from-green-400 dark:to-green-600 bg-clip-text text-transparent">
+                  {stats.approvedPayments}
+                </p>
+                <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                  Successfully approved
+                </p>
+              </div>
+              <div className="hidden md:flex w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <CheckCircle className="w-7 h-7 text-white" />
+              </div>
             </div>
-            <CheckCircle className="text-green-500" size={32} />
-          </div>
-        </div>
+          </CardBody>
+        </Card>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Rejected</p>
-              <p className="text-2xl font-bold text-red-600">{stats.rejectedPayments}</p>
+        {/* Rejected Card */}
+        <Card className="overflow-hidden relative group hover:shadow-xl transition-all duration-300">
+          <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 via-red-400/5 to-transparent"></div>
+          <CardBody className="p-4 md:p-5 relative">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 md:hidden bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center text-white shadow-lg">
+                    <XCircle className="w-4 h-4" />
+                  </div>
+                  <p className="text-xs md:text-sm text-red-600 dark:text-red-400 font-bold uppercase tracking-wide">
+                    Rejected
+                  </p>
+                </div>
+                <p className="text-3xl md:text-4xl font-extrabold bg-gradient-to-br from-red-600 to-red-800 dark:from-red-400 dark:to-red-600 bg-clip-text text-transparent">
+                  {stats.rejectedPayments}
+                </p>
+                <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                  Declined payments
+                </p>
+              </div>
+              <div className="hidden md:flex w-14 h-14 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <XCircle className="w-7 h-7 text-white" />
+              </div>
             </div>
-            <XCircle className="text-red-500" size={32} />
-          </div>
-        </div>
+          </CardBody>
+        </Card>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Revenue</p>
-              <p className="text-2xl font-bold text-primary-600">{formatCurrency(stats.totalRevenue)}</p>
+        {/* Total Revenue Card */}
+        <Card className="overflow-hidden relative group hover:shadow-xl transition-all duration-300">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-purple-400/5 to-transparent"></div>
+          <CardBody className="p-4 md:p-5 relative">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 md:hidden bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center text-white shadow-lg">
+                    <TrendingUp className="w-4 h-4" />
+                  </div>
+                  <p className="text-xs md:text-sm text-purple-600 dark:text-purple-400 font-bold uppercase tracking-wide">
+                    Total Revenue
+                  </p>
+                </div>
+                <p className="text-2xl md:text-3xl font-extrabold bg-gradient-to-br from-purple-600 to-purple-800 dark:from-purple-400 dark:to-purple-600 bg-clip-text text-transparent">
+                  {formatCurrency(stats.totalRevenue)}
+                </p>
+                <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                  Approved earnings
+                </p>
+              </div>
+              <div className="hidden md:flex w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <TrendingUp className="w-7 h-7 text-white" />
+              </div>
             </div>
-            <TrendingUp className="text-primary-500" size={32} />
-          </div>
-        </div>
+          </CardBody>
+        </Card>
       </div>
 
       {/* Filters */}
@@ -250,7 +341,92 @@ export const AdminDashboardPayments: React.FC = () => {
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto">
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-3 p-4">
+              {payments.map((payment) => (
+                <div
+                  key={payment.id}
+                  className="group relative overflow-hidden bg-gradient-to-br from-white to-blue-50/30 dark:from-slate-800/50 dark:to-blue-900/10 rounded-2xl border border-blue-100 dark:border-blue-900/30 p-4 shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  
+                  <div className="relative space-y-3">
+                    {/* Header with Student Info and Status */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="font-bold text-slate-900 dark:text-white text-sm truncate">
+                          {payment.user?.name}
+                        </div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                          {payment.user?.email}
+                        </div>
+                      </div>
+                      <div className="flex-shrink-0">
+                        {getStatusBadge(payment.status)}
+                      </div>
+                    </div>
+
+                    {/* Payment Details Grid */}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="bg-white/60 dark:bg-slate-900/40 backdrop-blur-sm rounded-xl p-3 border border-slate-100 dark:border-white/5">
+                        <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">
+                          Subject
+                        </div>
+                        <div className="font-bold text-slate-900 dark:text-white text-sm truncate">
+                          {payment.subject?.name}
+                        </div>
+                      </div>
+                      <div className="bg-white/60 dark:bg-slate-900/40 backdrop-blur-sm rounded-xl p-3 border border-slate-100 dark:border-white/5">
+                        <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">
+                          Amount
+                        </div>
+                        <div className="font-bold text-slate-900 dark:text-white text-sm">
+                          {formatCurrency(payment.amount, payment.currency)}
+                        </div>
+                      </div>
+                      <div className="bg-white/60 dark:bg-slate-900/40 backdrop-blur-sm rounded-xl p-3 border border-slate-100 dark:border-white/5">
+                        <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">
+                          Method
+                        </div>
+                        <div className="font-bold text-slate-900 dark:text-white text-xs capitalize truncate">
+                          {payment.paymentMethod.replace('_', ' ')}
+                        </div>
+                      </div>
+                      <div className="bg-white/60 dark:bg-slate-900/40 backdrop-blur-sm rounded-xl p-3 border border-slate-100 dark:border-white/5">
+                        <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">
+                          Date
+                        </div>
+                        <div className="font-bold text-slate-900 dark:text-white text-xs">
+                          {new Date(payment.createdAt).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action Button */}
+                    <div className="pt-2">
+                      <button
+                        onClick={() => {
+                          setSelectedPayment(payment)
+                          setShowDetailsModal(true)
+                        }}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all duration-300"
+                      >
+                        <Eye className="w-4 h-4" />
+                        <span>View Details</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead className="bg-gray-50 dark:bg-gray-900">
                   <tr>

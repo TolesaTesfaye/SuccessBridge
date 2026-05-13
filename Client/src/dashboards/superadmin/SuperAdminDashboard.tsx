@@ -137,9 +137,9 @@ export const SuperAdminDashboard: React.FC = () => {
     >
       <div className="space-y-0 pb-8">
         {/* Main Tabs - Compact & Scrollable */}
-        <div className="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b-2 border-gray-200 dark:border-slate-700 flex gap-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-4 md:-mx-6 px-4 md:px-6">
+        <div className="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b-2 border-gray-200 dark:border-slate-700 flex gap-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-2 md:-mx-6 px-2 md:px-6">
           <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "overview"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
@@ -151,7 +151,7 @@ export const SuperAdminDashboard: React.FC = () => {
 
           {/* High School Tabs */}
           <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm flex items-center gap-1 ${
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "grade_9"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
@@ -161,12 +161,12 @@ export const SuperAdminDashboard: React.FC = () => {
               setHighSchoolActiveGrade("grade_9");
             }}
           >
-            <span>9️⃣</span>
-            Grade 9
+            <span className="hidden sm:inline">Grade 9</span>
+            <span className="sm:hidden">G9</span>
           </button>
 
           <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm flex items-center gap-1 ${
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "grade_10"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
@@ -176,12 +176,12 @@ export const SuperAdminDashboard: React.FC = () => {
               setHighSchoolActiveGrade("grade_10");
             }}
           >
-            <span>🔟</span>
-            Grade 10
+            <span className="hidden sm:inline">Grade 10</span>
+            <span className="sm:hidden">G10</span>
           </button>
 
           <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm flex items-center gap-1 ${
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "grade_11"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
@@ -191,12 +191,12 @@ export const SuperAdminDashboard: React.FC = () => {
               setHighSchoolActiveGrade("grade_11");
             }}
           >
-            <span>1️⃣1️⃣</span>
-            Grade 11
+            <span className="hidden sm:inline">Grade 11</span>
+            <span className="sm:hidden">G11</span>
           </button>
 
           <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm flex items-center gap-1 ${
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "grade_12"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
@@ -206,13 +206,13 @@ export const SuperAdminDashboard: React.FC = () => {
               setHighSchoolActiveGrade("grade_12");
             }}
           >
-            <span>1️⃣2️⃣</span>
-            Grade 12
+            <span className="hidden sm:inline">Grade 12</span>
+            <span className="sm:hidden">G12</span>
           </button>
 
           {/* University Tabs */}
           <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm flex items-center gap-1 ${
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "freshman"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
@@ -222,12 +222,12 @@ export const SuperAdminDashboard: React.FC = () => {
               setUniversityActiveLevel("freshman");
             }}
           >
-            <span>🆕</span>
-            Freshman
+            <span className="hidden sm:inline">Freshman</span>
+            <span className="sm:hidden">Fr</span>
           </button>
 
           <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm flex items-center gap-1 ${
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "remedial"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
@@ -237,12 +237,12 @@ export const SuperAdminDashboard: React.FC = () => {
               setUniversityActiveLevel("remedial");
             }}
           >
-            <span>📖</span>
-            Remedial
+            <span className="hidden sm:inline">Remedial</span>
+            <span className="sm:hidden">Rm</span>
           </button>
 
           <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm flex items-center gap-1 ${
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "senior"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
@@ -252,12 +252,12 @@ export const SuperAdminDashboard: React.FC = () => {
               setUniversityActiveLevel("senior");
             }}
           >
-            <span>🎯</span>
-            Senior
+            <span className="hidden sm:inline">Senior</span>
+            <span className="sm:hidden">Sr</span>
           </button>
 
           <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm flex items-center gap-1 ${
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "gc"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
@@ -267,22 +267,21 @@ export const SuperAdminDashboard: React.FC = () => {
               setUniversityActiveLevel("gc");
             }}
           >
-            <span>🏆</span>
             GC
           </button>
 
           <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "upload"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
             }`}
             onClick={() => setActiveTab("upload")}
           >
-            📤 Upload
+            Upload
           </button>
           <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "approvals"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
@@ -292,17 +291,18 @@ export const SuperAdminDashboard: React.FC = () => {
             Approvals
           </button>
           <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "universities"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
             }`}
             onClick={() => setActiveTab("universities")}
           >
-            Universities
+            <span className="hidden sm:inline">Universities</span>
+            <span className="sm:hidden">Univ</span>
           </button>
           <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "admins"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
@@ -312,7 +312,7 @@ export const SuperAdminDashboard: React.FC = () => {
             Admins
           </button>
           <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "students"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
@@ -322,17 +322,17 @@ export const SuperAdminDashboard: React.FC = () => {
             Students
           </button>
           <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "payments"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
             }`}
             onClick={() => setActiveTab("payments")}
           >
-            💳 Payments
+            Payments
           </button>
           <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "resources"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
@@ -342,29 +342,30 @@ export const SuperAdminDashboard: React.FC = () => {
             Resources
           </button>
           <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "addquiz"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
             }`}
             onClick={() => setActiveTab("addquiz")}
           >
-            Add Quiz
+            <span className="hidden sm:inline">Add Quiz</span>
+            <span className="sm:hidden">Quiz</span>
           </button>
           <button
-            className={`px-4 py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-sm ${
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "admin-view"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
             }`}
             onClick={() => setActiveTab("admin-view")}
           >
-            👨‍💼 Admin View
+            Admin View
           </button>
         </div>
 
         {/* Tab Content */}
-        <div className="animate-fadeIn pt-6">
+        <div className="animate-fadeIn pt-4 md:pt-6 px-2 md:px-0">
           {activeTab === "overview" && <OverviewTab stats={stats} />}
 
           {/* High School Grade Pages */}
@@ -418,6 +419,7 @@ export const SuperAdminDashboard: React.FC = () => {
           onClose={() => setShowUploadModal(false)}
           title="Upload New Resource"
           size="lg"
+          fullScreenOnMobile={true}
         >
           <ResourceUploadForm
             onSubmit={handleUploadSubmit}
@@ -438,10 +440,11 @@ export const SuperAdminDashboard: React.FC = () => {
               : "Student Detailed Profile"
           }
           size="lg"
+          fullScreenOnMobile={true}
         >
           {(selectedStudent || selectedAdmin) && (
             <div className="space-y-6">
-              <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-[20px] border border-slate-100 dark:border-white/5">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-[20px] border border-slate-100 dark:border-white/5">
                 <div className="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-2xl">
                   {selectedStudent?.isAdmin || selectedAdmin ? "👨‍💼" : "🎓"}
                 </div>
@@ -466,7 +469,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6">
                 <div className="space-y-4">
                   <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider">
                     Academic Information
@@ -548,7 +551,7 @@ export const SuperAdminDashboard: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex gap-3 pt-6 border-t dark:border-white/5">
+              <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t dark:border-white/5">
                 <Button
                   variant="secondary"
                   fullWidth

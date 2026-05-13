@@ -82,54 +82,115 @@ export const ApprovalsTab: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Admin Request Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardBody>
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 bg-orange-100 dark:bg-orange-500/20 rounded-xl">
-                <Clock className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+        {/* Total Requests Card */}
+        <Card className="overflow-hidden relative group hover:shadow-xl transition-all duration-300">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-blue-400/5 to-transparent"></div>
+          <CardBody className="p-4 md:p-5 relative">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 md:hidden bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg">
+                    <Users className="w-4 h-4" />
+                  </div>
+                  <p className="text-xs md:text-sm text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wide">
+                    Total Requests
+                  </p>
+                </div>
+                <p className="text-3xl md:text-4xl font-extrabold bg-gradient-to-br from-blue-600 to-blue-800 dark:from-blue-400 dark:to-blue-600 bg-clip-text text-transparent">
+                  {adminRequests.length}
+                </p>
+                <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                  All admin requests
+                </p>
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white m-0">Pending</h3>
-                <p className="text-slate-600 dark:text-slate-400 text-sm m-0">Awaiting review</p>
+              <div className="hidden md:flex w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <Users className="w-7 h-7 text-white" />
               </div>
-            </div>
-            <div className="text-center">
-              <span className="text-3xl font-bold text-orange-600 dark:text-orange-400">{pendingRequests.length}</span>
             </div>
           </CardBody>
         </Card>
 
-        <Card>
-          <CardBody>
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 bg-green-100 dark:bg-green-500/20 rounded-xl">
-                <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
+        {/* Pending Card */}
+        <Card className="overflow-hidden relative group hover:shadow-xl transition-all duration-300">
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-orange-400/5 to-transparent"></div>
+          <CardBody className="p-4 md:p-5 relative">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 md:hidden bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center text-white shadow-lg">
+                    <Clock className="w-4 h-4" />
+                  </div>
+                  <p className="text-xs md:text-sm text-orange-600 dark:text-orange-400 font-bold uppercase tracking-wide">
+                    Pending
+                  </p>
+                </div>
+                <p className="text-3xl md:text-4xl font-extrabold bg-gradient-to-br from-orange-600 to-orange-800 dark:from-orange-400 dark:to-orange-600 bg-clip-text text-transparent">
+                  {pendingRequests.length}
+                </p>
+                <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                  Awaiting review
+                </p>
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white m-0">Approved</h3>
-                <p className="text-slate-600 dark:text-slate-400 text-sm m-0">Successfully approved</p>
+              <div className="hidden md:flex w-14 h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <Clock className="w-7 h-7 text-white" />
               </div>
-            </div>
-            <div className="text-center">
-              <span className="text-3xl font-bold text-green-600 dark:text-green-400">{approvedRequests.length}</span>
             </div>
           </CardBody>
         </Card>
 
-        <Card>
-          <CardBody>
-            <div className="flex items-center gap-4 mb-4">
-              <div className="p-3 bg-red-100 dark:bg-red-500/20 rounded-xl">
-                <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
+        {/* Approved Card */}
+        <Card className="overflow-hidden relative group hover:shadow-xl transition-all duration-300">
+          <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-green-400/5 to-transparent"></div>
+          <CardBody className="p-4 md:p-5 relative">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 md:hidden bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center text-white shadow-lg">
+                    <CheckCircle className="w-4 h-4" />
+                  </div>
+                  <p className="text-xs md:text-sm text-green-600 dark:text-green-400 font-bold uppercase tracking-wide">
+                    Approved
+                  </p>
+                </div>
+                <p className="text-3xl md:text-4xl font-extrabold bg-gradient-to-br from-green-600 to-green-800 dark:from-green-400 dark:to-green-600 bg-clip-text text-transparent">
+                  {approvedRequests.length}
+                </p>
+                <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                  Successfully approved
+                </p>
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white m-0">Rejected</h3>
-                <p className="text-slate-600 dark:text-slate-400 text-sm m-0">Declined requests</p>
+              <div className="hidden md:flex w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <CheckCircle className="w-7 h-7 text-white" />
               </div>
             </div>
-            <div className="text-center">
-              <span className="text-3xl font-bold text-red-600 dark:text-red-400">{rejectedRequests.length}</span>
+          </CardBody>
+        </Card>
+
+        {/* Rejected Card */}
+        <Card className="overflow-hidden relative group hover:shadow-xl transition-all duration-300">
+          <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 via-red-400/5 to-transparent"></div>
+          <CardBody className="p-4 md:p-5 relative">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 md:hidden bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center text-white shadow-lg">
+                    <AlertTriangle className="w-4 h-4" />
+                  </div>
+                  <p className="text-xs md:text-sm text-red-600 dark:text-red-400 font-bold uppercase tracking-wide">
+                    Rejected
+                  </p>
+                </div>
+                <p className="text-3xl md:text-4xl font-extrabold bg-gradient-to-br from-red-600 to-red-800 dark:from-red-400 dark:to-red-600 bg-clip-text text-transparent">
+                  {rejectedRequests.length}
+                </p>
+                <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                  Declined requests
+                </p>
+              </div>
+              <div className="hidden md:flex w-14 h-14 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                <AlertTriangle className="w-7 h-7 text-white" />
+              </div>
             </div>
           </CardBody>
         </Card>
