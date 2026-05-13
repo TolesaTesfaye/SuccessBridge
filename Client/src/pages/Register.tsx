@@ -17,7 +17,6 @@ interface FormDataType {
   email: string
   password: string
   confirmPassword: string
-  role: 'student' | 'admin'
   studentType?: StudentType
   highSchoolGrade?: HighSchoolGrade
   highSchoolStream?: 'natural' | 'social' | null
@@ -49,7 +48,6 @@ export const Register: React.FC = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'student',
   })
   const [formError, setFormError] = useState<string | null>(null)
 
@@ -79,18 +77,11 @@ export const Register: React.FC = () => {
         setFormError('Password must be at least 6 characters')
         return false
       }
-      // For admin, also validate university and department
-      if (formData.role === 'admin') {
-        if (!formData.university || !formData.department) {
-          setFormError('Please select university and department')
-          return false
-        }
-      }
       return true
     }
 
     if (step === 2) {
-      if (formData.role === 'student' && !formData.studentType) {
+      if (!formData.studentType) {
         setFormError('Please select a student type')
         return false
       }
@@ -157,39 +148,27 @@ export const Register: React.FC = () => {
         name: fullName,
         email: formData.email,
         password: formData.password,
-        role: formData.role
+        role: 'student' // Always student for public registration
       }
 
       // Add student-specific fields only if they have values
-      if (formData.role === 'student') {
-        if (formData.studentType) {
-          payload.studentType = formData.studentType
-        }
-        if (formData.highSchoolGrade) {
-          payload.highSchoolGrade = formData.highSchoolGrade
-        }
-        if (formData.highSchoolStream) {
-          payload.highSchoolStream = formData.highSchoolStream
-        }
-        if (formData.universityLevel) {
-          payload.universityLevel = formData.universityLevel
-        }
-        if (formData.university) {
-          payload.university = formData.university
-        }
-        if (formData.department) {
-          payload.department = formData.department
-        }
+      if (formData.studentType) {
+        payload.studentType = formData.studentType
       }
-
-      // Add admin-specific fields
-      if (formData.role === 'admin') {
-        if (formData.university) {
-          payload.university = formData.university
-        }
-        if (formData.department) {
-          payload.department = formData.department
-        }
+      if (formData.highSchoolGrade) {
+        payload.highSchoolGrade = formData.highSchoolGrade
+      }
+      if (formData.highSchoolStream) {
+        payload.highSchoolStream = formData.highSchoolStream
+      }
+      if (formData.universityLevel) {
+        payload.universityLevel = formData.universityLevel
+      }
+      if (formData.university) {
+        payload.university = formData.university
+      }
+      if (formData.department) {
+        payload.department = formData.department
       }
       
       console.log('=== FRONTEND REGISTRATION ===')
@@ -200,15 +179,7 @@ export const Register: React.FC = () => {
       
       console.log('Registration result:', result)
       
-      if (formData.role === 'admin') {
-        // Admin registration - show success message and redirect to login
-        navigate('/login', { 
-          state: { 
-            message: '🎉 Admin registration request submitted successfully! Your application will be reviewed by the super admin. Once approved, you will receive an email to set up your password.',
-            type: 'info'
-          }
-        })
-      } else if (result) {
+      if (result) {
         // Student registration - redirect to verification page with email
         navigate('/verify-email', { 
           state: { 
@@ -239,9 +210,9 @@ export const Register: React.FC = () => {
   }
 
   const shouldShowStep = (): boolean => {
-    if (step === 2) return formData.role === 'student'
-    if (step === 3) return formData.role === 'student' && formData.studentType !== null
-    if (step === 4) return formData.role === 'student' && formData.studentType === 'university'
+    if (step === 2) return true // Always show student type selection
+    if (step === 3) return formData.studentType !== null
+    if (step === 4) return formData.studentType === 'university'
     return true
   }
 
@@ -250,9 +221,9 @@ export const Register: React.FC = () => {
     if (!shouldShowStep() && step > 1) {
       setStep(step + 1)
     }
-  }, [formData.role, formData.studentType, formData.universityLevel, step])
+  }, [formData.studentType, formData.universityLevel, step])
 
-  const totalSteps = formData.role === 'admin' ? 1 : formData.studentType === 'high_school' ? 3 : 4
+  const totalSteps = formData.studentType === 'high_school' ? 3 : 4
 
   return (
     <div className="min-h-screen relative overflow-hidden flex flex-col justify-center py-6 md:py-12 bg-slate-50 dark:bg-[#0a0f1c]">
@@ -341,87 +312,6 @@ export const Register: React.FC = () => {
                     required
                   />
 
-                  <FormSelect
-                    label="Account Type"
-                    name="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    options={[
-                      { value: 'student', label: 'Student' },
-                      { value: 'admin', label: 'Admin/Teacher' },
-                    ]}
-                  />
-
-                  {/* Admin-specific fields */}
-                  {formData.role === 'admin' && (
-                    <div className="space-y-3 md:space-y-4 mt-3 md:mt-4 p-3 md:p-4 bg-blue-50 dark:bg-blue-500/10 rounded-lg md:rounded-xl border border-blue-200 dark:border-blue-500/20">
-                      <h4 className="font-semibold text-blue-900 dark:text-blue-100 text-xs md:text-sm mb-2 md:mb-3 flex items-center gap-2">
-                        <GraduationCap className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                        Admin Institution Details
-                      </h4>
-                      
-                      <div className="grid grid-cols-1 gap-3 md:gap-4">
-                        <div className="space-y-1.5 md:space-y-2">
-                          <label className="block text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-300">University</label>
-                          <div className="relative">
-                            <select
-                              name="university"
-                              value={formData.university || ''}
-                              onChange={handleChange}
-                              className="w-full pl-3 md:pl-4 pr-8 md:pr-10 py-2 md:py-3 text-xs md:text-sm appearance-none border border-slate-300 dark:border-slate-700 rounded-lg md:rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors shadow-sm"
-                              required={formData.role === 'admin'}
-                            >
-                              <option value="" disabled>Choose your university...</option>
-                              {UNIVERSITIES.map(uni => (
-                                <option key={uni} value={uni}>
-                                  {uni}
-                                </option>
-                              ))}
-                            </select>
-                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 md:px-4 text-slate-500">
-                              <svg className="h-3 w-3 md:h-4 md:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="space-y-1.5 md:space-y-2">
-                          <label className="block text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-300">Department</label>
-                          <div className="relative">
-                            <select
-                              name="department"
-                              value={formData.department || ''}
-                              onChange={handleChange}
-                              className="w-full pl-3 md:pl-4 pr-8 md:pr-10 py-2 md:py-3 text-xs md:text-sm appearance-none border border-slate-300 dark:border-slate-700 rounded-lg md:rounded-xl bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors shadow-sm"
-                              required={formData.role === 'admin'}
-                            >
-                              <option value="" disabled>Choose your department...</option>
-                              {Object.keys(DEPARTMENTS).map(dept => (
-                                <option key={dept} value={dept}>
-                                  {dept}
-                                </option>
-                              ))}
-                            </select>
-                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 md:px-4 text-slate-500">
-                              <svg className="h-3 w-3 md:h-4 md:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20 rounded-lg p-2.5 md:p-3 mt-2 md:mt-3">
-                        <div className="flex items-start gap-1.5 md:gap-2">
-                          <AlertTriangle className="w-3.5 h-3.5 md:w-4 md:h-4 text-orange-600 dark:text-orange-400 mt-0.5 flex-shrink-0" />
-                          <div>
-                            <p className="text-orange-800 dark:text-orange-200 text-[10px] md:text-sm font-medium">Admin Account Approval Required</p>
-                            <p className="text-orange-700 dark:text-orange-300 text-[9px] md:text-xs mt-0.5 md:mt-1">
-                              Your admin account will be reviewed by super admin before activation. You'll be notified once approved.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-4">
                     <FormInput
                       label="Password"
@@ -447,16 +337,12 @@ export const Register: React.FC = () => {
                   </div>
 
                   <button
-                    type={formData.role === 'admin' ? 'submit' : 'button'}
-                    onClick={formData.role === 'admin' ? undefined : handleNext}
+                    type="button"
+                    onClick={handleNext}
                     disabled={loading}
                     className="w-full flex justify-center items-center gap-2 py-2.5 md:py-3 px-4 border border-transparent rounded-lg md:rounded-xl shadow-lg text-xs md:text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all shadow-blue-600/30 mt-4 md:mt-8"
                   >
-                    {formData.role === 'admin' ? (
-                      <><UserPlus className="w-3.5 h-3.5 md:w-4 md:h-4" /> {loading ? 'Creating Account...' : 'Register Admin'}</>
-                    ) : (
-                      <>Continue <ArrowRight className="w-3.5 h-3.5 md:w-4 md:h-4" /></>
-                    )}
+                    Continue <ArrowRight className="w-3.5 h-3.5 md:w-4 md:h-4" />
                   </button>
 
                   <div className="relative my-4 md:my-6">
@@ -481,7 +367,7 @@ export const Register: React.FC = () => {
               )}
 
               {/* Step 2: Student Type */}
-              {step === 2 && formData.role === 'student' && (
+              {step === 2 && (
                 <>
                   <label className="block text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2 mt-2 md:mt-4">Choose your academic path</label>
                   <div className="grid grid-cols-1 gap-3 md:gap-4">

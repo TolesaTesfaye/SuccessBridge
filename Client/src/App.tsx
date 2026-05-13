@@ -130,11 +130,12 @@ const SuperAdminResources = lazy(() =>
     default: m.SuperAdminResources,
   })),
 );
-const SuperAdminApprovals = lazy(() =>
-  import("@pages/superadmin/SuperAdminApprovals").then((m) => ({
-    default: m.SuperAdminApprovals,
-  })),
-);
+// DEPRECATED: Admin approval process removed
+// const SuperAdminApprovals = lazy(() =>
+//   import("@pages/superadmin/SuperAdminApprovals").then((m) => ({
+//     default: m.SuperAdminApprovals,
+//   })),
+// );
 const SuperAdminUniversities = lazy(() =>
   import("@pages/superadmin/SuperAdminUniversities").then((m) => ({
     default: m.SuperAdminUniversities,
@@ -456,14 +457,15 @@ const AppContent: React.FC = () => {
                   </ProtectedRoute>
                 }
               />
-              <Route
+              {/* DEPRECATED: Admin approval route removed */}
+              {/* <Route
                 path="/superadmin/approvals"
                 element={
                   <ProtectedRoute requiredRole="super_admin">
                     <SuperAdminApprovals />
                   </ProtectedRoute>
                 }
-              />
+              /> */}
               <Route
                 path="/superadmin/universities"
                 element={

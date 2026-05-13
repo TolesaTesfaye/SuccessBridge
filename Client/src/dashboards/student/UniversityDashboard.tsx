@@ -52,7 +52,9 @@ export const UniversityDashboard: React.FC = () => {
 
   // Learning Center Specific State
   const [learningSubject, setLearningSubject] = useState<string>(
-    activeCategory === "remedial" ? "Math" : "Psychology",
+    activeCategory === "remedial" ? "Math" : 
+    activeCategory === "senior" || activeCategory === "gc" ? "Python" :
+    "Psychology",
   );
 
   const isIntroductory =
@@ -69,6 +71,15 @@ export const UniversityDashboard: React.FC = () => {
         "Geography",
         "History",
         "English",
+      ];
+    }
+    if (activeCategory === "senior" || activeCategory === "gc") {
+      return [
+        "C++",
+        "Python",
+        "Java",
+        "Data Structures",
+        "Algorithms",
       ];
     }
     if (activeCategory === "remedial") {
@@ -207,6 +218,8 @@ export const UniversityDashboard: React.FC = () => {
       setLearningSubject("Math");
     } else if (activeCategory === "freshman") {
       setLearningSubject("Psychology");
+    } else if (activeCategory === "senior" || activeCategory === "gc") {
+      setLearningSubject("Python");
     }
   }, [activeCategory]);
 

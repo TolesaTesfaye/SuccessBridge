@@ -240,21 +240,25 @@ router.post(
   addDemoAdminRequest,
 );
 
+// ============================================
+// DEPRECATED: Admin Approval Routes
+// Admin approval process has been removed.
+// Admins now register directly without approval.
+// These routes are kept for backward compatibility only.
+// ============================================
+
 /**
  * @swagger
  * /auth/admin-requests:
  *   get:
- *     summary: Get all admin requests (Super Admin only)
+ *     summary: Get all admin requests (DEPRECATED - returns empty list)
+ *     deprecated: true
  *     tags: [Authentication]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of admin requests
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden - Super Admin access required
+ *         description: Empty list (approval process removed)
  */
 router.get(
   "/admin-requests",
@@ -267,26 +271,9 @@ router.get(
  * @swagger
  * /auth/admin-requests/{id}/approve:
  *   post:
- *     summary: Approve an admin request (Super Admin only)
+ *     summary: Approve an admin request (DEPRECATED - returns error)
+ *     deprecated: true
  *     tags: [Authentication]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Admin request ID
- *     responses:
- *       200:
- *         description: Admin request approved successfully
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden - Super Admin access required
- *       404:
- *         description: Admin request not found
  */
 router.post(
   "/admin-requests/:id/approve",
@@ -299,38 +286,9 @@ router.post(
  * @swagger
  * /auth/admin-requests/{id}/reject:
  *   post:
- *     summary: Reject an admin request (Super Admin only)
+ *     summary: Reject an admin request (DEPRECATED - returns error)
+ *     deprecated: true
  *     tags: [Authentication]
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Admin request ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - reason
- *             properties:
- *               reason:
- *                 type: string
- *                 description: Reason for rejection
- *     responses:
- *       200:
- *         description: Admin request rejected successfully
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden - Super Admin access required
- *       404:
- *         description: Admin request not found
  */
 router.post(
   "/admin-requests/:id/reject",
@@ -343,49 +301,9 @@ router.post(
  * @swagger
  * /auth/submit-admin-request:
  *   post:
- *     summary: Submit admin request with candidate details
+ *     summary: Submit admin request (DEPRECATED - use /register instead)
+ *     deprecated: true
  *     tags: [Authentication]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *               - name
- *               - university
- *               - department
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *                 description: Email address for the admin candidate
- *               password:
- *                 type: string
- *                 description: Password for the admin candidate
- *               name:
- *                 type: string
- *                 description: Full name of the admin candidate
- *               university:
- *                 type: string
- *                 description: University name
- *               department:
- *                 type: string
- *                 description: Department name
- *               stream:
- *                 type: string
- *                 description: Academic stream (optional)
- *     responses:
- *       200:
- *         description: Admin request submitted successfully
- *       400:
- *         description: Invalid request data
- *       401:
- *         description: Invalid credentials
- *       404:
- *         description: Admin request not found
  */
 router.post("/submit-admin-request", submitAdminRequest);
 
@@ -393,26 +311,9 @@ router.post("/submit-admin-request", submitAdminRequest);
  * @swagger
  * /auth/admin-request-status:
  *   post:
- *     summary: Check admin request status by email
+ *     summary: Check admin request status (DEPRECATED - always returns not_found)
+ *     deprecated: true
  *     tags: [Authentication]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *                 description: Email address used for admin request
- *     responses:
- *       200:
- *         description: Admin request status retrieved successfully
- *       404:
- *         description: No admin request found for this email
  */
 router.post("/admin-request-status", getAdminRequestStatus);
 

@@ -1,0 +1,147 @@
+import { SubjectConfig } from '../subjectRegistry';
+
+export const javaConfig: SubjectConfig = {
+  name: 'Java',
+  color: {
+    primary: '#007396',
+    secondary: '#EA2D2E',
+    gradient: 'from-blue-700 to-red-600',
+  },
+  chapters: [
+    {
+      id: 'introduction',
+      title: 'Introduction to Java',
+      subtopics: [
+        'What is Java?',
+        'Java Features',
+        'JDK, JRE, and JVM',
+        'Setting Up Java Environment',
+        'Your First Java Program',
+        'Java Program Structure',
+      ],
+    },
+    {
+      id: 'basics',
+      title: 'Java Basics',
+      subtopics: [
+        'Variables and Data Types',
+        'Operators',
+        'Type Casting',
+        'Input and Output',
+        'Comments',
+        'Keywords and Identifiers',
+      ],
+    },
+    {
+      id: 'control-flow',
+      title: 'Control Flow Statements',
+      subtopics: [
+        'If-Else Statements',
+        'Switch Statements',
+        'For Loops',
+        'While Loops',
+        'Do-While Loops',
+        'Break and Continue',
+        'Enhanced For Loop',
+      ],
+    },
+    {
+      id: 'arrays',
+      title: 'Arrays',
+      subtopics: [
+        'One-Dimensional Arrays',
+        'Multi-Dimensional Arrays',
+        'Array Operations',
+        'Arrays Class',
+        'Variable Arguments',
+      ],
+    },
+    {
+      id: 'methods',
+      title: 'Methods',
+      subtopics: [
+        'Method Declaration',
+        'Method Parameters',
+        'Return Types',
+        'Method Overloading',
+        'Recursion',
+        'Static Methods',
+      ],
+    },
+    {
+      id: 'oop',
+      title: 'Object-Oriented Programming',
+      subtopics: [
+        'Classes and Objects',
+        'Constructors',
+        'this Keyword',
+        'Encapsulation',
+        'Inheritance',
+        'Polymorphism',
+        'Abstraction',
+        'Interfaces',
+      ],
+    },
+    {
+      id: 'strings',
+      title: 'Strings',
+      subtopics: [
+        'String Class',
+        'String Methods',
+        'StringBuilder and StringBuffer',
+        'String Comparison',
+        'Regular Expressions',
+      ],
+    },
+    {
+      id: 'collections',
+      title: 'Collections Framework',
+      subtopics: [
+        'ArrayList',
+        'LinkedList',
+        'HashSet and TreeSet',
+        'HashMap and TreeMap',
+        'Queue and Stack',
+        'Iterators',
+        'Comparable and Comparator',
+      ],
+    },
+    {
+      id: 'exception-handling',
+      title: 'Exception Handling',
+      subtopics: [
+        'Try-Catch Blocks',
+        'Multiple Catch Blocks',
+        'Finally Block',
+        'Throw and Throws',
+        'Custom Exceptions',
+        'Checked vs Unchecked Exceptions',
+      ],
+    },
+    {
+      id: 'file-io',
+      title: 'File I/O',
+      subtopics: [
+        'File Class',
+        'Reading Files',
+        'Writing Files',
+        'BufferedReader and BufferedWriter',
+        'Serialization',
+        'NIO Package',
+      ],
+    },
+    {
+      id: 'advanced',
+      title: 'Advanced Topics',
+      subtopics: [
+        'Generics',
+        'Multithreading',
+        'Lambda Expressions',
+        'Stream API',
+        'Annotations',
+        'Reflection',
+        'JDBC Basics',
+      ],
+    },
+  ],
+};

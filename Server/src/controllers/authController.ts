@@ -14,7 +14,7 @@ export const register = async (
     console.log('=== REGISTRATION CONTROLLER ===');
     console.log('Request body:', JSON.stringify(req.body, null, 2));
     
-    const { email, name, password } = req.body;
+    const { email, name, password, role } = req.body;
     if (!email || !name || !password) {
       throw new AppError(400, "Email, name, and password are required");
     }
@@ -27,9 +27,14 @@ export const register = async (
 
     const result = await Promise.race([registrationPromise, timeoutPromise]) as any;
 
+    // For admin registration, return 201 with token for immediate login
+    // For student registration, return 201 with verification requirement
     res.status(201).json({
       success: true,
       data: result,
+      message: role === 'admin' 
+        ? 'Admin account created successfully! You can now log in.'
+        : result.message,
     });
   } catch (error: any) {
     console.error("Registration error:", error);

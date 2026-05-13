@@ -108,28 +108,10 @@ export class AuthService {
       }
     }
 
-    // Check if admin request already exists
-    if (role === "admin") {
-      const existingRequest = await AdminRequest.findOne({ where: { email } });
-      if (existingRequest) {
-        if (existingRequest.status === "pending") {
-          throw new AppError(
-            400,
-            "Admin registration request already submitted and pending approval",
-          );
-        } else if (existingRequest.status === "rejected") {
-          throw new AppError(
-            400,
-            `Previous admin request was rejected. Reason: ${existingRequest.rejectionReason || "No reason provided"}`,
-          );
-        }
-      }
-    }
-
     const hashedPassword = await bcrypt.hash(password, 10);
 
     if (role === "admin") {
-      // For admin registration, create AdminRequest for tracking
+      // For admin registration, create admin user directly
       if (!university || !department) {
         throw new AppError(
           400,
@@ -137,22 +119,34 @@ export class AuthService {
         );
       }
 
-      // Create admin request record for tracking
-      const adminRequest = await AdminRequest.create({
-        name,
+      // Create admin user directly (no approval needed)
+      const newAdmin = await User.create({
         email,
+        name,
         password: hashedPassword,
+        role: "admin",
         university,
         department,
-        documents: [],
-        status: "pending",
-      });
+        isApproved: true,
+        approvalStatus: "approved",
+        approvedAt: new Date(),
+        isEmailVerified: true,
+      } as any);
+
+      // Generate token for immediate login
+      const token = this.generateToken(newAdmin);
 
       return {
-        message:
-          "Admin registration request submitted successfully. Your application will be reviewed by the super admin.",
-        requestId: adminRequest.id,
-        status: "pending",
+        message: "Admin account created successfully! You can now log in.",
+        user: {
+          id: newAdmin.id,
+          email: newAdmin.email,
+          name: newAdmin.name,
+          role: newAdmin.role,
+          university: newAdmin.university,
+          department: newAdmin.department,
+        },
+        token,
       };
     } else {
       // For student registration, store in PendingUser table until email is verified
@@ -214,23 +208,6 @@ export class AuthService {
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
-      // Check if this is an admin trying to login before approval
-      const adminRequest = await AdminRequest.findOne({ where: { email } });
-      if (adminRequest) {
-        if (adminRequest.status === "pending") {
-          throw new AppError(
-            403,
-            "Your admin account is being processed. Please wait for approval before logging in. You will receive an email once your account is approved.",
-          );
-        }
-        if (adminRequest.status === "rejected") {
-          throw new AppError(
-            403,
-            `Your admin account request was rejected. Reason: ${adminRequest.rejectionReason || "No reason provided"}. Please contact support for more information.`,
-          );
-        }
-      }
-
       throw new AppError(401, "No account found with this email address. Please check your email or create a new account.");
     }
 
@@ -329,7 +306,7 @@ export class AuthService {
   }
 
   /**
-   * Get all admin requests
+   * Get all admin requests (deprecated - kept for backward compatibility)
    */
   static async getAllAdminRequests() {
     try {
@@ -340,169 +317,35 @@ export class AuthService {
   }
 
   /**
-   * Approve an admin request
+   * Approve an admin request (deprecated - admins are now auto-approved)
    */
   static async approveAdminRequest(requestId: string, approvedBy: string) {
-    try {
-      const adminRequest = await AdminRequest.findByPk(requestId);
-      if (!adminRequest) {
-        throw new AppError(404, "Admin request not found");
-      }
-
-      if (adminRequest.status !== "pending") {
-        throw new AppError(
-          400,
-          `Admin request is already ${adminRequest.status}`,
-        );
-      }
-
-      // Check if user already exists
-      const existingUser = await User.findOne({
-        where: { email: adminRequest.email },
-      });
-      if (existingUser) {
-        throw new AppError(400, "User account already exists for this email");
-      }
-
-      // Create the admin user
-      const newAdmin = await User.create({
-        email: adminRequest.email,
-        name: adminRequest.name,
-        password: adminRequest.password, // This is already the hashed password from the request
-        role: "admin",
-        university: adminRequest.university,
-        department: adminRequest.department,
-        isApproved: true,
-        approvalStatus: "approved",
-        approvedBy: approvedBy,
-        approvedAt: new Date(),
-      } as any);
-
-      // Update the admin request status
-      await adminRequest.update({
-        status: "approved",
-        reviewedBy: approvedBy,
-        reviewedAt: new Date(),
-      });
-
-      // Send confirmation email (stub)
-      try {
-        await EmailService.sendAdminApprovalEmail(
-          adminRequest.email,
-          adminRequest.name,
-        );
-      } catch (err) {
-        console.warn("Failed to send approval email:", err);
-      }
-
-      return {
-        message:
-          "Admin request approved successfully. The admin can now log in.",
-        user: { id: newAdmin.id, email: newAdmin.email },
-      };
-    } catch (error) {
-      if (error instanceof AppError) throw error;
-      console.error("Approve admin request error:", error);
-      throw new AppError(500, "Failed to approve admin request");
-    }
+    throw new AppError(400, "Admin approval process has been removed. Admins are now registered directly.");
   }
 
   /**
-   * Reject an admin request
+   * Reject an admin request (deprecated - admins are now auto-approved)
    */
   static async rejectAdminRequest(
     requestId: string,
     rejectedBy: string,
     reason: string,
   ) {
-    try {
-      const adminRequest = await AdminRequest.findByPk(requestId);
-      if (!adminRequest) {
-        throw new AppError(404, "Admin request not found");
-      }
-
-      if (adminRequest.status !== "pending") {
-        throw new AppError(400, "Admin request has already been processed");
-      }
-
-      await adminRequest.update({
-        status: "rejected",
-        reviewedBy: rejectedBy,
-        reviewedAt: new Date(),
-        rejectionReason: reason,
-      });
-
-      // Send rejection email (stub)
-      try {
-        await EmailService.sendAdminRejectionEmail(
-          adminRequest.email,
-          adminRequest.name,
-          reason,
-        );
-      } catch (err) {
-        console.warn("Failed to send rejection email:", err);
-      }
-
-      return adminRequest;
-    } catch (error) {
-      if (error instanceof AppError) throw error;
-      throw new AppError(500, "Failed to reject admin request");
-    }
+    throw new AppError(400, "Admin approval process has been removed. Admins are now registered directly.");
   }
 
   /**
-   * Submit an admin request (for existing admin flow)
+   * Submit an admin request (deprecated - use register instead)
    */
   static async submitAdminRequest(data: any) {
-    const { email, password, name, university, department, stream } = data;
-
-    if (!email || !password || !name || !university || !department) {
-      throw new AppError(
-        400,
-        "Email, password, name, university, and department are required",
-      );
-    }
-
-    // Prevent duplicates
-    const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) {
-      throw new AppError(400, "User already exists");
-    }
-
-    const existingRequest = await AdminRequest.findOne({ where: { email } });
-    if (existingRequest) {
-      if (existingRequest.status === "pending") {
-        throw new AppError(
-          400,
-          "Admin registration request already submitted and pending approval",
-        );
-      }
-      if (existingRequest.status === "rejected") {
-        throw new AppError(
-          400,
-          `Previous admin request was rejected. Reason: ${existingRequest.rejectionReason || "No reason provided"}`,
-        );
-      }
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    return await AdminRequest.create({
-      email,
-      password: hashedPassword,
-      name,
-      university,
-      department,
-      status: "pending",
-    });
+    throw new AppError(400, "Admin approval process has been removed. Please use the standard registration endpoint.");
   }
 
   /**
-   * Get admin request status
+   * Get admin request status (deprecated)
    */
   static async getAdminRequestStatus(email: string) {
-    const request = await AdminRequest.findOne({ where: { email } });
-    return request ? request.status : "not_found";
+    return "not_found";
   }
 
   /**
