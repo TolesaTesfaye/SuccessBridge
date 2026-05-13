@@ -1,5 +1,4 @@
 import User from '../models/User.js'
-import AdminRequest from '../models/AdminRequest.js'
 import bcrypt from 'bcryptjs'
 import { Op } from 'sequelize'
 
@@ -135,15 +134,6 @@ export class UserService {
     const user = await User.findByPk(id)
     if (!user) {
       throw new Error('User not found')
-    }
-
-    // If deleting an admin user, also clean up their admin request record
-    // This allows them to re-register if needed
-    if (user.role === 'admin') {
-      const adminRequest = await AdminRequest.findOne({ where: { email: user.email } })
-      if (adminRequest) {
-        await adminRequest.destroy()
-      }
     }
 
     await user.destroy()
