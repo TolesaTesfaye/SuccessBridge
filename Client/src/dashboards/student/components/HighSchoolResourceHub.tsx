@@ -57,65 +57,36 @@ export const HighSchoolResourceHub: React.FC<HighSchoolResourceHubProps> = ({
 
   return (
     <div className="w-full">
-      {/* Mobile-Optimized Search and Filter Section */}
+      {/* Search Bar */}
       <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
-        {/* Search Bar - Always Visible */}
-        <div className="p-2">
+        <div className="p-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 z-10" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search resources..."
-              className="w-full pl-9 md:pl-10 pr-9 md:pr-10 py-2 md:py-3 border-0 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 outline-none transition-all text-sm md:text-base"
+              className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 outline-none transition-all text-base rounded-lg border-0"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery("")}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 p-1"
               >
-                <X className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <X className="w-4 h-4" />
               </button>
             )}
           </div>
         </div>
 
-        {/* Filter Toggle Button - Mobile */}
-        <div className="px-2 pb-2">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="w-full flex items-center justify-between px-3 py-2 md:px-4 md:py-3 bg-slate-50 dark:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-          >
-            <div className="flex items-center gap-2">
-              <Filter className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-600 dark:text-slate-400" />
-              <span className="text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-300">
-                Filters {activeFiltersCount > 0 && `(${activeFiltersCount})`}
-              </span>
-            </div>
-            <svg
-              className={`w-4 h-4 md:w-5 md:h-5 text-slate-600 dark:text-slate-400 transition-transform ${showFilters ? "rotate-180" : ""}`}
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
-        </div>
-
-        {/* Collapsible Filters */}
-        {showFilters && (
-          <div className="px-2 pb-2 space-y-3 border-t border-slate-200 dark:border-slate-700 pt-2">
-            {/* Stream Selector (Only for 11 & 12) */}
+        {/* 3-Column Filter Grid */}
+        <div className="px-4 py-4 border-t border-slate-200 dark:border-slate-800">
+          <div className="grid grid-cols-3 gap-3">
+            {/* Stream Filter */}
             {(activeGrade === "grade_11" || activeGrade === "grade_12") && (
               <div>
-                <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
+                <label className="block text-xs font-medium text-slate-400 dark:text-slate-500 mb-2">
                   Stream
                 </label>
                 <select
@@ -123,7 +94,7 @@ export const HighSchoolResourceHub: React.FC<HighSchoolResourceHubProps> = ({
                   onChange={(e) =>
                     handleStreamChange((e.target.value as Stream) || null)
                   }
-                  className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all"
+                  className="w-full px-3 py-2.5 bg-slate-800/50 dark:bg-slate-800/80 border border-slate-700 dark:border-slate-600 rounded-lg text-white dark:text-slate-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                 >
                   <option value="">All Streams</option>
                   <option value="natural">Natural Science</option>
@@ -132,15 +103,15 @@ export const HighSchoolResourceHub: React.FC<HighSchoolResourceHubProps> = ({
               </div>
             )}
 
-            {/* Subject Selector */}
+            {/* Subject Filter */}
             <div>
-              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
+              <label className="block text-xs font-medium text-slate-400 dark:text-slate-500 mb-2">
                 Subject
               </label>
               <select
                 value={selectedSubject || ""}
                 onChange={(e) => setSelectedSubject(e.target.value || null)}
-                className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all"
+                className="w-full px-3 py-2.5 bg-slate-800/50 dark:bg-slate-800/80 border border-slate-700 dark:border-slate-600 rounded-lg text-white dark:text-slate-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
               >
                 <option value="">All Subjects</option>
                 {subjects.map((subject) => (
@@ -151,9 +122,9 @@ export const HighSchoolResourceHub: React.FC<HighSchoolResourceHubProps> = ({
               </select>
             </div>
 
-            {/* Resource Type Selector */}
+            {/* Resource Type Filter */}
             <div>
-              <label className="block text-xs font-semibold text-slate-600 dark:text-slate-400 mb-1.5">
+              <label className="block text-xs font-medium text-slate-400 dark:text-slate-500 mb-2">
                 Resource Type
               </label>
               <select
@@ -161,7 +132,7 @@ export const HighSchoolResourceHub: React.FC<HighSchoolResourceHubProps> = ({
                 onChange={(e) =>
                   setSelectedResourceType(e.target.value || null)
                 }
-                className="w-full px-3 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all"
+                className="w-full px-3 py-2.5 bg-slate-800/50 dark:bg-slate-800/80 border border-slate-700 dark:border-slate-600 rounded-lg text-white dark:text-slate-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
               >
                 <option value="">All Types</option>
                 {resourceTypes.map((type: string) => (
@@ -171,62 +142,23 @@ export const HighSchoolResourceHub: React.FC<HighSchoolResourceHubProps> = ({
                 ))}
               </select>
             </div>
-
-            {/* Clear Filters Button */}
-            {(selectedStream || selectedSubject || selectedResourceType) && (
-              <button
-                onClick={() => {
-                  handleStreamChange(null);
-                  setSelectedSubject(null);
-                  setSelectedResourceType(null);
-                }}
-                className="w-full px-4 py-2.5 text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-              >
-                Clear All Filters
-              </button>
-            )}
           </div>
-        )}
 
-        {/* Active Filters Pills - Mobile Optimized */}
-        {(selectedStream || selectedSubject || selectedResourceType) &&
-          !showFilters && (
-            <div className="px-2 pb-2 flex flex-wrap gap-2">
-              {selectedStream && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium">
-                  {selectedStream}
-                  <button
-                    onClick={() => handleStreamChange(null)}
-                    className="hover:text-blue-900 dark:hover:text-blue-100"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              )}
-              {selectedSubject && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 rounded-full text-xs font-medium">
-                  {selectedSubject}
-                  <button
-                    onClick={() => setSelectedSubject(null)}
-                    className="hover:text-emerald-900 dark:hover:text-emerald-100"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              )}
-              {selectedResourceType && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded-full text-xs font-medium">
-                  {selectedResourceType}
-                  <button
-                    onClick={() => setSelectedResourceType(null)}
-                    className="hover:text-purple-900 dark:hover:text-purple-100"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              )}
-            </div>
+          {/* Clear Filters Button */}
+          {(selectedStream || selectedSubject || selectedResourceType) && (
+            <button
+              onClick={() => {
+                handleStreamChange(null);
+                setSelectedSubject(null);
+                setSelectedResourceType(null);
+              }}
+              className="w-full mt-3 px-3 py-2 text-xs font-semibold text-red-400 dark:text-red-400 bg-red-500/10 dark:bg-red-500/10 border border-red-500/20 dark:border-red-500/20 rounded-lg hover:bg-red-500/20 dark:hover:bg-red-500/20 transition-colors flex items-center justify-center gap-2"
+            >
+              <X className="w-3 h-3" />
+              Clear Filters
+            </button>
           )}
+        </div>
       </div>
 
       {/* Results Count + Refresh */}
