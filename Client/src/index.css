@@ -48,6 +48,66 @@ html.dark body {
   @apply bg-blue-600/20 text-blue-600;
 }
 
+/* Mobile-Friendly Select Dropdowns */
+select {
+  /* Ensure minimum touch target size (44x44px recommended by Apple/Google) */
+  min-height: 44px;
+  
+  /* Better touch interaction */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  
+  /* Improve text readability on mobile */
+  font-size: 16px; /* Prevents zoom on iOS */
+  
+  /* Better spacing for mobile */
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+}
+
+/* Larger touch targets on mobile */
+@media (max-width: 768px) {
+  select {
+    min-height: 44px;
+    font-size: 14px;
+    padding: 0.625rem 0.75rem;
+    padding-right: 2.5rem; /* Space for dropdown arrow */
+  }
+  
+  /* Make option text more readable */
+  select option {
+    font-size: 14px;
+    padding: 0.5rem;
+  }
+}
+
+/* Desktop improvements */
+@media (min-width: 769px) {
+  select {
+    min-height: 48px;
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+    padding-right: 3rem;
+  }
+  
+  select option {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+  }
+}
+
+/* Improve focus states for accessibility */
+select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Better disabled state */
+select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 10px;

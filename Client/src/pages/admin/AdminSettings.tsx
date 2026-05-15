@@ -147,14 +147,17 @@ export const AdminSettings: React.FC = () => {
                       <select
                         value={settings.defaultLanguage}
                         onChange={(e) => handleChange('defaultLanguage', e.target.value)}
-                        className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-[#13141a] border border-slate-200 dark:border-white/10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-slate-900 dark:text-white font-semibold appearance-none transition-all hover:border-blue-500/30"
+                        className="w-full pl-10 md:pl-12 pr-10 md:pr-12 py-3 md:py-4 bg-slate-50 dark:bg-[#13141a] border border-slate-200 dark:border-white/10 rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-slate-900 dark:text-white font-semibold appearance-none transition-all hover:border-blue-500/30 touch-manipulation min-h-[44px] md:min-h-[48px] text-sm md:text-base"
                         disabled={loading}
                       >
-                        <option value="en">English (US)</option>
-                        <option value="am">Amharic (Ethiopia)</option>
-                        <option value="or">Oromo (Ethiopia)</option>
+                        <option value="en" className="text-sm md:text-base py-2">English (US)</option>
+                        <option value="am" className="text-sm md:text-base py-2">Amharic (Ethiopia)</option>
+                        <option value="or" className="text-sm md:text-base py-2">Oromo (Ethiopia)</option>
                       </select>
-                      <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                      <Globe className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-slate-400" />
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 md:px-4 text-slate-400">
+                        <svg className="h-4 w-4 md:h-5 md:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                      </div>
                     </div>
                   </div>
                   <div className="space-y-3">
@@ -163,14 +166,17 @@ export const AdminSettings: React.FC = () => {
                       <select
                         value={settings.timezone}
                         onChange={(e) => handleChange('timezone', e.target.value)}
-                        className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-[#13141a] border border-slate-200 dark:border-white/10 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-slate-900 dark:text-white font-semibold appearance-none transition-all hover:border-blue-500/30"
+                        className="w-full pl-10 md:pl-12 pr-10 md:pr-12 py-3 md:py-4 bg-slate-50 dark:bg-[#13141a] border border-slate-200 dark:border-white/10 rounded-xl md:rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-slate-900 dark:text-white font-semibold appearance-none transition-all hover:border-blue-500/30 touch-manipulation min-h-[44px] md:min-h-[48px] text-sm md:text-base"
                         disabled={loading}
                       >
-                        <option value="UTC">Coordinated Universal Time (UTC)</option>
-                        <option value="EAT">East Africa Time (EAT)</option>
-                        <option value="GMT">Greenwich Mean Time (GMT)</option>
+                        <option value="UTC" className="text-sm md:text-base py-2">Coordinated Universal Time (UTC)</option>
+                        <option value="EAT" className="text-sm md:text-base py-2">East Africa Time (EAT)</option>
+                        <option value="GMT" className="text-sm md:text-base py-2">Greenwich Mean Time (GMT)</option>
                       </select>
-                      <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                      <Clock className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-slate-400" />
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 md:px-4 text-slate-400">
+                        <svg className="h-4 w-4 md:h-5 md:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                      </div>
                     </div>
                   </div>
                 </div>

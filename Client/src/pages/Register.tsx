@@ -544,17 +544,17 @@ export const Register: React.FC = () => {
                         name="university"
                         value={formData.university || ''}
                         onChange={handleChange}
-                        className="w-full pl-3 md:pl-4 pr-8 md:pr-10 py-2 md:py-3 text-xs md:text-sm appearance-none border border-slate-300 dark:border-slate-700 rounded-lg md:rounded-xl bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors shadow-sm"
+                        className="w-full pl-3 md:pl-4 pr-10 md:pr-12 py-2.5 md:py-3 text-xs md:text-sm appearance-none border border-slate-300 dark:border-slate-700 rounded-lg md:rounded-xl bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors shadow-sm touch-manipulation min-h-[44px] md:min-h-[48px]"
                       >
-                        <option value="" disabled>Choose a university...</option>
+                        <option value="" disabled className="text-xs md:text-sm">Choose a university...</option>
                         {UNIVERSITIES.map(uni => (
-                          <option key={uni} value={uni}>
+                          <option key={uni} value={uni} className="text-xs md:text-sm py-2">
                             {uni}
                           </option>
                         ))}
                       </select>
-                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 md:px-4 text-slate-500">
-                        <svg className="h-3 w-3 md:h-4 md:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 md:px-4 text-slate-500">
+                        <svg className="h-4 w-4 md:h-5 md:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                       </div>
                     </div>
                   </div>
@@ -567,17 +567,17 @@ export const Register: React.FC = () => {
                           name="department"
                           value={formData.department || ''}
                           onChange={handleChange}
-                          className="w-full pl-3 md:pl-4 pr-8 md:pr-10 py-2 md:py-3 text-xs md:text-sm appearance-none border border-slate-300 dark:border-slate-700 rounded-lg md:rounded-xl bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors shadow-sm"
+                          className="w-full pl-3 md:pl-4 pr-10 md:pr-12 py-2.5 md:py-3 text-xs md:text-sm appearance-none border border-slate-300 dark:border-slate-700 rounded-lg md:rounded-xl bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors shadow-sm touch-manipulation min-h-[44px] md:min-h-[48px]"
                         >
-                          <option value="" disabled>Choose a department...</option>
+                          <option value="" disabled className="text-xs md:text-sm">Choose a department...</option>
                           {Object.keys(DEPARTMENTS).map(dept => (
-                            <option key={dept} value={dept}>
+                            <option key={dept} value={dept} className="text-xs md:text-sm py-2">
                               {dept}
                             </option>
                           ))}
                         </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
-                          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 md:px-4 text-slate-500">
+                          <svg className="h-4 w-4 md:h-5 md:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                         </div>
                       </div>
                     </div>

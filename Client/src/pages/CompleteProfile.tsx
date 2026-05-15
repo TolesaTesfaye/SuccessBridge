@@ -401,39 +401,49 @@ export const CompleteProfile: React.FC = () => {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     University Name
                   </label>
-                  <select
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                    value={profileData.university}
-                    onChange={(e) => updateProfileData('university', e.target.value)}
-                  >
-                    <option value="">Select a university</option>
-                    {universities.map((univ) => (
-                      <option key={univ.id} value={univ.id}>
-                        {univ.name}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative">
+                    <select
+                      className="w-full px-3 md:px-4 py-2.5 md:py-3 pr-10 md:pr-12 border border-gray-300 dark:border-gray-600 rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white appearance-none touch-manipulation min-h-[44px] md:min-h-[48px] text-sm md:text-base"
+                      value={profileData.university}
+                      onChange={(e) => updateProfileData('university', e.target.value)}
+                    >
+                      <option value="" className="text-sm md:text-base">Select a university</option>
+                      {universities.map((univ) => (
+                        <option key={univ.id} value={univ.id} className="text-sm md:text-base py-2">
+                          {univ.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 md:px-4 text-gray-500">
+                      <svg className="h-4 w-4 md:h-5 md:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                  </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Department
                   </label>
-                  <select
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white disabled:opacity-50"
-                    value={profileData.department}
-                    onChange={(e) => updateProfileData('department', e.target.value)}
-                    disabled={!profileData.university}
-                  >
-                    <option value="">
-                      {profileData.university ? 'Select a department' : 'Select university first'}
-                    </option>
-                    {filteredDepartments.map((dept) => (
-                      <option key={dept.id} value={dept.id}>
-                        {dept.name}
+                  <div className="relative">
+                    <select
+                      className="w-full px-3 md:px-4 py-2.5 md:py-3 pr-10 md:pr-12 border border-gray-300 dark:border-gray-600 rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white disabled:opacity-50 appearance-none touch-manipulation min-h-[44px] md:min-h-[48px] text-sm md:text-base"
+                      value={profileData.department}
+                      onChange={(e) => updateProfileData('department', e.target.value)}
+                      disabled={!profileData.university}
+                    >
+                      <option value="" className="text-sm md:text-base">
+                        {profileData.university ? 'Select a department' : 'Select university first'}
                       </option>
-                    ))}
-                  </select>
+                      {filteredDepartments.map((dept) => (
+                        <option key={dept.id} value={dept.id} className="text-sm md:text-base py-2">
+                          {dept.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 md:px-4 text-gray-500">
+                      <svg className="h-4 w-4 md:h-5 md:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
