@@ -1,7 +1,7 @@
 import React from "react";
 import { FormSelect } from "@components/forms/FormSelect";
 import { FormInput } from "@components/forms/FormInput";
-import { Search, ChevronDown, X } from "lucide-react";
+import { Search, ChevronDown, X, Filter, ChevronUp } from "lucide-react";
 
 interface ResourceFilterProps {
   onFilter: (filters: FilterOptions) => void;
@@ -25,6 +25,7 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
 }) => {
   const [filters, setFilters] = React.useState<FilterOptions>({});
   const [openDropdown, setOpenDropdown] = React.useState<string | null>(null);
+  const [isFiltersExpanded, setIsFiltersExpanded] = React.useState(false);
 
   const handleChange = (name: string, value: string) => {
     const updated = { ...filters, [name]: value || undefined };
@@ -106,19 +107,20 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
     const selectedOption = options.find(opt => opt.value === value);
     
     return (
-      <div className="relative">
+      <div className="relative mb-4">
+        {/* Label */}
+        <div className="text-sm font-medium text-slate-400 dark:text-slate-500 mb-2">
+          {label}
+        </div>
+        
+        {/* Dropdown Button */}
         <button
           onClick={() => setOpenDropdown(isOpen ? null : filterKey)}
-          className="w-full flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-left transition-all hover:border-blue-400 dark:hover:border-blue-500 active:scale-[0.98]"
+          className="w-full flex items-center justify-between px-4 py-3.5 bg-slate-800/50 dark:bg-slate-800/80 border border-slate-700 dark:border-slate-600 rounded-lg text-left transition-all hover:bg-slate-800/70 dark:hover:bg-slate-700/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <div className="flex-1">
-            <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-0.5">
-              {label}
-            </div>
-            <div className="text-sm font-semibold text-slate-900 dark:text-white truncate">
-              {selectedOption ? selectedOption.label : `Select ${label}`}
-            </div>
-          </div>
+          <span className="text-base text-white dark:text-slate-200 font-medium">
+            {selectedOption ? selectedOption.label : `All ${label}s`}
+          </span>
           <ChevronDown 
             className={`w-5 h-5 text-slate-400 transition-transform flex-shrink-0 ml-2 ${isOpen ? 'rotate-180' : ''}`} 
           />
@@ -129,36 +131,40 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
           <>
             {/* Backdrop */}
             <div 
-              className="fixed inset-0 bg-black/20 z-40"
+              className="fixed inset-0 bg-black/40 z-40"
               onClick={() => setOpenDropdown(null)}
             />
             
             {/* Options List */}
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl z-50 max-h-64 overflow-y-auto">
-              {/* Clear Option */}
-              {value && (
-                <button
-                  onClick={() => handleChange(filterKey, '')}
-                  className="w-full px-4 py-3 text-left text-sm font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 border-b border-slate-200 dark:border-slate-700 flex items-center gap-2"
-                >
-                  <X className="w-4 h-4" />
-                  Clear Selection
-                </button>
-              )}
+            <div className="absolute top-full left-0 right-0 mt-2 bg-slate-800 dark:bg-slate-800 border border-slate-700 dark:border-slate-600 rounded-lg shadow-2xl z-50 max-h-64 overflow-y-auto">
+              {/* All/Clear Option */}
+              <button
+                onClick={() => handleChange(filterKey, '')}
+                className={`w-full px-4 py-3 text-left text-sm transition-colors border-b border-slate-700 dark:border-slate-700 ${
+                  !value
+                    ? 'bg-blue-600/20 text-blue-400 font-semibold'
+                    : 'text-slate-300 dark:text-slate-300 hover:bg-slate-700/50 dark:hover:bg-slate-700'
+                }`}
+              >
+                All {label}s
+                {!value && (
+                  <span className="ml-2 text-blue-400">✓</span>
+                )}
+              </button>
               
               {options.map((option) => (
                 <button
                   key={option.value}
                   onClick={() => handleChange(filterKey, option.value)}
-                  className={`w-full px-4 py-3 text-left text-sm font-medium transition-colors ${
+                  className={`w-full px-4 py-3 text-left text-sm transition-colors ${
                     value === option.value
-                      ? 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-400 font-bold'
-                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                      ? 'bg-blue-600/20 text-blue-400 font-semibold'
+                      : 'text-slate-300 dark:text-slate-300 hover:bg-slate-700/50 dark:hover:bg-slate-700'
                   }`}
                 >
                   {option.label}
                   {value === option.value && (
-                    <span className="ml-2 text-blue-600 dark:text-blue-400">✓</span>
+                    <span className="ml-2 text-blue-400">✓</span>
                   )}
                 </button>
               ))}
@@ -170,25 +176,50 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-xl md:rounded-2xl border border-slate-200 dark:border-white/10 shadow-sm mb-4 md:mb-6 overflow-hidden">
+    <div className="bg-white dark:bg-slate-900 md:rounded-2xl border-b md:border border-slate-200 dark:border-slate-800 md:shadow-sm mb-0 md:mb-6 overflow-hidden">
       {/* Mobile Layout */}
-      <div className="md:hidden">
-        <div className="p-3 space-y-3">
-          {/* Search Bar */}
+      <div className="md:hidden bg-slate-900 dark:bg-slate-950">
+        {/* Search Bar */}
+        <div className="p-4 pb-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 z-10" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 z-10" />
             <input
               type="text"
               name="search"
               placeholder="Search resources..."
               value={filters.search || ""}
               onChange={(e) => handleChange('search', e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full pl-11 pr-4 py-3.5 bg-slate-800/50 dark:bg-slate-800/80 border border-slate-700 dark:border-slate-700 rounded-lg text-base text-white dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
+        </div>
 
-          {/* Filter Buttons - Vertical Stack */}
-          <div className="space-y-2">
+        {/* Filters Accordion Header */}
+        <button
+          onClick={() => setIsFiltersExpanded(!isFiltersExpanded)}
+          className="w-full flex items-center justify-between px-4 py-3 bg-slate-900/50 dark:bg-slate-900/80 border-y border-slate-800 dark:border-slate-800 hover:bg-slate-800/30 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <Filter className="w-5 h-5 text-slate-400" />
+            <span className="text-base font-semibold text-white dark:text-white">
+              Filters
+            </span>
+            {activeFilterCount > 0 && (
+              <span className="ml-2 px-2 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full">
+                {activeFilterCount}
+              </span>
+            )}
+          </div>
+          {isFiltersExpanded ? (
+            <ChevronUp className="w-5 h-5 text-slate-400" />
+          ) : (
+            <ChevronDown className="w-5 h-5 text-slate-400" />
+          )}
+        </button>
+
+        {/* Collapsible Filter Content */}
+        {isFiltersExpanded && (
+          <div className="px-4 py-4 bg-slate-900 dark:bg-slate-950 border-b border-slate-800">
             {/* High School Filters */}
             {educationLevel === "high_school" && (
               <>
@@ -197,12 +228,6 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
                   value={filters.stream || ''}
                   filterKey="stream"
                   options={streams}
-                />
-                <MobileFilterButton
-                  label="Grade"
-                  value={filters.grade || ''}
-                  filterKey="grade"
-                  options={grades}
                 />
                 <MobileFilterButton
                   label="Subject"
@@ -254,19 +279,19 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
                 />
               </>
             )}
-          </div>
 
-          {/* Clear All Button */}
-          {activeFilterCount > 0 && (
-            <button
-              onClick={clearFilters}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-xl hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors"
-            >
-              <X className="w-4 h-4" />
-              Clear All Filters ({activeFilterCount})
-            </button>
-          )}
-        </div>
+            {/* Clear All Button */}
+            {activeFilterCount > 0 && (
+              <button
+                onClick={clearFilters}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-red-400 dark:text-red-400 bg-red-500/10 dark:bg-red-500/10 border border-red-500/20 dark:border-red-500/20 rounded-lg hover:bg-red-500/20 dark:hover:bg-red-500/20 transition-colors mt-2"
+              >
+                <X className="w-4 h-4" />
+                Clear All Filters
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Desktop Layout - Original Grid */}
