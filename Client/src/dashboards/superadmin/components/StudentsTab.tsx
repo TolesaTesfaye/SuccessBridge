@@ -163,7 +163,7 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({
               >
                 {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-transparent to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                
+
                 <div className="relative space-y-3">
                   {/* Header with Avatar and Status */}
                   <div className="flex items-start gap-3">
@@ -190,8 +190,12 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({
                   {/* Info Grid */}
                   <div className="grid grid-cols-2 gap-2">
                     <div className="bg-white/60 dark:bg-slate-900/40 backdrop-blur-sm rounded-xl p-3 border border-slate-100 dark:border-white/5">
-                      <div className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${student.universityId ? "text-blue-500" : "text-orange-500"}`}>
-                        {student.universityId ? "🎓 University" : "📚 High School"}
+                      <div
+                        className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${student.universityId ? "text-blue-500" : "text-orange-500"}`}
+                      >
+                        {student.universityId
+                          ? "🎓 University"
+                          : "📚 High School"}
                       </div>
                       <div className="font-bold text-slate-900 dark:text-white text-sm truncate">
                         {student.universityId || "General HS"}
@@ -203,7 +207,9 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({
                       </div>
                       <div className="font-bold text-slate-900 dark:text-white text-sm truncate">
                         {student.departmentId ||
-                          (student.gradeId ? `Grade ${student.gradeId}` : "N/A")}
+                          (student.gradeId
+                            ? `Grade ${student.gradeId}`
+                            : "N/A")}
                       </div>
                     </div>
                     <div className="bg-white/60 dark:bg-slate-900/40 backdrop-blur-sm rounded-xl p-3 border border-slate-100 dark:border-white/5 col-span-2">
@@ -246,23 +252,23 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({
         <div className="hidden md:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gradient-to-r from-purple-50/50 to-indigo-50/50 dark:from-purple-900/20 dark:to-indigo-900/20 border-y border-purple-100 dark:border-purple-900/30">
-                <th className="px-6 py-4 text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
+              <tr className="bg-gradient-to-r from-purple-50/50 to-indigo-50/50 dark:from-slate-800 dark:to-slate-800 border-y border-purple-100 dark:border-slate-700">
+                <th className="px-6 py-4 text-xs font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wider">
                   Student Identity
                 </th>
-                <th className="px-6 py-4 text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
+                <th className="px-6 py-4 text-xs font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wider">
                   Education Level
                 </th>
-                <th className="px-6 py-4 text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
+                <th className="px-6 py-4 text-xs font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wider">
                   Academic Area
                 </th>
-                <th className="px-6 py-4 text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
+                <th className="px-6 py-4 text-xs font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wider">
                   Joined Date
                 </th>
-                <th className="px-6 py-4 text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
+                <th className="px-6 py-4 text-xs font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-4 text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider text-right">
+                <th className="px-6 py-4 text-xs font-bold text-purple-700 dark:text-purple-300 uppercase tracking-wider text-right">
                   Actions
                 </th>
               </tr>
@@ -316,7 +322,11 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({
                           }`}
                         >
                           <span>{student.universityId ? "🎓" : "📚"}</span>
-                          <span>{student.universityId ? "University" : "High School"}</span>
+                          <span>
+                            {student.universityId
+                              ? "University"
+                              : "High School"}
+                          </span>
                         </span>
                         <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
                           {student.universityId || "General High School"}

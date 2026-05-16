@@ -171,14 +171,18 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
   }
 
   return (
-    <div className="flex flex-col min-h-screen -mt-6 -mx-4 pb-12 bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-slate-900 dark:via-blue-950 dark:to-indigo-950 text-slate-800 dark:text-slate-200 transition-colors duration-300 overflow-hidden">
+    <div className="flex flex-col min-h-screen -mt-6 -mx-4 pb-12 bg-slate-900 text-slate-200 transition-colors duration-300 overflow-hidden">
+      {/* Command Interface Background Pattern */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMiI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyek0zNiAzMHYySDI0di0yaDEyek0zNiAyNnYySDI0di0yaDEyeiIvPjwvZz48L2c+PC9zdmc+')] opacity-30 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 pointer-events-none"></div>
+
       {/* Premium Hero Section - Admin Landing Style */}
       <section className="relative pt-24 pb-20 overflow-hidden">
-        {/* Background Decorative Elements */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[600px] opacity-30 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 dark:from-blue-600 dark:to-purple-600 blur-[120px] rounded-full"></div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[500px] bg-gradient-to-r from-cyan-300 to-emerald-300 dark:from-cyan-500 dark:to-emerald-500 blur-[120px] rounded-full opacity-60"></div>
-          <div className="absolute bottom-0 right-0 w-[800px] h-[400px] bg-gradient-to-r from-amber-200 to-pink-200 dark:from-amber-500 dark:to-pink-500 blur-[100px] rounded-full"></div>
+        {/* Background Decorative Elements - Dark Mode */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[600px] opacity-20 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 blur-[150px] rounded-full"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[500px] bg-gradient-to-r from-cyan-600 to-emerald-600 blur-[150px] rounded-full opacity-40"></div>
+          <div className="absolute bottom-0 right-0 w-[800px] h-[400px] bg-gradient-to-r from-indigo-600 to-purple-600 blur-[120px] rounded-full opacity-30"></div>
         </div>
 
         <div className="container mx-auto px-8 relative z-10">
@@ -385,13 +389,19 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
       <section className="mb-8 relative">
         <div className="relative bg-transparent p-8 lg:p-12 overflow-visible">
           {/* Curved/Wavy Background Shape */}
-          <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 1200 400">
+          <svg
+            className="absolute inset-0 w-full h-full"
+            preserveAspectRatio="none"
+            viewBox="0 0 1200 400"
+          >
             <defs>
-              <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style={{ stopColor: '#4F46E5', stopOpacity: 0.85 }} />
-                <stop offset="50%" style={{ stopColor: '#3B82F6', stopOpacity: 0.85 }} />
-                <stop offset="100%" style={{ stopColor: '#06B6D4', stopOpacity: 0.85 }} />
-              </linearGradient>
+              <linearGradient
+                id="gradient1"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              ></linearGradient>
             </defs>
             <path
               d="M0,80 C200,20 400,20 600,80 C800,140 1000,140 1200,80 L1200,320 C1000,380 800,380 600,320 C400,260 200,260 0,320 Z"
@@ -465,13 +475,19 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
       <section className="mb-8 relative">
         <div className="p-8 lg:p-10 text-white text-center relative overflow-visible space-y-6">
           {/* Curved/Wavy Background Shape */}
-          <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 1200 300">
+          <svg
+            className="absolute inset-0 w-full h-full"
+            preserveAspectRatio="none"
+            viewBox="0 0 1200 300"
+          >
             <defs>
-              <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style={{ stopColor: '#7C3AED', stopOpacity: 0.9 }} />
-                <stop offset="50%" style={{ stopColor: '#9333EA', stopOpacity: 0.9 }} />
-                <stop offset="100%" style={{ stopColor: '#C026D3', stopOpacity: 0.9 }} />
-              </linearGradient>
+              <linearGradient
+                id="gradient2"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              ></linearGradient>
             </defs>
             <path
               d="M0,60 C300,10 600,10 900,60 C1050,85 1125,85 1200,60 L1200,240 C1125,265 1050,265 900,240 C600,190 300,190 0,240 Z"

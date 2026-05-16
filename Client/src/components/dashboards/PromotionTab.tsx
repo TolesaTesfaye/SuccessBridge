@@ -14,18 +14,96 @@ import {
   Award,
   Users,
   Rocket,
+  Play,
+  Eye,
 } from "lucide-react";
+import portfolioThumb from "../../assets/portifolio.png";
+import githubThumb from "../../assets/github.png";
+import youtubeThumb from "../../assets/youtube.png";
+import linkedinThumb from "../../assets/linkedin.png";
 
 export const PromotionTab: React.FC = () => {
+  // Featured YouTube Videos - Professional Video Gallery
+  const featuredVideos = [
+    {
+      videoId: "TZgjn2hvZcU",
+      title: "SuccessBridge Platform Overview",
+      description:
+        "Discover how SuccessBridge is revolutionizing education for Ethiopian students.",
+      views: "1.2K",
+    },
+    {
+      videoId: "mE4Y2O1fPWQ",
+      title: "Developer Journey & Vision",
+      description:
+        "Learn about the inspiration and vision behind SuccessBridge.",
+      views: "856",
+    },
+    {
+      videoId: "so6vRW0Heds",
+      title: "Student Success Stories",
+      description:
+        "See how students are achieving their academic goals with SuccessBridge.",
+      views: "2.1K",
+    },
+    {
+      videoId: "0KUKX3f9HEE",
+      title: "Platform Features & Tutorials",
+      description:
+        "Explore the key features and learn how to make the most of SuccessBridge.",
+      views: "1.5K",
+    },
+  ];
+
+  // Developer Social Links as Cards
+  const socialLinks = [
+    {
+      name: "Portfolio",
+      url: "https://my-portfolio-lastport.vercel.app/",
+      icon: Globe,
+      color: "from-blue-500 to-cyan-500",
+      bgColor: "bg-blue-50 dark:bg-blue-900/20",
+      textColor: "text-blue-600 dark:text-blue-400",
+      description: "Explore my professional projects and work",
+      thumbnail: portfolioThumb,
+    },
+    {
+      name: "GitHub",
+      url: "https://github.com/TolesaTesfaye",
+      icon: Github,
+      color: "from-gray-700 to-gray-900",
+      bgColor: "bg-gray-100 dark:bg-gray-800/20",
+      textColor: "text-gray-800 dark:text-gray-300",
+      description: "Check out my open-source contributions",
+      thumbnail: githubThumb,
+    },
+    {
+      name: "LinkedIn",
+      url: "https://www.linkedin.com/in/tolesa-tesfaye-9057a538b/",
+      icon: Linkedin,
+      color: "from-blue-600 to-blue-800",
+      bgColor: "bg-blue-50 dark:bg-blue-900/20",
+      textColor: "text-blue-700 dark:text-blue-400",
+      description: "Connect with me professionally",
+      thumbnail: linkedinThumb,
+    },
+    {
+      name: "YouTube",
+      url: "https://www.youtube.com/@tolinaaf",
+      icon: Youtube,
+      color: "from-red-500 to-red-700",
+      bgColor: "bg-red-50 dark:bg-red-900/20",
+      textColor: "text-red-600 dark:text-red-400",
+      description: "Subscribe for educational content",
+      thumbnail: youtubeThumb,
+    },
+  ];
+
   const developer = {
     name: "Tolesa Tesfaye",
     title: "Full-Stack Developer & Creator of SuccessBridge",
-    bio: "Passionate about building educational technology that empowers Ethiopian students to achieve their academic dreams.",
+    bio: "Passionate about building educational technology that empowers Ethiopian students to achieve their academic dreams. With expertise in modern web technologies and a commitment to quality education, I'm dedicated to creating platforms that make learning accessible and engaging.",
     portfolio: "https://my-portfolio-lastport.vercel.app/",
-    github: "https://github.com/TolesaTesfaye",
-    linkedin: "https://www.linkedin.com/in/tolesa-tesfaye-9057a538b/",
-    youtube: "https://www.youtube.com/@tolinaaf",
-    twitter: "https://twitter.com/tolesatesfaye",
     email: "tolesatesfaye273@gmail.com",
   };
 
@@ -80,31 +158,112 @@ export const PromotionTab: React.FC = () => {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 md:space-y-8 pb-12 px-2 md:px-0">
-      {/* Hero Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 p-6 md:p-12 text-white shadow-2xl -mx-2 md:-mx-0">
-        <div className="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-black/10 rounded-full blur-3xl"></div>
-
-        <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="w-5 h-5 md:w-6 md:h-6" />
-            <span className="text-xs md:text-sm font-bold uppercase tracking-wider">
-              About SuccessBridge
-            </span>
+    <div className="max-w-7xl mx-auto space-y-6 md:space-y-10 pb-12 px-2 md:px-0">
+      {/* Hero Banner - Enhanced */}
+      <Card className="border-none shadow-2xl overflow-hidden -mx-2 md:-mx-0">
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-8 md:p-16 text-center">
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 mb-6">
+              <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-blue-500" />
+              <span className="text-xs md:text-sm font-bold uppercase tracking-wider">
+                About SuccessBridge
+              </span>
+            </div>
+            <h2 className="text-3xl md:text-5xl font-black mb-4 leading-tight text-slate-900 dark:text-white">
+              Empowering Ethiopian
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+                Students
+              </span>
+            </h2>
+            <p className="text-sm md:text-lg text-slate-600 dark:text-slate-400 max-w-3xl mx-auto leading-relaxed">
+              SuccessBridge is a comprehensive learning platform designed
+              specifically for Ethiopian high school and university students.
+              Our mission is to bridge the gap between ambition and achievement
+              by providing quality educational resources, smart assessments, and
+              personalized learning analytics.
+            </p>
           </div>
-          <h2 className="text-2xl md:text-4xl font-black mb-3 md:mb-4 leading-tight">
-            Empowering Ethiopian Students
-          </h2>
-          <p className="text-sm md:text-lg text-blue-100 max-w-3xl leading-relaxed">
-            SuccessBridge is a comprehensive learning platform designed
-            specifically for Ethiopian high school and university students. Our
-            mission is to bridge the gap between ambition and achievement by
-            providing quality educational resources, smart assessments, and
-            personalized learning analytics.
-          </p>
         </div>
-      </div>
+      </Card>
+
+      {/* Developer Social Cards - New Professional Section */}
+      <Card className="border-none shadow-2xl overflow-hidden">
+        <div className="bg-gradient-to-r from-slate-50 to-blue-50 dark:from-slate-800 dark:to-blue-900/20 px-6 py-4 md:px-10 md:py-8 border-b border-slate-200 dark:border-slate-700">
+          <h3 className="text-lg md:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+              <Code className="w-5 h-5 md:w-6 md:h-6 text-white" />
+            </div>
+            Connect With the Developer
+          </h3>
+        </div>
+        <CardBody className="p-6 md:p-10">
+          {/* Developer Info */}
+          <div className="text-center mb-10">
+            <div className="w-24 h-24 md:w-32 md:h-32 mx-auto rounded-3xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center text-white text-4xl md:text-5xl font-black shadow-2xl mb-4">
+              {developer.name
+                .split(" ")
+                .map((n) => n[0])
+                .join("")}
+            </div>
+            <h4 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white mb-2">
+              {developer.name}
+            </h4>
+            <p className="text-sm md:text-base text-blue-600 dark:text-blue-400 font-semibold mb-4">
+              {developer.title}
+            </p>
+            <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl mx-auto">
+              {developer.bio}
+            </p>
+          </div>
+
+          {/* Social Link Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            {socialLinks.map((link, index) => (
+              <a
+                key={index}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 p-0 hover:shadow-2xl hover:scale-105 transition-all duration-300 bg-white dark:bg-slate-800"
+              >
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${link.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
+                />
+                {link.thumbnail && (
+                  <div className="relative h-32 overflow-hidden">
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${link.color} opacity-20`}
+                    />
+                    <img
+                      src={link.thumbnail}
+                      alt={`${link.name} thumbnail`}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                  </div>
+                )}
+                <div className="relative p-6">
+                  <div
+                    className={`w-14 h-14 rounded-2xl ${link.bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
+                  >
+                    <link.icon className={`w-7 h-7 ${link.textColor}`} />
+                  </div>
+                  <h5 className="text-lg font-black text-slate-900 dark:text-white mb-2">
+                    {link.name}
+                  </h5>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+                    {link.description}
+                  </p>
+                  <div className="flex items-center gap-2 text-sm font-bold text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    <span>Visit</span>
+                    <ExternalLink className="w-4 h-4" />
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </CardBody>
+      </Card>
 
       {/* Why Choose SuccessBridge */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
@@ -128,89 +287,9 @@ export const PromotionTab: React.FC = () => {
         ))}
       </div>
 
-      {/* Developer Section */}
-      <Card className="border-none shadow-xl overflow-hidden">
-        <div className="bg-gradient-to-r from-slate-50 to-blue-50 dark:from-slate-800 dark:to-blue-900/20 px-4 py-3 md:px-8 md:py-6 border-b border-slate-200 dark:border-slate-700">
-          <h3 className="text-lg md:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2 md:gap-3">
-            <Code className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
-            Meet the Developer
-          </h3>
-        </div>
-        <CardBody className="p-4 md:p-8">
-          <div className="flex flex-col md:flex-row gap-6 md:gap-8">
-            <div className="flex-shrink-0">
-              <div className="w-24 h-24 md:w-32 md:h-32 rounded-2xl md:rounded-3xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-3xl md:text-4xl font-black shadow-xl mx-auto md:mx-0">
-                {developer.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
-              </div>
-            </div>
-
-            <div className="flex-1 text-center md:text-left">
-              <h4 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-1 md:mb-2">
-                {developer.name}
-              </h4>
-              <p className="text-xs md:text-sm text-blue-600 dark:text-blue-400 font-semibold mb-3 md:mb-4">
-                {developer.title}
-              </p>
-              <p className="text-xs md:text-base text-slate-600 dark:text-slate-400 leading-relaxed mb-4 md:mb-6">
-                {developer.bio}
-              </p>
-
-              <div className="flex flex-wrap gap-2 md:gap-3 justify-center md:justify-start">
-                <a
-                  href={developer.portfolio}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg md:rounded-xl font-semibold text-xs md:text-sm transition-all hover:scale-105 shadow-lg"
-                >
-                  <Globe className="w-3 h-3 md:w-4 md:h-4" />
-                  Portfolio
-                </a>
-                <a
-                  href={developer.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg md:rounded-xl font-semibold text-xs md:text-sm transition-all hover:scale-105"
-                >
-                  <Github className="w-3 h-3 md:w-4 md:h-4" />
-                  GitHub
-                </a>
-                <a
-                  href={developer.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-blue-700 hover:bg-blue-800 text-white rounded-lg md:rounded-xl font-semibold text-xs md:text-sm transition-all hover:scale-105"
-                >
-                  <Linkedin className="w-3 h-3 md:w-4 md:h-4" />
-                  LinkedIn
-                </a>
-                <a
-                  href={developer.youtube}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg md:rounded-xl font-semibold text-xs md:text-sm transition-all hover:scale-105"
-                >
-                  <Youtube className="w-3 h-3 md:w-4 md:h-4" />
-                  YouTube
-                </a>
-                <a
-                  href={`mailto:${developer.email}`}
-                  className="inline-flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-1.5 md:py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg md:rounded-xl font-semibold text-xs md:text-sm transition-all hover:scale-105"
-                >
-                  <Mail className="w-3 h-3 md:w-4 md:h-4" />
-                  Email
-                </a>
-              </div>
-            </div>
-          </div>
-        </CardBody>
-      </Card>
-
       {/* Online Courses */}
-      <Card className="border-none shadow-xl overflow-hidden">
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 px-4 py-3 md:px-8 md:py-6 border-b border-slate-200 dark:border-slate-700">
+      <Card className="border-none shadow-2xl overflow-hidden">
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 px-6 py-4 md:px-10 md:py-8 border-b border-slate-200 dark:border-slate-700">
           <h3 className="text-lg md:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-2 md:gap-3">
             <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-purple-600" />
             Online Courses & Resources
@@ -257,24 +336,138 @@ export const PromotionTab: React.FC = () => {
         </CardBody>
       </Card>
 
-      {/* Call to Action */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 md:p-12 text-center text-white shadow-2xl -mx-2 md:-mx-0">
-        <h3 className="text-xl md:text-3xl font-black mb-3 md:mb-4">
-          Want to Build Something Amazing?
-        </h3>
-        <p className="text-sm md:text-lg text-indigo-100 mb-4 md:mb-6 max-w-2xl mx-auto leading-relaxed">
-          Interested in collaborating on educational technology projects or need
-          a custom learning platform? Let's connect and create something
-          impactful together!
-        </p>
-        <a
-          href={`mailto:${developer.email}`}
-          className="inline-flex items-center gap-2 px-6 md:px-8 py-2.5 md:py-3 bg-white text-indigo-600 rounded-xl md:rounded-2xl font-bold text-sm md:text-base hover:bg-indigo-50 transition-all hover:scale-105 shadow-xl"
-        >
-          <Mail className="w-4 h-4 md:w-5 md:h-5" />
-          Get in Touch
-        </a>
-      </div>
+      {/* Featured Video Gallery - Professional Layout */}
+      <Card className="border-none shadow-2xl overflow-hidden">
+        <div className="bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 px-6 py-4 md:px-10 md:py-8 border-b border-slate-200 dark:border-slate-700">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-red-500 flex items-center justify-center">
+              <Youtube className="w-5 h-5 md:w-6 md:h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-lg md:text-2xl font-black text-slate-900 dark:text-white">
+                Featured Video Gallery
+              </h3>
+              <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
+                Watch and learn from our curated video content
+              </p>
+            </div>
+          </div>
+        </div>
+        <CardBody className="p-4 md:p-8">
+          {/* Main Featured Video */}
+          <div className="max-w-5xl mx-auto mb-10">
+            <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl bg-slate-900 group">
+              <iframe
+                src={`https://www.youtube.com/embed/${featuredVideos[0].videoId}?rel=0&modestbranding=1`}
+                title={featuredVideos[0].title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                <div className="text-white">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Eye className="w-4 h-4" />
+                    <span>{featuredVideos[0].views} views</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 text-center">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-bold uppercase tracking-wider mb-3">
+                <Play className="w-3 h-3" />
+                Featured Video
+              </div>
+              <h4 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-3">
+                {featuredVideos[0].title}
+              </h4>
+              <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+                {featuredVideos[0].description}
+              </p>
+            </div>
+          </div>
+
+          {/* Video Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto">
+            {featuredVideos.slice(1).map((video, index) => (
+              <div
+                key={index}
+                className="group relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 hover:shadow-2xl hover:border-red-300 dark:hover:border-red-700 transition-all duration-300 bg-white dark:bg-slate-800"
+              >
+                <div className="relative aspect-video overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10" />
+                  <iframe
+                    src={`https://www.youtube.com/embed/${video.videoId}?rel=0&modestbranding=1`}
+                    title={video.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="absolute inset-0 w-full h-full group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute bottom-3 left-3 z-20">
+                    <div className="flex items-center gap-1.5 text-white/90 text-xs">
+                      <Eye className="w-3 h-3" />
+                      <span>{video.views}</span>
+                    </div>
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center shadow-lg">
+                      <Play className="w-5 h-5 text-white ml-1" />
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <h5 className="text-sm md:text-base font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                    {video.title}
+                  </h5>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">
+                    {video.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardBody>
+      </Card>
+
+      {/* Call to Action - Enhanced */}
+      <Card className="border-none shadow-2xl overflow-hidden -mx-2 md:-mx-0">
+        <div className="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-900/20 dark:via-purple-900/20 dark:to-pink-900/20 p-8 md:p-16 text-center">
+          <div className="relative z-10">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 mb-6">
+              <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-indigo-500" />
+              <span className="text-xs font-bold uppercase tracking-wider">
+                Let's Connect
+              </span>
+            </div>
+            <h3 className="text-2xl md:text-4xl font-black mb-4 text-slate-900 dark:text-white">
+              Want to Build Something Amazing?
+            </h3>
+            <p className="text-sm md:text-lg text-slate-600 dark:text-slate-400 mb-8 max-w-2xl mx-auto leading-relaxed">
+              Interested in collaborating on educational technology projects or
+              need a custom learning platform? Let's connect and create
+              something impactful together!
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a
+                href={`mailto:${developer.email}`}
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl md:rounded-2xl font-bold text-sm md:text-base transition-all hover:scale-105 shadow-xl"
+              >
+                <Mail className="w-4 h-4 md:w-5 md:h-5" />
+                Get in Touch
+              </a>
+              <a
+                href={developer.portfolio}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-xl md:rounded-2xl font-bold text-sm md:text-base border border-indigo-200 dark:border-indigo-700 transition-all hover:scale-105 shadow-xl"
+              >
+                <Globe className="w-4 h-4 md:w-5 md:h-5" />
+                View Portfolio
+              </a>
+            </div>
+          </div>
+        </div>
+      </Card>
     </div>
   );
 };
