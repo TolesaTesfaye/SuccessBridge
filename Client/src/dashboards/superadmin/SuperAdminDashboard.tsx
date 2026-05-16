@@ -25,6 +25,7 @@ import {
   HighSchoolGradeDashboard,
   UniversityLevelDashboard,
   StudentViewWrapper,
+  SecurityTab,
 } from "./components";
 
 export const SuperAdminDashboard: React.FC = () => {
@@ -340,6 +341,17 @@ export const SuperAdminDashboard: React.FC = () => {
           >
             Admin View
           </button>
+          <button
+            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
+              activeTab === "security"
+                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
+                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
+            }`}
+            onClick={() => setActiveTab("security")}
+          >
+            <span className="hidden sm:inline">Security</span>
+            <span className="sm:hidden">🔒</span>
+          </button>
         </div>
 
         {/* Tab Content */}
@@ -347,16 +359,32 @@ export const SuperAdminDashboard: React.FC = () => {
           {activeTab === "overview" && <OverviewTab stats={stats} />}
 
           {/* High School Grade Pages */}
-          {activeTab === "grade_9" && <StudentViewWrapper type="highschool" grade="grade_9" />}
-          {activeTab === "grade_10" && <StudentViewWrapper type="highschool" grade="grade_10" />}
-          {activeTab === "grade_11" && <StudentViewWrapper type="highschool" grade="grade_11" />}
-          {activeTab === "grade_12" && <StudentViewWrapper type="highschool" grade="grade_12" />}
+          {activeTab === "grade_9" && (
+            <StudentViewWrapper type="highschool" grade="grade_9" />
+          )}
+          {activeTab === "grade_10" && (
+            <StudentViewWrapper type="highschool" grade="grade_10" />
+          )}
+          {activeTab === "grade_11" && (
+            <StudentViewWrapper type="highschool" grade="grade_11" />
+          )}
+          {activeTab === "grade_12" && (
+            <StudentViewWrapper type="highschool" grade="grade_12" />
+          )}
 
           {/* University Level Pages */}
-          {activeTab === "freshman" && <StudentViewWrapper type="university" level="freshman" />}
-          {activeTab === "remedial" && <StudentViewWrapper type="university" level="remedial" />}
-          {activeTab === "senior" && <StudentViewWrapper type="university" level="senior" />}
-          {activeTab === "gc" && <StudentViewWrapper type="university" level="gc" />}
+          {activeTab === "freshman" && (
+            <StudentViewWrapper type="university" level="freshman" />
+          )}
+          {activeTab === "remedial" && (
+            <StudentViewWrapper type="university" level="remedial" />
+          )}
+          {activeTab === "senior" && (
+            <StudentViewWrapper type="university" level="senior" />
+          )}
+          {activeTab === "gc" && (
+            <StudentViewWrapper type="university" level="gc" />
+          )}
 
           {activeTab === "upload" && (
             <Card>
@@ -387,6 +415,7 @@ export const SuperAdminDashboard: React.FC = () => {
           )}
           {activeTab === "addquiz" && <SuperAdminAddQuiz />}
           {activeTab === "admin-view" && <AdminDashboardView />}
+          {activeTab === "security" && <SecurityTab />}
         </div>
 
         {/* Upload Modal */}

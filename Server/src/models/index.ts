@@ -13,6 +13,7 @@ import ResourceAccess from './ResourceAccess.js'
 import Payment from './Payment.js'
 import SubjectAccess from './SubjectAccess.js'
 import Notification from './Notification.js'
+import AuditLog from './AuditLog.js'
 
 // Define relationships
 export const setupAssociations = () => {
@@ -116,4 +117,5 @@ export {
   Payment,
   SubjectAccess,
   Notification,
+  AuditLog,
 }

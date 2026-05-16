@@ -4,12 +4,15 @@ import { AuthService } from "../services/authService.js";
 import { ILoginRequest, IRegisterRequest } from "../types/index.js";
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
+import auditService from "../services/auditService.js";
+import { AuditRequest } from "../middleware/auditLogger.js";
 
 export const register = async (
   req: Request<unknown, unknown, IRegisterRequest>,
   res: Response,
   next: NextFunction,
 ) => {
+  const auditReq = req as AuditRequest;
   try {
     console.log('=== REGISTRATION CONTROLLER ===');
     console.log('Request body:', JSON.stringify(req.body, null, 2));
@@ -27,6 +30,18 @@ export const register = async (
 
     const result = await Promise.race([registrationPromise, timeoutPromise]) as any;
 
+    // Log successful registration
+    auditService.logAction({
+      userId: result?.user?.id,
+      action: 'register',
+      resource: 'users',
+      resourceId: result?.user?.id,
+      details: { email, role: role || 'student' },
+      ipAddress: auditReq.audit?.ipAddress,
+      userAgent: auditReq.audit?.userAgent,
+      status: 'success',
+    });
+
     // For admin registration, return 201 with token for immediate login
     // For student registration, return 201 with verification requirement
     res.status(201).json({
@@ -37,6 +52,17 @@ export const register = async (
         : result.message,
     });
   } catch (error: any) {
+    // Log failed registration
+    auditService.logAction({
+      action: 'register',
+      resource: 'users',
+      details: { email: req.body?.email },
+      ipAddress: auditReq.audit?.ipAddress,
+      userAgent: auditReq.audit?.userAgent,
+      status: 'failure',
+      errorMessage: error?.message || 'Registration failed',
+    });
+
     console.error("Registration error:", error);
     console.error("Error name:", error.name);
     console.error("Error message:", error.message);
@@ -90,6 +116,7 @@ export const login = async (
   res: Response,
   next: NextFunction,
 ) => {
+  const auditReq = req as AuditRequest;
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -98,11 +125,35 @@ export const login = async (
 
     const result = await AuthService.login(req.body);
 
+    // Log successful login
+    auditService.logAction({
+      userId: result?.user?.id,
+      action: 'login',
+      resource: 'users',
+      resourceId: result?.user?.id,
+      details: { email },
+      ipAddress: auditReq.audit?.ipAddress,
+      userAgent: auditReq.audit?.userAgent,
+      status: 'success',
+    });
+
     res.json({
       success: true,
       data: result,
     });
   } catch (error: any) {
+    const auditReq = req as AuditRequest;
+    // Log failed login
+    auditService.logAction({
+      action: 'login',
+      resource: 'users',
+      details: { email: req.body?.email },
+      ipAddress: auditReq.audit?.ipAddress,
+      userAgent: auditReq.audit?.userAgent,
+      status: 'failure',
+      errorMessage: error?.message || 'Login failed',
+    });
+
     if (error instanceof AppError) {
       return res
         .status(error.statusCode)
@@ -145,12 +196,25 @@ export const logout = async (
   res: Response,
   next: NextFunction,
 ) => {
+  const auditReq = req as AuditRequest;
   try {
     const token = req.headers.authorization?.split(" ")[1];
+    const userId = (req.user as any)?.userId || (req.user as any)?.id;
 
     if (token) {
       await AuthService.logout(token);
     }
+
+    // Log logout
+    auditService.logAction({
+      userId,
+      action: 'logout',
+      resource: 'users',
+      resourceId: userId,
+      ipAddress: auditReq.audit?.ipAddress,
+      userAgent: auditReq.audit?.userAgent,
+      status: 'success',
+    });
 
     res.json({
       success: true,
@@ -715,6 +779,7 @@ export const resetPassword = async (
   res: Response,
   next: NextFunction,
 ) => {
+  const auditReq = req as AuditRequest;
   try {
     const { email, code, newPassword } = req.body;
 
@@ -728,11 +793,37 @@ export const resetPassword = async (
 
     const result = await AuthService.resetPassword(email, code, newPassword);
 
+    // Find user ID for audit log
+    const user = await User.findOne({ where: { email } });
+
+    // Log successful password reset
+    auditService.logAction({
+      userId: user?.id,
+      action: 'password_reset',
+      resource: 'users',
+      resourceId: user?.id,
+      details: { email },
+      ipAddress: auditReq.audit?.ipAddress,
+      userAgent: auditReq.audit?.userAgent,
+      status: 'success',
+    });
+
     res.json({
       success: true,
       message: result.message,
     });
   } catch (error: any) {
+    // Log failed password reset
+    auditService.logAction({
+      action: 'password_reset',
+      resource: 'users',
+      details: { email: req.body?.email },
+      ipAddress: auditReq.audit?.ipAddress,
+      userAgent: auditReq.audit?.userAgent,
+      status: 'failure',
+      errorMessage: error?.message || 'Password reset failed',
+    });
+
     if (error instanceof AppError) {
       return res
         .status(error.statusCode)

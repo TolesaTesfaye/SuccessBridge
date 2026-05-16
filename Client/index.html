@@ -4,40 +4,23 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="SuccessBridge - Comprehensive learning platform for high school and university students" />
+    <meta
+      name="description"
+      content="SuccessBridge - Comprehensive learning platform for high school and university students"
+    />
     <meta name="theme-color" content="#3b82f6" />
-    
-    <!-- Security Headers -->
-    <!-- Content Security Policy -->
-    <meta http-equiv="Content-Security-Policy" content="
-      default-src 'self';
-      script-src 'self' 'unsafe-inline' 'unsafe-eval';
-      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-      img-src 'self' data: https: blob:;
-      font-src 'self' data: https://fonts.gstatic.com;
-      connect-src 'self' http://localhost:5000 https://successbridge-tolesa-api.onrender.com https://api.brevo.com;
-      media-src 'self' https: blob:;
-      object-src 'none';
-      frame-ancestors 'none';
-      base-uri 'self';
-      form-action 'self';
-      upgrade-insecure-requests;
-    ">
-    
-    <!-- Prevent MIME type sniffing -->
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    
-    <!-- Prevent clickjacking -->
-    <meta http-equiv="X-Frame-Options" content="DENY">
-    
-    <!-- XSS Protection (legacy browsers) -->
-    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
-    
+
+    <!-- Note: Security headers (CSP, X-Frame-Options, X-Content-Type-Options, X-XSS-Protection) 
+         are now set via HTTP headers from the server (see Server/src/index.ts).
+         Meta tags for frame-ancestors and X-Frame-Options are ignored by browsers and cause warnings. -->
+
     <!-- Referrer Policy -->
-    <meta name="referrer" content="strict-origin-when-cross-origin">
-    
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
     <!-- Permissions Policy -->
-    <meta http-equiv="Permissions-Policy" content="
+    <meta
+      http-equiv="Permissions-Policy"
+      content="
       geolocation=(),
       microphone=(),
       camera=(),
@@ -46,18 +29,31 @@
       magnetometer=(),
       gyroscope=(),
       accelerometer=()
-    ">
-    
-    <!-- Cache Control Meta Tags -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-    
+    "
+    />
+
     <title>SuccessBridge - Learning Platform</title>
     <script>
-      // Set API URL for production (Cloudflare will use this, local dev will use .env)
-      if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-        window.__VITE_API_URL__ = 'https://successbridge-tolesa-api.onrender.com/api';
+      // Set API URL based on environment
+      // For production (Cloudflare Pages), use the Render API
+      // For local network access (192.168.x.x), use the local server
+      // For localhost/127.0.0.1, use .env file
+      const hostname = window.location.hostname;
+
+      if (hostname !== "localhost" && hostname !== "127.0.0.1") {
+        // Check if it's a local network IP (192.168.x.x or 10.x.x.x)
+        if (
+          hostname.startsWith("192.168.") ||
+          hostname.startsWith("10.") ||
+          hostname.startsWith("172.")
+        ) {
+          // Use local network API server (adjust port as needed)
+          window.__VITE_API_URL__ = "http://192.168.0.114:5000/api";
+        } else {
+          // Production - use Render API
+          window.__VITE_API_URL__ =
+            "https://successbridge-tolesa-api.onrender.com/api";
+        }
       }
     </script>
   </head>

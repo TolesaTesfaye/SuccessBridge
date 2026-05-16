@@ -13,7 +13,9 @@ import { connectRedis } from "./config/redis.js";
 import { seedSuperAdmin } from "./config/seedAdmin.js";
 import { setupSwagger } from "./config/swagger.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { auditMiddleware } from "./middleware/auditLogger.js";
 import { logger } from "./utils/logger.js";
+import { runAuditMigration } from "./migrations/runAuditMigration.js";
 import passport from "./config/passport.js";
 import authRoutes from "./routes/auth.js";
 import resourceRoutes from "./routes/resources.js";
@@ -29,6 +31,8 @@ import systemRoutes from "./routes/system.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import diagnosticRoutes from "./routes/diagnostic.js";
+import auditRoutes from "./routes/audit.js";
+import securityRoutes from "./routes/securityRoutes.js";
 
 // Import all models to ensure they are registered with Sequelize
 import User from "./models/User.js";
@@ -47,6 +51,7 @@ import ResourceAccess from "./models/ResourceAccess.js";
 import Payment from "./models/Payment.js";
 import SubjectAccess from "./models/SubjectAccess.js";
 import Notification from "./models/Notification.js";
+import AuditLog from "./models/AuditLog.js";
 import { setupAssociations } from "./models/index.js";
 
 dotenv.config();
@@ -56,7 +61,7 @@ const PORT = process.env.PORT || 5000;
 
 // Trust proxy - Required for Render and other cloud platforms
 // This allows Express to trust the X-Forwarded-For header from reverse proxies
-app.set('trust proxy', 1);
+app.set("trust proxy", 1);
 
 // Security and Performance Middlewares
 app.use(
@@ -66,18 +71,45 @@ app.use(
       directives: {
         defaultSrc: ["'self'"],
         styleSrc: ["'self'", "'unsafe-inline'"],
-        scriptSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
         imgSrc: ["'self'", "data:", "https:", "blob:"],
         fontSrc: ["'self'", "data:"],
-        connectSrc: ["'self'", "https:"],
+        // Allow both HTTP and HTTPS for local network development
+        connectSrc: [
+          "'self'",
+          "http:",
+          "https:",
+          "ws:",
+          "wss:",
+          "http://localhost:*",
+          "http://127.0.0.1:*",
+          "http://192.168.*:*",
+          "http://192.168.0.114:5000",
+        ],
         frameSrc: ["'self'", "blob:", "data:"], // Allow iframes for PDF previews
-        frameAncestors: ["'self'"], // Prevent embedding in other sites
+        frameAncestors: [
+          "'self'",
+          "http://localhost:*",
+          "http://127.0.0.1:*",
+          "http://192.168.*:*",
+        ],
         objectSrc: ["'none'"],
         upgradeInsecureRequests: [],
       },
     },
   }),
 );
+
+// Additional security headers
+app.use((req, res, next) => {
+  // X-Frame-Options - Prevent clickjacking (set via header, not meta)
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  // X-Content-Type-Options - Prevent MIME sniffing
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  // X-XSS-Protection
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  next();
+});
 app.use(compression());
 
 // Rate limiting
@@ -107,6 +139,7 @@ const corsOptions = {
       "http://localhost:5173",
       "http://127.0.0.1:5173",
       "https://successbridge.pages.dev",
+      "http://192.168.0.114:3000/",
     ].filter(Boolean);
 
     // In development, allow all localhost/127.0.0.1 origins
@@ -117,12 +150,12 @@ const corsOptions = {
 
     // Allow requests with no origin (like mobile apps, curl) or if origin is in allowed list
     // Also allow: Cloudflare Pages (.pages.dev), Vercel (.vercel.app), Netlify (.netlify.app), GitHub Pages (.github.io)
-    const isAllowedDomain = origin && (
-      origin.endsWith(".pages.dev") ||
-      origin.endsWith(".vercel.app") ||
-      origin.endsWith(".netlify.app") ||
-      origin.includes(".github.io")
-    );
+    const isAllowedDomain =
+      origin &&
+      (origin.endsWith(".pages.dev") ||
+        origin.endsWith(".vercel.app") ||
+        origin.endsWith(".netlify.app") ||
+        origin.includes(".github.io"));
 
     if (
       !origin ||
@@ -154,6 +187,7 @@ app.use("/api/", limiter);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(passport.initialize());
+app.use(auditMiddleware);
 
 // Setup Swagger documentation (only in development)
 if (process.env.NODE_ENV === "development") {
@@ -203,6 +237,8 @@ app.use("/api/system", systemRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/diagnostic", diagnosticRoutes);
+app.use("/api/admin", auditRoutes);
+app.use("/api/admin/security", securityRoutes);
 
 // Health check
 app.get("/health", async (req, res) => {
@@ -267,6 +303,19 @@ const startServer = async () => {
           }
         } catch (pendingUserError) {
           logger.error("Failed to sync PendingUser table:", pendingUserError);
+        }
+
+        // Ensure AuditLog table exists (safer sync)
+        try {
+          if (process.env.NODE_ENV === "development") {
+            await AuditLog.sync({ alter: true });
+            logger.database("AuditLog table verified/created (dev)");
+          } else {
+            await AuditLog.sync();
+            logger.database("AuditLog table verified (prod)");
+          }
+        } catch (auditLogError) {
+          logger.error("Failed to sync AuditLog table:", auditLogError);
         }
 
         // Seed super admin (only if not exists)

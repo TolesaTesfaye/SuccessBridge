@@ -1,243 +1,248 @@
 /**
  * Session Management Utility
- * Handles session timeout, inactivity detection, and automatic logout
+ * Implements session timeout with inactivity tracking
  */
 
-import { useAuthStore } from '@store/authStore';
+// Session timeout configuration (30 minutes)
+const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
+const WARNING_BEFORE_TIMEOUT = 5 * 60 * 1000; // Warn 5 minutes before timeout
 
-export interface SessionConfig {
-  timeoutMs: number; // Session timeout in milliseconds
-  warningMs: number; // Show warning before timeout
-  checkIntervalMs: number; // How often to check for inactivity
+// Session state
+let sessionTimer: ReturnType<typeof setTimeout> | null = null;
+let warningTimer: ReturnType<typeof setTimeout> | null = null;
+let lastActivity = Date.now();
+let sessionActive = true;
+let onSessionExpireCallback: (() => void) | null = null;
+let onSessionWarningCallback: ((remainingSeconds: number) => void) | null =
+  null;
+
+// Events to track user activity
+const ACTIVITY_EVENTS = [
+  "mousedown",
+  "mousemove",
+  "keypress",
+  "scroll",
+  "touchstart",
+  "click",
+  "wheel",
+];
+
+/**
+ * Initialize session management
+ * Call this on app startup after successful login
+ */
+export function initSessionManager(options?: {
+  onExpire?: () => void;
+  onWarning?: (remainingSeconds: number) => void;
+  timeout?: number;
+}) {
+  if (options?.onExpire) {
+    onSessionExpireCallback = options.onExpire;
+  }
+  if (options?.onWarning) {
+    onSessionWarningCallback = options.onWarning;
+  }
+
+  // Reset last activity time
+  lastActivity = Date.now();
+  sessionActive = true;
+
+  // Add event listeners for activity tracking
+  ACTIVITY_EVENTS.forEach((event) => {
+    window.addEventListener(event, handleActivity);
+  });
+
+  // Start the session timer
+  resetSessionTimer();
+
+  console.info(
+    `[Session] Session management initialized with ${SESSION_TIMEOUT / 60000} minute timeout`,
+  );
 }
 
-class SessionManager {
-  private config: SessionConfig;
-  private lastActivityTime: number = Date.now();
-  private timeoutTimer: NodeJS.Timeout | null = null;
-  private warningTimer: NodeJS.Timeout | null = null;
-  private checkInterval: NodeJS.Timeout | null = null;
-  private warningCallback: (() => void) | null = null;
-  private logoutCallback: (() => void) | null = null;
-  private isActive: boolean = false;
+/**
+ * Handle user activity
+ */
+function handleActivity() {
+  if (!sessionActive) return;
 
-  constructor(config: Partial<SessionConfig> = {}) {
-    this.config = {
-      timeoutMs: config.timeoutMs || 30 * 60 * 1000, // 30 minutes default
-      warningMs: config.warningMs || 5 * 60 * 1000, // 5 minutes warning
-      checkIntervalMs: config.checkIntervalMs || 1000, // Check every second
-    };
+  lastActivity = Date.now();
+  resetSessionTimer();
+}
+
+/**
+ * Reset the session timer
+ */
+function resetSessionTimer() {
+  // Clear existing timers
+  if (sessionTimer) {
+    clearTimeout(sessionTimer);
+  }
+  if (warningTimer) {
+    clearTimeout(warningTimer);
   }
 
+  // Set warning timer (if callback provided)
+  if (onSessionWarningCallback) {
+    const callback = onSessionWarningCallback;
+    warningTimer = setTimeout(() => {
+      if (sessionActive && callback) {
+        const remainingSeconds = Math.ceil(
+          (SESSION_TIMEOUT - WARNING_BEFORE_TIMEOUT) / 1000,
+        );
+        callback(remainingSeconds);
+      }
+    }, SESSION_TIMEOUT - WARNING_BEFORE_TIMEOUT);
+  }
+
+  // Set session expiration timer
+  sessionTimer = setTimeout(() => {
+    expireSession();
+  }, SESSION_TIMEOUT);
+}
+
+/**
+ * Expire the current session
+ */
+function expireSession() {
+  sessionActive = false;
+
+  // Clear timers
+  if (sessionTimer) {
+    clearTimeout(sessionTimer);
+    sessionTimer = null;
+  }
+  if (warningTimer) {
+    clearTimeout(warningTimer);
+    warningTimer = null;
+  }
+
+  // Remove event listeners
+  ACTIVITY_EVENTS.forEach((event) => {
+    window.removeEventListener(event, handleActivity);
+  });
+
+  // Call expiration callback
+  if (onSessionExpireCallback) {
+    onSessionExpireCallback();
+  }
+
+  console.warn("[Session] Session expired due to inactivity");
+}
+
+/**
+ * Check if session is active
+ */
+export function checkSessionActive(): boolean {
+  return sessionActive;
+}
+
+/**
+ * Get time until session expires (in seconds)
+ */
+export function getSessionTimeRemaining(): number {
+  if (!sessionActive) return 0;
+  const elapsed = Date.now() - lastActivity;
+  const remaining = SESSION_TIMEOUT - elapsed;
+  return Math.max(0, Math.ceil(remaining / 1000));
+}
+
+/**
+ * Get session timeout duration (in milliseconds)
+ */
+export function getSessionTimeout(): number {
+  return SESSION_TIMEOUT;
+}
+
+/**
+ * Extend the session (reset timeout)
+ * Useful when user performs actions that should extend the session
+ */
+export function extendSession() {
+  if (sessionActive) {
+    lastActivity = Date.now();
+    resetSessionTimer();
+    console.info("[Session] Session extended");
+  }
+}
+
+/**
+ * Manually end the session
+ */
+export function endSession() {
+  expireSession();
+}
+
+/**
+ * Cleanup session manager (call on logout)
+ */
+export function cleanupSessionManager() {
+  // Clear timers
+  if (sessionTimer) {
+    clearTimeout(sessionTimer);
+    sessionTimer = null;
+  }
+  if (warningTimer) {
+    clearTimeout(warningTimer);
+    warningTimer = null;
+  }
+
+  // Remove event listeners
+  ACTIVITY_EVENTS.forEach((event) => {
+    window.removeEventListener(event, handleActivity);
+  });
+
+  sessionActive = false;
+  onSessionExpireCallback = null;
+  onSessionWarningCallback = null;
+
+  console.info("[Session] Session manager cleaned up");
+}
+
+/**
+ * Session manager API object for external use
+ */
+export const sessionManager = {
   /**
    * Start session monitoring
+   * @param onWarning - Callback when session is about to expire
+   * @param onExpire - Callback when session expires
    */
-  public start(
-    onWarning?: () => void,
-    onLogout?: () => void,
-  ): void {
-    if (this.isActive) {
-      return;
-    }
-
-    this.isActive = true;
-    this.warningCallback = onWarning || null;
-    this.logoutCallback = onLogout || null;
-    this.lastActivityTime = Date.now();
-
-    // Set up activity listeners
-    this.setupActivityListeners();
-
-    // Start checking for inactivity
-    this.startInactivityCheck();
-
-    console.log('✅ Session manager started');
-  }
+  start: (
+    onWarning?: (remainingSeconds: number) => void,
+    onExpire?: () => void,
+  ) => {
+    initSessionManager({
+      onWarning,
+      onExpire,
+    });
+  },
 
   /**
    * Stop session monitoring
    */
-  public stop(): void {
-    this.isActive = false;
-    this.removeActivityListeners();
-    this.clearTimers();
-    console.log('🛑 Session manager stopped');
-  }
+  stop: () => {
+    cleanupSessionManager();
+  },
 
   /**
-   * Reset session timer (called on user activity)
+   * Extend the current session
    */
-  public resetTimer(): void {
-    this.lastActivityTime = Date.now();
-    this.clearTimers();
-  }
+  extendSession: () => {
+    extendSession();
+  },
 
   /**
-   * Extend session (called when user dismisses warning)
+   * Check if session is active
    */
-  public extendSession(): void {
-    this.resetTimer();
-    console.log('⏰ Session extended');
-  }
+  isSessionActive: () => {
+    return checkSessionActive();
+  },
 
   /**
-   * Get remaining session time in seconds
+   * Get time remaining until session expires (in seconds)
    */
-  public getRemainingTime(): number {
-    const elapsed = Date.now() - this.lastActivityTime;
-    const remaining = this.config.timeoutMs - elapsed;
-    return Math.max(0, Math.floor(remaining / 1000));
-  }
-
-  /**
-   * Check if session is about to expire
-   */
-  public isNearExpiry(): boolean {
-    const remaining = this.getRemainingTime();
-    return remaining <= this.config.warningMs / 1000;
-  }
-
-  /**
-   * Set up activity listeners
-   */
-  private setupActivityListeners(): void {
-    const events = [
-      'mousedown',
-      'mousemove',
-      'keypress',
-      'scroll',
-      'touchstart',
-      'click',
-    ];
-
-    events.forEach((event) => {
-      window.addEventListener(event, this.handleActivity, { passive: true });
-    });
-  }
-
-  /**
-   * Remove activity listeners
-   */
-  private removeActivityListeners(): void {
-    const events = [
-      'mousedown',
-      'mousemove',
-      'keypress',
-      'scroll',
-      'touchstart',
-      'click',
-    ];
-
-    events.forEach((event) => {
-      window.removeEventListener(event, this.handleActivity);
-    });
-  }
-
-  /**
-   * Handle user activity
-   */
-  private handleActivity = (): void => {
-    if (!this.isActive) return;
-    this.resetTimer();
-  };
-
-  /**
-   * Start checking for inactivity
-   */
-  private startInactivityCheck(): void {
-    this.checkInterval = setInterval(() => {
-      if (!this.isActive) return;
-
-      const elapsed = Date.now() - this.lastActivityTime;
-      const remaining = this.config.timeoutMs - elapsed;
-
-      // Show warning
-      if (
-        remaining <= this.config.warningMs &&
-        remaining > 0 &&
-        this.warningCallback
-      ) {
-        this.warningCallback();
-      }
-
-      // Logout on timeout
-      if (remaining <= 0) {
-        this.handleTimeout();
-      }
-    }, this.config.checkIntervalMs);
-  }
-
-  /**
-   * Handle session timeout
-   */
-  private handleTimeout(): void {
-    console.warn('⏰ Session timeout - logging out');
-    this.stop();
-
-    if (this.logoutCallback) {
-      this.logoutCallback();
-    } else {
-      // Default logout behavior
-      const { logout } = useAuthStore.getState();
-      logout();
-    }
-  }
-
-  /**
-   * Clear all timers
-   */
-  private clearTimers(): void {
-    if (this.timeoutTimer) {
-      clearTimeout(this.timeoutTimer);
-      this.timeoutTimer = null;
-    }
-    if (this.warningTimer) {
-      clearTimeout(this.warningTimer);
-      this.warningTimer = null;
-    }
-  }
-}
-
-// Export singleton instance
-export const sessionManager = new SessionManager({
-  timeoutMs: 30 * 60 * 1000, // 30 minutes
-  warningMs: 5 * 60 * 1000, // 5 minutes warning
-  checkIntervalMs: 1000, // Check every second
-});
-
-/**
- * React hook for session management
- */
-export const useSessionManager = () => {
-  const { logout } = useAuthStore();
-
-  const startSession = (onWarning?: () => void) => {
-    sessionManager.start(
-      onWarning,
-      async () => {
-        await logout();
-        window.location.href = '/login?reason=session_expired';
-      },
-    );
-  };
-
-  const stopSession = () => {
-    sessionManager.stop();
-  };
-
-  const extendSession = () => {
-    sessionManager.extendSession();
-  };
-
-  const getRemainingTime = () => {
-    return sessionManager.getRemainingTime();
-  };
-
-  return {
-    startSession,
-    stopSession,
-    extendSession,
-    getRemainingTime,
-    isNearExpiry: sessionManager.isNearExpiry(),
-  };
+  getTimeRemaining: () => {
+    return getSessionTimeRemaining();
+  },
 };

@@ -126,6 +126,33 @@ const PromotionPage = lazy(() =>
   })),
 );
 
+// Lazy load security dashboard pages
+const SecurityDashboard = lazy(() =>
+  import("@dashboards/admin/SecurityDashboard").then((m) => ({
+    default: m.SecurityDashboard,
+  })),
+);
+const AuditLogsPage = lazy(() =>
+  import("@dashboards/admin/AuditLogsPage").then((m) => ({
+    default: m.AuditLogsPage,
+  })),
+);
+const FailedLoginsPage = lazy(() =>
+  import("@dashboards/admin/FailedLoginsPage").then((m) => ({
+    default: m.FailedLoginsPage,
+  })),
+);
+const SessionsPage = lazy(() =>
+  import("@dashboards/admin/SessionsPage").then((m) => ({
+    default: m.SessionsPage,
+  })),
+);
+const RateLimitPage = lazy(() =>
+  import("@dashboards/admin/RateLimitPage").then((m) => ({
+    default: m.RateLimitPage,
+  })),
+);
+
 // Lazy load super admin pages
 const SuperAdminResources = lazy(() =>
   import("@pages/superadmin/SuperAdminResources").then((m) => ({
@@ -582,6 +609,48 @@ const AppContent: React.FC = () => {
                 element={
                   <ProtectedRoute requiredRole="super_admin">
                     <PromotionPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Security Dashboard Routes */}
+              <Route
+                path="/admin/security"
+                element={
+                  <ProtectedRoute requiredRole="super_admin">
+                    <SecurityDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/security/audit-logs"
+                element={
+                  <ProtectedRoute requiredRole="super_admin">
+                    <AuditLogsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/security/failed-logins"
+                element={
+                  <ProtectedRoute requiredRole="super_admin">
+                    <FailedLoginsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/security/sessions"
+                element={
+                  <ProtectedRoute requiredRole="super_admin">
+                    <SessionsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/security/rate-limits"
+                element={
+                  <ProtectedRoute requiredRole="super_admin">
+                    <RateLimitPage />
                   </ProtectedRoute>
                 }
               />
