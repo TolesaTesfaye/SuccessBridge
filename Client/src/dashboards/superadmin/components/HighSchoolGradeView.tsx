@@ -201,10 +201,6 @@ export const HighSchoolGradeView: React.FC<HighSchoolGradeViewProps> = ({
             {gradeLabels[grade]} Resources
             {selectedSubject && ` - ${selectedSubject}`}
           </div>
-          <Button variant="secondary" size="sm">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Resource
-          </Button>
         </CardHeader>
         <CardBody>
           {loading ? (
@@ -220,10 +216,7 @@ export const HighSchoolGradeView: React.FC<HighSchoolGradeViewProps> = ({
               <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200 mb-2">
                 No Resources Found
               </h3>
-              <p className="text-slate-600 dark:text-slate-400">
-                No resources match your current filters. Try adjusting the
-                filters or add new resources.
-              </p>
+
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

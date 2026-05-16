@@ -7,6 +7,47 @@
     <meta name="description" content="SuccessBridge - Comprehensive learning platform for high school and university students" />
     <meta name="theme-color" content="#3b82f6" />
     
+    <!-- Security Headers -->
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' 'unsafe-eval';
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      img-src 'self' data: https: blob:;
+      font-src 'self' data: https://fonts.gstatic.com;
+      connect-src 'self' http://localhost:5000 https://successbridge-tolesa-api.onrender.com https://api.brevo.com;
+      media-src 'self' https: blob:;
+      object-src 'none';
+      frame-ancestors 'none';
+      base-uri 'self';
+      form-action 'self';
+      upgrade-insecure-requests;
+    ">
+    
+    <!-- Prevent MIME type sniffing -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    
+    <!-- Prevent clickjacking -->
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    
+    <!-- XSS Protection (legacy browsers) -->
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    
+    <!-- Referrer Policy -->
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <!-- Permissions Policy -->
+    <meta http-equiv="Permissions-Policy" content="
+      geolocation=(),
+      microphone=(),
+      camera=(),
+      payment=(),
+      usb=(),
+      magnetometer=(),
+      gyroscope=(),
+      accelerometer=()
+    ">
+    
     <!-- Cache Control Meta Tags -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />

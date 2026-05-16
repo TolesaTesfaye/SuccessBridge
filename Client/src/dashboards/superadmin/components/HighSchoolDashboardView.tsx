@@ -198,7 +198,7 @@ export const HighSchoolDashboardView: React.FC = () => {
               <div className="text-center py-16 bg-slate-50 dark:bg-slate-800/20 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
                 <FileText className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
                 <h4 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-1">No resources found</h4>
-                <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto">Try adjusting your filters or selecting a different subject or resource type.</p>
+
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

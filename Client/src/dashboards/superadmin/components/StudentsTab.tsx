@@ -346,7 +346,7 @@ export const StudentsTab: React.FC<StudentsTabProps> = ({
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="flex justify-end gap-2 invisible group-hover:visible transition-all">
                         <button
                           onClick={() => handleViewStudent(student)}
                           className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white rounded-lg text-xs font-bold shadow-md hover:shadow-lg transition-all"

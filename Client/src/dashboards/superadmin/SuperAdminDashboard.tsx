@@ -16,14 +16,15 @@ import { AdminDashboardPayments } from "@dashboards/admin/AdminDashboardPayments
 // Import extracted components
 import {
   OverviewTab,
-  ApprovalsTab,
   AdminsTab,
   StudentsTab,
   ResourcesTab,
-  UniversitiesTab,
   AdminDashboardView,
   HighSchoolGradeView,
   UniversityLevelView,
+  HighSchoolGradeDashboard,
+  UniversityLevelDashboard,
+  StudentViewWrapper,
 } from "./components";
 
 export const SuperAdminDashboard: React.FC = () => {
@@ -56,7 +57,6 @@ export const SuperAdminDashboard: React.FC = () => {
     totalUsers: 0,
     activeStudents: 0,
     totalResources: 0,
-    pendingApprovals: 0,
     loading: true,
   });
 
@@ -80,7 +80,6 @@ export const SuperAdminDashboard: React.FC = () => {
           totalResources: Array.isArray(resourcesRes)
             ? resourcesRes.length
             : resourcesRes.data?.total || 0,
-          pendingApprovals: 0, // TODO: Add approval system
           loading: false,
         });
       } catch (error) {
@@ -282,27 +281,6 @@ export const SuperAdminDashboard: React.FC = () => {
           </button>
           <button
             className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "approvals"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => setActiveTab("approvals")}
-          >
-            Approvals
-          </button>
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "universities"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => setActiveTab("universities")}
-          >
-            <span className="hidden sm:inline">Universities</span>
-            <span className="sm:hidden">Univ</span>
-          </button>
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
               activeTab === "admins"
                 ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
                 : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
@@ -369,16 +347,16 @@ export const SuperAdminDashboard: React.FC = () => {
           {activeTab === "overview" && <OverviewTab stats={stats} />}
 
           {/* High School Grade Pages */}
-          {activeTab === "grade_9" && <HighSchoolGradeView grade="grade_9" />}
-          {activeTab === "grade_10" && <HighSchoolGradeView grade="grade_10" />}
-          {activeTab === "grade_11" && <HighSchoolGradeView grade="grade_11" />}
-          {activeTab === "grade_12" && <HighSchoolGradeView grade="grade_12" />}
+          {activeTab === "grade_9" && <StudentViewWrapper type="highschool" grade="grade_9" />}
+          {activeTab === "grade_10" && <StudentViewWrapper type="highschool" grade="grade_10" />}
+          {activeTab === "grade_11" && <StudentViewWrapper type="highschool" grade="grade_11" />}
+          {activeTab === "grade_12" && <StudentViewWrapper type="highschool" grade="grade_12" />}
 
           {/* University Level Pages */}
-          {activeTab === "freshman" && <UniversityLevelView level="freshman" />}
-          {activeTab === "remedial" && <UniversityLevelView level="remedial" />}
-          {activeTab === "senior" && <UniversityLevelView level="senior" />}
-          {activeTab === "gc" && <UniversityLevelView level="gc" />}
+          {activeTab === "freshman" && <StudentViewWrapper type="university" level="freshman" />}
+          {activeTab === "remedial" && <StudentViewWrapper type="university" level="remedial" />}
+          {activeTab === "senior" && <StudentViewWrapper type="university" level="senior" />}
+          {activeTab === "gc" && <StudentViewWrapper type="university" level="gc" />}
 
           {activeTab === "upload" && (
             <Card>
@@ -391,8 +369,6 @@ export const SuperAdminDashboard: React.FC = () => {
               </CardBody>
             </Card>
           )}
-          {activeTab === "approvals" && <ApprovalsTab />}
-          {activeTab === "universities" && <UniversitiesTab />}
           {activeTab === "admins" && (
             <AdminsTab
               onViewAdmin={setSelectedAdmin}

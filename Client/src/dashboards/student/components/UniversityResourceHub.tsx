@@ -220,17 +220,6 @@ export const UniversityResourceHub: React.FC<UniversityResourceHubProps> = ({
           )}
         </div>
       </div>
-                  <button
-                    onClick={() => setSelectedSubject("")}
-                    className="hover:text-rose-900 dark:hover:text-rose-100"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              )}
-            </div>
-          )}
-      </div>
 
       {/* Results Count + Refresh */}
       <div className="flex items-center justify-between py-2 bg-slate-50 dark:bg-slate-900/50 px-2 md:px-4">

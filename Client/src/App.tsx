@@ -1,4 +1,4 @@
-import React, { lazy, Suspense, useEffect } from "react";
+import React, { lazy, Suspense, useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -11,6 +11,8 @@ import { LoadingOverlay } from "@components/common/Spinner";
 import { PerformanceMonitor } from "@components/common/PerformanceMonitor";
 import { ToastProvider, useToast } from "@components/common/Toast";
 import { useApiErrorHandler } from "@utils/apiErrorHandler";
+import { SessionTimeoutWarning } from "@components/common/SessionTimeoutWarning";
+import { sessionManager } from "@utils/sessionManager";
 
 // Eager load critical components
 import { Home } from "@pages/Home";
@@ -251,15 +253,60 @@ export const App: React.FC = () => {
 };
 
 const AppContent: React.FC = () => {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, logout } = useAuthStore();
   const toast = useToast();
+  const [showSessionWarning, setShowSessionWarning] = useState(false);
 
   // Initialize global error handler
   useApiErrorHandler(toast);
 
+  // Initialize session management for authenticated users
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Start session monitoring
+      sessionManager.start(
+        () => {
+          // Show warning when session is about to expire
+          setShowSessionWarning(true);
+        },
+        async () => {
+          // Auto logout on session timeout
+          await logout();
+          toast.error('Your session has expired. Please log in again.');
+          window.location.href = '/login?reason=session_expired';
+        }
+      );
+
+      return () => {
+        // Stop session monitoring when user logs out
+        sessionManager.stop();
+      };
+    }
+  }, [isAuthenticated, logout, toast]);
+
+  const handleExtendSession = () => {
+    sessionManager.extendSession();
+    setShowSessionWarning(false);
+    toast.success('Session extended successfully');
+  };
+
+  const handleLogoutNow = async () => {
+    setShowSessionWarning(false);
+    await logout();
+    window.location.href = '/login';
+  };
+
   return (
     <>
       <PerformanceMonitor />
+      
+      {/* Session Timeout Warning Modal */}
+      <SessionTimeoutWarning
+        isOpen={showSessionWarning}
+        onExtend={handleExtendSession}
+        onLogout={handleLogoutNow}
+      />
+      
       <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Layout>
           <Suspense fallback={<div className="min-h-screen" />}>

@@ -91,24 +91,87 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
     { value: "eng", label: "Engineering" },
   ];
 
-  // Define filters for mobile display (Top 3 filters)
-  const getMobileFilters = () => {
-    if (educationLevel === "high_school") {
-      return [
-        { label: "Stream", key: "stream", options: streams },
-        { label: "Subject", key: "subject", options: subjects },
-        { label: "Resource Type", key: "type", options: resourceTypes },
-      ];
-    } else {
-      return [
-        { label: "University", key: "university", options: universities },
-        { label: "Department", key: "department", options: departments },
-        { label: "Subject", key: "subject", options: subjects },
-      ];
-    }
-  };
+  // Mobile Filter Button Component
+  const MobileFilterButton = ({
+    label,
+    value,
+    filterKey,
+    options,
+  }: {
+    label: string;
+    value: string;
+    filterKey: string;
+    options: { value: string; label: string }[];
+  }) => {
+    const isOpen = openDropdown === filterKey;
+    const selectedOption = options.find((opt) => opt.value === value);
 
-  const mobileFilters = getMobileFilters();
+    return (
+      <div className="relative mb-4">
+        {/* Label */}
+        <div className="text-sm font-medium text-slate-400 dark:text-slate-500 mb-2">
+          {label}
+        </div>
+
+        {/* Dropdown Button */}
+        <button
+          onClick={() => setOpenDropdown(isOpen ? null : filterKey)}
+          className="w-full flex items-center justify-between px-4 py-3.5 bg-slate-800/50 dark:bg-slate-800/80 border border-slate-700 dark:border-slate-600 rounded-lg text-left transition-all hover:bg-slate-800/70 dark:hover:bg-slate-700/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <span className="text-base text-white dark:text-slate-200 font-medium">
+            {selectedOption ? selectedOption.label : `All ${label}s`}
+          </span>
+          <ChevronDown
+            className={`w-5 h-5 text-slate-400 transition-transform flex-shrink-0 ml-2 ${isOpen ? "rotate-180" : ""}`}
+          />
+        </button>
+
+        {/* Dropdown Options */}
+        {isOpen && (
+          <>
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 bg-black/40 z-40"
+              onClick={() => setOpenDropdown(null)}
+            />
+
+            {/* Options List */}
+            <div className="absolute top-full left-0 right-0 mt-2 bg-slate-800 dark:bg-slate-800 border border-slate-700 dark:border-slate-600 rounded-lg shadow-2xl z-50 max-h-64 overflow-y-auto">
+              {/* All/Clear Option */}
+              <button
+                onClick={() => handleChange(filterKey, "")}
+                className={`w-full px-4 py-3 text-left text-sm transition-colors border-b border-slate-700 dark:border-slate-700 ${
+                  !value
+                    ? "bg-blue-600/20 text-blue-400 font-semibold"
+                    : "text-slate-300 dark:text-slate-300 hover:bg-slate-700/50 dark:hover:bg-slate-700"
+                }`}
+              >
+                All {label}s
+                {!value && <span className="ml-2 text-blue-400">✓</span>}
+              </button>
+
+              {options.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => handleChange(filterKey, option.value)}
+                  className={`w-full px-4 py-3 text-left text-sm transition-colors ${
+                    value === option.value
+                      ? "bg-blue-600/20 text-blue-400 font-semibold"
+                      : "text-slate-300 dark:text-slate-300 hover:bg-slate-700/50 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  {option.label}
+                  {value === option.value && (
+                    <span className="ml-2 text-blue-400">✓</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="bg-white dark:bg-slate-900 md:rounded-2xl border-b md:border border-slate-200 dark:border-slate-800 md:shadow-sm mb-0 md:mb-6 overflow-hidden">
@@ -123,93 +186,110 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
               name="search"
               placeholder="Search resources..."
               value={filters.search || ""}
-              onChange={(e) => handleChange('search', e.target.value)}
+              onChange={(e) => handleChange("search", e.target.value)}
               className="w-full pl-11 pr-4 py-3.5 bg-slate-800/50 dark:bg-slate-800/80 border border-slate-700 dark:border-slate-700 rounded-lg text-base text-white dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
         </div>
 
-        {/* Mobile Filter Dropdowns - 3 Column Grid */}
-        <div className="px-4 py-4 border-t border-slate-800">
-          <div className="grid grid-cols-3 gap-3">
-            {mobileFilters.map((filter) => (
-              <div key={filter.key} className="relative">
-                {/* Label */}
-                <label className="block text-xs font-medium text-slate-400 dark:text-slate-500 mb-2">
-                  {filter.label}
-                </label>
-
-                {/* Dropdown Button */}
-                <button
-                  onClick={() => setOpenDropdown(openDropdown === filter.key ? null : filter.key)}
-                  className="w-full flex items-center justify-between px-3 py-2.5 bg-slate-800/50 dark:bg-slate-800/80 border border-slate-700 dark:border-slate-600 rounded-lg text-left transition-all hover:bg-slate-800/70 dark:hover:bg-slate-700/50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <span className="text-sm font-medium text-white dark:text-slate-200 truncate">
-                    {filters[filter.key as keyof FilterOptions] 
-                      ? mobileFilters.find(f => f.key === filter.key)?.options.find(opt => opt.value === filters[filter.key as keyof FilterOptions])?.label 
-                      : `All ${filter.label}s`
-                    }
-                  </span>
-                  <ChevronDown 
-                    className={`w-4 h-4 text-slate-400 transition-transform flex-shrink-0 ml-1 ${openDropdown === filter.key ? 'rotate-180' : ''}`} 
-                  />
-                </button>
-
-                {/* Dropdown Options */}
-                {openDropdown === filter.key && (
-                  <>
-                    <div 
-                      className="fixed inset-0 bg-black/40 z-40"
-                      onClick={() => setOpenDropdown(null)}
-                    />
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-slate-800 dark:bg-slate-800 border border-slate-700 dark:border-slate-600 rounded-lg shadow-2xl z-50 max-h-64 overflow-y-auto">
-                      <button
-                        onClick={() => handleChange(filter.key, '')}
-                        className={`w-full px-3 py-2.5 text-left text-xs transition-colors border-b border-slate-700 dark:border-slate-700 ${
-                          !filters[filter.key as keyof FilterOptions]
-                            ? 'bg-blue-600/20 text-blue-400 font-semibold'
-                            : 'text-slate-300 dark:text-slate-300 hover:bg-slate-700/50 dark:hover:bg-slate-700'
-                        }`}
-                      >
-                        All {filter.label}s
-                        {!filters[filter.key as keyof FilterOptions] && (
-                          <span className="ml-2 text-blue-400">✓</span>
-                        )}
-                      </button>
-                      {filter.options.map((option) => (
-                        <button
-                          key={option.value}
-                          onClick={() => handleChange(filter.key, option.value)}
-                          className={`w-full px-3 py-2.5 text-left text-xs transition-colors ${
-                            filters[filter.key as keyof FilterOptions] === option.value
-                              ? 'bg-blue-600/20 text-blue-400 font-semibold'
-                              : 'text-slate-300 dark:text-slate-300 hover:bg-slate-700/50 dark:hover:bg-slate-700'
-                          }`}
-                        >
-                          {option.label}
-                          {filters[filter.key as keyof FilterOptions] === option.value && (
-                            <span className="ml-2 text-blue-400">✓</span>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
-            ))}
+        {/* Filters Accordion Header */}
+        <button
+          onClick={() => setIsFiltersExpanded(!isFiltersExpanded)}
+          className="w-full flex items-center justify-between px-4 py-3 bg-slate-900/50 dark:bg-slate-900/80 border-y border-slate-800 dark:border-slate-800 hover:bg-slate-800/30 transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <Filter className="w-5 h-5 text-slate-400" />
+            <span className="text-base font-semibold text-white dark:text-white">
+              Filters
+            </span>
+            {activeFilterCount > 0 && (
+              <span className="ml-2 px-2 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full">
+                {activeFilterCount}
+              </span>
+            )}
           </div>
-
-          {/* Clear All Button - Only show if filters are active */}
-          {activeFilterCount > 0 && (
-            <button
-              onClick={clearFilters}
-              className="w-full mt-3 flex items-center justify-center gap-2 px-3 py-2 text-xs font-semibold text-red-400 dark:text-red-400 bg-red-500/10 dark:bg-red-500/10 border border-red-500/20 dark:border-red-500/20 rounded-lg hover:bg-red-500/20 dark:hover:bg-red-500/20 transition-colors"
-            >
-              <X className="w-3 h-3" />
-              Clear Filters
-            </button>
+          {isFiltersExpanded ? (
+            <ChevronUp className="w-5 h-5 text-slate-400" />
+          ) : (
+            <ChevronDown className="w-5 h-5 text-slate-400" />
           )}
-        </div>
+        </button>
+
+        {/* Collapsible Filter Content */}
+        {isFiltersExpanded && (
+          <div className="px-4 py-4 bg-slate-900 dark:bg-slate-950 border-b border-slate-800">
+            {/* High School Filters */}
+            {educationLevel === "high_school" && (
+              <>
+                <MobileFilterButton
+                  label="Stream"
+                  value={filters.stream || ""}
+                  filterKey="stream"
+                  options={streams}
+                />
+                <MobileFilterButton
+                  label="Subject"
+                  value={filters.subject || ""}
+                  filterKey="subject"
+                  options={subjects}
+                />
+                <MobileFilterButton
+                  label="Resource Type"
+                  value={filters.type || ""}
+                  filterKey="type"
+                  options={resourceTypes}
+                />
+              </>
+            )}
+
+            {/* University Filters */}
+            {educationLevel === "university" && (
+              <>
+                <MobileFilterButton
+                  label="Student Type"
+                  value={filters.studentType || ""}
+                  filterKey="studentType"
+                  options={studentTypes}
+                />
+                <MobileFilterButton
+                  label="University"
+                  value={filters.university || ""}
+                  filterKey="university"
+                  options={universities}
+                />
+                <MobileFilterButton
+                  label="Department"
+                  value={filters.department || ""}
+                  filterKey="department"
+                  options={departments}
+                />
+                <MobileFilterButton
+                  label="Subject"
+                  value={filters.subject || ""}
+                  filterKey="subject"
+                  options={subjects}
+                />
+                <MobileFilterButton
+                  label="Resource Type"
+                  value={filters.type || ""}
+                  filterKey="type"
+                  options={resourceTypes}
+                />
+              </>
+            )}
+
+            {/* Clear All Button */}
+            {activeFilterCount > 0 && (
+              <button
+                onClick={clearFilters}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-red-400 dark:text-red-400 bg-red-500/10 dark:bg-red-500/10 border border-red-500/20 dark:border-red-500/20 rounded-lg hover:bg-red-500/20 dark:hover:bg-red-500/20 transition-colors mt-2"
+              >
+                <X className="w-4 h-4" />
+                Clear All Filters
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Desktop Layout - Original Grid */}
@@ -222,7 +302,7 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
             name="search"
             placeholder="Search resources..."
             value={filters.search || ""}
-            onChange={(e) => handleChange('search', e.target.value)}
+            onChange={(e) => handleChange("search", e.target.value)}
           />
         </div>
 
@@ -232,7 +312,7 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
             label="Resource Type"
             name="type"
             value={filters.type || ""}
-            onChange={(e) => handleChange('type', e.target.value)}
+            onChange={(e) => handleChange("type", e.target.value)}
             options={resourceTypes}
           />
 
@@ -241,7 +321,7 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
               label="Student Type"
               name="studentType"
               value={filters.studentType || ""}
-              onChange={(e) => handleChange('studentType', e.target.value)}
+              onChange={(e) => handleChange("studentType", e.target.value)}
               options={studentTypes}
             />
           )}
@@ -250,7 +330,7 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
             label="Subject"
             name="subject"
             value={filters.subject || ""}
-            onChange={(e) => handleChange('subject', e.target.value)}
+            onChange={(e) => handleChange("subject", e.target.value)}
             options={subjects}
           />
 
@@ -260,7 +340,7 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
                 label="Grade"
                 name="grade"
                 value={filters.grade || ""}
-                onChange={(e) => handleChange('grade', e.target.value)}
+                onChange={(e) => handleChange("grade", e.target.value)}
                 options={grades}
               />
 
@@ -268,7 +348,7 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
                 label="Stream"
                 name="stream"
                 value={filters.stream || ""}
-                onChange={(e) => handleChange('stream', e.target.value)}
+                onChange={(e) => handleChange("stream", e.target.value)}
                 options={streams}
               />
             </>
@@ -280,7 +360,7 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
                 label="University"
                 name="university"
                 value={filters.university || ""}
-                onChange={(e) => handleChange('university', e.target.value)}
+                onChange={(e) => handleChange("university", e.target.value)}
                 options={universities}
               />
 
@@ -288,7 +368,7 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
                 label="Department"
                 name="department"
                 value={filters.department || ""}
-                onChange={(e) => handleChange('department', e.target.value)}
+                onChange={(e) => handleChange("department", e.target.value)}
                 options={departments}
               />
             </>
@@ -311,4 +391,3 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
     </div>
   );
 };
-

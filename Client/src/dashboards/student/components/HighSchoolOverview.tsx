@@ -48,9 +48,9 @@ export const HighSchoolOverview: React.FC<HighSchoolOverviewProps> = ({
   return (
     <div className="space-y-3 md:space-y-6 pb-6 md:pb-8 animate-in fade-in duration-700">
       {/* Hero Section - Full Width */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-sky-600 via-blue-600 to-indigo-700 text-white p-4 md:p-8 lg:p-12 shadow-2xl">
+      <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-700 text-white p-4 md:p-8 lg:p-12 shadow-2xl">
         <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute -bottom-20 -left-16 w-56 h-56 rounded-full bg-cyan-300/20 blur-3xl" />
+        <div className="absolute -bottom-20 -left-16 w-56 h-56 rounded-full bg-blue-300/20 blur-3xl" />
 
         <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 items-center">
           <div>
