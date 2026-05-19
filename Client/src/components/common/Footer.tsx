@@ -1,5 +1,6 @@
 import React from "react";
-import { Mail, Phone } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import {
   FaFacebook,
   FaInstagram,
@@ -9,229 +10,205 @@ import {
   FaGithub,
   FaLinkedin,
 } from "react-icons/fa";
-import logo from "@/assets/SuccessBridgeLogo.png";
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="relative z-10 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 pt-8 md:pt-16 pb-6 md:pb-8 border-t border-slate-200 dark:border-slate-800">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
-        {/* Main Content Grid with more spacing */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 md:gap-12 mb-6 md:mb-16">
-          {/* Brand Identity - 25% width (1 column) */}
-          <div className="space-y-3 md:space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 md:w-10 md:h-10 bg-white dark:bg-slate-800 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20 p-1">
-                <img
-                  src={logo}
-                  alt="SuccessBridge"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <span className="text-base md:text-xl font-bold text-slate-900 dark:text-white tracking-tight">
-                SuccessBridge
-              </span>
-            </div>
-            <p className="text-slate-500 dark:text-slate-400 text-xs md:text-base leading-relaxed">
-              Empowering Ethiopian students with world-class digital learning
-              resources, bridging the gap between secondary and higher
-              education.
+    <footer className="relative z-10 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+
+      {/* ── Navigation bar ── uses homepage palette ── */}
+      <div className="max-w-7xl mx-auto px-5 lg:px-10">
+
+        {/* Heading */}
+        <div className="pt-8 md:pt-10 lg:pt-12 pb-4 md:pb-5">
+          <h3 className="text-slate-900 dark:text-white text-base md:text-xl font-bold">
+            SuccessBridge
+          </h3>
+        </div>
+
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10 pb-6 md:pb-8">
+
+          {/* ── Col 1 – Brand identity */}
+          <div className="lg:col-span-1 space-y-3">
+            <p className="text-slate-600 dark:text-slate-400 text-xs md:text-sm leading-relaxed">
+              The ultimate learning platform for Ethiopian students. World-class resources,
+              smart assessments, and personalized progress tracking.
             </p>
-            <div className="flex items-center gap-2 md:gap-3 pt-2 flex-wrap">
-              <a
-                href="https://t.me/tolinaaftt"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-blue-500 dark:hover:bg-blue-500 hover:text-white transition-all text-slate-500 dark:text-slate-400 active:scale-95"
-                title="Telegram Channel"
-              >
-                <FaTelegram className="w-4 h-4 md:w-6 md:h-6" />
-              </a>
-              <a
-                href="https://www.tiktok.com/@tolinaaftt"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-black dark:hover:bg-black hover:text-white transition-all text-slate-500 dark:text-slate-400 active:scale-95"
-                title="TikTok"
-              >
-                <FaTiktok className="w-4 h-4 md:w-6 md:h-6" />
-              </a>
-              <a
-                href="https://www.instagram.com/tolman_tube"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-pink-600 dark:hover:bg-pink-600 hover:text-white transition-all text-slate-500 dark:text-slate-400 active:scale-95"
-                title="Instagram"
-              >
-                <FaInstagram className="w-4 h-4 md:w-6 md:h-6" />
-              </a>
-              <a
-                href="https://www.facebook.com/profile.php?id=61555804154730"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-blue-600 dark:hover:bg-blue-600 hover:text-white transition-all text-slate-500 dark:text-slate-400 active:scale-95"
-                title="Facebook"
-              >
-                <FaFacebook className="w-4 h-4 md:w-6 md:h-6" />
-              </a>
-              <a
-                href="https://www.youtube.com/@tolinaaf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-red-600 dark:hover:bg-red-600 hover:text-white transition-all text-slate-500 dark:text-slate-400 active:scale-95"
-                title="YouTube"
-              >
-                <FaYoutube className="w-4 h-4 md:w-6 md:h-6" />
-              </a>
+            <div className="flex items-center gap-1.5 md:gap-2.5 flex-wrap">
+              {[
+                ["FaTelegram", "https://t.me/tolinaaftt", "text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-500/15"],
+                ["FaTiktok", "https://www.tiktok.com/@tolinaaftt", "text-slate-700 hover:bg-slate-100 dark:hover:bg-white/10"],
+                ["FaInstagram", "https://www.instagram.com/tolman_tube", "text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-500/15"],
+                ["FaFacebook", "https://www.facebook.com/profile.php?id=61555804154730", "text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/15"],
+                ["FaYoutube", "https://www.youtube.com/@tolinaaf", "text-red-600 hover:bg-red-50 dark:hover:bg-red-500/15"],
+                ["FaGithub", "https://github.com/TolesaTesfaye", "text-slate-700 hover:bg-slate-100 dark:hover:bg-white/10"],
+                ["FaLinkedin", "https://www.linkedin.com/in/tolesa-tesfaye-9057a538b/", "text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-500/15"],
+              ].map(([Icon, href, hover]) => (
+                <a
+                  key={href}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 ${hover} text-slate-500 dark:text-slate-400 transition-all text-sm md:text-base active:scale-95`}
+                >
+                  {(() => {
+                    switch (Icon) {
+                      case "FaTelegram": return <FaTelegram />;
+                      case "FaTiktok": return <FaTiktok />;
+                      case "FaInstagram": return <FaInstagram />;
+                      case "FaFacebook": return <FaFacebook />;
+                      case "FaYoutube": return <FaYoutube />;
+                      case "FaGithub": return <FaGithub />;
+                      case "FaLinkedin": return <FaLinkedin />;
+                      default: return null;
+                    }
+                  })()}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Col 2 – About SuccessBridge */}
+          <div>
+            <h4 className="text-slate-900 dark:text-white font-bold text-sm md:text-base mb-3 md:mb-5 flex items-center gap-2">
+              <span className="w-[3px] h-4 md:h-5 rounded-full bg-blue-500 inline-block" />
+              About SuccessBridge
+            </h4>
+            <ul className="space-y-1.5 md:space-y-2.5">
+              {[
+                { label: "Our Mission", href: "/about" },
+                { label: "Contact / Get in Touch", href: "/contact" },
+                { label: "Privacy Policy", href: "/privacy-policy" },
+                { label: "Terms of Service", href: "/terms-of-service" },
+                { label: "API Documentation", href: "https://github.com/TolesaTesfaye", external: true },
+              ].map((item) => (
+                <li key={item.label}>
+                  {item.external ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-xs md:text-sm leading-relaxed block"
+                    >
+                      {item.label}
+                    </a>
+                  ) : (
+                    <Link
+                      to={item.href}
+                      className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-xs md:text-sm leading-relaxed block"
+                    >
+                      {item.label}
+                    </Link>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* ── Col 3 – Platform */}
+          <div>
+            <h4 className="text-slate-900 dark:text-white font-bold text-sm md:text-base mb-3 md:mb-5 flex items-center gap-2">
+              <span className="w-[3px] h-4 md:h-5 rounded-full bg-violet-500 inline-block" />
+              Platform
+            </h4>
+            <ul className="space-y-1.5 md:space-y-2.5">
+              {[
+                { label: "Resources Library", href: "/student/resources" },
+                { label: "Student Quizzes", href: "/student/quizzes" },
+                { label: "Progress & Analytics", href: "/student/progress" },
+                { label: "Payment Tracking", href: "/student/payments" },
+                { label: "Learning Center", href: "/university/dashboard" },
+              ].map((item) => (
+                <li key={item.label}>
+                  <Link
+                    to={item.href}
+                    className="text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors text-xs md:text-sm leading-relaxed block"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* ── Col 4 – Contact Address */}
+          <div>
+            <h4 className="text-slate-900 dark:text-white font-bold text-sm md:text-base mb-3 md:mb-5 flex items-center gap-2">
+              <span className="w-[3px] h-4 md:h-5 rounded-full bg-emerald-500 inline-block" />
+              Contact Us
+            </h4>
+            <ul className="space-y-3 md:space-y-4">
+              <li>
+                <a
+                  href="mailto:support@successbridge.edu.et"
+                  className="group flex items-start gap-2 text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                >
+                  <Mail className="w-4 h-4 md:w-[18px] md:h-[18px] mt-0.5 flex-shrink-0 text-emerald-600 dark:text-emerald-500" />
+                  <div>
+                    <p className="text-[9px] md:text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-semibold">Email</p>
+                    <p className="text-xs md:text-sm font-medium">support@successbridge.edu.et</p>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="tel:+251911234567"
+                  className="group flex items-start gap-2 text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                >
+                  <Phone className="w-4 h-4 md:w-[18px] md:h-[18px] mt-0.5 flex-shrink-0 text-emerald-600 dark:text-emerald-500" />
+                  <div>
+                    <p className="text-[9px] md:text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-semibold">Phone</p>
+                    <p className="text-xs md:text-sm font-medium">+251 (0) 911 234 567</p>
+                  </div>
+                </a>
+              </li>
+              <li>
+                <div className="flex items-start gap-2 text-slate-700 dark:text-slate-300">
+                  <MapPin className="w-4 h-4 md:w-[18px] md:h-[18px] mt-0.5 flex-shrink-0 text-emerald-600 dark:text-emerald-500" />
+                  <div>
+                    <p className="text-[9px] md:text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-semibold">Location</p>
+                    <p className="text-xs md:text-sm font-medium">Addis Ababa, Ethiopia</p>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div className="flex items-start gap-2 text-slate-700 dark:text-slate-300">
+                  <Clock className="w-4 h-4 md:w-[18px] md:h-[18px] mt-0.5 flex-shrink-0 text-emerald-600 dark:text-emerald-500" />
+                  <div>
+                    <p className="text-[9px] md:text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-semibold">Business Hours</p>
+                    <p className="text-xs md:text-sm font-medium leading-snug">Mon – Fri: 9 AM – 6 PM</p>
+                    <p className="text-xs md:text-sm font-medium leading-snug">Sat: 10 AM – 4 PM</p>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Bottom bar ── */}
+      <div className="bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800">
+        <div className="max-w-7xl mx-auto px-5 lg:px-10 py-4 md:py-5">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4">
+            <p className="text-slate-500 dark:text-slate-500 text-[11px] md:text-xs text-center md:text-left tracking-wider">
+              © {new Date().getFullYear()} SUCCESSBRIDGE. ALL RIGHTS RESERVED.
+            </p>
+            <div className="flex items-center gap-4 md:gap-6">
+              <Link to="/privacy-policy" className="text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-[11px] md:text-xs tracking-wider">
+                Privacy Policy
+              </Link>
+              <Link to="/terms-of-service" className="text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-[11px] md:text-xs tracking-wider">
+                Terms of Service
+              </Link>
               <a
                 href="https://github.com/TolesaTesfaye"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-700 dark:hover:bg-slate-700 hover:text-white transition-all text-slate-500 dark:text-slate-400 active:scale-95"
-                title="GitHub"
+                className="text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-[11px] md:text-xs tracking-wider"
               >
-                <FaGithub className="w-4 h-4 md:w-6 md:h-6" />
-              </a>
-              <a
-                href="https://www.linkedin.com/in/tolesa-tesfaye-9057a538b/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 md:w-12 md:h-12 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-blue-700 dark:hover:bg-blue-700 hover:text-white transition-all text-slate-500 dark:text-slate-400 active:scale-95"
-                title="LinkedIn"
-              >
-                <FaLinkedin className="w-4 h-4 md:w-6 md:h-6" />
+                API Documentation
               </a>
             </div>
-          </div>
-
-          {/* Navigation Content - 2 columns on all screens */}
-          <div className="lg:col-span-3 grid grid-cols-2 gap-4 md:gap-10">
-            {/* Academic Paths */}
-            <div className="space-y-2 md:space-y-4">
-              <h4 className="text-slate-900 dark:text-white font-bold text-xs md:text-lg mb-2 md:mb-4 flex items-center gap-1 md:gap-2">
-                <div className="w-1 h-3 md:h-6 bg-blue-600 dark:bg-blue-500 rounded-full"></div>
-                Learning Path
-              </h4>
-              <ul className="space-y-1 md:space-y-3 text-[10px] md:text-base font-medium text-slate-600 dark:text-slate-300">
-                <li>
-                  <a
-                    href="/highschool/dashboard"
-                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors block py-0.5 md:py-1 active:text-blue-700"
-                  >
-                    High School Hub
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/university/dashboard"
-                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors block py-0.5 md:py-1 active:text-blue-700"
-                  >
-                    Freshman Common Courses
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/university/dashboard"
-                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors block py-0.5 md:py-1 active:text-blue-700"
-                  >
-                    Digital Modules
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/university/dashboard"
-                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors block py-0.5 md:py-1 active:text-blue-700"
-                  >
-                    Past Entrance Exams
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors block py-0.5 md:py-1 active:text-blue-700"
-                  >
-                    Interactive Quizzes
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Quick Links */}
-            <div className="space-y-2 md:space-y-4">
-              <h4 className="text-slate-900 dark:text-white font-bold text-xs md:text-lg mb-2 md:mb-4 flex items-center gap-1 md:gap-2">
-                <div className="w-1 h-3 md:h-6 bg-indigo-600 dark:bg-indigo-500 rounded-full"></div>
-                Resources
-              </h4>
-              <ul className="space-y-1 md:space-y-3 text-[10px] md:text-base font-medium text-slate-600 dark:text-slate-300">
-                <li>
-                  <a
-                    href="/about"
-                    className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block py-0.5 md:py-1 active:text-indigo-700"
-                  >
-                    About Our Mission
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/contact"
-                    className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block py-0.5 md:py-1 active:text-indigo-700"
-                  >
-                    Support Center
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/privacy-policy"
-                    className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block py-0.5 md:py-1 active:text-indigo-700"
-                  >
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/terms-of-service"
-                    className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block py-0.5 md:py-1 active:text-indigo-700"
-                  >
-                    Terms of Service
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors block py-0.5 md:py-1 active:text-indigo-700"
-                  >
-                    API Documentation
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        {/* Copyright Section with Support Info */}
-        <div className="pt-5 md:pt-8 border-t border-slate-200 dark:border-slate-800">
-          {/* Support Info - Horizontal Layout */}
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 md:gap-8 mb-4 md:mb-5">
-            <a
-              href="mailto:support@successbridge.edu.et"
-              className="flex items-center gap-2 group"
-            >
-              <Mail className="w-4 h-4 text-emerald-600 dark:text-emerald-500" />
-              <div>
-                <p className="text-[9px] md:text-[10px] text-slate-400 dark:text-slate-500 font-semibold uppercase tracking-wider">
-                  Email Support
-                </p>
-                <p className="text-xs md:text-sm text-slate-700 dark:text-slate-300 font-medium group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                  support@successbridge.edu.et
-                </p>
-              </div>
-            </a>
-          </div>
-
-          {/* Copyright */}
-          <div className="flex flex-col md:flex-row justify-between items-center gap-2 md:gap-4 text-[9px] md:text-xs font-bold text-slate-400 dark:text-slate-500 tracking-wide md:tracking-widest uppercase">
-            <p className="text-center md:text-left">
-              © 2024 SUCCESSBRIDGE. ARCHITECTING FUTURES.
-            </p>
           </div>
         </div>
       </div>

@@ -3,7 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 }
 
 html {
@@ -11,6 +11,7 @@ html {
   color-scheme: light;
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 html.dark {
@@ -21,6 +22,7 @@ html.dark {
 body {
   font-family: var(--font-sans);
   background-color: #f8fafc;
+  overflow-x: hidden;
   @apply transition-colors duration-300;
 }
 
@@ -52,14 +54,14 @@ html.dark body {
 select {
   /* Ensure minimum touch target size (44x44px recommended by Apple/Google) */
   min-height: 44px;
-  
+
   /* Better touch interaction */
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  
+
   /* Improve text readability on mobile */
   font-size: 16px; /* Prevents zoom on iOS */
-  
+
   /* Better spacing for mobile */
   padding-top: 0.625rem;
   padding-bottom: 0.625rem;
@@ -73,7 +75,7 @@ select {
     padding: 0.625rem 0.75rem;
     padding-right: 2.5rem; /* Space for dropdown arrow */
   }
-  
+
   /* Make option text more readable */
   select option {
     font-size: 14px;
@@ -89,7 +91,7 @@ select {
     padding: 0.75rem 1rem;
     padding-right: 3rem;
   }
-  
+
   select option {
     font-size: 0.875rem;
     padding: 0.5rem;
@@ -178,7 +180,8 @@ select:disabled {
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -187,7 +190,8 @@ select:disabled {
 }
 
 @keyframes pulse-slow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
   }
   50% {
@@ -228,16 +232,31 @@ select:disabled {
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-8px); }
-  50% { transform: translateX(8px); }
-  75% { transform: translateX(-8px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-8px);
+  }
+  50% {
+    transform: translateX(8px);
+  }
+  75% {
+    transform: translateX(-8px);
+  }
 }
 
 @keyframes pop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .animate-shake {
@@ -259,8 +278,8 @@ select:disabled {
 
 /* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 /* Hide scrollbar utility - same as no-scrollbar */
