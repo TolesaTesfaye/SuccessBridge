@@ -33,9 +33,50 @@ export const testConnection = async (
   }
 };
 
+// Custom logging function - only logs essential information
+const createLoggingFunction = () => {
+  const debugMode = process.env.DEBUG_SQL === "true";
+  
+  return (msg: string) => {
+    // Only log in development and if debug mode is enabled
+    if (process.env.NODE_ENV !== "development" || !debugMode) {
+      return; // Suppress logs
+    }
+
+    // Filter out repetitive Sequelize queries
+    const skipPatterns = [
+      /^Executing \(default\):/,  // Suppress "Executing (default): SELECT..."
+      /^SELECT/,                   // Suppress raw SELECT queries
+      /^Deprecated:/,              // Skip deprecation warnings
+    ];
+
+    // Only show if it matches important patterns
+    const importantPatterns = [
+      /CREATE TABLE/,
+      /DROP TABLE/,
+      /ALTER TABLE/,
+      /INSERT INTO/,
+      /UPDATE/,
+      /DELETE FROM/,
+      /ERROR/,
+      /error/,
+    ];
+
+    // Skip if matches any skip pattern
+    if (skipPatterns.some(pattern => pattern.test(msg))) {
+      return;
+    }
+
+    // Only log if it's an important operation or debug mode shows everything
+    if (importantPatterns.some(pattern => pattern.test(msg)) || debugMode) {
+      console.log(`[DB] ${msg}`);
+    }
+  };
+};
+
 // Create sequelize instance with fallback
 const createSequelizeInstance = () => {
-  const logging = process.env.NODE_ENV === "development" ? console.log : false;
+  const logging = process.env.NODE_ENV === "development" ? createLoggingFunction() : false;
 
   const isSupabaseHost = (host?: string) => (host ?? "").includes("supabase");
   const isSupabaseUrl = (url?: string) => (url ?? "").includes("supabase");
