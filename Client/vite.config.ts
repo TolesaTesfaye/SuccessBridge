@@ -37,7 +37,7 @@ export default defineConfig({
     host: "0.0.0.0", // Listen on all network interfaces for local network access
     hmr: {
       protocol: "ws",
-      host: "0.0.0.0", // Allow HMR from any network interface
+      host: "localhost", // Use localhost for the HMR client (browsers cannot connect to 0.0.0.0)
       port: 3000,
     },
 
