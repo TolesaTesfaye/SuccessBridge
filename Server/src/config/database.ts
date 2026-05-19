@@ -36,7 +36,7 @@ export const testConnection = async (
 // Custom logging function - only logs essential information
 const createLoggingFunction = () => {
   const debugMode = process.env.DEBUG_SQL === "true";
-  
+
   return (msg: string) => {
     // Only log in development and if debug mode is enabled
     if (process.env.NODE_ENV !== "development" || !debugMode) {
@@ -45,9 +45,9 @@ const createLoggingFunction = () => {
 
     // Filter out repetitive Sequelize queries
     const skipPatterns = [
-      /^Executing \(default\):/,  // Suppress "Executing (default): SELECT..."
-      /^SELECT/,                   // Suppress raw SELECT queries
-      /^Deprecated:/,              // Skip deprecation warnings
+      /^Executing \(default\):/, // Suppress "Executing (default): SELECT..."
+      /^SELECT/, // Suppress raw SELECT queries
+      /^Deprecated:/, // Skip deprecation warnings
     ];
 
     // Only show if it matches important patterns
@@ -63,12 +63,12 @@ const createLoggingFunction = () => {
     ];
 
     // Skip if matches any skip pattern
-    if (skipPatterns.some(pattern => pattern.test(msg))) {
+    if (skipPatterns.some((pattern) => pattern.test(msg))) {
       return;
     }
 
     // Only log if it's an important operation or debug mode shows everything
-    if (importantPatterns.some(pattern => pattern.test(msg)) || debugMode) {
+    if (importantPatterns.some((pattern) => pattern.test(msg)) || debugMode) {
       console.log(`[DB] ${msg}`);
     }
   };
@@ -76,7 +76,8 @@ const createLoggingFunction = () => {
 
 // Create sequelize instance with fallback
 const createSequelizeInstance = () => {
-  const logging = process.env.NODE_ENV === "development" ? createLoggingFunction() : false;
+  const logging =
+    process.env.NODE_ENV === "development" ? createLoggingFunction() : false;
 
   const isSupabaseHost = (host?: string) => (host ?? "").includes("supabase");
   const isSupabaseUrl = (url?: string) => (url ?? "").includes("supabase");
@@ -114,7 +115,7 @@ const createSequelizeInstance = () => {
 
   // Use DATABASE_URL from environment variables
   const databaseUrl = process.env.DATABASE_URL;
-  
+
   if (!databaseUrl) {
     console.error("❌ DATABASE_URL is not defined in environment variables!");
     throw new Error("DATABASE_URL is required for database connection");
@@ -123,7 +124,6 @@ const createSequelizeInstance = () => {
   console.log("🔄 Attempting database connection...");
   console.log(`📍 Using URL: ${databaseUrl.substring(0, 30)}...`);
 
-  
   return new Sequelize(databaseUrl, {
     dialect: "postgres",
     dialectOptions: buildDialectOptions(true), // Always use SSL for Supabase
@@ -137,7 +137,7 @@ const sequelize = createSequelizeInstance();
 // Enhanced test function for the main instance
 export const testMainConnection = async () => {
   console.log("🔍 Testing database connection...");
-  
+
   const success = await testConnection(sequelize, "Supabase PostgreSQL");
 
   if (!success) {
