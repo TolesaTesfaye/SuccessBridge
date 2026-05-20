@@ -41,10 +41,10 @@ function useReveal(rootRef: React.RefObject<HTMLDivElement>) {
 /* ── TOC ── */
 const TOC_ITEMS = [
   { id: "contact-info", label: "Contact Info" },
-  { id: "categories",   label: "Categories" },
+  { id: "categories", label: "Categories" },
   { id: "contact-form", label: "Message Form" },
-  { id: "quick-links",  label: "Helpful Links" },
-  { id: "faq",          label: "FAQ" },
+  { id: "quick-links", label: "Helpful Links" },
+  { id: "faq", label: "FAQ" },
 ];
 
 function useActiveSection(): string {
@@ -193,10 +193,7 @@ export const Contact: React.FC = () => {
   /* React's <style> block at bottom defines animations */
 
   return (
-    <div
-      ref={rootRef}
-      className="min-h-screen bg-slate-50 dark:bg-[#0a0f1c]"
-    >
+    <div ref={rootRef} className="min-h-screen bg-slate-50 dark:bg-[#0a0f1c]">
       {/* ═══════════════════════════ HERO ═══════════════════════════ */}
       <section
         id="hero"
@@ -359,8 +356,8 @@ export const Contact: React.FC = () => {
                   </h3>
                 </div>
                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Reach out directly or fill in the form. We respond within
-                  24 hours on weekdays.
+                  Reach out directly or fill in the form. We respond within 24
+                  hours on weekdays.
                 </p>
                 {sidebarItems.map(({ icon, label, value, href }, i) => (
                   <a
@@ -580,7 +577,7 @@ export const Contact: React.FC = () => {
       {/* ═══════════════════════ FAQ ═══════════════════════ */}
       <section
         id="faq"
-        className="w-full py-14 sm:py-20 lg:py-28 bg-slate-50 dark:bg-[#0a0f1c]"
+        className="w-full py-14 sm:py-20 lg:py-28 bg-slate-50 dark:bg-[#0a0f1d]"
         data-reveal
       >
         <div className="w-full px-4 sm:px-6 lg:px-12">
@@ -624,7 +621,9 @@ export const Contact: React.FC = () => {
                   {/* accordion body */}
                   <div
                     className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                      openFaq === i ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                      openFaq === i
+                        ? "max-h-96 opacity-100"
+                        : "max-h-0 opacity-0"
                     }`}
                   >
                     <div className="px-5 md:px-6 pb-5 md:pb-6">
@@ -642,7 +641,7 @@ export const Contact: React.FC = () => {
 
       {/* ═══════════════════════ CTA (full-width) ═══════════════════════ */}
       <section className="w-full relative py-16 sm:py-20 lg:py-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600" />
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-950" />
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 right-1/4 w-[400px] h-[400px] bg-white/5 rounded-full blur-[100px]" />
           <div className="absolute bottom-0 left-1/4 w-[300px] h-[300px] bg-blue-400/10 rounded-full blur-[80px]" />
