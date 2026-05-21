@@ -15,7 +15,6 @@ import { setupSwagger } from "./config/swagger.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { auditMiddleware } from "./middleware/auditLogger.js";
 import { logger } from "./utils/logger.js";
-import { runAuditMigration } from "./migrations/runAuditMigration.js";
 import passport from "./config/passport.js";
 import authRoutes from "./routes/auth.js";
 import resourceRoutes from "./routes/resources.js";
