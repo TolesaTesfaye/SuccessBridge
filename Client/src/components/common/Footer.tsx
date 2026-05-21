@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
 import {
   FaFacebook,
   FaInstagram,
@@ -14,7 +14,7 @@ import {
 export const Footer: React.FC = () => {
   return (
     <footer className="relative z-10 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
-      {/* ── Navigation bar ── uses homepage palette ── */}
+      {/* ── Navigation bar ── */}
       <div className="max-w-7xl mx-auto px-5 lg:px-10">
         {/* Heading */}
         <div className="pt-8 md:pt-10 lg:pt-12 pb-4 md:pb-5">
@@ -23,10 +23,10 @@ export const Footer: React.FC = () => {
           </h3>
         </div>
 
-        {/* Content Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10 pb-6 md:pb-8">
-          {/* ── Col 1 – Brand identity */}
-          <div className="lg:col-span-1 space-y-3">
+        {/* Mobile Layout: Social Media (full width) + About+Platform (2 cols) + Contact (center) */}
+        <div className="lg:hidden space-y-6 pb-6 md:pb-8">
+          {/* Social Media Row */}
+          <div className="space-y-2">
             <p className="text-slate-600 dark:text-slate-400 text-xs md:text-sm leading-relaxed">
               The ultimate learning platform for Ethiopian students. World-class
               resources, smart assessments, and personalized progress tracking.
@@ -101,7 +101,167 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* ── Col 2 – About SuccessBridge */}
+          {/* About + Platform + Contact (3 columns) */}
+          <div className="grid grid-cols-3 gap-4">
+            {/* About SuccessBridge */}
+            <div>
+              <h4 className="text-slate-900 dark:text-white font-bold text-xs mb-3 flex items-center gap-1">
+                <span className="w-[3px] h-3 rounded-full bg-blue-500 inline-block" />
+                About
+              </h4>
+              <ul className="space-y-1.5">
+                {[
+                  { label: "Mission", href: "/about" },
+                  { label: "Contact", href: "/contact" },
+                  { label: "Privacy", href: "/privacy-policy" },
+                  { label: "Terms", href: "/terms-of-service" },
+                ].map((item) => (
+                  <li key={item.label}>
+                    <Link
+                      to={item.href}
+                      className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-[10px] leading-relaxed block"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Platform */}
+            <div>
+              <h4 className="text-slate-900 dark:text-white font-bold text-xs mb-3 flex items-center gap-1">
+                <span className="w-[3px] h-3 rounded-full bg-violet-500 inline-block" />
+                Platform
+              </h4>
+              <ul className="space-y-1.5">
+                {[
+                  { label: "Resources", href: "/student/resources" },
+                  { label: "Quizzes", href: "/student/quizzes" },
+                  { label: "Progress", href: "/student/progress" },
+                  { label: "Payments", href: "/student/payments" },
+                ].map((item) => (
+                  <li key={item.label}>
+                    <Link
+                      to={item.href}
+                      className="text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors text-[10px] leading-relaxed block"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Contact Us */}
+            <div>
+              <h4 className="text-slate-900 dark:text-white font-bold text-xs mb-3 flex items-center gap-1">
+                <span className="w-[3px] h-3 rounded-full bg-emerald-500 inline-block" />
+                Contact
+              </h4>
+              <ul className="space-y-1.5 text-[10px]">
+                <li>
+                  <a
+                    href="mailto:support@successbridge.edu.et"
+                    className="text-slate-600 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors block truncate"
+                  >
+                    Email
+                  </a>
+                </li>
+                <li>
+                  <span className="text-slate-600 dark:text-slate-400 block">
+                    support@success...
+                  </span>
+                </li>
+                <li>
+                  <span className="text-slate-600 dark:text-slate-400 block">
+                    Addis Ababa
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop Layout: 4 columns */}
+        <div className="hidden lg:grid lg:grid-cols-4 lg:gap-10 pb-6 lg:pb-8">
+          {/* Col 1 – Brand identity */}
+          <div className="space-y-3">
+            <p className="text-slate-600 dark:text-slate-400 text-xs md:text-sm leading-relaxed">
+              The ultimate learning platform for Ethiopian students. World-class
+              resources, smart assessments, and personalized progress tracking.
+            </p>
+            <div className="flex items-center gap-1.5 md:gap-2.5 flex-wrap">
+              {[
+                [
+                  "FaTelegram",
+                  "https://t.me/tolinaaftt",
+                  "text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-500/15",
+                ],
+                [
+                  "FaTiktok",
+                  "https://www.tiktok.com/@tolinaaftt",
+                  "text-slate-700 hover:bg-slate-100 dark:hover:bg-white/10",
+                ],
+                [
+                  "FaInstagram",
+                  "https://www.instagram.com/tolman_tube",
+                  "text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-500/15",
+                ],
+                [
+                  "FaFacebook",
+                  "https://www.facebook.com/profile.php?id=61555804154730",
+                  "text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/15",
+                ],
+                [
+                  "FaYoutube",
+                  "https://www.youtube.com/@tolinaaf",
+                  "text-red-600 hover:bg-red-50 dark:hover:bg-red-500/15",
+                ],
+                [
+                  "FaGithub",
+                  "https://github.com/TolesaTesfaye",
+                  "text-slate-700 hover:bg-slate-100 dark:hover:bg-white/10",
+                ],
+                [
+                  "FaLinkedin",
+                  "https://www.linkedin.com/in/tolesa-tesfaye-9057a538b/",
+                  "text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-500/15",
+                ],
+              ].map(([Icon, href, hover]) => (
+                <a
+                  key={href}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 ${hover} text-slate-500 dark:text-slate-400 transition-all text-sm md:text-base active:scale-95`}
+                >
+                  {(() => {
+                    switch (Icon) {
+                      case "FaTelegram":
+                        return <FaTelegram />;
+                      case "FaTiktok":
+                        return <FaTiktok />;
+                      case "FaInstagram":
+                        return <FaInstagram />;
+                      case "FaFacebook":
+                        return <FaFacebook />;
+                      case "FaYoutube":
+                        return <FaYoutube />;
+                      case "FaGithub":
+                        return <FaGithub />;
+                      case "FaLinkedin":
+                        return <FaLinkedin />;
+                      default:
+                        return null;
+                    }
+                  })()}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Col 2 – About SuccessBridge */}
           <div>
             <h4 className="text-slate-900 dark:text-white font-bold text-sm md:text-base mb-3 md:mb-5 flex items-center gap-2">
               <span className="w-[3px] h-4 md:h-5 rounded-full bg-blue-500 inline-block" />
@@ -116,6 +276,7 @@ export const Footer: React.FC = () => {
                 {
                   href: "https://github.com/TolesaTesfaye",
                   external: true,
+                  label: "GitHub",
                 },
               ].map((item) => (
                 <li key={item.label}>
@@ -141,7 +302,7 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* ── Col 3 – Platform */}
+          {/* Col 3 – Platform */}
           <div>
             <h4 className="text-slate-900 dark:text-white font-bold text-sm md:text-base mb-3 md:mb-5 flex items-center gap-2">
               <span className="w-[3px] h-4 md:h-5 rounded-full bg-violet-500 inline-block" />
@@ -166,7 +327,7 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* ── Col 4 – Contact Address */}
+          {/* Col 4 – Contact Address */}
           <div>
             <h4 className="text-slate-900 dark:text-white font-bold text-sm md:text-base mb-3 md:mb-5 flex items-center gap-2">
               <span className="w-[3px] h-4 md:h-5 rounded-full bg-emerald-500 inline-block" />

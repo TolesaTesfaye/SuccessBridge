@@ -12,9 +12,37 @@ const api: AxiosInstance = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 60000, // 60 second timeout (Render free tier can take 30-50s to wake up)
+  timeout: 30000, // Reduced from 60s for faster failure detection
 });
 
+// Response caching with TTL
+interface CacheEntry {
+  data: any;
+  timestamp: number;
+  ttl: number;
+}
+
+const responseCache = new Map<string, CacheEntry>();
+const CACHE_DURATIONS = {
+  SHORT: 5 * 60 * 1000, // 5 minutes for user data
+  MEDIUM: 10 * 60 * 1000, // 10 minutes for dashboard stats
+  LONG: 30 * 60 * 1000, // 30 minutes for static data
+};
+
+// Determine cache TTL based on URL
+const getCacheTTL = (url: string): number => {
+  if (url.includes("/analytics") || url.includes("/stats"))
+    return CACHE_DURATIONS.MEDIUM;
+  if (
+    url.includes("/universities") ||
+    url.includes("/subjects") ||
+    url.includes("/grades")
+  )
+    return CACHE_DURATIONS.LONG;
+  return CACHE_DURATIONS.SHORT;
+};
+
+// In-flight request deduplication
 const inFlightGetRequests = new Map<string, Promise<any>>();
 
 const originalGet = api.get.bind(api);
@@ -23,19 +51,49 @@ api.get = ((url: string, config: any = {}) => {
   const paramsKey = JSON.stringify(config?.params ?? {});
   const headersKey = JSON.stringify(config?.headers ?? {});
   const requestKey = `${url}?${paramsKey}&${headersKey}`;
+  const skipCache = config?.skipCache === true;
 
+  // Check cache first (unless explicitly skipped)
+  if (!skipCache) {
+    const cached = responseCache.get(requestKey);
+    if (cached && Date.now() - cached.timestamp < cached.ttl) {
+      if (import.meta.env.DEV) {
+        console.log(`💾 Cache hit: ${url}`);
+      }
+      return Promise.resolve({ data: cached.data, cached: true });
+    }
+  }
+
+  // Check in-flight requests
   const existingRequest = inFlightGetRequests.get(requestKey);
   if (existingRequest) {
     return existingRequest;
   }
 
-  const request = originalGet(url, config).finally(() => {
-    inFlightGetRequests.delete(requestKey);
-  });
+  const request = originalGet(url, config)
+    .then((response) => {
+      // Cache successful responses
+      if (!skipCache) {
+        responseCache.set(requestKey, {
+          data: response.data,
+          timestamp: Date.now(),
+          ttl: getCacheTTL(url),
+        });
+      }
+      return response;
+    })
+    .finally(() => {
+      inFlightGetRequests.delete(requestKey);
+    });
 
   inFlightGetRequests.set(requestKey, request);
   return request;
 }) as AxiosInstance["get"];
+
+// Clear cache utility
+export const clearApiCache = () => {
+  responseCache.clear();
+};
 
 // Request interceptor to add token
 api.interceptors.request.use(
@@ -48,7 +106,7 @@ api.interceptors.request.use(
     // Don't set Content-Type for FormData - let axios set it with boundary
     if (config.data instanceof FormData) {
       // Remove Content-Type if it was set, axios will add it with boundary
-      delete config.headers['Content-Type'];
+      delete config.headers["Content-Type"];
     }
 
     // Log requests only in development
@@ -57,10 +115,10 @@ api.interceptors.request.use(
         `🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`,
         {
           params: config.params,
-          data: config.data instanceof FormData ? 'FormData' : config.data,
+          data: config.data instanceof FormData ? "FormData" : config.data,
           hasAuth: !!config.headers.Authorization,
-          authHeader: config.headers.Authorization ? 'Bearer ***' : 'None',
-          contentType: config.headers['Content-Type'] || 'auto',
+          authHeader: config.headers.Authorization ? "Bearer ***" : "None",
+          contentType: config.headers["Content-Type"] || "auto",
         },
       );
     }
@@ -84,14 +142,14 @@ const isRetryableError = (error: AxiosError): boolean => {
   // Retry on network errors, timeouts, and 5xx server errors
   return (
     !error.response || // Network error
-    error.code === 'ECONNABORTED' || // Timeout
-    error.code === 'ERR_NETWORK' || // Network error
+    error.code === "ECONNABORTED" || // Timeout
+    error.code === "ERR_NETWORK" || // Network error
     (error.response.status >= 500 && error.response.status < 600) // Server error
   );
 };
 
 // Helper function to delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Response interceptor for error handling with retry logic
 api.interceptors.response.use(
@@ -118,7 +176,7 @@ api.interceptors.response.use(
       config.__retryCount += 1;
 
       console.log(
-        `🔄 Retrying request (${config.__retryCount}/${MAX_RETRIES}): ${config.method?.toUpperCase()} ${config.url}`
+        `🔄 Retrying request (${config.__retryCount}/${MAX_RETRIES}): ${config.method?.toUpperCase()} ${config.url}`,
       );
 
       // Wait before retrying
@@ -152,10 +210,7 @@ api.interceptors.response.use(
     const userError = parseApiError(error);
 
     // Handle 401 errors (but not during auth initialization)
-    if (
-      error.response?.status === 401 &&
-      !config?.url?.includes("/auth/me")
-    ) {
+    if (error.response?.status === 401 && !config?.url?.includes("/auth/me")) {
       // Clear auth state and redirect to login
       const { logout } = useAuthStore.getState();
       await logout();

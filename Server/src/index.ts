@@ -52,6 +52,7 @@ import SubjectAccess from "./models/SubjectAccess.js";
 import Notification from "./models/Notification.js";
 import AuditLog from "./models/AuditLog.js";
 import { setupAssociations } from "./models/index.js";
+import { cacheMiddleware } from "./middleware/cacheMiddleware.js";
 
 dotenv.config();
 
@@ -187,6 +188,15 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(passport.initialize());
 app.use(auditMiddleware);
+
+// Apply caching middleware for GET requests (5 minute TTL)
+app.use(
+  "/api/",
+  cacheMiddleware({
+    ttl: 300,
+    exclude: ["/auth", "/notifications", "/payments", "/user/preferences"],
+  }),
+);
 
 // Setup Swagger documentation (only in development)
 if (process.env.NODE_ENV === "development") {

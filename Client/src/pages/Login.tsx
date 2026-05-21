@@ -1,10 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, Link, useLocation, useSearchParams } from "react-router-dom";
+import {
+  useNavigate,
+  Link,
+  useLocation,
+  useSearchParams,
+} from "react-router-dom";
 import { useAuth } from "@hooks/useAuth";
 import { FormInput } from "@components/forms/FormInput";
 import { AppLogo } from "@components/common/AppLogo";
 import { ThemeToggle } from "@components/common/ThemeToggle";
 import { useToast } from "@components/common/Toast";
+import { Spinner } from "@components/common/Spinner";
 import { LogIn, AlertCircle } from "lucide-react";
 
 const OAUTH_ERR_DEDUPE_KEY = "sb_login_oauth_err";
@@ -75,7 +81,10 @@ export const Login: React.FC = () => {
           return;
         }
       }
-      sessionStorage.setItem(OAUTH_ERR_DEDUPE_KEY, JSON.stringify({ code: error, at: Date.now() }));
+      sessionStorage.setItem(
+        OAUTH_ERR_DEDUPE_KEY,
+        JSON.stringify({ code: error, at: Date.now() }),
+      );
     } catch {
       /* ignore */
     }
@@ -187,14 +196,24 @@ export const Login: React.FC = () => {
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full flex justify-center items-center gap-2 py-3 md:py-3 px-4 border border-transparent rounded-lg md:rounded-xl shadow-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all shadow-blue-600/30"
-            >
-              <LogIn className="w-4 h-4" />
-              {loading ? "Authenticating..." : "Sign In"}
-            </button>
+            <div className="space-y-3">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full flex justify-center items-center gap-2 py-3 md:py-3 px-4 border border-transparent rounded-lg md:rounded-xl shadow-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all shadow-blue-600/30"
+              >
+                <LogIn className="w-4 h-4" />
+                {loading ? "Authenticating..." : "Sign In"}
+              </button>
+              {loading && (
+                <div className="flex justify-center items-center gap-2 py-3">
+                  <Spinner size="md" />
+                  <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                    Signing in...
+                  </span>
+                </div>
+              )}
+            </div>
           </form>
 
           <div className="mt-6 md:mt-8 pt-5 md:pt-6 border-t border-slate-200 dark:border-slate-600 text-center transition-colors">
