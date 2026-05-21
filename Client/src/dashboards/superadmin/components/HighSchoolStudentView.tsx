@@ -5,8 +5,6 @@ import { BookOpen, Home, Library } from "lucide-react";
 import { HighSchoolLearningCenter } from "@dashboards/student/components/HighSchoolLearningCenter";
 import { HighSchoolOverview } from "@dashboards/student/components/HighSchoolOverview";
 import { HighSchoolResourceHub } from "@dashboards/student/components/HighSchoolResourceHub";
-import { Footer } from "@components/common/Footer";
-
 import { HIGH_SCHOOL } from "@utils/constants";
 import { getAvailableSubjects } from "@utils/highSchoolSubjectRegistry";
 
@@ -152,7 +150,6 @@ export const HighSchoolStudentView: React.FC<HighSchoolStudentViewProps> = ({ gr
               homeResources={homeResources}
               setActiveTab={setActiveTab}
             />
-            <Footer />
           </>
         ) : activeTab === "learning" ? (
           <HighSchoolLearningCenter
@@ -179,7 +176,6 @@ export const HighSchoolStudentView: React.FC<HighSchoolStudentViewProps> = ({ gr
               resources={resources}
               onRefresh={fetchResources}
             />
-            <Footer />
           </>
         )}
       </div>

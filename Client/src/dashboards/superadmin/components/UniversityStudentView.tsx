@@ -3,8 +3,6 @@ import { resourceService } from "@services/resourceService";
 import { universityService } from "@services/universityService";
 import { useAuthStore } from "@store/authStore";
 import { BookOpen, Library, Home } from "lucide-react";
-import { Footer } from "@components/common/Footer";
-
 import { UNIVERSITY_CATEGORIES } from "@utils/constants";
 
 import { UniversityOverview } from "@dashboards/student/components/UniversityOverview";
@@ -24,24 +22,34 @@ interface UniversityStudentViewProps {
   level: StudentCategory;
 }
 
-export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({ level }) => {
+export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({
+  level,
+}) => {
   const { user } = useAuthStore();
-  const [activeTab, setActiveTab] = useState<"home" | "learning" | "hub">("home");
+  const [activeTab, setActiveTab] = useState<"home" | "learning" | "hub">(
+    "home",
+  );
   const [selectedDepartment, setSelectedDepartment] = useState<string>("");
   const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [selectedResourceType, setSelectedResourceType] = useState<string>("");
-  const [selectedStream, setSelectedStream] = useState<"natural" | "social" | "">("");
+  const [selectedStream, setSelectedStream] = useState<
+    "natural" | "social" | ""
+  >("");
   const [selectedUniversity, setSelectedUniversity] = useState<string>("");
-  const [availableUniversities, setAvailableUniversities] = useState<UniversityWithResources[]>([]);
+  const [availableUniversities, setAvailableUniversities] = useState<
+    UniversityWithResources[]
+  >([]);
   const [resources, setResources] = useState<any[]>([]);
   const [homeResources, setHomeResources] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [homeLoading, setHomeLoading] = useState(false);
 
   const [learningSubject, setLearningSubject] = useState<string>(
-    level === "remedial" ? "Math" : 
-    level === "senior" || level === "gc" ? "Python" :
-    "Psychology",
+    level === "remedial"
+      ? "Math"
+      : level === "senior" || level === "gc"
+        ? "Python"
+        : "Psychology",
   );
 
   const isIntroductory = level === "remedial" || level === "freshman";
@@ -69,7 +77,14 @@ export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({ le
       if (selectedStream === "social") {
         return ["Common Course", "History", "Geography", "Economics", "Civics"];
       }
-      return ["Math", "English", "Physics", "Chemistry", "Geography", "History"];
+      return [
+        "Math",
+        "English",
+        "Physics",
+        "Chemistry",
+        "Geography",
+        "History",
+      ];
     }
     return ["Common Course"];
   };
@@ -77,7 +92,8 @@ export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({ le
   const subjects = getSubjects();
 
   const getResourceTypes = (): string[] => {
-    return UNIVERSITY_CATEGORIES[level as keyof typeof UNIVERSITY_CATEGORIES].resources;
+    return UNIVERSITY_CATEGORIES[level as keyof typeof UNIVERSITY_CATEGORIES]
+      .resources;
   };
 
   const resourceTypes = getResourceTypes();
@@ -90,24 +106,24 @@ export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({ le
         educationLevel: "university",
         grade: level,
       };
-      
+
       if (selectedUniversity) {
         params.university = selectedUniversity;
         params.universityName = selectedUniversity;
       }
-      
+
       if (!isIntroductory && selectedDepartment) {
         params.department = selectedDepartment;
       }
-      
+
       if (selectedSubject) {
         params.subject = selectedSubject;
       }
-      
+
       if (selectedStream) {
         params.stream = selectedStream;
       }
-      
+
       if (selectedResourceType) {
         params.type = selectedResourceType;
       }
@@ -141,7 +157,8 @@ export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({ le
 
   const fetchUniversities = async () => {
     try {
-      const response = await universityService.getUniversitiesWithFreshmanResources();
+      const response =
+        await universityService.getUniversitiesWithFreshmanResources();
       setAvailableUniversities(response.data || []);
     } catch (err) {
       console.error("Failed to fetch universities:", err);
@@ -155,7 +172,14 @@ export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({ le
 
   useEffect(() => {
     fetchResources();
-  }, [selectedDepartment, selectedSubject, selectedResourceType, selectedStream, selectedUniversity, activeTab]);
+  }, [
+    selectedDepartment,
+    selectedSubject,
+    selectedResourceType,
+    selectedStream,
+    selectedUniversity,
+    activeTab,
+  ]);
 
   useEffect(() => {
     if (level === "remedial") {
@@ -215,7 +239,6 @@ export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({ le
               setActiveTab={setActiveTab}
               handleLearningCenterClick={handleLearningCenterClick}
             />
-            <Footer />
           </>
         ) : activeTab === "learning" ? (
           <UniversityLearningCenter
@@ -247,7 +270,6 @@ export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({ le
               activeCategory={level}
               onRefresh={fetchResources}
             />
-            <Footer />
           </>
         )}
       </div>
