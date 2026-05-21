@@ -7,17 +7,32 @@ const NotificationBell: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
-  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 })
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0, width: 384 })
   const { unreadCount, notifications, loading, markAsRead, markAllAsRead, refresh } =
     useNotifications(60000) // Poll every 60 seconds (1 minute)
 
-  // Calculate dropdown position based on button position
+  // Calculate dropdown position and width based on button position and screen size
   useEffect(() => {
     if (isOpen && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect()
+      const isMobile = window.innerWidth < 640 // sm breakpoint
+      
+      let topPos = rect.bottom + 8 // 8px gap below button
+      let rightPos = window.innerWidth - rect.right
+      let dropdownWidth = 384 // md: w-96 default
+      
+      // Adjust for mobile to prevent off-screen
+      if (isMobile) {
+        dropdownWidth = Math.min(window.innerWidth - 16, 384) // Full width minus 8px margins on each side
+        rightPos = 8 // 8px margin from right edge on mobile
+      } else if (window.innerWidth < 768) {
+        dropdownWidth = 320 // sm: w-80
+      }
+      
       setDropdownPosition({
-        top: rect.bottom + 8, // 8px gap below button
-        right: window.innerWidth - rect.right, // Align right edge
+        top: topPos,
+        right: rightPos,
+        width: dropdownWidth,
       })
     }
   }, [isOpen])
@@ -93,6 +108,7 @@ const NotificationBell: React.FC = () => {
               position: 'fixed',
               top: `${dropdownPosition.top}px`,
               right: `${dropdownPosition.right}px`,
+              width: `${dropdownPosition.width}px`,
               zIndex: 9999,
             }}
           >
