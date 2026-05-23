@@ -3,10 +3,10 @@ import React, { memo, useMemo, useCallback } from 'react'
 /**
  * Enhanced memo wrapper that compares props deeply for expensive components
  */
-export const withMemo = <P extends object>(
+export function withMemo<P extends object>(
   Component: React.FC<P>,
   propsAreEqual?: (prevProps: P, nextProps: P) => boolean
-): React.FC<P> => {
+): React.FC<P> {
   return memo(Component, propsAreEqual)
 }
 
@@ -33,15 +33,16 @@ export const useOptimizedMemo = <T>(
 /**
  * Lazy load component with Suspense wrapper
  */
-export const withLazyLoad = <P extends object>(
+export function withLazyLoad<P extends object>(
   Component: React.LazyExoticComponent<React.FC<P>>,
-  fallback: React.ReactNode = <div>Loading...</div>
-): React.FC<P> => {
-  return (props: P) => (
-    <React.Suspense fallback={fallback}>
-      <Component {...props} />
-    </React.Suspense>
-  )
+  fallback: React.ReactNode = React.createElement('div', null, 'Loading...')
+): React.FC<P> {
+  return (props: P) =>
+    React.createElement(
+      React.Suspense,
+      { fallback },
+      React.createElement(Component, props as any)
+    )
 }
 
 /**
@@ -53,7 +54,7 @@ export const VirtualListItem = React.memo<{
   item: any
   renderItem: (item: any, index: number) => React.ReactNode
 }>(({ index, item, renderItem }) => {
-  return <>{renderItem(item, index)}</>
+  return React.createElement(React.Fragment, null, renderItem(item, index))
 })
 
 VirtualListItem.displayName = 'VirtualListItem'

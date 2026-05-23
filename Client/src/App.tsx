@@ -56,6 +56,11 @@ const StudentResources = lazy(() =>
     default: m.StudentResources,
   })),
 );
+const StudentAICompanion = lazy(() =>
+  import("@pages/student/StudentAICompanion").then((m) => ({
+    default: m.StudentAICompanion,
+  })),
+);
 const StudentQuizzes = lazy(() =>
   import("@pages/student/StudentQuizzes").then((m) => ({
     default: m.StudentQuizzes,
@@ -383,6 +388,14 @@ const AppContent: React.FC = () => {
                 element={
                   <ProtectedRoute requiredRole="student">
                     <StudentResources />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/ai-companion"
+                element={
+                  <ProtectedRoute requiredRole="student">
+                    <StudentAICompanion />
                   </ProtectedRoute>
                 }
               />

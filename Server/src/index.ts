@@ -32,6 +32,7 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import diagnosticRoutes from "./routes/diagnostic.js";
 import auditRoutes from "./routes/audit.js";
 import securityRoutes from "./routes/securityRoutes.js";
+import aiRoutes from "./routes/ai.js";
 
 // Import all models to ensure they are registered with Sequelize
 import User from "./models/User.js";
@@ -248,6 +249,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/diagnostic", diagnosticRoutes);
 app.use("/api/admin", auditRoutes);
 app.use("/api/admin/security", securityRoutes);
+app.use("/api/ai", aiRoutes);
 
 // Health check
 app.get("/health", async (req, res) => {

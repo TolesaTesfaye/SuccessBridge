@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   Megaphone,
   CreditCard,
+  Sparkles,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -46,6 +47,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       path: "/dashboard",
       icon: <LayoutDashboard className="w-5 h-5" />,
       emoji: "📊",
+    },
+    {
+      label: "AI Companion",
+      path: "/student/ai-companion",
+      icon: <Sparkles className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />,
+      emoji: "🤖",
     },
     ...(shouldShowQuizzes
       ? [
