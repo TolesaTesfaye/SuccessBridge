@@ -463,7 +463,7 @@ export const StudentAICompanion: React.FC = () => {
         </div>
 
         {/* Main Tabs Container */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden min-h-[600px] sm:min-h-[700px] transition-all">
+        <div className="w-full bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden min-h-[600px] sm:min-h-[700px] transition-all">
 
           {/* ----------------------------------------------------
               TAB 1: BridgeBot Chat UI
