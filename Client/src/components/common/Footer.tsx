@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Mail, MapPin } from "lucide-react";
 import {
   FaFacebook,
@@ -10,8 +10,43 @@ import {
   FaGithub,
   FaLinkedin,
 } from "react-icons/fa";
+import { useAuthStore } from "@store/authStore";
+
+// Helper component that navigates and scrolls to top
+const ScrollLink: React.FC<{
+  to: string;
+  children: React.ReactNode;
+  className?: string;
+}> = ({ to, children, className }) => {
+  const navigate = useNavigate();
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate(to);
+    window.scrollTo(0, 0);
+  };
+  return (
+    <a href={to} onClick={handleClick} className={className}>
+      {children}
+    </a>
+  );
+};
 
 export const Footer: React.FC = () => {
+  const { user } = useAuthStore();
+  const studentType = user?.studentType;
+  const highSchoolGrade = user?.highSchoolGrade;
+  const universityLevel = user?.universityLevel;
+
+  // Generate dynamic Platform links based on student type
+  const getPlatformLinks = () => {
+    return [
+      { label: "Resource Hub", href: "/dashboard?tab=hub" },
+      { label: "Student Quizzes", href: "/student/quizzes" },
+      { label: "Progress & Analytics", href: "/student/progress" },
+      { label: "Payment Tracking", href: "/student/payments" },
+    ];
+  };
+
   return (
     <footer className="relative z-10 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
       {/* ── Navigation bar ── */}
@@ -117,12 +152,12 @@ export const Footer: React.FC = () => {
                   { label: "Terms", href: "/terms-of-service" },
                 ].map((item) => (
                   <li key={item.label}>
-                    <Link
+                    <ScrollLink
                       to={item.href}
                       className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-[10px] leading-relaxed block"
                     >
                       {item.label}
-                    </Link>
+                    </ScrollLink>
                   </li>
                 ))}
               </ul>
@@ -135,12 +170,7 @@ export const Footer: React.FC = () => {
                 Platform
               </h4>
               <ul className="space-y-1.5">
-                {[
-                  { label: "Resources", href: "/student/resources" },
-                  { label: "Quizzes", href: "/student/quizzes" },
-                  { label: "Progress", href: "/student/progress" },
-                  { label: "Payments", href: "/student/payments" },
-                ].map((item) => (
+                {getPlatformLinks().map((item) => (
                   <li key={item.label}>
                     <Link
                       to={item.href}
@@ -273,30 +303,14 @@ export const Footer: React.FC = () => {
                 { label: "Contact / Get in Touch", href: "/contact" },
                 { label: "Privacy Policy", href: "/privacy-policy" },
                 { label: "Terms of Service", href: "/terms-of-service" },
-                {
-                  href: "https://github.com/TolesaTesfaye",
-                  external: true,
-                  label: "GitHub",
-                },
               ].map((item) => (
                 <li key={item.label}>
-                  {item.external ? (
-                    <a
-                      href={item.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-xs md:text-sm leading-relaxed block"
-                    >
-                      {item.label}
-                    </a>
-                  ) : (
-                    <Link
-                      to={item.href}
-                      className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-xs md:text-sm leading-relaxed block"
-                    >
-                      {item.label}
-                    </Link>
-                  )}
+                  <ScrollLink
+                    to={item.href}
+                    className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-xs md:text-sm leading-relaxed block"
+                  >
+                    {item.label}
+                  </ScrollLink>
                 </li>
               ))}
             </ul>
@@ -309,12 +323,7 @@ export const Footer: React.FC = () => {
               Platform
             </h4>
             <ul className="space-y-1.5 md:space-y-2.5">
-              {[
-                { label: "Resources Library", href: "/student/resources" },
-                { label: "Student Quizzes", href: "/student/quizzes" },
-                { label: "Progress & Analytics", href: "/student/progress" },
-                { label: "Payment Tracking", href: "/student/payments" },
-              ].map((item) => (
+              {getPlatformLinks().map((item) => (
                 <li key={item.label}>
                   <Link
                     to={item.href}

@@ -92,75 +92,52 @@ export const UniversityResourceHub: React.FC<UniversityResourceHubProps> = ({
           </div>
         </div>
 
-        {/* 3-Column Filter Grid */}
+        {/* Filter Grid */}
         <div className="px-4 py-4 border-t border-slate-200 dark:border-slate-800">
-          <div className="grid grid-cols-3 gap-3">
-            {/* University Filter */}
-            <div>
-              <label className="block text-xs font-medium text-slate-400 dark:text-slate-500 mb-2">
-                University
-              </label>
-              <select
-                value={selectedUniversity}
-                onChange={(e) => setSelectedUniversity(e.target.value)}
-                className="w-full px-3 py-2.5 bg-slate-800/50 dark:bg-slate-800/80 border border-slate-700 dark:border-slate-600 rounded-lg text-white dark:text-slate-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-              >
-                <option value="">All Universities</option>
-                {(availableUniversities.length > 0
-                  ? availableUniversities.map((u) => u.name)
-                  : UNIVERSITIES
-                ).map((uni) => (
-                  <option key={uni} value={uni}>
-                    {uni}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Department Filter */}
-            {!isIntroductory && (
+          {/* For introductory levels (freshman/remedial): Show all 4 filters in one row */}
+          {isIntroductory ? (
+            <div className="grid grid-cols-4 gap-3">
+              {/* University Filter */}
               <div>
                 <label className="block text-xs font-medium text-slate-400 dark:text-slate-500 mb-2">
-                  Department
+                  University
                 </label>
                 <select
-                  value={selectedDepartment}
-                  onChange={(e) => setSelectedDepartment(e.target.value)}
+                  value={selectedUniversity}
+                  onChange={(e) => setSelectedUniversity(e.target.value)}
                   className="w-full px-3 py-2.5 bg-slate-800/50 dark:bg-slate-800/80 border border-slate-700 dark:border-slate-600 rounded-lg text-white dark:text-slate-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
                 >
-                  <option value="">All Departments</option>
-                  {Object.keys(DEPARTMENTS).map((dept) => (
-                    <option key={dept} value={dept}>
-                      {dept.replace(/_/g, " ")}
+                  <option value="">All Universities</option>
+                  {(availableUniversities.length > 0
+                    ? availableUniversities.map((u) => u.name)
+                    : UNIVERSITIES
+                  ).map((uni) => (
+                    <option key={uni} value={uni}>
+                      {uni}
                     </option>
                   ))}
                 </select>
               </div>
-            )}
 
-            {/* Subject Filter */}
-            <div>
-              <label className="block text-xs font-medium text-slate-400 dark:text-slate-500 mb-2">
-                Subject
-              </label>
-              <select
-                value={selectedSubject}
-                onChange={(e) => setSelectedSubject(e.target.value)}
-                className="w-full px-3 py-2.5 bg-slate-800/50 dark:bg-slate-800/80 border border-slate-700 dark:border-slate-600 rounded-lg text-white dark:text-slate-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-              >
-                <option value="">All Subjects</option>
-                {subjects.map((subj) => (
-                  <option key={subj} value={subj}>
-                    {subj}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+              {/* Subject Filter */}
+              <div>
+                <label className="block text-xs font-medium text-slate-400 dark:text-slate-500 mb-2">
+                  Subject
+                </label>
+                <select
+                  value={selectedSubject}
+                  onChange={(e) => setSelectedSubject(e.target.value)}
+                  className="w-full px-3 py-2.5 bg-slate-800/50 dark:bg-slate-800/80 border border-slate-700 dark:border-slate-600 rounded-lg text-white dark:text-slate-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                >
+                  <option value="">All Subjects</option>
+                  {subjects.map((subj) => (
+                    <option key={subj} value={subj}>
+                      {subj}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-          {/* Secondary Filters (if needed) */}
-          {(selectedUniversity || selectedDepartment || selectedSubject) && (
-            <div className="grid grid-cols-3 gap-3 mt-3">
               {/* Stream Selector */}
               <div>
                 <label className="block text-xs font-medium text-slate-400 dark:text-slate-500 mb-2">
@@ -191,6 +168,69 @@ export const UniversityResourceHub: React.FC<UniversityResourceHubProps> = ({
                   {resourceTypes.map((type) => (
                     <option key={type} value={type}>
                       {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          ) : (
+            /* For non-introductory levels (senior/gc): Show 3-column grid */
+            <div className="grid grid-cols-3 gap-3">
+              {/* University Filter */}
+              <div>
+                <label className="block text-xs font-medium text-slate-400 dark:text-slate-500 mb-2">
+                  University
+                </label>
+                <select
+                  value={selectedUniversity}
+                  onChange={(e) => setSelectedUniversity(e.target.value)}
+                  className="w-full px-3 py-2.5 bg-slate-800/50 dark:bg-slate-800/80 border border-slate-700 dark:border-slate-600 rounded-lg text-white dark:text-slate-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                >
+                  <option value="">All Universities</option>
+                  {(availableUniversities.length > 0
+                    ? availableUniversities.map((u) => u.name)
+                    : UNIVERSITIES
+                  ).map((uni) => (
+                    <option key={uni} value={uni}>
+                      {uni}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Department Filter */}
+              <div>
+                <label className="block text-xs font-medium text-slate-400 dark:text-slate-500 mb-2">
+                  Department
+                </label>
+                <select
+                  value={selectedDepartment}
+                  onChange={(e) => setSelectedDepartment(e.target.value)}
+                  className="w-full px-3 py-2.5 bg-slate-800/50 dark:bg-slate-800/80 border border-slate-700 dark:border-slate-600 rounded-lg text-white dark:text-slate-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                >
+                  <option value="">All Departments</option>
+                  {Object.keys(DEPARTMENTS).map((dept) => (
+                    <option key={dept} value={dept}>
+                      {dept.replace(/_/g, " ")}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Subject Filter */}
+              <div>
+                <label className="block text-xs font-medium text-slate-400 dark:text-slate-500 mb-2">
+                  Subject
+                </label>
+                <select
+                  value={selectedSubject}
+                  onChange={(e) => setSelectedSubject(e.target.value)}
+                  className="w-full px-3 py-2.5 bg-slate-800/50 dark:bg-slate-800/80 border border-slate-700 dark:border-slate-600 rounded-lg text-white dark:text-slate-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                >
+                  <option value="">All Subjects</option>
+                  {subjects.map((subj) => (
+                    <option key={subj} value={subj}>
+                      {subj}
                     </option>
                   ))}
                 </select>
