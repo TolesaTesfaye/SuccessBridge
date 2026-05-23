@@ -1,65 +1,72 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { MessageSquare, Send, X, RefreshCw } from 'lucide-react'
-import { DashboardLayout } from '@components/dashboards/DashboardLayout'
-import { ResourceList } from '@components/resources/ResourceList'
-import { ResourceFilter } from '@components/resources/ResourceFilter'
-import { useResources } from '@hooks/useResources'
-import { AIService, ChatMessage } from '@services/aiService'
+import React, { useState, useRef, useEffect } from "react";
+import { MessageSquare, Send, X, RefreshCw } from "lucide-react";
+import { DashboardLayout } from "@components/dashboards/DashboardLayout";
+import { ResourceList } from "@components/resources/ResourceList";
+import { ResourceFilter } from "@components/resources/ResourceFilter";
+import { useResources } from "@hooks/useResources";
+import { AIService, ChatMessage } from "@services/aiService";
 
 export const StudentResources: React.FC = () => {
-  const [filters, setFilters] = useState({})
-  const { resources, loading, error } = useResources(filters)
+  const [filters, setFilters] = useState({});
+  const { resources, loading, error } = useResources(filters);
 
   // Chat state
-  const [showChat, setShowChat] = useState(false)
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
-  const [inputMessage, setInputMessage] = useState('')
-  const [chatLoading, setChatLoading] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const [showChat, setShowChat] = useState(false);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [inputMessage, setInputMessage] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll chat
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [chatMessages])
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages]);
 
   // Handle chat send
   const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!inputMessage.trim()) return
+    e.preventDefault();
+    if (!inputMessage.trim()) return;
 
     const userMessage: ChatMessage = {
-      role: 'user',
+      role: "user",
       content: inputMessage,
-    }
+    };
 
-    setChatMessages((prev) => [...prev, userMessage])
-    setInputMessage('')
-    setChatLoading(true)
+    setChatMessages((prev) => [...prev, userMessage]);
+    setInputMessage("");
+    setChatLoading(true);
 
     try {
       const response = await AIService.generateChatResponse(
         [...chatMessages, userMessage],
-        'gemini-2.5-flash'
-      )
+        "gemini-2.5-flash",
+      );
       const aiMessage: ChatMessage = {
-        role: 'assistant',
+        role: "assistant",
         content: response,
-      }
-      setChatMessages((prev) => [...prev, aiMessage])
+      };
+      setChatMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
-      console.error('Chat error:', error)
+      console.error("Chat error:", error);
       const errorMessage: ChatMessage = {
-        role: 'assistant',
-        content: 'Sorry, I encountered an error. Please try again.',
-      }
-      setChatMessages((prev) => [...prev, errorMessage])
+        role: "assistant",
+        content: "Sorry, I encountered an error. Please try again.",
+      };
+      setChatMessages((prev) => [...prev, errorMessage]);
     } finally {
-      setChatLoading(false)
+      setChatLoading(false);
     }
-  }
-    <DashboardLayout title="Resources" subtitle="Browse and access learning materials">
+  };
+
+  return (
+    <DashboardLayout
+      title="Resources"
+      subtitle="Browse and access learning materials"
+    >
       <div className="space-y-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white m-0">Available Resources</h2>
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white m-0">
+          Available Resources
+        </h2>
         <ResourceFilter onFilter={setFilters} />
         {error && (
           <div className="p-4 text-sm text-red-600 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-500/20">
@@ -107,13 +114,13 @@ export const StudentResources: React.FC = () => {
               chatMessages.map((msg, idx) => (
                 <div
                   key={idx}
-                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div
                     className={`max-w-xs px-3 py-2 rounded-lg text-sm ${
-                      msg.role === 'user'
-                        ? 'bg-indigo-600 text-white rounded-br-none'
-                        : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-bl-none'
+                      msg.role === "user"
+                        ? "bg-indigo-600 text-white rounded-br-none"
+                        : "bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded-bl-none"
                     }`}
                   >
                     {msg.content}
@@ -158,5 +165,7 @@ export const StudentResources: React.FC = () => {
         </div>
       )}
     </DashboardLayout>
-  )
-}
+  );
+};
+
+export default StudentResources;
