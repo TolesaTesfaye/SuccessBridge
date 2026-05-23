@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useParams, Navigate } from "react-router-dom";
+import { useParams, Navigate, useNavigate } from "react-router-dom";
+import { MessageSquare } from "lucide-react";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { UniversityLearningCenter } from "@dashboards/student/components/UniversityLearningCenter";
 import {
@@ -26,6 +27,7 @@ const resolveSubjectFromSlug = (slug?: string): string | undefined => {
 };
 
 export const UniversityLearningCenterRoute: React.FC = () => {
+  const navigate = useNavigate();
   const { user } = useAuthStore();
   const { subject: subjectSlug, chapterId } = useParams<{
     subject?: string;
@@ -73,6 +75,16 @@ export const UniversityLearningCenterRoute: React.FC = () => {
         setActiveTab={() => {}}
         initialChapterId={safeInitialChapterId}
       />
+
+      {/* Floating Chat Button - Mobile Only */}
+      <button
+        onClick={() => navigate("/student/ai-companion")}
+        className="fixed bottom-4 left-4 md:hidden bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 z-40"
+        title="Chat with AI"
+        aria-label="Open AI chat"
+      >
+        <MessageSquare className="w-6 h-6" />
+      </button>
     </DashboardLayout>
   );
 };
