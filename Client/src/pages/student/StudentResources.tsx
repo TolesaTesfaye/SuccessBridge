@@ -83,7 +83,7 @@ export const StudentResources: React.FC = () => {
       {/* Floating Chat Button - Mobile Only */}
       <button
         onClick={() => setShowChat(!showChat)}
-        className="fixed bottom-4 left-4 md:hidden bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 z-40"
+        className="fixed bottom-4 right-4 md:hidden bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 z-40"
         title="Chat with AI"
         aria-label="Open AI chat"
       >
@@ -92,7 +92,7 @@ export const StudentResources: React.FC = () => {
 
       {/* Floating Chat Panel */}
       {showChat && (
-        <div className="fixed bottom-20 left-4 md:hidden w-[calc(100%-32px)] max-w-sm bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 z-50 flex flex-col h-[500px] overflow-hidden">
+        <div className="fixed bottom-20 right-4 md:hidden w-[calc(100%-32px)] max-w-sm bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 z-50 flex flex-col h-[500px] overflow-hidden">
           {/* Header */}
           <div className="bg-indigo-600 text-white px-4 py-3 flex items-center justify-between rounded-t-2xl">
             <span className="font-semibold text-sm">AI Study Companion</span>
