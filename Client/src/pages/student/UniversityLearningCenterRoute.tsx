@@ -90,7 +90,7 @@ export const UniversityLearningCenterRoute: React.FC = () => {
     try {
       const response = await AIService.generateChatResponse(
         [...chatMessages, userMessage],
-        "gemini-2.5-flash"
+        "gemini-2.5-flash",
       );
       const aiMessage: ChatMessage = {
         role: "assistant",
