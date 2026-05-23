@@ -18,7 +18,7 @@ export class AIService {
     messages: { role: "user" | "model"; content: string }[],
   ): Promise<string> {
     const genAI = getGenAI();
-    const modelName = process.env.GEMINI_MODEL || "gemini-1.5-pro";
+    const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 
     const model = genAI.getGenerativeModel({
       model: modelName,
@@ -60,7 +60,7 @@ export class AIService {
     style: string = "simple",
   ): Promise<string> {
     const genAI = getGenAI();
-    const modelName = process.env.GEMINI_MODEL || "gemini-1.5-pro";
+    const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
     const model = genAI.getGenerativeModel({ model: modelName });
 
     let prompt = `Explain the concept of "${concept}"`;
@@ -93,7 +93,7 @@ export class AIService {
     questionCount: number = 5,
   ): Promise<any[]> {
     const genAI = getGenAI();
-    const modelName = process.env.GEMINI_MODEL || "gemini-1.5-pro";
+    const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 
     // Use JSON-mode response to ensure we get structured data
     const model = genAI.getGenerativeModel({
@@ -137,7 +137,7 @@ Do not include any wrapping markdown formatting like \`\`\`json. Return only the
     maxLength?: number,
   ): Promise<string> {
     const genAI = getGenAI();
-    const modelName = process.env.GEMINI_MODEL || "gemini-1.5-pro";
+    const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
     const model = genAI.getGenerativeModel({ model: modelName });
 
     let prompt = `Summarize the following text or notes for a student. 
@@ -170,7 +170,7 @@ Make it highly legible, structured, and easy to review before an exam.`;
     currentLevel: string,
   ): Promise<string> {
     const genAI = getGenAI();
-    const modelName = process.env.GEMINI_MODEL || "gemini-1.5-pro";
+    const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
     const model = genAI.getGenerativeModel({ model: modelName });
 
     const prompt = `Create a custom, structured study plan for a student wishing to master the topic/skill: "${topic}".
