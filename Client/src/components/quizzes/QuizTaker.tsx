@@ -1,93 +1,113 @@
-import React, { useState, useEffect } from 'react'
-import { type Quiz } from '@services/quizService'
-import { ChevronLeft, ChevronRight, Timer, CheckCircle2, AlertCircle, Map as MapIcon, XCircle } from 'lucide-react'
-import { Card, CardBody } from '@components/common/Card'
-import { Button } from '@components/common/Button'
-import { Loading } from '@components/common/Loading'
+import React, { useState, useEffect } from "react";
+import { type Quiz } from "@services/quizService";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Timer,
+  CheckCircle2,
+  AlertCircle,
+  Map as MapIcon,
+  XCircle,
+} from "lucide-react";
+import { Card, CardBody } from "@components/common/Card";
+import { Button } from "@components/common/Button";
+import { Loading } from "@components/common/Loading";
 
 interface QuizTakerProps {
-  quiz: Quiz
-  onSubmit: (results: { score: number; totalPoints: number; timeSpent: number; answers: Record<string, string> }) => void
-  onCancel?: () => void
-  loading?: boolean
+  quiz: Quiz;
+  onSubmit: (results: {
+    score: number;
+    totalPoints: number;
+    timeSpent: number;
+    answers: Record<string, string>;
+  }) => void;
+  onCancel?: () => void;
+  loading?: boolean;
 }
 
-export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, loading = false }) => {
-  const [currentIdx, setCurrentIdx] = useState(0)
-  const [answers, setAnswers] = useState<Record<string, string>>({})
-  const [timeLeft, setTimeLeft] = useState(quiz.timeLimit * 60)
-  const [showConfirm, setShowConfirm] = useState(false)
-  const [revealedQuestions, setRevealedQuestions] = useState<Record<string, boolean>>({})
-  const [isProcessing, setIsProcessing] = useState(false)
+export const QuizTaker: React.FC<QuizTakerProps> = ({
+  quiz,
+  onSubmit,
+  onCancel,
+  loading = false,
+}) => {
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [timeLeft, setTimeLeft] = useState(quiz.timeLimit * 60);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [revealedQuestions, setRevealedQuestions] = useState<
+    Record<string, boolean>
+  >({});
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const currentQuestion = quiz.questions[currentIdx]
-  const isRevealed = revealedQuestions[currentQuestion.id]
-  const progress = ((Object.keys(answers).length) / quiz.questions.length) * 100
+  const currentQuestion = quiz.questions[currentIdx];
+  const isRevealed = revealedQuestions[currentQuestion.id];
+  const progress = (Object.keys(answers).length / quiz.questions.length) * 100;
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTimeLeft(prev => {
+      setTimeLeft((prev) => {
         if (prev <= 1) {
-          handleSubmit()
-          return 0
+          handleSubmit();
+          return 0;
         }
-        return prev - 1
-      })
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [])
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
 
   const handleAnswer = (answer: string) => {
-    if (isRevealed || isProcessing) return
+    if (isRevealed || isProcessing) return;
 
-    setAnswers(prev => ({ ...prev, [currentQuestion.id]: answer }))
-    setRevealedQuestions(prev => ({ ...prev, [currentQuestion.id]: true }))
-    
+    setAnswers((prev) => ({ ...prev, [currentQuestion.id]: answer }));
+    setRevealedQuestions((prev) => ({ ...prev, [currentQuestion.id]: true }));
+
     // Auto-advance logic
     if (currentIdx < quiz.questions.length - 1) {
-      setIsProcessing(true)
+      setIsProcessing(true);
       setTimeout(() => {
-        setCurrentIdx(prev => prev + 1)
-        setIsProcessing(false)
-      }, 1500)
+        setCurrentIdx((prev) => prev + 1);
+        setIsProcessing(false);
+      }, 1500);
     }
-  }
+  };
 
   const calculateAndSubmit = (finalAnswers = answers) => {
-    let score = 0
-    let totalPoints = 0
+    let score = 0;
+    let totalPoints = 0;
 
     quiz.questions.forEach((q: any) => {
-      totalPoints += q.points
+      totalPoints += q.points;
       if (finalAnswers[q.id] === q.correctAnswer) {
-        score += q.points
+        score += q.points;
       }
-    })
+    });
 
-    const timeSpent = quiz.timeLimit * 60 - timeLeft
+    const timeSpent = quiz.timeLimit * 60 - timeLeft;
     onSubmit({
       score: Math.round((score / totalPoints) * 100),
       totalPoints,
       timeSpent,
-      answers: finalAnswers
-    })
-  }
+      answers: finalAnswers,
+    });
+  };
 
   const handleSubmit = () => {
     if (Object.keys(answers).length === quiz.questions.length) {
-      calculateAndSubmit()
+      calculateAndSubmit();
     } else {
-      setShowConfirm(true)
+      setShowConfirm(true);
     }
-  }
+  };
 
-  if (loading) return <Loading message="Analyzing your brilliance..." />
+  if (loading) return <Loading message="Analyzing your brilliance..." />;
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 animate-fadeIn pb-24">
@@ -107,19 +127,27 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
             <MapIcon className="w-7 h-7" />
           </div>
           <div>
-            <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-1">{quiz.title}</h1>
+            <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-none mb-1">
+              {quiz.title}
+            </h1>
             <p className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest">
-              Question {currentIdx + 1} of {quiz.questions.length} • Stay focused!
+              Question {currentIdx + 1} of {quiz.questions.length} • Stay
+              focused!
             </p>
           </div>
         </div>
 
-        <div className={`flex items-center gap-3 px-6 py-4 rounded-2xl border transition-all duration-500 ${timeLeft < 300
-          ? 'bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20 text-rose-600 animate-pulse'
-          : 'bg-slate-50 dark:bg-slate-800/40 border-slate-100 dark:border-white/5 text-slate-700 dark:text-slate-300'
-          }`}>
+        <div
+          className={`flex items-center gap-3 px-6 py-4 rounded-2xl border transition-all duration-500 ${
+            timeLeft < 300
+              ? "bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20 text-rose-600 animate-pulse"
+              : "bg-slate-50 dark:bg-slate-800/40 border-slate-100 dark:border-white/5 text-slate-700 dark:text-slate-300"
+          }`}
+        >
           <Timer className="w-5 h-5" />
-          <span className="text-xl font-black font-mono tracking-tighter">{formatTime(timeLeft)}</span>
+          <span className="text-xl font-black font-mono tracking-tighter">
+            {formatTime(timeLeft)}
+          </span>
         </div>
       </div>
 
@@ -138,7 +166,7 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
               <div className="space-y-10">
                 <div className="flex items-center gap-3">
                   <span className="px-4 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full text-[10px] font-black uppercase tracking-widest">
-                    {currentQuestion.type.replace('_', ' ')}
+                    {currentQuestion.type.replace("_", " ")}
                   </span>
                   <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
                     {currentQuestion.points} Points available
@@ -150,28 +178,35 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
                 </h2>
 
                 <div className="space-y-4">
-                  {currentQuestion.type === 'multiple_choice' && (
+                  {currentQuestion.type === "multiple_choice" && (
                     <div className="grid grid-cols-1 gap-4">
                       {currentQuestion.options?.map((option, idx) => {
-                        const selectedAnswer = answers[currentQuestion.id]
-                        const isSelected = selectedAnswer === option
-                        const isCorrect = option === currentQuestion.correctAnswer
-                        
-                        let baseClasses = "flex items-center gap-4 p-6 rounded-3xl border-2 transition-all duration-300 text-left group relative overflow-hidden "
-                        let stateClasses = "bg-white dark:bg-slate-800/40 border-slate-100 dark:border-white/5 text-slate-700 dark:text-slate-300 hover:border-blue-500/30 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:translate-x-1"
-                        
+                        const selectedAnswer = answers[currentQuestion.id];
+                        const isSelected = selectedAnswer === option;
+                        const isCorrect =
+                          option === currentQuestion.correctAnswer;
+
+                        let baseClasses =
+                          "flex items-center gap-4 p-6 rounded-3xl border-2 transition-all duration-300 text-left group relative overflow-hidden ";
+                        let stateClasses =
+                          "bg-white dark:bg-slate-800/40 border-slate-100 dark:border-white/5 text-slate-700 dark:text-slate-300 hover:border-blue-500/30 hover:bg-slate-50 dark:hover:bg-slate-800/80 hover:translate-x-1";
+
                         if (isRevealed) {
                           if (isSelected && isCorrect) {
-                            stateClasses = "bg-emerald-600 border-emerald-600 text-white shadow-xl shadow-emerald-500/20 animate-pop scale-[1.02]"
+                            stateClasses =
+                              "bg-emerald-600 border-emerald-600 text-white shadow-xl shadow-emerald-500/20 animate-pop scale-[1.02]";
                           } else if (isSelected && !isCorrect) {
-                            stateClasses = "bg-rose-600 border-rose-600 text-white shadow-xl shadow-rose-500/20 animate-shake"
+                            stateClasses =
+                              "bg-rose-600 border-rose-600 text-white shadow-xl shadow-rose-500/20 animate-shake";
                           } else if (isCorrect) {
-                            stateClasses = "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500/50 text-emerald-600 dark:text-emerald-400"
+                            stateClasses =
+                              "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500/50 text-emerald-600 dark:text-emerald-400";
                           } else {
-                            stateClasses = "opacity-40 grayscale-[0.5]"
+                            stateClasses = "opacity-40 grayscale-[0.5]";
                           }
                         } else if (isSelected) {
-                          stateClasses = "bg-blue-600 border-blue-600 text-white shadow-xl shadow-blue-500/20 translate-x-2"
+                          stateClasses =
+                            "bg-blue-600 border-blue-600 text-white shadow-xl shadow-blue-500/20 translate-x-2";
                         }
 
                         return (
@@ -181,51 +216,59 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
                             disabled={isRevealed || isProcessing}
                             className={baseClasses + stateClasses}
                           >
-                            <span className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm transition-colors ${
-                              (isSelected || (isRevealed && isCorrect)) ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
-                            }`}>
+                            <span
+                              className={`w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm transition-colors ${
+                                isSelected || (isRevealed && isCorrect)
+                                  ? "bg-white/20"
+                                  : "bg-slate-100 dark:bg-slate-800 text-slate-400"
+                              }`}
+                            >
                               {String.fromCharCode(65 + idx)}
                             </span>
                             <span className="text-lg font-bold">{option}</span>
-                            
+
                             {isRevealed && isCorrect && (
                               <div className="ml-auto flex items-center gap-2">
-                                <span className="text-[10px] font-black uppercase tracking-wider">Correct</span>
+                                <span className="text-[10px] font-black uppercase tracking-wider">
+                                  Correct
+                                </span>
                                 <CheckCircle2 className="w-6 h-6" />
                               </div>
                             )}
                             {isRevealed && isSelected && !isCorrect && (
                               <div className="ml-auto flex items-center gap-2">
-                                <span className="text-[10px] font-black uppercase tracking-wider">Incorrect</span>
+                                <span className="text-[10px] font-black uppercase tracking-wider">
+                                  Incorrect
+                                </span>
                                 <XCircle className="w-6 h-6" />
                               </div>
                             )}
-                            
+
                             {/* Decorative background pulse for correct answer */}
                             {isRevealed && isCorrect && isSelected && (
                               <div className="absolute inset-0 bg-white/10 animate-pulse pointer-events-none" />
                             )}
                           </button>
-                        )
+                        );
                       })}
                     </div>
                   )}
 
-                  {currentQuestion.type === 'short_answer' && (
+                  {currentQuestion.type === "short_answer" && (
                     <input
                       type="text"
                       className="w-full px-8 py-6 rounded-[28px] bg-slate-50 dark:bg-slate-800/40 border-2 border-slate-100 dark:border-white/5 focus:border-blue-500/50 focus:ring-8 focus:ring-blue-500/5 outline-none text-xl font-bold text-slate-900 dark:text-white transition-all placeholder:text-slate-400"
                       placeholder="Type your answer here..."
-                      value={answers[currentQuestion.id] || ''}
+                      value={answers[currentQuestion.id] || ""}
                       onChange={(e) => handleAnswer(e.target.value)}
                     />
                   )}
 
-                  {currentQuestion.type === 'essay' && (
+                  {currentQuestion.type === "essay" && (
                     <textarea
                       className="w-full px-8 py-6 rounded-[32px] bg-slate-50 dark:bg-slate-800/40 border-2 border-slate-100 dark:border-white/5 focus:border-blue-500/50 focus:ring-8 focus:ring-blue-500/5 outline-none text-lg font-medium text-slate-900 dark:text-white transition-all min-h-[300px] placeholder:text-slate-400"
                       placeholder="Share your detailed thoughts here..."
-                      value={answers[currentQuestion.id] || ''}
+                      value={answers[currentQuestion.id] || ""}
                       onChange={(e) => handleAnswer(e.target.value)}
                     />
                   )}
@@ -238,7 +281,7 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
           <div className="flex justify-between items-center bg-white dark:bg-slate-900 p-6 rounded-[32px] border border-slate-100 dark:border-white/5 shadow-xl shadow-slate-200/50 dark:shadow-none">
             <Button
               variant="secondary"
-              onClick={() => setCurrentIdx(prev => prev - 1)}
+              onClick={() => setCurrentIdx((prev) => prev - 1)}
               disabled={currentIdx === 0}
               className="h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-xs"
             >
@@ -246,7 +289,9 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
             </Button>
 
             <div className="hidden md:flex items-center gap-2">
-              <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Navigation Map</span>
+              <span className="text-xs font-black text-slate-400 uppercase tracking-widest">
+                Navigation Map
+              </span>
               <div className="h-1 w-12 bg-slate-100 dark:bg-slate-800 rounded-full" />
             </div>
 
@@ -261,7 +306,7 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
             ) : (
               <Button
                 variant="primary"
-                onClick={() => setCurrentIdx(prev => prev + 1)}
+                onClick={() => setCurrentIdx((prev) => prev + 1)}
                 className="h-14 px-10 rounded-2xl shadow-lg shadow-blue-500/20 font-black uppercase tracking-widest text-xs"
               >
                 Next Challenge <ChevronRight className="ml-2 w-5 h-5" />
@@ -278,36 +323,44 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
             </h3>
             <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-4 gap-3">
               {quiz.questions.map((q, idx) => {
-                const isAnswered = !!answers[q.id]
-                const isCorrect = isAnswered && answers[q.id] === q.correctAnswer
-                const questionRevealed = !!revealedQuestions[q.id]
-                const isActive = idx === currentIdx
-                
+                const isAnswered = !!answers[q.id];
+                const isCorrect =
+                  isAnswered && answers[q.id] === q.correctAnswer;
+                const questionRevealed = !!revealedQuestions[q.id];
+                const isActive = idx === currentIdx;
+
                 return (
                   <button
                     key={q.id}
                     onClick={() => !isProcessing && setCurrentIdx(idx)}
-                    className={`h-12 rounded-xl flex items-center justify-center text-xs font-black transition-all duration-300 border-2 relative ${isActive
-                      ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/25 scale-110 z-10'
-                      : questionRevealed
-                        ? isCorrect 
-                          ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500/30 text-emerald-600' 
-                          : 'bg-rose-50 dark:bg-rose-500/10 border-rose-500/30 text-rose-600'
-                        : isAnswered
-                          ? 'bg-blue-50 dark:bg-blue-500/10 border-blue-500/30 text-blue-600'
-                          : 'bg-slate-50 dark:bg-slate-800/40 border-slate-100 dark:border-white/5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-                      }`}
+                    className={`h-12 rounded-xl flex items-center justify-center text-xs font-black transition-all duration-300 border-2 relative ${
+                      isActive
+                        ? "bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/25 scale-110 z-10"
+                        : questionRevealed
+                          ? isCorrect
+                            ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500/30 text-emerald-600"
+                            : "bg-rose-50 dark:bg-rose-500/10 border-rose-500/30 text-rose-600"
+                          : isAnswered
+                            ? "bg-blue-50 dark:bg-blue-500/10 border-blue-500/30 text-blue-600"
+                            : "bg-slate-50 dark:bg-slate-800/40 border-slate-100 dark:border-white/5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                    }`}
                   >
                     {idx + 1}
                     {questionRevealed && (
-                      <div className={`absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 ${
-                        isCorrect ? 'bg-emerald-500' : 'bg-rose-500'
-                      }`}>
-                        {isCorrect ? <CheckCircle2 className="w-2 h-2 text-white" /> : <XCircle className="w-2 h-2 text-white" />}
+                      <div
+                        className={`absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 ${
+                          isCorrect ? "bg-emerald-500" : "bg-rose-500"
+                        }`}
+                      >
+                        {isCorrect ? (
+                          <CheckCircle2 className="w-2 h-2 text-white" />
+                        ) : (
+                          <XCircle className="w-2 h-2 text-white" />
+                        )}
                       </div>
                     )}
                   </button>
-                )
+                );
               })}
             </div>
 
@@ -337,16 +390,31 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
               <AlertCircle className="w-10 h-10" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Partial Submission?</h3>
+              <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                Partial Submission?
+              </h3>
               <p className="text-slate-500 dark:text-slate-400 font-medium">
-                You've completed <span className="font-black text-blue-600 dark:text-blue-400">{Object.keys(answers).length}</span> of {quiz.questions.length} questions. Are you ready to finalize your result?
+                You've completed{" "}
+                <span className="font-black text-blue-600 dark:text-blue-400">
+                  {Object.keys(answers).length}
+                </span>{" "}
+                of {quiz.questions.length} questions. Are you ready to finalize
+                your result?
               </p>
             </div>
             <div className="flex gap-4">
-              <Button variant="secondary" onClick={() => setShowConfirm(false)} className="flex-1 h-14 rounded-2xl font-bold">
+              <Button
+                variant="secondary"
+                onClick={() => setShowConfirm(false)}
+                className="flex-1 h-14 rounded-2xl font-bold"
+              >
                 Continue Test
               </Button>
-              <Button variant="primary" onClick={() => calculateAndSubmit()} className="flex-1 h-14 rounded-2xl bg-rose-600 hover:bg-rose-700 font-bold">
+              <Button
+                variant="primary"
+                onClick={() => calculateAndSubmit()}
+                className="flex-1 h-14 rounded-2xl bg-rose-600 hover:bg-rose-700 font-bold"
+              >
                 Submit Now
               </Button>
             </div>
@@ -354,5 +422,5 @@ export const QuizTaker: React.FC<QuizTakerProps> = ({ quiz, onSubmit, onCancel, 
         </div>
       )}
     </div>
-  )
-}
+  );
+};

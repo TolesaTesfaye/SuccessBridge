@@ -1,9 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { DashboardLayout } from "@components/dashboards/DashboardLayout";
-import { useAuthStore } from "@store/authStore";
-import { progressService } from "@services/progressService";
-import { Loading } from "@components/common/Loading";
-import { Footer } from "@components/common/Footer";
 import {
   Trophy, Target, BookOpen, Flame, Sparkles, Zap, Clock, Star,
   Brain, Rocket, TrendingUp, ChevronRight, ArrowUpRight,
@@ -89,7 +84,13 @@ function useCountUp(target: number, duration = 1200) {
   return value;
 }
 
-// Removing useDarkMode since DashboardLayout handles the theme globally
+function useDarkMode() {
+  const [dark, setDark] = useState<boolean>(true);
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark);
+  }, [dark]);
+  return { dark, toggle: () => setDark((d) => !d) };
+}
 
 // ---------- Primitives ----------
 function GlassCard({ children, className = "", glow = false }: { children: React.ReactNode; className?: string; glow?: boolean }) {
@@ -164,39 +165,16 @@ function StatTile({
 
 // ---------- Main Component ----------
 export function StudentProgress() {
-  const [stats, setStats] = useState<ProgressData | null>(null);
-  const [loading, setLoading] = useState(true);
-  const { user } = useAuthStore();
+  const { dark, toggle } = useDarkMode();
   const [tab, setTab] = useState<"official" | "ai">("official");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const statsData = await progressService.getStats();
-        setStats(statsData);
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  const data = stats || mockData;
-
-  const userLevel = Math.floor((data.totalStudyHours || 0) / 10) + 1;
-  const userXp = (data.totalStudyHours || 0) * 100;
-  const nextLevelXp = userLevel * 10 * 100;
+  const data = mockData;
 
   const xpProgress = useMemo(
-    () => Math.round((userXp / nextLevelXp) * 100),
-    [userXp, nextLevelXp]
+    () => Math.round((mockUser.xp / mockUser.nextLevelXp) * 100),
+    []
   );
-  const goalsDone = (data.weeklyGoals || []).filter((g) => g.done).length;
-  const goalsPct = data.weeklyGoals?.length ? (goalsDone / data.weeklyGoals.length) * 100 : 0;
-
-  const animatedTotalStudyHours = useCountUp(data.totalStudyHours || 0);
+  const goalsDone = data.weeklyGoals.filter((g) => g.done).length;
+  const goalsPct = (goalsDone / data.weeklyGoals.length) * 100;
 
   // Hero ring
   const radius = 78;
@@ -216,21 +194,10 @@ export function StudentProgress() {
 
   const subjects = tab === "official" ? data.officialSubjectProgress : data.aiSubjectProgress;
 
-  if (loading) {
-    return (
-      <DashboardLayout title="Your Progress" subtitle="Analyzing your academic journey...">
-        <div className="flex-1 flex items-center justify-center min-h-[60vh]">
-          <Loading message="Analyzing your academic journey..." />
-        </div>
-      </DashboardLayout>
-    );
-  }
-
   return (
-    <DashboardLayout noPadding={true}>
     <div
       onMouseMove={handleMouseMove}
-      className="relative h-full overflow-y-auto overflow-x-hidden custom-scrollbar bg-gradient-to-br from-slate-50 via-violet-50/50 to-indigo-50 dark:from-[#070B1A] dark:via-[#0B1121] dark:to-[#0A0A1F] text-slate-900 dark:text-slate-100 flex flex-col"
+      className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-violet-50/50 to-indigo-50 dark:from-[#070B1A] dark:via-[#0B1121] dark:to-[#0A0A1F] text-slate-900 dark:text-slate-100"
     >
       {/* Ambient blobs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -247,11 +214,29 @@ export function StudentProgress() {
         }}
       />
 
-      <div className="relative mx-auto w-full max-w-[1600px] flex-1 px-4 py-8 sm:px-6 lg:px-12 lg:py-12">
-        {/* Header removed */}
+      <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        {/* Top bar */}
+        <header className="mb-10 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-lg shadow-violet-500/40">
+              <GraduationCap className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-400">Dashboard</div>
+              <div className="font-display text-lg font-bold">Progress Hub</div>
+            </div>
+          </div>
+          <button
+            onClick={toggle}
+            aria-label="Toggle theme"
+            className="group relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/20 bg-white/60 dark:bg-white/5 backdrop-blur-xl transition-all hover:scale-110 hover:shadow-lg hover:shadow-violet-500/30"
+          >
+            {dark ? <Sun className="h-5 w-5 text-amber-400" /> : <Moon className="h-5 w-5 text-indigo-600" />}
+          </button>
+        </header>
 
         {/* HERO */}
-        <section className="relative mb-10 overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-blue-600 via-cyan-600 to-teal-700 p-8 shadow-2xl shadow-cyan-500/30 sm:p-12">
+        <section className="relative mb-10 overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-violet-600 via-fuchsia-600 to-indigo-700 p-8 shadow-2xl shadow-violet-500/30 sm:p-12">
           <div className="absolute inset-0 opacity-30"
             style={{
               backgroundImage: "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.4), transparent 40%), radial-gradient(circle at 80% 80%, rgba(255,200,255,0.3), transparent 40%)",
@@ -266,12 +251,12 @@ export function StudentProgress() {
             <div>
               <div className="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-md px-4 py-1.5 text-xs font-semibold text-white ring-1 ring-white/30">
                 <Sparkles className="h-3.5 w-3.5" />
-                Level {userLevel} · Scholar
+                Level {mockUser.level} · Top Performer
               </div>
               <h1 className="mt-4 font-display text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
                 Welcome back,<br />
                 <span className="bg-gradient-to-r from-white via-pink-100 to-amber-100 bg-clip-text text-transparent">
-                  {user?.name?.split(' ')[0] || "Learner"}
+                  {mockUser.name}
                 </span>
               </h1>
               <p className="mt-4 max-w-xl text-base text-white/80 sm:text-lg">
@@ -308,8 +293,8 @@ export function StudentProgress() {
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
                 <div className="text-xs font-semibold uppercase tracking-widest text-white/70">XP</div>
-                <div className="font-display text-4xl font-bold tabular-nums">{userXp}</div>
-                <div className="text-xs text-white/70">/ {nextLevelXp}</div>
+                <div className="font-display text-4xl font-bold tabular-nums">{mockUser.xp}</div>
+                <div className="text-xs text-white/70">/ {mockUser.nextLevelXp}</div>
               </div>
             </div>
           </div>
@@ -490,7 +475,7 @@ export function StudentProgress() {
                 </div>
                 <div className="mt-2 flex items-baseline gap-2">
                   <span className="font-display text-5xl font-bold tabular-nums bg-gradient-to-br from-amber-500 to-orange-600 bg-clip-text text-transparent">
-                    {animatedTotalStudyHours}
+                    {useCountUp(data.totalStudyHours)}
                   </span>
                   <span className="text-lg font-semibold text-slate-500 dark:text-slate-400">hours</span>
                 </div>
@@ -550,14 +535,12 @@ export function StudentProgress() {
           </div>
         </section>
 
-        <footer className="mt-12 pb-8 text-center text-xs text-slate-500 dark:text-slate-500">
+        <footer className="mt-12 text-center text-xs text-slate-500 dark:text-slate-500">
           Keep pushing. The top of the leaderboard is closer than you think. ✨
         </footer>
       </div>
-      <div className="mt-auto">
-        <Footer />
-      </div>
     </div>
-    </DashboardLayout>
   );
 }
+
+export default StudentProgress;
