@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { Footer } from "@components/common/Footer";
+import { AIChatIcon } from "@components/common/AIChatIcon";
 import { resourceService } from "@services/resourceService";
 import { useAuthStore } from "@store/authStore";
 import { BookOpen, Home, Library } from "lucide-react";
@@ -211,6 +212,7 @@ export const HighSchoolDashboard: React.FC = () => {
           <Footer />
         </>
       )}
+      {(activeTab === "learning" || activeTab === "hub") && <AIChatIcon />}
     </DashboardLayout>
   );
 };

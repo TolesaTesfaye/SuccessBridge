@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { Footer } from "@components/common/Footer";
+import { AIChatIcon } from "@components/common/AIChatIcon";
 import { resourceService } from "@services/resourceService";
 import { universityService } from "@services/universityService";
 import { useAuthStore } from "@store/authStore";
@@ -322,6 +323,7 @@ export const UniversityDashboard: React.FC = () => {
           <Footer />
         </>
       )}
+      {(activeTab === "learning" || activeTab === "hub") && <AIChatIcon />}
     </DashboardLayout>
   );
 };
