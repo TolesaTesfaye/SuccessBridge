@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import {
   Trophy,
   Target,
@@ -18,8 +19,6 @@ import {
   CheckCircle2,
   Circle,
   BarChart3,
-  Moon,
-  Sun,
   Calendar,
   Crown,
   Activity,
@@ -186,15 +185,6 @@ function useCountUp(target: number, duration = 1200) {
   return value;
 }
 
-function useDarkMode() {
-  const [dark, setDark] = useState<boolean>(true);
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark);
-  }, [dark]);
-  return { dark, toggle: () => setDark((d) => !d) };
-}
-
-// ---------- Primitives ----------
 function GlassCard({
   children,
   className = "",
@@ -307,7 +297,6 @@ function StatTile({
 
 // ---------- Main Component ----------
 export function StudentProgress() {
-  const { dark, toggle } = useDarkMode();
   const [tab, setTab] = useState<"official" | "ai">("official");
   const data = mockData;
 
@@ -341,60 +330,11 @@ export function StudentProgress() {
     tab === "official" ? data.officialSubjectProgress : data.aiSubjectProgress;
 
   return (
-    <div
-      onMouseMove={handleMouseMove}
-      className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-violet-50/50 to-indigo-50 dark:from-[#070B1A] dark:via-[#0B1121] dark:to-[#0A0A1F] text-slate-900 dark:text-slate-100"
-    >
-      {/* Ambient blobs */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-violet-500/20 dark:bg-violet-600/20 blur-3xl animate-float" />
-        <div
-          className="absolute top-1/3 -right-32 h-[450px] w-[450px] rounded-full bg-fuchsia-400/20 dark:bg-fuchsia-700/15 blur-3xl animate-float"
-          style={{ animationDelay: "2s" }}
-        />
-        <div
-          className="absolute bottom-0 left-1/3 h-[400px] w-[400px] rounded-full bg-cyan-400/15 dark:bg-cyan-600/10 blur-3xl animate-float"
-          style={{ animationDelay: "4s" }}
-        />
-      </div>
-
-      {/* Grid texture */}
+    <DashboardLayout>
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.025] dark:opacity-[0.06]"
-        style={{
-          backgroundImage:
-            "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }}
-      />
-
-      <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
-        {/* Top bar */}
-        <header className="mb-10 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 shadow-lg shadow-violet-500/40">
-              <GraduationCap className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <div className="text-xs font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-400">
-                Dashboard
-              </div>
-              <div className="font-display text-lg font-bold">Progress Hub</div>
-            </div>
-          </div>
-          <button
-            onClick={toggle}
-            aria-label="Toggle theme"
-            className="group relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/20 bg-white/60 dark:bg-white/5 backdrop-blur-xl transition-all hover:scale-110 hover:shadow-lg hover:shadow-violet-500/30"
-          >
-            {dark ? (
-              <Sun className="h-5 w-5 text-amber-400" />
-            ) : (
-              <Moon className="h-5 w-5 text-indigo-600" />
-            )}
-          </button>
-        </header>
-
+        onMouseMove={handleMouseMove}
+        className="relative w-full space-y-8 pb-12"
+      >
         {/* HERO */}
         <section className="relative mb-10 overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-violet-600 via-fuchsia-600 to-indigo-700 p-8 shadow-2xl shadow-violet-500/30 sm:p-12">
           <div
@@ -836,12 +776,8 @@ export function StudentProgress() {
             ))}
           </div>
         </section>
-
-        <footer className="mt-12 text-center text-xs text-slate-500 dark:text-slate-500">
-          Keep pushing. The top of the leaderboard is closer than you think. ✨
-        </footer>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }
 
