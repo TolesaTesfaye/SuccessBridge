@@ -24,14 +24,16 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       "/404",
       "/verify-email",
       "/resend-verification",
-    ].includes(location.pathname) || location.pathname.startsWith("/verify-email/");
+    ].includes(location.pathname) ||
+    location.pathname.startsWith("/verify-email/");
   const isPublicPage = [
     "/about",
     "/contact",
     "/privacy-policy",
     "/terms-of-service",
   ].includes(location.pathname);
-  const isDashboard = location.pathname.includes("/dashboard") ||
+  const isDashboard =
+    location.pathname.includes("/dashboard") ||
     location.pathname.includes("/student") ||
     location.pathname.includes("/admin") ||
     location.pathname.includes("/superadmin") ||
@@ -112,7 +114,11 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                   {user?.name?.charAt(0).toUpperCase() || "U"}
                 </div>
               </div>
-              <Button variant="secondary" onClick={handleLogout} className="text-sm">
+              <Button
+                variant="secondary"
+                onClick={handleLogout}
+                className="text-sm"
+              >
                 Logout
               </Button>
             </>
@@ -143,9 +149,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
       {isPublicPage ? renderPublicHeader() : renderStandardHeader()}
 
       {/* Main Content */}
-      <main className="flex-1 w-full">
-        {children}
-      </main>
+      <main className="flex-1 w-full">{children}</main>
 
       {/* Footer - Always show */}
       <Footer />

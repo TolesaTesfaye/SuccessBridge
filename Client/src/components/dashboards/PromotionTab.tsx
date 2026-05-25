@@ -16,6 +16,14 @@ import {
   Rocket,
   Play,
   Eye,
+  Beaker,
+  Calculator,
+  Globe as EarthIcon,
+  Dna,
+  Zap,
+  BarChart3,
+  BookMarked,
+  Lightbulb,
 } from "lucide-react";
 import portfolioThumb from "../../assets/portifolio.png";
 import githubThumb from "../../assets/github.png";
@@ -157,6 +165,66 @@ export const PromotionTab: React.FC = () => {
     },
   ];
 
+  // Grade 12 Available Subjects
+  const grade12Subjects = [
+    {
+      name: "Biology",
+      icon: Dna,
+      color: "from-green-500 to-emerald-600",
+      bgColor: "bg-green-50 dark:bg-green-900/20",
+      description: "Life sciences and living organisms",
+    },
+    {
+      name: "Chemistry",
+      icon: Beaker,
+      color: "from-purple-500 to-pink-600",
+      bgColor: "bg-purple-50 dark:bg-purple-900/20",
+      description: "Matter, reactions, and molecular science",
+    },
+    {
+      name: "Physics",
+      icon: Lightbulb,
+      color: "from-yellow-500 to-orange-600",
+      bgColor: "bg-yellow-50 dark:bg-yellow-900/20",
+      description: "Energy, motion, and forces",
+    },
+    {
+      name: "Math",
+      icon: Calculator,
+      color: "from-blue-500 to-indigo-600",
+      bgColor: "bg-blue-50 dark:bg-blue-900/20",
+      description: "Numbers, algebra, and geometry",
+    },
+    {
+      name: "English",
+      icon: BookMarked,
+      color: "from-red-500 to-rose-600",
+      bgColor: "bg-red-50 dark:bg-red-900/20",
+      description: "Literature and language skills",
+    },
+    {
+      name: "History",
+      icon: BarChart3,
+      color: "from-amber-500 to-orange-600",
+      bgColor: "bg-amber-50 dark:bg-amber-900/20",
+      description: "Historical events and civilizations",
+    },
+    {
+      name: "Geography",
+      icon: EarthIcon,
+      color: "from-teal-500 to-cyan-600",
+      bgColor: "bg-teal-50 dark:bg-teal-900/20",
+      description: "Earth systems and world cultures",
+    },
+    {
+      name: "Economics",
+      icon: Zap,
+      color: "from-sky-500 to-blue-600",
+      bgColor: "bg-sky-50 dark:bg-sky-900/20",
+      description: "Trade, markets, and resources",
+    },
+  ];
+
   return (
     <div className="max-w-7xl mx-auto space-y-6 md:space-y-10 pb-12 px-2 md:px-0">
       {/* Hero Banner - Enhanced */}
@@ -286,6 +354,65 @@ export const PromotionTab: React.FC = () => {
           </Card>
         ))}
       </div>
+
+      {/* Grade 12 Available Subjects - Inspire Students */}
+      <Card className="border-none shadow-2xl overflow-hidden">
+        <div className="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 px-6 py-4 md:px-10 md:py-8 border-b border-slate-200 dark:border-slate-700">
+          <h3 className="text-lg md:text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center">
+              <BookOpen className="w-5 h-5 md:w-6 md:h-6 text-white" />
+            </div>
+            Grade 12 Available Subjects
+          </h3>
+          <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 ml-12 md:ml-16">
+            Unlock access to all 8 comprehensive subjects with one payment
+          </p>
+        </div>
+        <CardBody className="p-6 md:p-10">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-6">
+            {grade12Subjects.map((subject, index) => (
+              <div
+                key={index}
+                className={`group relative overflow-hidden rounded-xl md:rounded-2xl border border-slate-200 dark:border-slate-700 hover:shadow-xl hover:scale-105 transition-all duration-300 bg-white dark:bg-slate-800`}
+              >
+                <div
+                  className={`absolute inset-0 bg-gradient-to-br ${subject.color} opacity-5 group-hover:opacity-15 transition-opacity duration-300`}
+                />
+                <div className="relative p-4 md:p-6 h-full flex flex-col items-center text-center">
+                  <div
+                    className={`w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br ${subject.color} flex items-center justify-center text-white mb-3 md:mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                  >
+                    <subject.icon className="w-6 h-6 md:w-8 md:h-8" />
+                  </div>
+                  <h4 className="text-sm md:text-lg font-bold text-slate-900 dark:text-white mb-1 md:mb-2">
+                    {subject.name}
+                  </h4>
+                  <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2">
+                    {subject.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Call to Action */}
+          <div className="mt-8 md:mt-12 text-center">
+            <div className="max-w-2xl mx-auto p-6 md:p-8 rounded-2xl bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900/30 dark:to-blue-900/30 border border-indigo-200 dark:border-indigo-700/50">
+              <p className="text-sm md:text-base text-slate-700 dark:text-slate-300 mb-4">
+                All 8 subjects with{" "}
+                <span className="font-bold text-indigo-600 dark:text-indigo-400">
+                  complete chapter-by-chapter materials
+                </span>
+                , practice questions, and resources
+              </p>
+              <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400">
+                ✓ Interactive exercises • ✓ Downloadable resources • ✓ Lifetime
+                access
+              </p>
+            </div>
+          </div>
+        </CardBody>
+      </Card>
 
       {/* Online Courses */}
       <Card className="border-none shadow-2xl overflow-hidden">

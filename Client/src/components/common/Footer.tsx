@@ -48,7 +48,7 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <footer className="relative z-10 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+    <footer className="relative z-10 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
       {/* ── Navigation bar ── */}
       <div className="max-w-7xl mx-auto px-5 lg:px-10">
         {/* Heading */}
