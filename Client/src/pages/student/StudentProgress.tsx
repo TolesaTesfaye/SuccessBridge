@@ -133,11 +133,11 @@ function AnimatedBar({ value, delay = 0, gradient = "from-violet-500 via-fuchsia
 }
 
 function StatTile({
-  icon: Icon, label, value, suffix = "", trend, gradient, delay = 0,
+  icon: Icon, label, value, suffix = "", trend, gradient,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string; value: number; suffix?: string; trend?: string;
-  gradient: string; delay?: number;
+  gradient: string;
 }) {
   const v = useCountUp(value);
   return (
@@ -303,9 +303,9 @@ export function StudentProgress() {
         {/* Stat tiles */}
         <section className="mb-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           <StatTile icon={BookOpen} label="Resources Accessed" value={data.resourcesAccessed} trend="+12%" gradient="from-cyan-500 to-blue-600" />
-          <StatTile icon={Target} label="Quizzes Completed" value={data.quizzesCompleted} trend="+8%" gradient="from-violet-500 to-fuchsia-500" delay={100} />
-          <StatTile icon={TrendingUp} label="Average Score" value={data.averageScore} suffix="%" trend="+5%" gradient="from-emerald-500 to-teal-600" delay={200} />
-          <StatTile icon={Flame} label="Day Streak" value={data.studyStreak} trend="🔥" gradient="from-orange-500 to-rose-500" delay={300} />
+          <StatTile icon={Target} label="Quizzes Completed" value={data.quizzesCompleted} trend="+8%" gradient="from-violet-500 to-fuchsia-500" />
+          <StatTile icon={TrendingUp} label="Average Score" value={data.averageScore} suffix="%" trend="+5%" gradient="from-emerald-500 to-teal-600" />
+          <StatTile icon={Flame} label="Day Streak" value={data.studyStreak} trend="🔥" gradient="from-orange-500 to-rose-500" />
         </section>
 
         {/* Main grid */}
