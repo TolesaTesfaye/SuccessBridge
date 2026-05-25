@@ -1,236 +1,309 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { DashboardLayout } from '@components/dashboards/DashboardLayout'
-import { Card, CardBody } from '@components/common/Card'
-import { Button } from '@components/common/Button'
-import { Camera, Mail, Phone, BookOpen, GraduationCap, Building2, Calendar, User as UserIcon, ShieldCheck } from 'lucide-react'
 import { useAuthStore } from '@store/authStore'
+import {
+  Mail,
+  Phone,
+  CalendarDays,
+  MapPin,
+  Award,
+  BookOpen,
+  Building2,
+  GraduationCap,
+  Sparkles,
+  ChevronRight,
+  Trophy,
+  Star,
+  User,
+  Activity,
+  Code,
+  Lightbulb,
+  Gamepad2,
+  CheckCircle2,
+} from 'lucide-react'
 
-export const StudentProfile: React.FC = () => {
+export function StudentProfile() {
   const { user } = useAuthStore()
+
+  // Use dynamic user data, fallback to defaults if not available
+  const name = user?.name || 'Sarah Jenkins'
+  const email = user?.email || 'sarah.j@successbridge.edu'
+  const phone = (user as any)?.phone || '+1 (555) 123-4567'
+  const joinDate = user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'September 2021'
+  const location = 'San Francisco, CA'
   
-  const [profile, setProfile] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    grade: '',
-    stream: '',
-    university: '',
-    department: '',
-    joinDate: '',
-    studentType: '',
-    universityLevel: '',
-  })
-
-  const [isEditing, setIsEditing] = useState(false)
-
-  useEffect(() => {
-    if (user) {
-      setProfile({
-        name: user.name || 'Student',
-        email: user.email || '',
-        phone: user.phone || 'Not provided',
-        grade: user.studentType === 'high_school' 
-          ? (user.highSchoolGrade?.replace('_', ' ').toUpperCase() || 'Not set')
-          : 'University Student',
-        stream: user.studentType === 'high_school' && user.highSchoolStream
-          ? user.highSchoolStream.charAt(0).toUpperCase() + user.highSchoolStream.slice(1)
-          : 'N/A',
-        university: user.university || 'Not set',
-        department: user.department || 'Not set',
-        joinDate: user.createdAt || new Date().toISOString(),
-        studentType: user.studentType || 'high_school',
-        universityLevel: user.universityLevel || '',
-      })
-    }
-  }, [user])
-
-  const handleChange = (field: string, value: string) => {
-    setProfile(prev => ({ ...prev, [field]: value }))
-  }
-
-  const getStudentTypeLabel = () => {
-    if (profile.studentType === 'university') {
-      return `University - ${profile.universityLevel?.toUpperCase() || 'Student'}`
-    }
-    return 'High School Student'
-  }
+  const university = user?.university || 'Stanford University'
+  const department = user?.department || 'School of Engineering'
+  const grade = user?.studentType === 'high_school' 
+    ? (user?.highSchoolGrade?.replace('_', ' ').toUpperCase() || 'Not set')
+    : (user?.universityLevel?.toUpperCase() || 'Senior Year (3.9 GPA)')
+  const studentType = user?.studentType === 'high_school' ? 'High School Student' : 'University Student'
+  const stream = user?.studentType === 'high_school' && user?.highSchoolStream 
+    ? user.highSchoolStream.charAt(0).toUpperCase() + user.highSchoolStream.slice(1) 
+    : 'Full-Time Undergraduate'
 
   return (
-    <DashboardLayout title="My Profile" subtitle="Manage your account settings and preferences">
-      <div className="max-w-5xl mx-auto space-y-8 animate-fadeIn pb-12">
-        
-        {/* Profile Header Banner */}
-        <div className="relative rounded-[32px] overflow-hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/5 shadow-xl shadow-slate-200/50 dark:shadow-none transition-all duration-300">
-          <div className="h-48 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 relative overflow-hidden">
-            {/* Decorative circles */}
-            <div className="absolute top-0 right-0 -mt-20 -mr-20 w-64 h-64 rounded-full bg-white/10 blur-3xl"></div>
-            <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 rounded-full bg-black/10 blur-3xl"></div>
-          </div>
-          
-          <div className="px-8 pb-8 pt-0 relative flex flex-col sm:flex-row items-center sm:items-end gap-6 sm:gap-8 -mt-16">
-            <div className="relative group">
-              <div className="w-32 h-32 rounded-3xl bg-white dark:bg-slate-800 p-2 shadow-2xl overflow-hidden shrink-0 border-4 border-white dark:border-slate-900 relative z-10">
-                <div className="w-full h-full bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-900/40 dark:to-purple-900/40 rounded-2xl flex items-center justify-center text-indigo-500 dark:text-indigo-400">
-                  <UserIcon size={48} strokeWidth={1.5} />
-                </div>
+    <DashboardLayout>
+      <div className="max-w-6xl mx-auto space-y-8 pb-12 pt-6 animate-in fade-in slide-in-from-bottom-4 duration-700 px-4 sm:px-6">
+        {/* Hero Section */}
+        <div className="relative rounded-3xl overflow-hidden glass-panel shadow-2xl">
+          {/* Profile Info */}
+          <div className="p-8 relative">
+            <div className="flex flex-col md:flex-row gap-6 items-center md:items-center">
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-violet-500 rounded-full blur-md opacity-70 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <img
+                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80"
+                  alt={name}
+                  className="relative w-32 h-32 md:w-40 md:h-40 rounded-full object-cover border-4 border-white dark:border-slate-900 shadow-2xl"
+                />
+                <div className="absolute bottom-2 right-2 w-8 h-8 bg-emerald-500 border-4 border-white dark:border-slate-900 rounded-full"></div>
               </div>
-              {isEditing && (
-                <button className="absolute bottom-2 right-2 p-2.5 bg-blue-600 text-white rounded-xl shadow-lg hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all z-20">
-                  <Camera size={18} />
+
+              <div className="flex-1 pb-2">
+                <div className="flex flex-wrap items-center gap-4 mb-2">
+                  <h1 className="text-3xl md:text-4xl font-display font-bold text-slate-900 dark:text-white">
+                    {name}
+                  </h1>
+                  <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-amber-200 to-amber-400 dark:from-amber-500/20 dark:to-amber-600/20 border border-amber-300 dark:border-amber-500/30 shadow-lg shadow-amber-500/20 text-amber-800 dark:text-amber-300 text-sm font-semibold">
+                    <Sparkles className="w-4 h-4" />
+                    Premium Scholar
+                  </div>
+                </div>
+                <p className="text-slate-600 dark:text-slate-300 text-lg flex items-center gap-2">
+                  {department} <span className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600"></span> {studentType}
+                </p>
+              </div>
+
+              <div className="flex gap-3 pb-2 w-full md:w-auto">
+                <button className="flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                  Message
                 </button>
-              )}
-            </div>
-            
-            <div className="flex-1 text-center sm:text-left mb-2">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-1">
-                <h1 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight">{profile.name}</h1>
-                <span className="inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs md:text-sm font-bold w-fit mx-auto sm:mx-0">
-                  <ShieldCheck size={16} /> {getStudentTypeLabel()}
-                </span>
+                <button className="flex-1 md:flex-none px-6 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-medium hover:from-violet-500 hover:to-indigo-500 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-indigo-500/30">
+                  Connect
+                </button>
               </div>
-              <p className="text-xs md:text-sm text-slate-500 font-medium">{profile.email} • Joined {new Date(profile.joinDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</p>
-            </div>
-
-            <div className="mb-2 shrink-0 w-full sm:w-auto">
-              <Button 
-                variant={isEditing ? 'secondary' : 'primary'} 
-                className="w-full sm:w-auto !rounded-2xl shadow-lg"
-                onClick={() => setIsEditing(!isEditing)}
-              >
-                {isEditing ? 'Cancel Editing' : 'Edit Profile'}
-              </Button>
             </div>
           </div>
         </div>
 
+        {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Personal Information */}
-          <div className="lg:col-span-2 space-y-8">
-            <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-none rounded-[32px] overflow-hidden">
-              <div className="px-8 py-6 border-b border-slate-100 dark:border-white/5 bg-slate-50/50 dark:bg-white/5 flex items-center gap-3">
-                <div className="p-2.5 bg-blue-100 dark:bg-blue-900/30 rounded-xl text-blue-600">
-                  <UserIcon size={20} />
+          {/* Column 1: Identity & Contact */}
+          <div className="space-y-8">
+            <div className="glass-panel rounded-3xl p-6 md:p-8 transition-all duration-300 hover:shadow-2xl hover:shadow-slate-200/50 dark:hover:shadow-black/50">
+              <h2 className="text-xl font-display font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                <User className="w-5 h-5 text-violet-500" />
+                Personal Details
+              </h2>
+
+              <div className="space-y-5">
+                <div className="flex items-start gap-4 group">
+                  <div className="p-3 rounded-2xl bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 group-hover:scale-110 transition-transform duration-300">
+                    <Mail className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mb-0.5">
+                      Email Address
+                    </p>
+                    <p className="text-slate-900 dark:text-slate-200 font-medium break-all">
+                      {email}
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Personal Information</h3>
+
+                <div className="flex items-start gap-4 group">
+                  <div className="p-3 rounded-2xl bg-cyan-50 dark:bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 group-hover:scale-110 transition-transform duration-300">
+                    <Phone className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mb-0.5">
+                      Phone Number
+                    </p>
+                    <p className="text-slate-900 dark:text-slate-200 font-medium">
+                      {phone}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4 group">
+                  <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform duration-300">
+                    <MapPin className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mb-0.5">
+                      Location
+                    </p>
+                    <p className="text-slate-900 dark:text-slate-200 font-medium">
+                      {location}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4 group">
+                  <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 group-hover:scale-110 transition-transform duration-300">
+                    <CalendarDays className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium mb-0.5">
+                      Joined Date
+                    </p>
+                    <p className="text-slate-900 dark:text-slate-200 font-medium">
+                      {joinDate}
+                    </p>
+                  </div>
+                </div>
               </div>
-              <CardBody className="p-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-2 group">
-                    <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                      <UserIcon size={14} /> Full Name
-                    </label>
-                    <input
-                      type="text"
-                      value={profile.name}
-                      onChange={(e) => handleChange('name', e.target.value)}
-                      disabled={!isEditing}
-                      className="w-full bg-transparent text-slate-900 dark:text-white font-semibold text-lg border-b-2 border-transparent disabled:opacity-90 disabled:cursor-not-allowed focus:outline-none focus:border-blue-600 transition-colors py-1"
-                      placeholder="Enter full name"
-                    />
-                    {isEditing && <div className="h-0.5 w-full bg-slate-100 dark:bg-slate-800 -mt-1 hidden group-focus-within:block" />}
-                  </div>
-                  
-                  <div className="space-y-2 group">
-                    <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                      <Mail size={14} /> Email Address
-                    </label>
-                    <input
-                      type="email"
-                      value={profile.email}
-                      onChange={(e) => handleChange('email', e.target.value)}
-                      disabled={!isEditing}
-                      className="w-full bg-transparent text-slate-900 dark:text-white font-semibold text-lg border-b-2 border-transparent disabled:opacity-90 disabled:cursor-not-allowed focus:outline-none focus:border-blue-600 transition-colors py-1"
-                      placeholder="Enter email address"
-                    />
-                  </div>
+            </div>
 
-                  <div className="space-y-2 group">
-                    <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                      <Phone size={14} /> Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      value={profile.phone}
-                      onChange={(e) => handleChange('phone', e.target.value)}
-                      disabled={!isEditing}
-                      className="w-full bg-transparent text-slate-900 dark:text-white font-semibold text-lg border-b-2 border-transparent disabled:opacity-90 disabled:cursor-not-allowed focus:outline-none focus:border-blue-600 transition-colors py-1"
-                      placeholder="Enter phone number"
-                    />
-                  </div>
-                </div>
-
-                {isEditing && (
-                  <div className="mt-10 flex gap-4 pt-6 border-t border-slate-100 dark:border-white/5">
-                    <Button variant="primary" className="!rounded-xl shadow-lg shadow-blue-500/30 w-full sm:w-auto" onClick={() => setIsEditing(false)}>
-                      Save Changes
-                    </Button>
-                    <Button variant="secondary" className="!rounded-xl w-full sm:w-auto" onClick={() => setIsEditing(false)}>
-                      Cancel
-                    </Button>
-                  </div>
-                )}
-              </CardBody>
-            </Card>
+            {/* Skills & Interests */}
+            <div className="glass-panel rounded-3xl p-6 md:p-8 transition-all duration-300 hover:shadow-2xl hover:shadow-slate-200/50 dark:hover:shadow-black/50">
+              <h2 className="text-xl font-display font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                <Lightbulb className="w-5 h-5 text-amber-500" />
+                Skills & Interests
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {['JavaScript', 'React', 'Machine Learning', 'UI/UX Design', 'Data Analysis', 'Web Development'].map((skill, idx) => (
+                  <span key={idx} className="px-3 py-1.5 text-sm font-medium rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-default">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* Academic Information */}
-          <div className="space-y-8">
-            <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-none rounded-[32px] overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-800/50 dark:to-slate-900">
-              <div className="px-8 py-6 border-b border-slate-200/60 dark:border-white/5 flex items-center gap-3">
-                <div className="p-2.5 bg-purple-100 dark:bg-purple-900/30 rounded-xl text-purple-600">
-                  <GraduationCap size={20} />
-                </div>
-                <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">Academic Profile</h3>
+          {/* Column 2 & 3: Academics */}
+          <div className="lg:col-span-2 space-y-8">
+            <div className="glass-panel rounded-3xl p-6 md:p-8">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-xl font-display font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <BookOpen className="w-5 h-5 text-indigo-500" />
+                  Academic Profile
+                </h2>
+                <button className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors">
+                  Edit Profile
+                </button>
               </div>
-              <CardBody className="p-8 space-y-6">
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                <div className="glass-card rounded-2xl p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/50 group">
+                  <div className="flex items-center gap-4 mb-3">
+                    <div className="p-2.5 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                      <Building2 className="w-5 h-5" />
+                    </div>
+                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                      Institution
+                    </p>
+                  </div>
+                  <p className="text-lg font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    {university}
+                  </p>
+                </div>
+
+                <div className="glass-card rounded-2xl p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/50 group">
+                  <div className="flex items-center gap-4 mb-3">
+                    <div className="p-2.5 rounded-xl bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                      <GraduationCap className="w-5 h-5" />
+                    </div>
+                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                      Department
+                    </p>
+                  </div>
+                  <p className="text-lg font-semibold text-slate-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                    {department}
+                  </p>
+                </div>
+
+                <div className="glass-card rounded-2xl p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/50 group">
+                  <div className="flex items-center gap-4 mb-3">
+                    <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                      <Award className="w-5 h-5" />
+                    </div>
+                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                      Current Grade
+                    </p>
+                  </div>
+                  <p className="text-lg font-semibold text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                    {grade}
+                  </p>
+                </div>
+
+                <div className="glass-card rounded-2xl p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/50 dark:hover:shadow-black/50 group">
+                  <div className="flex items-center gap-4 mb-3">
+                    <div className="p-2.5 rounded-xl bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400">
+                      <Star className="w-5 h-5" />
+                    </div>
+                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                      Student Stream
+                    </p>
+                  </div>
+                  <p className="text-lg font-semibold text-slate-900 dark:text-white group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
+                    {stream}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Recent Activity Timeline */}
+            <div className="glass-panel rounded-3xl p-6 md:p-8">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-xl font-display font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <Activity className="w-5 h-5 text-emerald-500" />
+                  Recent Activity
+                </h2>
+                <button className="text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors">
+                  View All
+                </button>
+              </div>
+
+              <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-200 dark:before:via-slate-700 before:to-transparent">
                 
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-white/5 flex items-center justify-center text-slate-400 shrink-0">
-                    <BookOpen size={20} />
+                {/* Activity Item 1 */}
+                <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white dark:border-slate-900 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10">
+                    <CheckCircle2 className="w-4 h-4" />
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Current Grade</p>
-                    <p className="text-lg font-bold text-slate-900 dark:text-white">{profile.grade}</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-white/5 flex items-center justify-center text-slate-400 shrink-0">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" /></svg>
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Academic Stream</p>
-                    <p className="text-lg font-bold text-slate-900 dark:text-white">{profile.stream}</p>
+                  <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] glass-card p-4 rounded-2xl transition-transform hover:-translate-y-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-slate-900 dark:text-white">Completed Course</span>
+                      <time className="font-medium text-xs text-slate-500 dark:text-slate-400">2 days ago</time>
+                    </div>
+                    <div className="text-sm text-slate-600 dark:text-slate-300">Finished "Introduction to Data Science" with 98% score.</div>
                   </div>
                 </div>
 
-                <div className="my-6 h-px w-full bg-slate-200/60 dark:bg-white/5"></div>
-
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-white/5 flex items-center justify-center text-slate-400 shrink-0">
-                    <Building2 size={20} />
+                {/* Activity Item 2 */}
+                <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white dark:border-slate-900 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10">
+                    <Code className="w-4 h-4" />
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Target University</p>
-                    <p className="text-lg font-bold text-slate-900 dark:text-white">{profile.university}</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-white/5 flex items-center justify-center text-slate-400 shrink-0">
-                    <Calendar size={20} />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Target Department</p>
-                    <p className="text-lg font-bold text-slate-900 dark:text-white">{profile.department}</p>
+                  <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] glass-card p-4 rounded-2xl transition-transform hover:-translate-y-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-slate-900 dark:text-white">Submitted Project</span>
+                      <time className="font-medium text-xs text-slate-500 dark:text-slate-400">1 week ago</time>
+                    </div>
+                    <div className="text-sm text-slate-600 dark:text-slate-300">Uploaded final assignment for "Web Development Bootcamp".</div>
                   </div>
                 </div>
 
-              </CardBody>
-            </Card>
+                {/* Activity Item 3 */}
+                <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white dark:border-slate-900 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10">
+                    <Award className="w-4 h-4" />
+                  </div>
+                  <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] glass-card p-4 rounded-2xl transition-transform hover:-translate-y-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-bold text-slate-900 dark:text-white">Earned Badge</span>
+                      <time className="font-medium text-xs text-slate-500 dark:text-slate-400">2 weeks ago</time>
+                    </div>
+                    <div className="text-sm text-slate-600 dark:text-slate-300">Awarded "Fast Learner" for completing 5 modules in a row.</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
           </div>
         </div>
-
       </div>
     </DashboardLayout>
   )

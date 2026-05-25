@@ -1,82 +1,179 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
-import { Card, CardBody } from "@components/common/Card";
-import { progressService } from "@services/progressService";
-import { paymentService } from "@services/paymentService";
-import { Loading } from "@components/common/Loading";
 import { useAuthStore } from "@store/authStore";
+import { progressService } from "@services/progressService";
+import { Loading } from "@components/common/Loading";
+import { Footer } from "@components/common/Footer";
 import {
-  Trophy,
-  Target,
-  BookOpen,
-  Flame,
-  Sparkles,
-  Zap,
-  Clock,
-  Star,
-  Brain,
-  Rocket,
-  BarChart3,
-  TrendingUp,
-  CreditCard,
-  ChevronRight,
-  ArrowUpRight,
-  Award as AchievementIcon,
-  BookMarked,
-  GraduationCap,
-  Timer,
-  AlertCircle,
-  CheckCircle,
-  Circle,
+  Trophy, Target, BookOpen, Flame, Sparkles, Zap, Clock, Star,
+  Brain, Rocket, TrendingUp, ChevronRight, ArrowUpRight,
+  Award, GraduationCap, CheckCircle2, Circle, BarChart3, Moon, Sun,
+  Calendar, Crown, Activity, Cpu,
 } from "lucide-react";
 
+// ---------- Interfaces ----------
+interface QuizHistoryItem {
+  id: string; quizTitle: string; subject: string; score: number;
+  totalPoints: number; questionsAnswered: number; passed: boolean; date: string;
+}
+interface SubjectProgress { subject: string; progress: number; quizzes: number; }
 interface ProgressData {
   resourcesAccessed: number;
   quizzesCompleted: number;
   averageScore: number;
   studyStreak: number;
-  subjectProgress: Array<{
-    subject: string;
-    progress: number;
-    quizzes: number;
-  }>;
+  totalStudyHours: number;
+  weeklyGoals: Array<{ goal: string; done: boolean }>;
+  recentQuizHistory: QuizHistoryItem[];
+  officialSubjectProgress: SubjectProgress[];
+  aiSubjectProgress: SubjectProgress[];
 }
 
-interface PaymentData {
-  id: string;
-  amount: number;
-  currency?: string;
-  status: "pending" | "approved" | "rejected";
-  createdAt: string | Date;
-  approvedAt?: string | Date;
+// ---------- Mock data ----------
+const mockUser = { name: "Alex Morgan", level: 14, xp: 2840, nextLevelXp: 3500 };
+
+const mockData: ProgressData = {
+  resourcesAccessed: 47,
+  quizzesCompleted: 23,
+  averageScore: 87,
+  studyStreak: 12,
+  totalStudyHours: 42,
+  weeklyGoals: [
+    { goal: "Complete 5 quizzes this week", done: true },
+    { goal: "Maintain 80%+ average score", done: true },
+    { goal: "Study 10 hours minimum", done: false },
+    { goal: "Review weak chapters in Physics", done: false },
+  ],
+  recentQuizHistory: [
+    { id: "1", quizTitle: "Calculus — Integration Techniques", subject: "Mathematics", score: 18, totalPoints: 20, questionsAnswered: 20, passed: true, date: "2026-05-23" },
+    { id: "2", quizTitle: "Newtonian Mechanics Deep Dive", subject: "Physics", score: 14, totalPoints: 20, questionsAnswered: 20, passed: true, date: "2026-05-21" },
+    { id: "3", quizTitle: "Organic Chemistry — Reactions", subject: "Chemistry", score: 16, totalPoints: 20, questionsAnswered: 20, passed: true, date: "2026-05-19" },
+    { id: "4", quizTitle: "Cell Biology Fundamentals", subject: "Biology", score: 11, totalPoints: 20, questionsAnswered: 20, passed: false, date: "2026-05-17" },
+  ],
+  officialSubjectProgress: [
+    { subject: "Mathematics", progress: 92, quizzes: 8 },
+    { subject: "Physics", progress: 78, quizzes: 5 },
+    { subject: "Chemistry", progress: 65, quizzes: 4 },
+    { subject: "Biology", progress: 84, quizzes: 6 },
+  ],
+  aiSubjectProgress: [
+    { subject: "Mathematics", progress: 88, quizzes: 4 },
+    { subject: "Physics", progress: 72, quizzes: 3 },
+    { subject: "Literature", progress: 91, quizzes: 2 },
+  ],
+};
+
+const achievements = [
+  { icon: Flame, label: "12-Day Streak", color: "from-orange-500 to-red-500", unlocked: true },
+  { icon: Crown, label: "Top 5% This Week", color: "from-amber-400 to-yellow-500", unlocked: true },
+  { icon: Brain, label: "Quiz Master", color: "from-violet-500 to-fuchsia-500", unlocked: true },
+  { icon: Rocket, label: "Level 14 Reached", color: "from-cyan-400 to-blue-600", unlocked: true },
+  { icon: Star, label: "Perfect Score", color: "from-pink-500 to-rose-500", unlocked: false },
+  { icon: Award, label: "Marathon Learner", color: "from-emerald-400 to-teal-600", unlocked: false },
+];
+
+// ---------- Hooks ----------
+function useCountUp(target: number, duration = 1200) {
+  const [value, setValue] = useState(0);
+  useEffect(() => {
+    let raf = 0; const start = performance.now();
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setValue(Math.round(target * eased));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration]);
+  return value;
 }
 
-interface Achievement {
-  id: string;
-  icon: React.ElementType;
-  label: string;
-  description: string;
-  color: string;
-  bgColor: string;
-  unlocked: boolean;
+// Removing useDarkMode since DashboardLayout handles the theme globally
+
+// ---------- Primitives ----------
+function GlassCard({ children, className = "", glow = false }: { children: React.ReactNode; className?: string; glow?: boolean }) {
+  return (
+    <div
+      className={`group relative rounded-3xl border border-white/10 bg-white/60 dark:bg-white/[0.03] backdrop-blur-xl shadow-[0_8px_32px_-12px_rgba(15,23,42,0.15)] dark:shadow-[0_8px_32px_-12px_rgba(0,0,0,0.6)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_50px_-12px_rgba(99,102,241,0.35)] ${className}`}
+    >
+      {glow && (
+        <div className="pointer-events-none absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          style={{ background: "radial-gradient(600px circle at var(--mx,50%) var(--my,50%), rgba(139,92,246,0.15), transparent 40%)" }}
+        />
+      )}
+      {children}
+    </div>
+  );
 }
 
-const StudentProgress: React.FC = () => {
+function AnimatedBar({ value, delay = 0, gradient = "from-violet-500 via-fuchsia-500 to-pink-500" }: { value: number; delay?: number; gradient?: string }) {
+  const [w, setW] = useState(0);
+  useEffect(() => {
+    const t = setTimeout(() => setW(value), 200 + delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return (
+    <div className="relative h-2.5 w-full overflow-hidden rounded-full bg-slate-200/70 dark:bg-white/5">
+      <div
+        className={`h-full rounded-full bg-gradient-to-r ${gradient} relative overflow-hidden`}
+        style={{ width: `${w}%`, transition: "width 1.4s cubic-bezier(0.22, 1, 0.36, 1)" }}
+      >
+        <div className="absolute inset-0 opacity-60"
+          style={{
+            background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent)",
+            backgroundSize: "200% 100%",
+            animation: "shimmer 2.5s linear infinite",
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function StatTile({
+  icon: Icon, label, value, suffix = "", trend, gradient, delay = 0,
+}: {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string; value: number; suffix?: string; trend?: string;
+  gradient: string; delay?: number;
+}) {
+  const v = useCountUp(value);
+  return (
+    <GlassCard glow className="p-6 overflow-hidden" >
+      <div className={`absolute -top-12 -right-12 h-40 w-40 rounded-full bg-gradient-to-br ${gradient} opacity-20 blur-3xl group-hover:opacity-40 transition-opacity duration-700`} />
+      <div className="relative flex items-start justify-between">
+        <div className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${gradient} shadow-lg`}>
+          <Icon className="h-6 w-6 text-white" />
+        </div>
+        {trend && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 ring-1 ring-emerald-500/20">
+            <ArrowUpRight className="h-3 w-3" /> {trend}
+          </span>
+        )}
+      </div>
+      <div className="relative mt-5">
+        <div className="font-display text-4xl font-bold tracking-tight text-slate-900 dark:text-white tabular-nums">
+          {v}{suffix}
+        </div>
+        <div className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">{label}</div>
+      </div>
+    </GlassCard>
+  );
+}
+
+// ---------- Main Component ----------
+export function StudentProgress() {
   const [stats, setStats] = useState<ProgressData | null>(null);
-  const [payments, setPayments] = useState<PaymentData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const { user } = useAuthStore();
+  const [tab, setTab] = useState<"official" | "ai">("official");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statsData, paymentsData] = await Promise.all([
-          progressService.getStats(),
-          paymentService.getUserPayments().then((res) => res.data || []),
-        ]);
+        const statsData = await progressService.getStats();
         setStats(statsData);
-        setPayments(paymentsData);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
@@ -86,684 +183,381 @@ const StudentProgress: React.FC = () => {
     fetchData();
   }, []);
 
-  if (loading) return <Loading message="Analyzing your academic journey..." />;
+  const data = stats || mockData;
 
-  if (!stats) return <Loading message="Loading your progress..." />;
+  const userLevel = Math.floor((data.totalStudyHours || 0) / 10) + 1;
+  const userXp = (data.totalStudyHours || 0) * 100;
+  const nextLevelXp = userLevel * 10 * 100;
 
-  // Calculate payment status
-  const latestPayment = payments.length > 0 ? payments[0] : null;
-  const isPaymentApproved = latestPayment?.status === "approved";
-  const isPaymentPending = latestPayment?.status === "pending";
+  const xpProgress = useMemo(
+    () => Math.round((userXp / nextLevelXp) * 100),
+    [userXp, nextLevelXp]
+  );
+  const goalsDone = (data.weeklyGoals || []).filter((g) => g.done).length;
+  const goalsPct = data.weeklyGoals?.length ? (goalsDone / data.weeklyGoals.length) * 100 : 0;
 
-  // Calculate overall progress (combining quiz performance and payment)
-  const calculateOverallProgress = () => {
-    const quizWeight = 0.6;
-    const paymentWeight = 0.4;
-    const quizProgress = stats?.averageScore || 0;
-    const paymentProgress = isPaymentApproved ? 100 : isPaymentPending ? 50 : 0;
-    return Math.round(
-      quizProgress * quizWeight + paymentProgress * paymentWeight,
+  const animatedTotalStudyHours = useCountUp(data.totalStudyHours || 0);
+
+  // Hero ring
+  const radius = 78;
+  const circumference = 2 * Math.PI * radius;
+  const [ringOffset, setRingOffset] = useState(circumference);
+  useEffect(() => {
+    const t = setTimeout(() => setRingOffset(circumference - (xpProgress / 100) * circumference), 300);
+    return () => clearTimeout(t);
+  }, [xpProgress, circumference]);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.currentTarget;
+    const rect = target.getBoundingClientRect();
+    target.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+    target.style.setProperty("--my", `${e.clientY - rect.top}px`);
+  };
+
+  const subjects = tab === "official" ? data.officialSubjectProgress : data.aiSubjectProgress;
+
+  if (loading) {
+    return (
+      <DashboardLayout title="Your Progress" subtitle="Analyzing your academic journey...">
+        <div className="flex-1 flex items-center justify-center min-h-[60vh]">
+          <Loading message="Analyzing your academic journey..." />
+        </div>
+      </DashboardLayout>
     );
-  };
-
-  const overallProgress = calculateOverallProgress();
-
-  // Generate achievements based on stats and payment
-  const getAchievements = (): Achievement[] => {
-    const achievements: Achievement[] = [
-      {
-        id: "straight-a",
-        icon: Star,
-        label: "Straight A Student",
-        description: "Maintain 90%+ average score",
-        color: "text-yellow-500",
-        bgColor: "bg-yellow-500/10",
-        unlocked: stats?.averageScore >= 90 || false,
-      },
-      {
-        id: "week-warrior",
-        icon: Flame,
-        label: "Week Warrior",
-        description: "7+ day study streak",
-        color: "text-orange-500",
-        bgColor: "bg-orange-500/10",
-        unlocked: (stats?.studyStreak || 0) >= 7,
-      },
-      {
-        id: "quiz-master",
-        icon: Brain,
-        label: "Quiz Master",
-        description: "Complete 10+ quizzes",
-        color: "text-purple-500",
-        bgColor: "bg-purple-500/10",
-        unlocked: (stats?.quizzesCompleted || 0) >= 10,
-      },
-      {
-        id: "knowledge-seeker",
-        icon: BookOpen,
-        label: "Knowledge Seeker",
-        description: "Access 20+ resources",
-        color: "text-blue-500",
-        bgColor: "bg-blue-500/10",
-        unlocked: (stats?.resourcesAccessed || 0) >= 20,
-      },
-      {
-        id: "paid-member",
-        icon: CreditCard,
-        label: "Premium Member",
-        description: "Active payment status",
-        color: "text-green-500",
-        bgColor: "bg-green-500/10",
-        unlocked: isPaymentApproved || false,
-      },
-      {
-        id: "dedicated-learner",
-        icon: GraduationCap,
-        label: "Dedicated Learner",
-        description: "Study 40+ hours",
-        color: "text-indigo-500",
-        bgColor: "bg-indigo-500/10",
-        unlocked: false, // Would need study hours data
-      },
-    ];
-    return achievements;
-  };
-
-  const achievements = getAchievements();
-  const unlockedAchievements = achievements.filter((a) => a.unlocked);
-
-  // Get progress color based on percentage
-  const getProgressColor = (percentage: number) => {
-    if (percentage >= 90) return "text-green-500";
-    if (percentage >= 70) return "text-blue-500";
-    if (percentage >= 50) return "text-yellow-500";
-    return "text-red-500";
-  };
-
-  const getPaymentStatusInfo = () => {
-    if (!latestPayment) {
-      return {
-        status: "No Payment",
-        color: "text-gray-500",
-        bgColor: "bg-gray-100 dark:bg-gray-800",
-        icon: AlertCircle,
-        message: "Complete your payment to unlock all features",
-      };
-    }
-    switch (latestPayment.status) {
-      case "approved":
-        return {
-          status: "Active",
-          color: "text-green-600 dark:text-green-400",
-          bgColor: "bg-green-100 dark:bg-green-900/30",
-          icon: CheckCircle,
-          message: "Your payment is approved. Full access granted!",
-        };
-      case "pending":
-        return {
-          status: "Pending",
-          color: "text-yellow-600 dark:text-yellow-400",
-          bgColor: "bg-yellow-100 dark:bg-yellow-900/30",
-          icon: Clock,
-          message: "Your payment is being reviewed",
-        };
-      case "rejected":
-        return {
-          status: "Rejected",
-          color: "text-red-600 dark:text-red-400",
-          bgColor: "bg-red-100 dark:bg-red-900/30",
-          icon: AlertCircle,
-          message: "Payment was rejected. Please try again.",
-        };
-    }
-  };
-
-  const paymentInfo = getPaymentStatusInfo();
+  }
 
   return (
-    <DashboardLayout
-      title="Your Progress"
-      subtitle="Track your learning journey, achievements, and milestones"
+    <DashboardLayout noPadding={true}>
+    <div
+      onMouseMove={handleMouseMove}
+      className="relative h-full overflow-y-auto overflow-x-hidden custom-scrollbar bg-gradient-to-br from-slate-50 via-violet-50/50 to-indigo-50 dark:from-[#070B1A] dark:via-[#0B1121] dark:to-[#0A0A1F] text-slate-900 dark:text-slate-100 flex flex-col"
     >
-      <div className="space-y-6 max-w-7xl mx-auto pb-12 px-2 md:px-0">
-        {/* Hero Section - Overall Progress */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 p-6 md:p-10 text-white">
-          <div className="absolute top-0 right-0 opacity-10">
-            <Rocket size={250} />
-          </div>
-          <div className="relative z-10">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-              <div>
-                <h2 className="text-2xl md:text-4xl font-black mb-2">
-                  Welcome back, {user?.name?.split(" ")[0] || "Learner"}! 🚀
-                </h2>
-                <p className="text-blue-100 text-sm md:text-base max-w-lg">
-                  You're making great progress! Keep up the momentum and reach
-                  your learning goals.
-                </p>
-                <div className="flex flex-wrap gap-3 mt-4">
-                  <div className="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-xl border border-white/30">
-                    <Flame size={16} className="text-orange-300" />
-                    <span className="font-bold text-sm">
-                      {stats?.studyStreak || 0} Day Streak
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-xl border border-white/30">
-                    <Trophy size={16} className="text-yellow-300" />
-                    <span className="font-bold text-sm">
-                      Top {Math.min(Math.floor(Math.random() * 20) + 1, 15)}%
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Circular Progress */}
-              <div className="flex-shrink-0">
-                <div className="relative w-32 h-32 md:w-40 md:h-40">
-                  <svg
-                    className="w-full h-full transform -rotate-90"
-                    viewBox="0 0 100 100"
-                  >
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="45"
-                      fill="none"
-                      stroke="rgba(255,255,255,0.2)"
-                      strokeWidth="8"
-                    />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="45"
-                      fill="none"
-                      stroke="white"
-                      strokeWidth="8"
-                      strokeLinecap="round"
-                      strokeDasharray={`${overallProgress * 2.83} 283`}
-                      className="transition-all duration-1000 ease-out"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-3xl md:text-4xl font-black">
-                      {overallProgress}%
-                    </span>
-                    <span className="text-xs text-blue-200">Overall</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-          {/* Resources Card */}
-          <Card className="hoverable group">
-            <CardBody className="p-4 md:p-5">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">
-                    Resources
-                  </p>
-                  <p className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white mt-1">
-                    {stats?.resourcesAccessed || 0}
-                  </p>
-                  <div className="flex items-center gap-1 mt-2 text-green-600 dark:text-green-400 text-xs font-bold">
-                    <TrendingUp size={12} />
-                    <span>+12%</span>
-                  </div>
-                </div>
-                <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
-                  <BookOpen
-                    size={20}
-                    className="text-blue-600 dark:text-blue-400"
-                  />
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-
-          {/* Quizzes Card */}
-          <Card className="hoverable group">
-            <CardBody className="p-4 md:p-5">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">
-                    Quizzes Done
-                  </p>
-                  <p className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white mt-1">
-                    {stats?.quizzesCompleted || 0}
-                  </p>
-                  <div className="flex items-center gap-1 mt-2 text-green-600 dark:text-green-400 text-xs font-bold">
-                    <TrendingUp size={12} />
-                    <span>+8%</span>
-                  </div>
-                </div>
-                <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
-                  <Target
-                    size={20}
-                    className="text-purple-600 dark:text-purple-400"
-                  />
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-
-          {/* Average Score Card */}
-          <Card className="hoverable group">
-            <CardBody className="p-4 md:p-5">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">
-                    Avg Score
-                  </p>
-                  <p className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white mt-1">
-                    {stats?.averageScore || 0}%
-                  </p>
-                  <div className="flex items-center gap-1 mt-2 text-green-600 dark:text-green-400 text-xs font-bold">
-                    <TrendingUp size={12} />
-                    <span>+5%</span>
-                  </div>
-                </div>
-                <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-xl">
-                  <Trophy
-                    size={20}
-                    className="text-amber-600 dark:text-amber-400"
-                  />
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-
-          {/* Study Streak Card */}
-          <Card className="hoverable group">
-            <CardBody className="p-4 md:p-5">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider font-semibold">
-                    Day Streak
-                  </p>
-                  <p className="text-2xl md:text-3xl font-black text-gray-900 dark:text-white mt-1">
-                    {stats?.studyStreak || 0}
-                  </p>
-                  <div className="flex items-center gap-1 mt-2 text-orange-600 dark:text-orange-400 text-xs font-bold">
-                    <Flame size={12} />
-                    <span>On Fire!</span>
-                  </div>
-                </div>
-                <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-xl">
-                  <Flame
-                    size={20}
-                    className="text-orange-600 dark:text-orange-400"
-                  />
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
-          {/* Subject Performance - Takes 2 columns */}
-          <div className="lg:col-span-2 space-y-4">
-            <Card className="overflow-hidden">
-              <div className="px-5 py-4 border-b border-gray-100 dark:border-white/5 bg-gradient-to-r from-gray-50 to-gray-100/50 dark:from-gray-800/50 dark:to-gray-800/30">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 rounded-xl">
-                      <BarChart3
-                        size={18}
-                        className="text-indigo-600 dark:text-indigo-400"
-                      />
-                    </div>
-                    <h3 className="text-lg font-black text-gray-900 dark:text-white">
-                      Subject Performance
-                    </h3>
-                  </div>
-                </div>
-              </div>
-
-              <CardBody className="p-4 md:p-6">
-                {(stats?.subjectProgress?.length || 0) > 0 ? (
-                  <div className="space-y-4">
-                    {stats.subjectProgress.map((item, index) => {
-                      const gradients = [
-                        "from-blue-500 to-indigo-500",
-                        "from-purple-500 to-pink-500",
-                        "from-emerald-400 to-teal-500",
-                        "from-orange-400 to-amber-500",
-                        "from-rose-500 to-red-600",
-                        "from-cyan-500 to-blue-600",
-                      ];
-                      const barGradient = gradients[index % gradients.length];
-                      const percentage = item.progress;
-
-                      return (
-                        <div
-                          key={item.subject}
-                          className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-white/5 hover:shadow-md transition-all duration-300 cursor-pointer group"
-                          onClick={() =>
-                            setSelectedSubject(
-                              selectedSubject === item.subject
-                                ? null
-                                : item.subject,
-                            )
-                          }
-                        >
-                          <div className="flex justify-between items-center mb-3">
-                            <div>
-                              <span className="text-lg font-black text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                {item.subject}
-                              </span>
-                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                {item.quizzes} quizzes completed
-                              </p>
-                            </div>
-                            <div className="text-right">
-                              <span
-                                className={`text-2xl font-black ${getProgressColor(percentage)}`}
-                              >
-                                {percentage}%
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Progress Bar */}
-                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
-                            <div
-                              className={`bg-gradient-to-r ${barGradient} h-full rounded-full transition-all duration-1000 ease-out`}
-                              style={{ width: `${percentage}%` }}
-                            />
-                          </div>
-
-                          {/* Expanded Details */}
-                          {selectedSubject === item.subject && (
-                            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-white/10 grid grid-cols-3 gap-4 text-center">
-                              <div className="p-3 bg-white dark:bg-gray-800 rounded-xl">
-                                <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase">
-                                  Chapters
-                                </p>
-                                <p className="text-lg font-black text-gray-900 dark:text-white mt-1">
-                                  {Math.floor(percentage / 10)}/10
-                                </p>
-                              </div>
-                              <div className="p-3 bg-white dark:bg-gray-800 rounded-xl">
-                                <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase">
-                                  Best Score
-                                </p>
-                                <p className="text-lg font-black text-gray-900 dark:text-white mt-1">
-                                  {Math.min(percentage + 10, 100)}%
-                                </p>
-                              </div>
-                              <div className="p-3 bg-white dark:bg-gray-800 rounded-xl">
-                                <p className="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase">
-                                  Time Spent
-                                </p>
-                                <p className="text-lg font-black text-gray-900 dark:text-white mt-1">
-                                  {Math.floor(Math.random() * 20) + 5}h
-                                </p>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 px-4">
-                    <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-500 dark:text-blue-400 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Target size={28} />
-                    </div>
-                    <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-2">
-                      Start Your Journey
-                    </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 max-w-sm mx-auto">
-                      Complete your first quiz to begin tracking your subject
-                      mastery!
-                    </p>
-                  </div>
-                )}
-              </CardBody>
-            </Card>
-          </div>
-
-          {/* Right Sidebar */}
-          <div className="space-y-4">
-            {/* Payment Status Card */}
-            <Card className="overflow-hidden">
-              <div className="px-5 py-4 border-b border-gray-100 dark:border-white/5">
-                <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-xl ${paymentInfo.bgColor}`}>
-                    <paymentInfo.icon size={18} className={paymentInfo.color} />
-                  </div>
-                  <h3 className="text-lg font-black text-gray-900 dark:text-white">
-                    Payment Status
-                  </h3>
-                </div>
-              </div>
-              <CardBody className="p-4 md:p-5">
-                <div className="space-y-4">
-                  <div className={`p-4 rounded-xl ${paymentInfo.bgColor}`}>
-                    <div className="flex items-center justify-between">
-                      <span className={`font-bold ${paymentInfo.color}`}>
-                        {paymentInfo.status}
-                      </span>
-                      <ChevronRight size={18} className={paymentInfo.color} />
-                    </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                      {paymentInfo.message}
-                    </p>
-                  </div>
-
-                  {latestPayment && (
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-500 dark:text-gray-400">
-                          Amount
-                        </span>
-                        <span className="font-bold text-gray-900 dark:text-white">
-                          {latestPayment.currency
-                            ? `${latestPayment.currency} `
-                            : "ETB "}
-                          {latestPayment.amount.toLocaleString()}
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-500 dark:text-gray-400">
-                          Date
-                        </span>
-                        <span className="font-bold text-gray-900 dark:text-white">
-                          {new Date(
-                            latestPayment.createdAt,
-                          ).toLocaleDateString()}
-                        </span>
-                      </div>
-                      {latestPayment.approvedAt && (
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-500 dark:text-gray-400">
-                            Approved
-                          </span>
-                          <span className="font-bold text-green-600 dark:text-green-400">
-                            {new Date(
-                              latestPayment.approvedAt,
-                            ).toLocaleDateString()}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  <button className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2">
-                    <CreditCard size={18} />
-                    {latestPayment ? "View Payment Details" : "Make Payment"}
-                  </button>
-                </div>
-              </CardBody>
-            </Card>
-
-            {/* Achievements Card */}
-            <Card className="overflow-hidden">
-              <div className="px-5 py-4 border-b border-gray-100 dark:border-white/5">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-amber-100 dark:bg-amber-900/40 rounded-xl">
-                    <AchievementIcon
-                      size={18}
-                      className="text-amber-600 dark:text-amber-400"
-                    />
-                  </div>
-                  <h3 className="text-lg font-black text-gray-900 dark:text-white">
-                    Achievements
-                  </h3>
-                </div>
-              </div>
-              <CardBody className="p-4">
-                <div className="grid grid-cols-3 gap-3">
-                  {achievements.map((achievement) => (
-                    <div
-                      key={achievement.id}
-                      className={`relative p-3 rounded-xl text-center transition-all duration-300 ${
-                        achievement.unlocked
-                          ? `${achievement.bgColor} cursor-pointer hover:scale-105`
-                          : "bg-gray-100 dark:bg-gray-800 opacity-50"
-                      }`}
-                    >
-                      <div
-                        className={`w-10 h-10 mx-auto mb-2 rounded-lg flex items-center justify-center ${
-                          achievement.unlocked
-                            ? "bg-white dark:bg-gray-900"
-                            : "bg-gray-200 dark:bg-gray-700"
-                        }`}
-                      >
-                        <achievement.icon
-                          size={20}
-                          className={
-                            achievement.unlocked
-                              ? achievement.color
-                              : "text-gray-400"
-                          }
-                        />
-                      </div>
-                      <p
-                        className={`text-xs font-bold ${
-                          achievement.unlocked
-                            ? "text-gray-900 dark:text-white"
-                            : "text-gray-500"
-                        }`}
-                      >
-                        {achievement.label}
-                      </p>
-                      {achievement.unlocked && (
-                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
-                          <CheckCircle size={8} className="text-white" />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-4">
-                  {unlockedAchievements.length} of {achievements.length}{" "}
-                  unlocked
-                </p>
-              </CardBody>
-            </Card>
-
-            {/* Weekly Goals */}
-            <Card className="overflow-hidden">
-              <div className="px-5 py-4 border-b border-gray-100 dark:border-white/5">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-emerald-100 dark:bg-emerald-900/40 rounded-xl">
-                    <Target
-                      size={18}
-                      className="text-emerald-600 dark:text-emerald-400"
-                    />
-                  </div>
-                  <h3 className="text-lg font-black text-gray-900 dark:text-white">
-                    Weekly Goals
-                  </h3>
-                </div>
-              </div>
-              <CardBody className="p-4">
-                <div className="space-y-3">
-                  {[
-                    {
-                      goal: "Complete Chemistry Ch. 3",
-                      done: true,
-                      icon: BookMarked,
-                    },
-                    {
-                      goal: "Score 80%+ on Math Quiz",
-                      done: true,
-                      icon: CheckCircle,
-                    },
-                    {
-                      goal: "Read 2 History Resources",
-                      done: false,
-                      icon: Circle,
-                    },
-                    {
-                      goal: "Study for 5 Hours",
-                      done: false,
-                      icon: Timer,
-                    },
-                  ].map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
-                    >
-                      <item.icon
-                        size={18}
-                        className={
-                          item.done ? "text-green-500" : "text-gray-400"
-                        }
-                      />
-                      <span
-                        className={`text-sm font-semibold flex-1 ${
-                          item.done
-                            ? "text-gray-500 dark:text-gray-400 line-through"
-                            : "text-gray-900 dark:text-white"
-                        }`}
-                      >
-                        {item.goal}
-                      </span>
-                      {item.done && (
-                        <CheckCircle size={16} className="text-green-500" />
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </CardBody>
-            </Card>
-          </div>
-        </div>
-
-        {/* Motivational Footer */}
-        <Card className="bg-gradient-to-br from-indigo-600 to-purple-700 dark:from-indigo-700 dark:to-purple-800 overflow-hidden">
-          <CardBody className="p-6 md:p-8 text-white relative">
-            <div className="absolute -top-12 -right-12 opacity-10">
-              <Sparkles size={200} />
-            </div>
-            <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Zap size={24} className="text-yellow-300 fill-yellow-300" />
-                  <h4 className="text-xl font-black">Keep the momentum!</h4>
-                </div>
-                <p className="text-indigo-100 font-medium max-w-xl">
-                  You're in the top performers this week. Your consistency is
-                  paying off. Keep pushing forward and unlock more achievements!
-                </p>
-              </div>
-              <button className="flex items-center gap-2 px-6 py-3 bg-white text-indigo-600 font-bold rounded-xl hover:bg-indigo-50 transition-colors whitespace-nowrap">
-                Continue Learning
-                <ArrowUpRight size={18} />
-              </button>
-            </div>
-          </CardBody>
-        </Card>
+      {/* Ambient blobs */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full bg-violet-500/20 dark:bg-violet-600/20 blur-3xl animate-float" />
+        <div className="absolute top-1/3 -right-32 h-[450px] w-[450px] rounded-full bg-fuchsia-400/20 dark:bg-fuchsia-700/15 blur-3xl animate-float" style={{ animationDelay: "2s" }} />
+        <div className="absolute bottom-0 left-1/3 h-[400px] w-[400px] rounded-full bg-cyan-400/15 dark:bg-cyan-600/10 blur-3xl animate-float" style={{ animationDelay: "4s" }} />
       </div>
+
+      {/* Grid texture */}
+      <div className="pointer-events-none absolute inset-0 opacity-[0.025] dark:opacity-[0.06]"
+        style={{
+          backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+        }}
+      />
+
+      <div className="relative mx-auto w-full max-w-[1600px] flex-1 px-4 py-8 sm:px-6 lg:px-12 lg:py-12">
+        {/* Header removed */}
+
+        {/* HERO */}
+        <section className="relative mb-10 overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-blue-600 via-cyan-600 to-teal-700 p-8 shadow-2xl shadow-cyan-500/30 sm:p-12">
+          <div className="absolute inset-0 opacity-30"
+            style={{
+              backgroundImage: "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.4), transparent 40%), radial-gradient(circle at 80% 80%, rgba(255,200,255,0.3), transparent 40%)",
+            }}
+          />
+          <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-pink-400/40 blur-3xl animate-pulse-glow" />
+          <div className="absolute top-10 right-20 hidden lg:block">
+            <Sparkles className="h-6 w-6 text-white/60 animate-float" />
+          </div>
+
+          <div className="relative grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-md px-4 py-1.5 text-xs font-semibold text-white ring-1 ring-white/30">
+                <Sparkles className="h-3.5 w-3.5" />
+                Level {userLevel} · Scholar
+              </div>
+              <h1 className="mt-4 font-display text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+                Welcome back,<br />
+                <span className="bg-gradient-to-r from-white via-pink-100 to-amber-100 bg-clip-text text-transparent">
+                  {user?.name?.split(' ')[0] || "Learner"}
+                </span>
+              </h1>
+              <p className="mt-4 max-w-xl text-base text-white/80 sm:text-lg">
+                You're on a <strong className="text-white">{data.studyStreak}-day streak</strong> with an average score of <strong className="text-white">{data.averageScore}%</strong>. Keep the momentum going.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <button className="group inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-3 font-semibold text-violet-700 shadow-xl transition-all hover:scale-105 hover:shadow-2xl">
+                  Continue Learning
+                  <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </button>
+                <button className="inline-flex items-center gap-2 rounded-2xl border border-white/30 bg-white/10 px-6 py-3 font-semibold text-white backdrop-blur-md transition-all hover:bg-white/20">
+                  <BarChart3 className="h-4 w-4" />
+                  View Analytics
+                </button>
+              </div>
+            </div>
+
+            {/* XP Ring */}
+            <div className="relative mx-auto">
+              <svg width="200" height="200" className="-rotate-90">
+                <defs>
+                  <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#fef3c7" />
+                    <stop offset="100%" stopColor="#fb7185" />
+                  </linearGradient>
+                </defs>
+                <circle cx="100" cy="100" r={radius} stroke="rgba(255,255,255,0.15)" strokeWidth="12" fill="none" />
+                <circle
+                  cx="100" cy="100" r={radius}
+                  stroke="url(#ringGrad)" strokeWidth="12" fill="none" strokeLinecap="round"
+                  strokeDasharray={circumference} strokeDashoffset={ringOffset}
+                  style={{ transition: "stroke-dashoffset 1.6s cubic-bezier(0.22, 1, 0.36, 1)", filter: "drop-shadow(0 0 12px rgba(251,113,133,0.6))" }}
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+                <div className="text-xs font-semibold uppercase tracking-widest text-white/70">XP</div>
+                <div className="font-display text-4xl font-bold tabular-nums">{userXp}</div>
+                <div className="text-xs text-white/70">/ {nextLevelXp}</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Stat tiles */}
+        <section className="mb-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <StatTile icon={BookOpen} label="Resources Accessed" value={data.resourcesAccessed} trend="+12%" gradient="from-cyan-500 to-blue-600" />
+          <StatTile icon={Target} label="Quizzes Completed" value={data.quizzesCompleted} trend="+8%" gradient="from-violet-500 to-fuchsia-500" delay={100} />
+          <StatTile icon={TrendingUp} label="Average Score" value={data.averageScore} suffix="%" trend="+5%" gradient="from-emerald-500 to-teal-600" delay={200} />
+          <StatTile icon={Flame} label="Day Streak" value={data.studyStreak} trend="🔥" gradient="from-orange-500 to-rose-500" delay={300} />
+        </section>
+
+        {/* Main grid */}
+        <div className="grid gap-6 lg:grid-cols-3">
+          {/* LEFT: Subject Performance */}
+          <GlassCard className="lg:col-span-2 p-7" glow>
+            <div className="flex items-start justify-between gap-4 flex-wrap">
+              <div>
+                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-400">
+                  <Activity className="h-3.5 w-3.5" /> Performance
+                </div>
+                <h2 className="mt-2 font-display text-2xl font-bold">Subject Mastery</h2>
+              </div>
+              <div className="inline-flex rounded-2xl border border-white/10 bg-white/40 dark:bg-white/5 p-1 backdrop-blur-md">
+                <button
+                  onClick={() => setTab("official")}
+                  className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
+                    tab === "official"
+                      ? "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-lg shadow-violet-500/30"
+                      : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+                >
+                  <GraduationCap className="h-4 w-4" /> Official
+                </button>
+                <button
+                  onClick={() => setTab("ai")}
+                  className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
+                    tab === "ai"
+                      ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/30"
+                      : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
+                  }`}
+                >
+                  <Cpu className="h-4 w-4" /> AI Practice
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-7 space-y-5">
+              {subjects.map((s, i) => (
+                <div key={`${tab}-${s.subject}`} className="group/row">
+                  <div className="mb-2 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br ${
+                        tab === "official" ? "from-violet-500/20 to-fuchsia-500/20" : "from-cyan-500/20 to-blue-600/20"
+                      } ring-1 ring-white/10`}>
+                        <BookOpen className={`h-4 w-4 ${tab === "official" ? "text-violet-500" : "text-cyan-500"}`} />
+                      </div>
+                      <div>
+                        <div className="font-semibold">{s.subject}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">{s.quizzes} quizzes completed</div>
+                      </div>
+                    </div>
+                    <div className="font-display text-lg font-bold tabular-nums">{s.progress}%</div>
+                  </div>
+                  <AnimatedBar
+                    value={s.progress}
+                    delay={i * 120}
+                    gradient={tab === "official" ? "from-violet-500 via-fuchsia-500 to-pink-500" : "from-cyan-400 via-sky-500 to-blue-600"}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Recent Quizzes */}
+            <div className="mt-9 border-t border-white/10 pt-6">
+              <h3 className="font-display text-lg font-bold mb-4 flex items-center gap-2">
+                <Clock className="h-4 w-4 text-violet-500" /> Recent Quizzes
+              </h3>
+              <div className="space-y-3">
+                {data.recentQuizHistory.map((q) => {
+                  const pct = Math.round((q.score / q.totalPoints) * 100);
+                  return (
+                    <div
+                      key={q.id}
+                      className="group/quiz flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/40 dark:bg-white/[0.02] p-4 transition-all hover:bg-white/60 dark:hover:bg-white/[0.05] hover:translate-x-1"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${
+                          q.passed
+                            ? "bg-emerald-500/15 text-emerald-500"
+                            : "bg-rose-500/15 text-rose-500"
+                        }`}>
+                          {q.passed ? <CheckCircle2 className="h-5 w-5" /> : <Zap className="h-5 w-5" />}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-semibold truncate">{q.quizTitle}</div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                            <span>{q.subject}</span>
+                            <span>·</span>
+                            <Calendar className="h-3 w-3" />
+                            <span>{q.date}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <div className={`font-display text-lg font-bold tabular-nums ${
+                          pct >= 80 ? "text-emerald-500" : pct >= 60 ? "text-amber-500" : "text-rose-500"
+                        }`}>{pct}%</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400">{q.score}/{q.totalPoints}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </GlassCard>
+
+          {/* RIGHT column */}
+          <div className="space-y-6">
+            {/* Weekly Goals */}
+            <GlassCard className="p-7" glow>
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-400">
+                    <Target className="h-3.5 w-3.5" /> This Week
+                  </div>
+                  <h2 className="mt-2 font-display text-xl font-bold">Goals</h2>
+                </div>
+                <div className="relative flex h-14 w-14 items-center justify-center">
+                  <svg className="absolute inset-0 -rotate-90" viewBox="0 0 56 56">
+                    <circle cx="28" cy="28" r="24" stroke="currentColor" strokeWidth="4" fill="none" className="text-slate-200 dark:text-white/10" />
+                    <circle
+                      cx="28" cy="28" r="24" stroke="url(#goalGrad)" strokeWidth="4" fill="none" strokeLinecap="round"
+                      strokeDasharray={2 * Math.PI * 24}
+                      strokeDashoffset={2 * Math.PI * 24 - (goalsPct / 100) * 2 * Math.PI * 24}
+                      style={{ transition: "stroke-dashoffset 1.4s ease" }}
+                    />
+                    <defs>
+                      <linearGradient id="goalGrad">
+                        <stop offset="0%" stopColor="#8b5cf6" />
+                        <stop offset="100%" stopColor="#ec4899" />
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  <div className="font-display text-xs font-bold tabular-nums">{goalsDone}/{data.weeklyGoals.length}</div>
+                </div>
+              </div>
+              <ul className="mt-5 space-y-2.5">
+                {data.weeklyGoals.map((g, i) => (
+                  <li
+                    key={i}
+                    className={`group/goal flex items-center gap-3 rounded-2xl border border-white/10 p-3 transition-all ${
+                      g.done
+                        ? "bg-gradient-to-r from-emerald-500/10 to-teal-500/5"
+                        : "bg-white/30 dark:bg-white/[0.02] hover:bg-white/50 dark:hover:bg-white/[0.04]"
+                    }`}
+                  >
+                    {g.done ? (
+                      <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 animate-scale-in" />
+                    ) : (
+                      <Circle className="h-5 w-5 text-slate-400 shrink-0" />
+                    )}
+                    <span className={`text-sm ${g.done ? "line-through text-slate-500 dark:text-slate-400" : "font-medium"}`}>
+                      {g.goal}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </GlassCard>
+
+            {/* Study Hours */}
+            <GlassCard className="relative overflow-hidden p-7" glow>
+              <div className="absolute -top-10 -right-10 h-32 w-32 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 opacity-20 blur-2xl" />
+              <div className="relative">
+                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400">
+                  <Clock className="h-3.5 w-3.5" /> Study Time
+                </div>
+                <div className="mt-2 flex items-baseline gap-2">
+                  <span className="font-display text-5xl font-bold tabular-nums bg-gradient-to-br from-amber-500 to-orange-600 bg-clip-text text-transparent">
+                    {animatedTotalStudyHours}
+                  </span>
+                  <span className="text-lg font-semibold text-slate-500 dark:text-slate-400">hours</span>
+                </div>
+                <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                  This month — about <strong>{Math.round(data.totalStudyHours / 4)}h</strong> per week.
+                </p>
+                <div className="mt-4 flex gap-1.5">
+                  {Array.from({ length: 7 }).map((_, i) => {
+                    const h = [60, 80, 40, 95, 70, 85, 50][i];
+                    return (
+                      <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                        <div className="w-full rounded-md bg-slate-200 dark:bg-white/10 overflow-hidden flex items-end" style={{ height: 50 }}>
+                          <div
+                            className="w-full rounded-md bg-gradient-to-t from-amber-500 to-orange-400"
+                            style={{ height: `${h}%`, transition: `height 1.2s cubic-bezier(0.22,1,0.36,1) ${i * 100}ms` }}
+                          />
+                        </div>
+                        <div className="text-[10px] font-medium text-slate-500">{["M","T","W","T","F","S","S"][i]}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </GlassCard>
+          </div>
+        </div>
+
+        {/* Achievements */}
+        <section className="mt-10">
+          <div className="mb-5 flex items-end justify-between">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-violet-600 dark:text-violet-400">
+                <Trophy className="h-3.5 w-3.5" /> Achievements
+              </div>
+              <h2 className="mt-2 font-display text-2xl font-bold">Your Trophy Case</h2>
+            </div>
+            <button className="text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 inline-flex items-center gap-1">
+              View all <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+            {achievements.map((a, i) => (
+              <GlassCard key={i} className={`p-5 text-center ${!a.unlocked && "opacity-50"}`}>
+                <div className={`relative mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br ${a.color} shadow-xl ${a.unlocked && "animate-pulse-glow"}`}
+                  style={{ animationDelay: `${i * 200}ms` }}>
+                  <a.icon className="h-8 w-8 text-white" strokeWidth={2.2} />
+                  {a.unlocked && (
+                    <Sparkles className="absolute -top-1 -right-1 h-4 w-4 text-amber-300 animate-float" />
+                  )}
+                </div>
+                <div className="mt-3 text-sm font-semibold">{a.label}</div>
+                <div className="text-[10px] uppercase tracking-widest text-slate-500 mt-1">
+                  {a.unlocked ? "Unlocked" : "Locked"}
+                </div>
+              </GlassCard>
+            ))}
+          </div>
+        </section>
+
+        <footer className="mt-12 pb-8 text-center text-xs text-slate-500 dark:text-slate-500">
+          Keep pushing. The top of the leaderboard is closer than you think. ✨
+        </footer>
+      </div>
+      <div className="mt-auto">
+        <Footer />
+      </div>
+    </div>
     </DashboardLayout>
   );
-};
-
-export { StudentProgress };
+}
