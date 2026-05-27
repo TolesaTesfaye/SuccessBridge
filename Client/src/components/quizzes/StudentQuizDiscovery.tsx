@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles,
   Flame,
@@ -9,12 +9,10 @@ import {
   Clock,
   BookOpen,
   Play,
-  Eye,
   CheckCircle2,
   Wand2,
   Zap,
   Search,
-  ChevronRight,
   Loader2,
   Bot,
   Layers,
@@ -23,8 +21,6 @@ import {
 import { Button } from "@components/common/Button";
 import {
   Input,
-  Badge,
-  Progress,
   Select,
   SelectContent,
   SelectItem,
@@ -102,30 +98,30 @@ function StatCard({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay }}
-      className="glass relative overflow-hidden rounded-2xl border border-border/60 p-5"
+      className="glass relative overflow-hidden rounded-xl sm:rounded-2xl border border-border/60 p-2.5 sm:p-4 lg:p-5"
     >
       <div
         className={cn(
-          "absolute -right-8 -top-8 h-28 w-28 rounded-full blur-2xl opacity-40",
+          "absolute -right-6 sm:-right-8 -top-6 sm:-top-8 h-20 sm:h-28 w-20 sm:w-28 rounded-full blur-2xl opacity-40",
           accent,
         )}
       />
-      <div className="relative flex items-start justify-between">
+      <div className="relative flex flex-col items-start justify-between gap-2">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          <p className="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground line-clamp-1">
             {label}
           </p>
-          <p className="mt-2 text-3xl font-semibold tracking-tight text-foreground">
+          <p className="mt-1 sm:mt-2 text-lg sm:text-2xl lg:text-3xl font-semibold tracking-tight text-foreground line-clamp-1">
             {value}
           </p>
         </div>
         <div
           className={cn(
-            "flex h-10 w-10 items-center justify-center rounded-xl text-white",
+            "flex h-7 sm:h-9 lg:h-10 w-7 sm:w-9 lg:w-10 items-center justify-center rounded-lg sm:rounded-xl text-white",
             accent,
           )}
         >
-          <Icon className="h-5 w-5" />
+          <Icon className="h-3.5 sm:h-4 lg:h-5 w-3.5 sm:w-4 lg:w-5" />
         </div>
       </div>
     </motion.div>
@@ -138,14 +134,12 @@ function QuizCard({
   userScores,
   completedQuizzes,
   onStart,
-  onPreview,
 }: {
   quiz: Quiz;
   index: number;
   userScores: Record<string, number>;
   completedQuizzes: string[];
   onStart: (quiz: Quiz) => void;
-  onPreview: (quiz: Quiz) => void;
 }) {
   const completion = getQuizCompletion(quiz, userScores, completedQuizzes);
   const started = completion > 0;
@@ -161,99 +155,168 @@ function QuizCard({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.45, delay: index * 0.04 }}
-      whileHover={{ y: -4 }}
-      className="group relative"
+      whileHover={{ y: -6 }}
+      className="group relative h-full"
     >
+      {/* Glow Background Effect */}
       <div
-        className="absolute -inset-px rounded-3xl bg-gradient-to-br from-primary to-secondary opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-40"
+        className={cn(
+          "absolute -inset-0.5 rounded-3xl bg-gradient-to-br opacity-0 blur-xl transition-opacity duration-300 group-hover:opacity-50 -z-10",
+          accent,
+        )}
       />
-      <div className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-border/60 bg-card/80 backdrop-blur-xl transition-shadow group-hover:shadow-2xl">
-        <div className={cn("relative h-28 bg-gradient-to-br", accent)}>
+
+      {/* Main Card Container */}
+      <div className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-border/40 bg-gradient-to-br from-card/95 to-card/80 backdrop-blur-2xl transition-all duration-300 group-hover:border-border/60 group-hover:shadow-2xl group-hover:shadow-primary/20">
+        {/* Header Section - Premium Gradient */}
+        <div className={cn("relative h-12 sm:h-16 bg-gradient-to-br", accent)}>
+          {/* Animated Gradient Overlay */}
           <div
-            className="absolute inset-0 opacity-30"
+            className="absolute inset-0 opacity-30 mix-blend-screen"
             style={{
               backgroundImage:
-                "radial-gradient(circle at 30% 20%, white 0, transparent 40%)",
+                "radial-gradient(circle at 20% 30%, rgba(255,255,255,0.4) 0%, transparent 50%)",
             }}
           />
-          <div className="absolute left-5 top-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 text-3xl backdrop-blur-md ring-1 ring-white/30">
+
+          {/* Subject Icon with Glassmorphism */}
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            className="absolute left-2 top-2 sm:left-3 sm:top-3 flex h-8 sm:h-10 w-8 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-white/15 text-lg sm:text-xl backdrop-blur-md ring-1 ring-white/40 transition-all"
+          >
             {icon}
-          </div>
-          <div className="absolute right-4 top-4 flex gap-2">
+          </motion.div>
+
+          {/* Badge Container - Top Right */}
+          <div className="absolute right-2 top-2 sm:right-3 sm:top-3 flex flex-col gap-1">
             {quiz.isAiGenerated && (
-              <Badge className="border-0 bg-white/25 text-white backdrop-blur-md">
-                <Sparkles className="mr-1 h-3 w-3" /> AI
-              </Badge>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="inline-flex items-center gap-0.5 sm:gap-1 rounded-full bg-white/20 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-white backdrop-blur-md ring-1 ring-white/30"
+              >
+                <Sparkles className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> AI
+              </motion.div>
             )}
             {done && (
-              <Badge className="border-0 bg-emerald-500/90 text-white">
-                <CheckCircle2 className="mr-1 h-3 w-3" /> Mastered
-              </Badge>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="inline-flex items-center gap-0.5 sm:gap-1 rounded-full bg-emerald-500/90 px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-semibold text-white ring-1 ring-emerald-400/30"
+              >
+                <CheckCircle2 className="h-2.5 w-2.5 sm:h-3 sm:w-3" /> Mastered
+              </motion.div>
             )}
           </div>
         </div>
-        <div className="flex flex-1 flex-col p-5">
-          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            {subjectLabel}
-          </p>
-          <h3 className="mt-1 text-lg font-semibold leading-snug tracking-tight text-foreground">
-            {quiz.title}
-          </h3>
-          <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
-            {quiz.description}
-          </p>
 
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
-            <Badge variant="outline" className={cn("border", diffStyle[difficulty])}>
-              {difficulty}
-            </Badge>
-            <span className="inline-flex items-center gap-1 text-muted-foreground">
-              <Clock className="h-3.5 w-3.5" /> {quiz.timeLimit} min
-            </span>
-            <span className="inline-flex items-center gap-1 text-muted-foreground">
-              <Layers className="h-3.5 w-3.5" /> {quiz.questions?.length ?? 0}{" "}
-              Qs
-            </span>
-            <span className="inline-flex items-center gap-1 text-muted-foreground">
-              <Target className="h-3.5 w-3.5" /> {quiz.passingScore}%
-            </span>
+        {/* Content Section */}
+        <div className="flex flex-1 flex-col justify-between p-2 sm:p-2.5 lg:p-3">
+          {/* Title & Description */}
+          <div className="space-y-1 sm:space-y-1.5">
+            <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-muted-foreground/70 truncate">
+              {subjectLabel}
+            </p>
+            <h3 className="line-clamp-1 text-xs sm:text-sm font-bold leading-tight tracking-tight text-foreground lg:text-base">
+              {quiz.title}
+            </h3>
+            <p className="line-clamp-1 text-[10px] sm:text-xs text-muted-foreground/80 lg:text-sm hidden sm:block">
+              {quiz.description}
+            </p>
           </div>
 
-          <div className="mt-5">
-            <div className="mb-1.5 flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">
-                {done ? "Completed" : started ? "In progress" : "Not started"}
-              </span>
-              <span className="font-medium text-foreground">
-                {Math.round(completion * 100)}%
-                {userScores[quiz.id] !== undefined && (
-                  <span className="text-muted-foreground">
-                    {" "}
-                    · {userScores[quiz.id]}%
-                  </span>
-                )}
-              </span>
-            </div>
-            <Progress value={completion * 100} className="h-1.5" />
-          </div>
-
-          <div className="mt-5 flex gap-2 pt-2">
-            <Button
-              onClick={() => onStart(quiz)}
-              className="flex-1 gap-2 bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-md hover:opacity-95"
+          {/* Metadata Row - Icons with Labels */}
+          <div className="my-1 grid grid-cols-2 gap-0.5 sm:gap-1">
+            <motion.div
+              className={cn(
+                "flex items-center gap-1 sm:gap-1.5 rounded-lg bg-border/30 px-1.5 sm:px-2.5 py-1 sm:py-1.5 text-xs font-medium transition-colors",
+                diffStyle[difficulty],
+              )}
+              whileHover={{ scale: 1.05 }}
             >
-              <Play className="h-4 w-4" />
-              {started && !done ? "Resume" : "Start Quiz"}
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => onPreview(quiz)}
-              aria-label="Preview quiz"
-              className="h-10 w-10 shrink-0 rounded-xl p-0"
+              <Zap className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+              <span className="hidden sm:inline">{difficulty}</span>
+              <span className="inline sm:hidden">{difficulty.slice(0, 1)}</span>
+            </motion.div>
+
+            <motion.div
+              className="flex items-center gap-1 sm:gap-1.5 rounded-lg bg-border/30 px-1.5 sm:px-2.5 py-1 sm:py-1.5 text-xs font-medium text-muted-foreground transition-colors"
+              whileHover={{ scale: 1.05 }}
             >
-              <Eye className="h-4 w-4" />
-            </Button>
+              <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+              {quiz.timeLimit}m
+            </motion.div>
+
+            <motion.div
+              className="flex items-center gap-1 sm:gap-1.5 rounded-lg bg-border/30 px-1.5 sm:px-2.5 py-1 sm:py-1.5 text-xs font-medium text-muted-foreground transition-colors"
+              whileHover={{ scale: 1.05 }}
+            >
+              <Layers className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+              {quiz.questions?.length ?? 0}Q
+            </motion.div>
+
+            <motion.div
+              className="flex items-center gap-1 sm:gap-1.5 rounded-lg bg-border/30 px-1.5 sm:px-2.5 py-1 sm:py-1.5 text-xs font-medium text-muted-foreground transition-colors"
+              whileHover={{ scale: 1.05 }}
+            >
+              <Target className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+              {quiz.passingScore}%
+            </motion.div>
           </div>
+        </div>
+
+        {/* Progress Section */}
+        <div className="space-y-0.5 px-2 sm:px-2.5 lg:px-3">
+          <div className="flex items-center justify-between text-[10px] sm:text-xs">
+            <span className="font-medium text-muted-foreground min-w-fit">
+              {done ? "✓ Done" : started ? "↻ Prog" : "○ New"}
+            </span>
+            <span className="font-semibold text-foreground text-right">
+              {Math.round(completion * 100)}%
+              {userScores[quiz.id] !== undefined && (
+                <span className="text-muted-foreground/70 hidden sm:inline">
+                  {" "}
+                  · {userScores[quiz.id]}%
+                </span>
+              )}
+            </span>
+          </div>
+
+          {/* Animated Progress Bar */}
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: "100%" }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="h-1.5 overflow-hidden rounded-full bg-border/40"
+          >
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${completion * 100}%` }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+              className={cn(
+                "h-full rounded-full bg-gradient-to-r transition-all duration-500",
+                done
+                  ? "from-emerald-500 to-teal-500"
+                  : started
+                    ? "from-amber-500 to-orange-500"
+                    : "from-muted to-muted-foreground",
+              )}
+            />
+          </motion.div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-1 sm:gap-1.5 border-t border-border/30 p-1.5 sm:p-2 lg:p-2.5">
+          {/* Primary CTA Button */}
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onStart(quiz)}
+            className="flex-1 inline-flex items-center justify-center gap-0.5 sm:gap-1 rounded-lg sm:rounded-lg bg-gradient-to-r from-primary to-secondary px-1.5 sm:px-2 py-1.5 sm:py-2 text-[10px] sm:text-xs font-semibold text-primary-foreground shadow-lg transition-all hover:shadow-xl hover:opacity-90 sm:text-xs"
+          >
+            <Play className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+            <span>Start</span>
+          </motion.button>
         </div>
       </div>
     </motion.div>
@@ -276,7 +339,11 @@ function EmptyState() {
   );
 }
 
-function AIStudio({ onQuizGenerated }: { onQuizGenerated: (quiz: Quiz) => void }) {
+function AIStudio({
+  onQuizGenerated,
+}: {
+  onQuizGenerated: (quiz: Quiz) => void;
+}) {
   const [subject, setSubject] = useState("Mathematics");
   const [difficulty, setDifficulty] = useState<Difficulty>("Medium");
   const [count, setCount] = useState([10]);
@@ -536,7 +603,10 @@ function AIStudio({ onQuizGenerated }: { onQuizGenerated: (quiz: Quiz) => void }
               </div>
               <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="h-20 overflow-hidden rounded-xl bg-muted">
+                  <div
+                    key={i}
+                    className="h-20 overflow-hidden rounded-xl bg-muted"
+                  >
                     <div className="shimmer h-full w-full" />
                   </div>
                 ))}
@@ -566,13 +636,11 @@ export const StudentQuizDiscovery: React.FC<StudentQuizDiscoveryProps> = ({
   completedQuizzes,
   onStartQuiz,
 }) => {
-  const [tab, setTab] = useState<"official" | "ai">("official");
   const [query, setQuery] = useState("");
   const [localAiQuizzes, setLocalAiQuizzes] = useState<Quiz[]>([]);
   const { user } = useAuth();
-  // Students cannot generate AI quizzes (rate-limited). Admin/superadmin can.
-  const canGenerateAiQuiz =
-    user?.role === "admin" || user?.role === "super_admin";
+  // Only super_admin can generate AI quizzes (limited credits)
+  const canGenerateAiQuiz = user?.role === "super_admin";
 
   const allAiQuizzes = useMemo(
     () => [...localAiQuizzes, ...aiQuizzes.filter((q) => q.isAiGenerated)],
@@ -582,9 +650,7 @@ export const StudentQuizDiscovery: React.FC<StudentQuizDiscoveryProps> = ({
   const filteredOfficial = useMemo(
     () =>
       officialQuizzes
-        .filter(
-          (q) => !q.isAiGenerated || q.isAiGenerated === undefined,
-        )
+        .filter((q) => !q.isAiGenerated || q.isAiGenerated === undefined)
         .filter(
           (q) =>
             q.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -600,7 +666,9 @@ export const StudentQuizDiscovery: React.FC<StudentQuizDiscoveryProps> = ({
         ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
         : 0;
     const passed = completedQuizzes.filter(
-      (id) => (userScores[id] ?? 0) >= (officialQuizzes.find((q) => q.id === id)?.passingScore ?? 60),
+      (id) =>
+        (userScores[id] ?? 0) >=
+        (officialQuizzes.find((q) => q.id === id)?.passingScore ?? 60),
     ).length;
     const mastery =
       officialQuizzes.length > 0
@@ -613,17 +681,6 @@ export const StudentQuizDiscovery: React.FC<StudentQuizDiscoveryProps> = ({
     };
   }, [userScores, completedQuizzes, officialQuizzes]);
 
-  const handlePreview = (quiz: Quiz) => {
-    const preview = [
-      quiz.title,
-      "",
-      quiz.description,
-      "",
-      `${quiz.questions?.length ?? 0} questions · ${quiz.timeLimit} min · Pass ${quiz.passingScore}%`,
-    ].join("\n");
-    window.alert(preview);
-  };
-
   const handleAiGenerated = (quiz: Quiz) => {
     setLocalAiQuizzes((prev) => [quiz, ...prev]);
   };
@@ -632,189 +689,111 @@ export const StudentQuizDiscovery: React.FC<StudentQuizDiscoveryProps> = ({
 
   return (
     <div className="mx-auto w-full max-w-7xl space-y-8 pb-8">
-        <section className="relative overflow-hidden rounded-[2rem] border border-slate-200/80 bg-gradient-to-br from-primary via-indigo-600 to-secondary p-6 shadow-xl shadow-primary/20 dark:border-white/10 sm:p-10">
-          <div
-            className="pointer-events-none absolute inset-0 opacity-30"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.35), transparent 45%)",
-            }}
-          />
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="relative"
-          >
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white ring-1 ring-white/25 backdrop-blur-md">
-              <Sparkles className="h-3.5 w-3.5" />
-              Quiz Hub
-            </div>
-            <h1 className="mt-4 text-2xl font-bold tracking-tight text-white sm:text-4xl">
-              Welcome back, {firstName}{" "}
-              <span className="inline-block" aria-hidden>
-                👋
-              </span>
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm text-white/85 sm:text-base">
-              Official assessments and AI practice — all in one place. Pick a quiz
-              below or generate a custom set.
-            </p>
-          </motion.div>
-        </section>
-
-        <section>
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-            <StatCard
-              icon={Flame}
-              label="Practice streak"
-              value={stats.completed > 0 ? `${stats.completed} quizzes` : "Start today"}
-              accent="bg-gradient-to-br from-orange-500 to-rose-500"
-            />
-            <StatCard
-              icon={Trophy}
-              label="Quizzes completed"
-              value={String(stats.completed)}
-              accent="bg-gradient-to-br from-amber-400 to-orange-500"
-              delay={0.05}
-            />
-            <StatCard
-              icon={TrendingUp}
-              label="Average score"
-              value={stats.average > 0 ? `${stats.average}%` : "—"}
-              accent="bg-gradient-to-br from-emerald-500 to-teal-500"
-              delay={0.1}
-            />
-            <StatCard
-              icon={Target}
-              label="Mastery"
-              value={`${stats.mastery}%`}
-              accent="bg-gradient-to-br from-primary to-secondary"
-              delay={0.15}
-            />
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-indigo-600 to-secondary p-6 shadow-xl shadow-primary/20 sm:p-10">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-30"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.35), transparent 45%)",
+          }}
+        />
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative"
+        >
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white ring-1 ring-white/25 backdrop-blur-md">
+            <Sparkles className="h-3.5 w-3.5" />
+            Quiz Hub
           </div>
-        </section>
+          <h1 className="mt-4 text-2xl font-bold tracking-tight text-white sm:text-4xl">
+            Welcome back, {firstName}{" "}
+            <span className="inline-block" aria-hidden>
+              👋
+            </span>
+          </h1>
+          <p className="mt-2 max-w-2xl text-sm text-white/85 sm:text-base">
+            Official assessments and AI practice — all in one place. Pick a quiz
+            below or generate a custom set.
+          </p>
+        </motion.div>
+      </section>
 
-        <section>
-          <LayoutGroup>
-            <div className="glass inline-flex items-center gap-1 rounded-full border border-border/60 p-1">
-              {(
-                [
-                  { id: "official" as const, label: "📚 Official Assessments" },
-                  { id: "ai" as const, label: "✨ AI Practice" },
-                ] as const
-              ).map((t) => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setTab(t.id)}
-                  className={cn(
-                    "relative rounded-full px-4 py-2 text-sm font-medium transition-colors",
-                    tab === t.id
-                      ? "text-white"
-                      : "text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {tab === t.id && (
-                    <motion.span
-                      layoutId="quiz-tab-pill"
-                      className="absolute inset-0 -z-0 rounded-full bg-gradient-to-r from-primary to-secondary shadow-md"
-                      transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                    />
-                  )}
-                  <span className="relative z-10">{t.label}</span>
-                </button>
-              ))}
+      <section>
+        <div className="grid grid-cols-4 gap-2 sm:gap-3">
+          <StatCard
+            icon={Flame}
+            label="Practice streak"
+            value={
+              stats.completed > 0 ? `${stats.completed} quizzes` : "Start today"
+            }
+            accent="bg-gradient-to-br from-orange-500 to-rose-500"
+          />
+          <StatCard
+            icon={Trophy}
+            label="Quizzes completed"
+            value={String(stats.completed)}
+            accent="bg-gradient-to-br from-amber-400 to-orange-500"
+            delay={0.05}
+          />
+          <StatCard
+            icon={TrendingUp}
+            label="Average score"
+            value={stats.average > 0 ? `${stats.average}%` : "—"}
+            accent="bg-gradient-to-br from-emerald-500 to-teal-500"
+            delay={0.1}
+          />
+          <StatCard
+            icon={Target}
+            label="Mastery"
+            value={`${stats.mastery}%`}
+            accent="bg-gradient-to-br from-primary to-secondary"
+            delay={0.15}
+          />
+        </div>
+      </section>
+
+      <section>
+        <div className="mb-6 space-y-6">
+          {canGenerateAiQuiz ? (
+            <AIStudio
+              onQuizGenerated={(quiz) => {
+                handleAiGenerated(quiz);
+                onStartQuiz(quiz);
+              }}
+            />
+          ) : null}
+
+          <div className="mb-5 flex flex-col items-center justify-center gap-3">
+            <div className="relative w-full max-w-md">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search quizzes…"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="pl-9"
+              />
             </div>
-          </LayoutGroup>
+          </div>
 
-          <AnimatePresence mode="wait">
-            {tab === "official" ? (
-              <motion.div
-                key="official"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.25 }}
-                className="mt-6"
-              >
-                <div className="mb-5 flex items-center justify-between gap-3">
-                  <div className="relative w-full max-w-sm">
-                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      placeholder="Search assessments…"
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      className="pl-9"
-                    />
-                  </div>
-                  <Button variant="ghost" size="sm" className="hidden gap-1 sm:inline-flex">
-                    Filters <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                  {filteredOfficial.length === 0 ? (
-                    <EmptyState />
-                  ) : (
-                    filteredOfficial.map((q, i) => (
-                      <QuizCard
-                        key={q.id}
-                        quiz={q}
-                        index={i}
-                        userScores={userScores}
-                        completedQuizzes={completedQuizzes}
-                        onStart={onStartQuiz}
-                        onPreview={handlePreview}
-                      />
-                    ))
-                  )}
-                </div>
-              </motion.div>
+          <div className="grid gap-2 sm:gap-3 grid-cols-3 lg:grid-cols-5">
+            {[...allAiQuizzes, ...filteredOfficial].length === 0 ? (
+              <EmptyState />
             ) : (
-              <motion.div
-                key="ai"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.25 }}
-                className="mt-6 space-y-6"
-              >
-                {canGenerateAiQuiz ? (
-                  <AIStudio
-                    onQuizGenerated={(quiz) => {
-                      handleAiGenerated(quiz);
-                      onStartQuiz(quiz);
-                    }}
-                  />
-                ) : (
-                  <div className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-5 text-sm text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
-                    AI quiz generation is available to <span className="font-semibold">admin</span> and{" "}
-                    <span className="font-semibold">superadmin</span> only.
-                  </div>
-                )}
-                {allAiQuizzes.length > 0 && (
-                  <div>
-                    <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                      Recent AI practice
-                    </h3>
-                    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                      {allAiQuizzes.map((q, i) => (
-                        <QuizCard
-                          key={q.id}
-                          quiz={q}
-                          index={i}
-                          userScores={userScores}
-                          completedQuizzes={completedQuizzes}
-                          onStart={onStartQuiz}
-                          onPreview={handlePreview}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </motion.div>
+              [...allAiQuizzes, ...filteredOfficial].map((q, i) => (
+                <QuizCard
+                  key={q.id}
+                  quiz={q}
+                  index={i}
+                  userScores={userScores}
+                  completedQuizzes={completedQuizzes}
+                  onStart={onStartQuiz}
+                />
+              ))
             )}
-          </AnimatePresence>
-        </section>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };

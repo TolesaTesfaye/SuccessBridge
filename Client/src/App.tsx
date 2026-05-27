@@ -304,9 +304,9 @@ const AppContent: React.FC = () => {
         async () => {
           // Auto logout on session timeout
           await logout();
-          toast.error('Your session has expired. Please log in again.');
-          window.location.href = '/login?reason=session_expired';
-        }
+          toast.error("Your session has expired. Please log in again.");
+          window.location.href = "/login?reason=session_expired";
+        },
       );
 
       return () => {
@@ -319,26 +319,26 @@ const AppContent: React.FC = () => {
   const handleExtendSession = () => {
     sessionManager.extendSession();
     setShowSessionWarning(false);
-    toast.success('Session extended successfully');
+    toast.success("Session extended successfully");
   };
 
   const handleLogoutNow = async () => {
     setShowSessionWarning(false);
     await logout();
-    window.location.href = '/login';
+    window.location.href = "/login";
   };
 
   return (
     <>
       <PerformanceMonitor />
-      
+
       {/* Session Timeout Warning Modal */}
       <SessionTimeoutWarning
         isOpen={showSessionWarning}
         onExtend={handleExtendSession}
         onLogout={handleLogoutNow}
       />
-      
+
       <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Layout>
           <Suspense fallback={<div className="min-h-screen" />}>
@@ -388,14 +388,6 @@ const AppContent: React.FC = () => {
                 element={
                   <ProtectedRoute requiredRole="student">
                     <StudentResources />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/student/ai-companion"
-                element={
-                  <ProtectedRoute requiredRole="student">
-                    <StudentAICompanion />
                   </ProtectedRoute>
                 }
               />
@@ -622,6 +614,14 @@ const AppContent: React.FC = () => {
                 element={
                   <ProtectedRoute requiredRole="super_admin">
                     <PromotionPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/superadmin/ai-companion"
+                element={
+                  <ProtectedRoute requiredRole="super_admin">
+                    <StudentAICompanion />
                   </ProtectedRoute>
                 }
               />

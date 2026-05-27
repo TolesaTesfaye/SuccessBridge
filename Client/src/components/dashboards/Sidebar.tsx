@@ -48,12 +48,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: <LayoutDashboard className="w-5 h-5" />,
       emoji: "📊",
     },
-    {
-      label: "AI Companion",
-      path: "/student/ai-companion",
-      icon: <Sparkles className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />,
-      emoji: "🤖",
-    },
     ...(shouldShowQuizzes
       ? [
           {
@@ -179,6 +173,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       path: "/superadmin/promotion",
       icon: <Megaphone className="w-5 h-5" />,
       emoji: "📢",
+    },
+    {
+      label: "AI Companion",
+      path: "/superadmin/ai-companion",
+      icon: (
+        <Sparkles className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
+      ),
+      emoji: "🤖",
     },
   ];
 
