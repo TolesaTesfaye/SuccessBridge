@@ -156,6 +156,8 @@ export interface IQuiz {
   questions: IQuestion[];
   timeLimit: number;
   passingScore: number;
+  createdBy: string;
+  isAiGenerated?: boolean;
   createdAt: Date;
 }
 

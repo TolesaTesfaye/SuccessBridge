@@ -1,54 +1,179 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+/** Groq is OpenAI-compatible; we use its Chat Completions endpoint. */
+type GroqChatRole = "system" | "user" | "assistant";
 
-const getGenAI = (): GoogleGenerativeAI => {
-  const apiKey = process.env.GEMINI_API_KEY;
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : String(error);
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const getGroqConfig = () => {
+  const apiKey = process.env.GROQ_API_KEY?.trim();
   if (!apiKey) {
     throw new Error(
-      "GEMINI_API_KEY is not configured in the server environment. Please get an API key from Google AI Studio and add it to your Server/.env file.",
+      "GROQ_API_KEY is not configured in the server environment. Add it to Server/.env to enable AI features.",
     );
   }
-  return new GoogleGenerativeAI(apiKey);
+
+  return {
+    apiKey,
+    baseUrl: (process.env.GROQ_BASE_URL?.trim() ||
+      "https://api.groq.com/openai/v1") as string,
+    model: (process.env.GROQ_MODEL?.trim() ||
+      "llama-3.1-8b-instant") as string,
+  };
+};
+
+const isRetryableGroqError = (error: unknown): boolean => {
+  const msg = getErrorMessage(error);
+  return /429|rate limit|Too Many Requests|timeout|ETIMEDOUT|ECONNRESET|503|temporarily unavailable/i.test(
+    msg,
+  );
+};
+
+const classifyGroqFailure = (error: unknown): string => {
+  const msg = getErrorMessage(error);
+  if (/GROQ_API_KEY|API key/i.test(msg)) {
+    return "Groq API key is missing/invalid. Add GROQ_API_KEY to Server/.env.";
+  }
+  if (/429|rate limit|Too Many Requests/i.test(msg)) {
+    return "Groq rate limit reached. Please wait a moment and try again.";
+  }
+  if (/401|unauthorized/i.test(msg)) {
+    return "Groq API key is invalid/unauthorized. Regenerate your key in Groq Cloud.";
+  }
+  return "Groq was unavailable. Template questions were added instead.";
+};
+
+type GroqChatMessage = { role: GroqChatRole; content: string };
+
+const groqChatCompletion = async (params: {
+  messages: GroqChatMessage[];
+  model?: string;
+  temperature?: number;
+  maxTokens?: number;
+  responseFormatJson?: boolean;
+}): Promise<string> => {
+  const { apiKey, baseUrl, model } = getGroqConfig();
+  const chosenModel = params.model ?? model;
+
+  const body: any = {
+    model: chosenModel,
+    messages: params.messages,
+    temperature: params.temperature ?? 0.3,
+  };
+
+  if (typeof params.maxTokens === "number") body.max_tokens = params.maxTokens;
+
+  // Groq supports OpenAI-compatible response_format for JSON on supported models.
+  if (params.responseFormatJson) {
+    body.response_format = { type: "json_object" };
+  }
+
+  const url = `${baseUrl.replace(/\/+$/, "")}/chat/completions`;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(
+      `Groq API error ${res.status}: ${text || res.statusText || "Unknown error"}`,
+    );
+  }
+
+  const json: any = await res.json();
+  const content = json?.choices?.[0]?.message?.content;
+  if (typeof content !== "string" || content.trim() === "") {
+    throw new Error("Groq returned an empty response.");
+  }
+  return content;
+};
+
+const parseJsonArray = (text: string): unknown[] => {
+  const trimmed = text.trim();
+  const fenceMatch = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/);
+  const jsonStr = (fenceMatch ? fenceMatch[1] : trimmed).trim();
+  const parsed = JSON.parse(jsonStr);
+  if (!Array.isArray(parsed)) {
+    throw new Error("AI generated an invalid quiz format. Please try again.");
+  }
+  return parsed;
+};
+
+const buildLocalQuizFallback = (
+  topic: string,
+  subjectName: string,
+  difficulty: string,
+  questionCount: number,
+): unknown[] => {
+  const points =
+    difficulty === "hard" ? 10 : difficulty === "easy" ? 5 : 8;
+  const stems = [
+    `Which statement best describes a core idea in "${topic}" (${subjectName})?`,
+    `What is the most accurate definition related to "${topic}" in ${subjectName}?`,
+    `Which example best illustrates "${topic}" in the context of ${subjectName}?`,
+    `What is a common misconception about "${topic}" in ${subjectName}?`,
+    `Which approach is most appropriate when studying "${topic}" in ${subjectName}?`,
+  ];
+
+  return Array.from({ length: questionCount }, (_, i) => {
+    const correct = `Key concept ${String.fromCharCode(66 + (i % 3))}`;
+    const options = [
+      `Distractor A for question ${i + 1}`,
+      correct,
+      `Distractor C for question ${i + 1}`,
+      `Distractor D for question ${i + 1}`,
+    ];
+    return {
+      id: `fallback_q${i + 1}`,
+      text: stems[i % stems.length],
+      type: "multiple_choice",
+      options,
+      correctAnswer: correct,
+      points,
+    };
+  });
+};
+
+export type QuizGenerationResult = {
+  questions: unknown[];
+  source: "groq" | "fallback";
+  model?: string;
+  fallbackReason?: string;
 };
 
 export class AIService {
   /**
-   * Generates a chat response from Gemini acting as an academic tutor.
+   * Generates a chat response from Groq acting as an academic tutor.
    */
   static async generateChatResponse(
     messages: { role: "user" | "model"; content: string }[],
   ): Promise<string> {
-    const genAI = getGenAI();
-    const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+    const system =
+      "You are 'BridgeBot', a highly encouraging, friendly, and expert academic tutor on the SuccessBridge learning platform. " +
+      "Your mission is to help students learn, explain concepts clearly, suggest resources, answer queries, and keep them motivated. " +
+      "Keep your answers structured, clear, and concise. Use clean markdown formatting (headers, bullet points, bold text). " +
+      "If the student asks something completely off-topic or unrelated to academics, politely guide them back to their studies.";
 
-    const model = genAI.getGenerativeModel({
-      model: modelName,
-      systemInstruction:
-        "You are 'BridgeBot', a highly encouraging, friendly, and expert academic tutor on the SuccessBridge learning platform. " +
-        "Your mission is to help students learn, explain concepts clearly, suggest resources, answer queries, and keep them motivated. " +
-        "Keep your answers structured, clear, and concise. Use clean markdown formatting (headers, bullet points, bold text). " +
-        "If the student asks something completely off-topic or unrelated to academics, politely guide them back to their studies.",
+    const converted: GroqChatMessage[] = [
+      { role: "system", content: system },
+      ...messages.map((m) => ({
+        role: (m.role === "user" ? "user" : "assistant") as GroqChatRole,
+        content: m.content,
+      })),
+    ];
+
+    return await groqChatCompletion({
+      messages: converted,
+      temperature: 0.5,
+      maxTokens: 800,
     });
-
-    // Translate our user/model role list into the format Gemini expects
-    // Note: Gemini chat history MUST start with a 'user' message. We filter out any initial model greeting messages.
-    let filteredMessages = messages.slice(0, -1);
-    while (filteredMessages.length > 0 && filteredMessages[0].role !== "user") {
-      filteredMessages.shift();
-    }
-
-    const history = filteredMessages.map((m) => ({
-      role: m.role === "user" ? "user" : "model",
-      parts: [{ text: m.content }],
-    }));
-
-    const chat = model.startChat({
-      history: history,
-    });
-
-    const lastMessage = messages[messages.length - 1].content;
-    const result = await chat.sendMessage(lastMessage);
-    const response = await result.response;
-    return response.text();
   }
 
   /**
@@ -59,10 +184,6 @@ export class AIService {
     subject?: string,
     style: string = "simple",
   ): Promise<string> {
-    const genAI = getGenAI();
-    const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
-    const model = genAI.getGenerativeModel({ model: modelName });
-
     let prompt = `Explain the concept of "${concept}"`;
     if (subject) {
       prompt += ` in the context of the subject "${subject}"`;
@@ -77,10 +198,18 @@ export class AIService {
     }
 
     prompt += ` Structure your response beautifully using markdown headers, bullet points, bold keywords, and code snippets or examples if applicable.`;
-
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text();
+    return await groqChatCompletion({
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a helpful academic tutor. Be accurate, concise, and well-structured in Markdown.",
+        },
+        { role: "user", content: prompt },
+      ],
+      temperature: 0.4,
+      maxTokens: 900,
+    });
   }
 
   /**
@@ -91,18 +220,7 @@ export class AIService {
     subjectName: string,
     difficulty: string,
     questionCount: number = 5,
-  ): Promise<any[]> {
-    const genAI = getGenAI();
-    const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
-
-    // Use JSON-mode response to ensure we get structured data
-    const model = genAI.getGenerativeModel({
-      model: modelName,
-      generationConfig: {
-        responseMimeType: "application/json",
-      },
-    });
-
+  ): Promise<QuizGenerationResult> {
     const prompt = `Generate a ${difficulty} difficulty multiple-choice quiz about the topic "${topic}" for the subject "${subjectName}".
 The quiz must contain exactly ${questionCount} questions.
 You must output a raw JSON array matching this TypeScript interface structure:
@@ -117,16 +235,48 @@ interface IQuestion {
 
 Do not include any wrapping markdown formatting like \`\`\`json. Return only the valid JSON array string. Ensure that the correctAnswer matches one of the values in the options array exactly.`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    let lastError: unknown;
 
-    try {
-      return JSON.parse(text);
-    } catch (e) {
-      console.error("Failed to parse Gemini JSON quiz:", text);
-      throw new Error("AI generated an invalid quiz format. Please try again.");
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const { model } = getGroqConfig();
+        const text = await groqChatCompletion({
+          messages: [
+            {
+              role: "system",
+              content:
+                "Return ONLY valid JSON. No markdown. Output must be a JSON array of questions.",
+            },
+            { role: "user", content: prompt },
+          ],
+          temperature: 0.2,
+          maxTokens: 1400,
+        });
+        const questions = parseJsonArray(text);
+        return { questions, source: "groq", model };
+      } catch (error) {
+        lastError = error;
+        const msg = getErrorMessage(error);
+        if (!isRetryableGroqError(error) || attempt === 1) break;
+        const retrySec = Number(msg.match(/retry(?:ing)? in (\d+)/i)?.[1]) || 3;
+        await sleep(Math.min(retrySec, 20) * 1000);
+      }
     }
+
+    console.warn(
+      "Groq failed for quiz generation; using server-side templates:",
+      getErrorMessage(lastError),
+    );
+    return {
+      questions: buildLocalQuizFallback(
+        topic,
+        subjectName,
+        difficulty.toLowerCase(),
+        questionCount,
+      ),
+      source: "fallback",
+      fallbackReason: classifyGroqFailure(lastError),
+    };
   }
 
   /**
@@ -136,10 +286,6 @@ Do not include any wrapping markdown formatting like \`\`\`json. Return only the
     text: string,
     maxLength?: number,
   ): Promise<string> {
-    const genAI = getGenAI();
-    const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
-    const model = genAI.getGenerativeModel({ model: modelName });
-
     let prompt = `Summarize the following text or notes for a student. 
 Generate a clear, high-yield summary that contains:
 1. A brief overview paragraph.
@@ -154,10 +300,18 @@ Make it highly legible, structured, and easy to review before an exam.`;
     }
 
     prompt += `\n\nText to summarize:\n${text}`;
-
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text();
+    return await groqChatCompletion({
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a helpful academic tutor. Produce a concise, well-structured Markdown summary.",
+        },
+        { role: "user", content: prompt },
+      ],
+      temperature: 0.3,
+      maxTokens: 900,
+    });
   }
 
   /**
@@ -169,10 +323,6 @@ Make it highly legible, structured, and easy to review before an exam.`;
     hoursPerDay: number,
     currentLevel: string,
   ): Promise<string> {
-    const genAI = getGenAI();
-    const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
-    const model = genAI.getGenerativeModel({ model: modelName });
-
     const prompt = `Create a custom, structured study plan for a student wishing to master the topic/skill: "${topic}".
 Details:
 - Duration: ${durationWeeks} weeks
@@ -186,9 +336,17 @@ Please structure the study plan to be highly action-oriented. For each week, out
 4. Recommended study techniques or resources (e.g. active recall, practice quizzes, specific documentation/topics to read)
 
 Format the response using clean Markdown. Use headers, bold text, checklists, and bullet points to make it visually engaging and readable.`;
-
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text();
+    return await groqChatCompletion({
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a study coach. Produce a practical, structured Markdown plan.",
+        },
+        { role: "user", content: prompt },
+      ],
+      temperature: 0.4,
+      maxTokens: 1200,
+    });
   }
 }

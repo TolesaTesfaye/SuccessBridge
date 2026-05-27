@@ -33,10 +33,13 @@ export const quizService = {
     educationLevel: 'high_school' | 'university'
     grade?: string
     stream?: string
+    university?: string
+    department?: string
     subjectId: string
     questions: Question[]
     timeLimit: number
     passingScore: number
+    isAiGenerated?: boolean
   }): Promise<Quiz> => {
     const response = await api.post('/quizzes', data)
     return response.data.data

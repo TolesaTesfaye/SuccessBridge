@@ -5,7 +5,8 @@ import { FormInput } from '@components/forms/FormInput'
 import { FormSelect } from '@components/forms/FormSelect'
 import { quizService, Question } from '@services/quizService'
 import { subjectService } from '@services/subjectService'
-import { Plus, Trash2, Save, X, ChevronRight, ChevronLeft } from 'lucide-react'
+import { AIService } from '@services/aiService'
+import { Plus, Trash2, Save, X, ChevronRight, ChevronLeft, Sparkles } from 'lucide-react'
 
 interface AdminQuizCreatorProps {
     onClose: () => void
@@ -15,6 +16,8 @@ interface AdminQuizCreatorProps {
 export const AdminQuizCreator: React.FC<AdminQuizCreatorProps> = ({ onClose, onSuccess }) => {
     const [step, setStep] = useState(1)
     const [loading, setLoading] = useState(false)
+    const [generatingAI, setGeneratingAI] = useState(false)
+    const [aiConfig, setAiConfig] = useState({ difficulty: 'medium', count: 5 })
     const [subjects, setSubjects] = useState<any[]>([])
 
     const [quizData, setQuizData] = useState({
@@ -23,13 +26,14 @@ export const AdminQuizCreator: React.FC<AdminQuizCreatorProps> = ({ onClose, onS
         subjectId: '',
         timeLimit: 30,
         passingScore: 60,
+        isAiGenerated: false,
         questions: [] as Question[]
     })
 
     useEffect(() => {
         const fetchSubjects = async () => {
             try {
-                const data = await subjectService.getAll()
+                const data = await subjectService.getSubjects()
                 setSubjects(data.map((s: any) => ({ value: s.id, label: s.name })))
             } catch (error) {
                 console.error('Failed to fetch subjects:', error)
@@ -48,6 +52,38 @@ export const AdminQuizCreator: React.FC<AdminQuizCreatorProps> = ({ onClose, onS
             points: 5
         }
         setQuizData({ ...quizData, questions: [...quizData.questions, newQuestion] })
+    }
+
+    const handleAIGenerate = async () => {
+        if (!quizData.title || !quizData.subjectId) {
+            alert('Please fill out Quiz Title and Academic Subject on Step 1 first.')
+            return
+        }
+        setGeneratingAI(true)
+        try {
+            const subject = subjects.find(s => s.value === quizData.subjectId)?.label || 'General'
+            const { questions: newQuestions } = await AIService.generateQuiz(quizData.title, subject, aiConfig.difficulty as any, aiConfig.count)
+            
+            const formattedQs: Question[] = newQuestions.map((q: any) => ({
+                id: Math.random().toString(36).substr(2, 9),
+                text: q.question,
+                type: 'multiple_choice',
+                options: q.options || ['', '', '', ''],
+                correctAnswer: q.correctAnswer || '',
+                points: 5
+            }))
+
+            setQuizData({
+                ...quizData,
+                questions: [...quizData.questions, ...formattedQs],
+                isAiGenerated: true
+            })
+        } catch (error) {
+            console.error('Failed to generate AI quiz:', error)
+            alert('Failed to generate questions. Please try again.')
+        } finally {
+            setGeneratingAI(false)
+        }
     }
 
     const handleRemoveQuestion = (id: string) => {
@@ -168,6 +204,18 @@ export const AdminQuizCreator: React.FC<AdminQuizCreatorProps> = ({ onClose, onS
                                         onChange={(e) => setQuizData({ ...quizData, passingScore: parseInt(e.target.value) })}
                                     />
                                 </div>
+                                <div className="flex items-center gap-3 mt-4">
+                                    <input
+                                        type="checkbox"
+                                        id="adminIsAiGenerated"
+                                        checked={quizData.isAiGenerated}
+                                        onChange={(e) => setQuizData({ ...quizData, isAiGenerated: e.target.checked })}
+                                        className="w-5 h-5 text-indigo-600 rounded-md border-slate-300 focus:ring-indigo-500"
+                                    />
+                                    <label htmlFor="adminIsAiGenerated" className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                        Mark as AI Generated Quiz
+                                    </label>
+                                </div>
                             </div>
                         </div>
                         <div className="flex justify-end pt-4">
@@ -268,15 +316,51 @@ export const AdminQuizCreator: React.FC<AdminQuizCreatorProps> = ({ onClose, onS
                         </Card>
                     ))}
 
-                    <button
-                        onClick={handleAddQuestion}
-                        className="w-full py-8 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-[32px] text-slate-400 hover:text-blue-600 hover:border-blue-400 hover:bg-blue-50/30 flex flex-col items-center gap-3 transition-all duration-300 group"
-                    >
-                        <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
-                            <Plus className="w-6 h-6" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button
+                            onClick={handleAddQuestion}
+                            className="w-full py-6 border-2 border-dashed border-slate-200 dark:border-white/10 rounded-[24px] text-slate-400 hover:text-blue-600 hover:border-blue-400 hover:bg-blue-50/30 flex flex-col items-center gap-3 transition-all duration-300 group"
+                        >
+                            <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
+                                <Plus className="w-5 h-5" />
+                            </div>
+                            <span className="font-bold uppercase tracking-widest text-[10px]">Add Manual Question</span>
+                        </button>
+                        
+                        <div className="w-full p-4 border-2 border-dashed border-purple-200 dark:border-purple-500/20 rounded-[24px] bg-purple-50/30 dark:bg-purple-900/10 flex flex-col items-center justify-center gap-3 relative">
+                            <div className="flex gap-2 w-full max-w-[200px]">
+                                <select 
+                                    className="w-1/2 px-2 py-1.5 text-xs rounded-lg border border-purple-100 dark:border-purple-500/20 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 outline-none"
+                                    value={aiConfig.difficulty}
+                                    onChange={(e) => setAiConfig({...aiConfig, difficulty: e.target.value})}
+                                >
+                                    <option value="easy">Easy</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="hard">Hard</option>
+                                </select>
+                                <select 
+                                    className="w-1/2 px-2 py-1.5 text-xs rounded-lg border border-purple-100 dark:border-purple-500/20 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 outline-none"
+                                    value={aiConfig.count}
+                                    onChange={(e) => setAiConfig({...aiConfig, count: parseInt(e.target.value)})}
+                                >
+                                    <option value={3}>3 Qs</option>
+                                    <option value={5}>5 Qs</option>
+                                    <option value={10}>10 Qs</option>
+                                </select>
+                            </div>
+                            <button
+                                onClick={handleAIGenerate}
+                                disabled={generatingAI}
+                                className="w-full max-w-[200px] py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                            >
+                                {generatingAI ? (
+                                    <>Generating...</>
+                                ) : (
+                                    <><Sparkles className="w-4 h-4" /> AI Auto-Generate</>
+                                )}
+                            </button>
                         </div>
-                        <span className="font-bold uppercase tracking-widest text-xs">Add New Question Block</span>
-                    </button>
+                    </div>
 
                     <div className="flex gap-4 pt-8 sticky bottom-6 z-20">
                         <Button variant="secondary" onClick={() => setStep(1)} className="h-14 px-8 rounded-2xl">

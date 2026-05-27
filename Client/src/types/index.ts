@@ -10,6 +10,8 @@ export interface User {
   universityLevel?: "remedial" | "freshman" | "senior" | "gc";
   university?: string;
   department?: string;
+  universityId?: string;
+  departmentId?: string;
   isEmailVerified?: boolean;
   createdAt: string | Date;
 }
@@ -109,10 +111,13 @@ export interface Quiz {
   educationLevel: "high_school" | "university";
   grade?: string;
   stream?: string;
+  university?: string;
+  department?: string;
   subjectId: string;
   questions: Question[];
   timeLimit: number;
   passingScore: number;
+  isAiGenerated?: boolean;
   createdAt: string | Date;
   updatedAt?: string | Date;
 }

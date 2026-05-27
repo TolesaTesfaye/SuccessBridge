@@ -34,9 +34,18 @@ export class AIService {
   /**
    * Generate an academic quiz
    */
-  static async generateQuiz(topic: string, subjectName: string, difficulty: 'easy' | 'medium' | 'hard' = 'medium', questionCount: number = 5): Promise<QuizQuestion[]> {
+  static async generateQuiz(
+    topic: string,
+    subjectName: string,
+    difficulty: 'easy' | 'medium' | 'hard' = 'medium',
+    questionCount: number = 5,
+  ): Promise<{ questions: QuizQuestion[]; aiFallback?: boolean; fallbackMessage?: string }> {
     const response = await api.post('/ai/quiz', { topic, subjectName, difficulty, questionCount });
-    return response.data.data;
+    return {
+      questions: response.data.data,
+      aiFallback: response.data.meta?.aiFallback === true,
+      fallbackMessage: response.data.meta?.message,
+    };
   }
 
   /**

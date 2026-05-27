@@ -2,8 +2,37 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+  --color-card: #ffffff;
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #64748b;
+  --color-border: #e2e8f0;
+  --color-input: #e2e8f0;
+  --color-accent: #f1f5f9;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0f172a;
+  --color-primary: #667eea;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #764ba2;
+}
+
 :root {
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+}
+
+html.dark {
+  --color-background: #020617;
+  --color-foreground: #f8fafc;
+  --color-card: #0f172a;
+  --color-muted: #1e293b;
+  --color-muted-foreground: #94a3b8;
+  --color-border: #334155;
+  --color-input: #334155;
+  --color-accent: #1e293b;
+  --color-popover: #0f172a;
+  --color-popover-foreground: #f8fafc;
 }
 
 html {
@@ -315,4 +344,27 @@ select:disabled {
 
 .filter-scroll::-webkit-scrollbar-thumb:hover {
   background: rgba(148, 163, 184, 0.5);
+}
+
+.glass {
+  @apply bg-white/80 backdrop-blur-md dark:bg-slate-900/80;
+}
+
+.text-gradient-ai {
+  @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+}
+
+.ai-border {
+  @apply border border-primary/20;
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.35),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
 }

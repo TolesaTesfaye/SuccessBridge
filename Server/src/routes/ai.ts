@@ -1,5 +1,5 @@
 import express from 'express';
-import { authMiddleware } from '../middleware/auth.js';
+import { authMiddleware, requireRole } from '../middleware/auth.js';
 import {
   chatTutor,
   explainConcept,
@@ -36,7 +36,7 @@ router.post('/explain', explainConcept);
  * POST /api/ai/quiz
  * Generate a multiple-choice quiz
  */
-router.post('/quiz', generateQuiz);
+router.post('/quiz', requireRole('admin', 'super_admin'), generateQuiz);
 
 /**
  * POST /api/ai/summarize

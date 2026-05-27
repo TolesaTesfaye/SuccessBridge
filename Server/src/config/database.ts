@@ -90,7 +90,8 @@ const createSequelizeInstance = () => {
         }
       : false,
     family: 4, // Force IPv4
-    connectTimeout: 10000, // 10 seconds timeout
+    connectTimeout: 30000,
+    keepAlive: true,
   });
 
   const commonOptions = {
@@ -98,8 +99,9 @@ const createSequelizeInstance = () => {
     pool: {
       max: 5,
       min: 0,
-      acquire: 30000,
-      idle: 10000,
+      acquire: 60000,
+      idle: 20000,
+      evict: 10000,
     },
     retry: {
       match: [
@@ -108,6 +110,7 @@ const createSequelizeInstance = () => {
         /ECONNREFUSED/,
         /ETIMEDOUT/,
         /EHOSTUNREACH/,
+        /Connection terminated unexpectedly/,
       ],
       max: 3,
     },

@@ -2,16 +2,31 @@ import { Request, Response, NextFunction } from 'express';
 import { AIService } from '../services/aiService.js';
 
 /**
- * Handle errors specifically related to Gemini API Key configuration.
+ * Handle errors specifically related to Groq API configuration.
  */
 const handleAIError = (error: any, res: Response, next: NextFunction) => {
   console.error('AI Request Error:', error);
   const errorMessage = error instanceof Error ? error.message : String(error);
-  
-  if (errorMessage.includes('GEMINI_API_KEY') || errorMessage.includes('API key')) {
+
+  if (errorMessage.includes('GROQ_API_KEY') || /API key/i.test(errorMessage)) {
     return res.status(503).json({
       success: false,
-      error: 'Google Gemini API key is missing or invalid. Please add a valid GEMINI_API_KEY to the Server/.env file to enable AI tutoring features.',
+      error: 'Groq API key is missing or invalid. Please add a valid GROQ_API_KEY to the Server/.env file to enable AI tutoring features.',
+    });
+  }
+
+  if (/401|unauthorized/i.test(errorMessage)) {
+    return res.status(503).json({
+      success: false,
+      error:
+        'Groq rejected the API key (401 Unauthorized). Please regenerate your key in Groq Cloud and update GROQ_API_KEY in Server/.env.',
+    });
+  }
+
+  if (/429|quota|rate limit/i.test(errorMessage)) {
+    return res.status(503).json({
+      success: false,
+      error: 'Groq rate limit reached. Please wait a moment and try again.',
     });
   }
 
@@ -84,10 +99,21 @@ export const generateQuiz = async (req: Request, res: Response, next: NextFuncti
     const count = questionCount ? parseInt(questionCount, 10) : 5;
     const diff = difficulty || 'medium';
 
-    const quizQuestions = await AIService.generateQuiz(topic, subjectName, diff, count);
+    const { questions, source, model, fallbackReason } = await AIService.generateQuiz(
+      topic,
+      subjectName,
+      diff,
+      count,
+    );
     res.json({
       success: true,
-      data: quizQuestions,
+      data: questions,
+      meta:
+        source === 'fallback'
+          ? { aiFallback: true, message: fallbackReason }
+          : model
+            ? { model }
+            : undefined,
     });
   } catch (error) {
     handleAIError(error, res, next);

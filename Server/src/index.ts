@@ -9,6 +9,10 @@ import rateLimit from "express-rate-limit";
 
 import { Op } from "sequelize";
 import sequelize, { testMainConnection } from "./config/database.js";
+import {
+  shouldAlterSchema,
+  syncModelsWithRetry,
+} from "./config/syncDatabase.js";
 import { connectRedis } from "./config/redis.js";
 import { seedSuperAdmin } from "./config/seedAdmin.js";
 import { setupSwagger } from "./config/swagger.js";
@@ -277,6 +281,8 @@ app.use(errorHandler);
 
 // Database connection and server start
 const startServer = async () => {
+  let dbSyncOk: boolean | undefined;
+
   try {
     logger.info("Starting SuccessBridge server...");
 
@@ -295,46 +301,42 @@ const startServer = async () => {
       logger.warn("   - Fix database connection and restart server");
     } else {
       // Only sync and seed if database connection is successful
-      try {
-        // Sync models (use alter only in development)
-        await sequelize.sync({
-          alter: process.env.NODE_ENV === "development",
-          logging: console.log, // Enable logging to see what's happening
-        });
-        logger.database("Models synced");
+      const useAlter = shouldAlterSchema();
 
-        // Ensure PendingUser table exists (safer sync)
+      try {
+        // Safe by default: create missing tables only. Set DB_SYNC_ALTER=true to migrate columns.
+        await syncModelsWithRetry(sequelize, { alter: useAlter });
+        logger.database(
+          useAlter ? "Models synced (alter mode)" : "Models synced",
+        );
+
+        const pendingAlter = useAlter && process.env.NODE_ENV === "development";
         try {
-          if (process.env.NODE_ENV === "development") {
-            await PendingUser.sync({ alter: true });
-            logger.database("PendingUser table verified/created (dev)");
-          } else {
-            await PendingUser.sync(); // Basic sync in production
-            logger.database("PendingUser table verified (prod)");
-          }
+          await PendingUser.sync({ alter: pendingAlter });
+          logger.database("PendingUser table verified/created");
         } catch (pendingUserError) {
           logger.error("Failed to sync PendingUser table:", pendingUserError);
         }
 
-        // Ensure AuditLog table exists (safer sync)
         try {
-          if (process.env.NODE_ENV === "development") {
-            await AuditLog.sync({ alter: true });
-            logger.database("AuditLog table verified/created (dev)");
-          } else {
-            await AuditLog.sync();
-            logger.database("AuditLog table verified (prod)");
-          }
+          await AuditLog.sync({ alter: pendingAlter });
+          logger.database("AuditLog table verified/created");
         } catch (auditLogError) {
           logger.error("Failed to sync AuditLog table:", auditLogError);
         }
 
-        // Seed super admin (only if not exists)
         await seedSuperAdmin();
         logger.info("Super admin checked/seeded");
+        dbSyncOk = true;
       } catch (syncError) {
+        dbSyncOk = false;
         logger.error("Database sync/seed failed:", syncError);
         logger.warn("Server will start but database operations may fail");
+        if (useAlter) {
+          logger.warn(
+            "Tip: unset DB_SYNC_ALTER or use Supabase direct connection (port 5432) for migrations",
+          );
+        }
       }
     }
 
@@ -353,9 +355,11 @@ const startServer = async () => {
       }
       logger.info(`🔍 Health check: http://localhost:${PORT}/health`);
 
-      if (connectionSuccess) {
+      if (connectionSuccess && dbSyncOk !== false) {
         logger.success(
-          "SuccessBridge server started successfully with database!",
+          dbSyncOk
+            ? "SuccessBridge server started successfully with database!"
+            : "SuccessBridge server started (database connected; sync had warnings)",
         );
 
         // Start periodic cleanup of expired pending users (every hour)

@@ -3,6 +3,7 @@ import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { subjectService, Subject } from "@services/subjectService";
 import { AIService, ChatMessage, QuizQuestion } from "@services/aiService";
 import api from "@services/api";
+import { useAuth } from "@hooks/useAuth";
 import {
   Sparkles,
   MessageSquare,
@@ -168,6 +169,10 @@ export const StudentAICompanion: React.FC = () => {
   const [activeTab, setActiveTab] = useState<
     "chat" | "explain" | "quiz" | "summarize" | "study-plan"
   >("chat");
+  const { user } = useAuth();
+  // Students cannot generate AI quizzes (rate-limited). Admin/superadmin can.
+  const canGenerateAiQuiz =
+    user?.role === "admin" || user?.role === "super_admin";
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -333,7 +338,7 @@ export const StudentAICompanion: React.FC = () => {
     );
 
     try {
-      const questions = await AIService.generateQuiz(
+      const { questions } = await AIService.generateQuiz(
         quizTopic,
         subjectName,
         quizDifficulty,
@@ -550,7 +555,9 @@ export const StudentAICompanion: React.FC = () => {
           {[
             { id: "chat", label: "Chat", icon: MessageSquare },
             { id: "explain", label: "Explain", icon: HelpCircle },
-            { id: "quiz", label: "Quiz", icon: Clipboard },
+            ...(canGenerateAiQuiz
+              ? [{ id: "quiz", label: "Quiz", icon: Clipboard }]
+              : []),
             { id: "summarize", label: "Summary", icon: BookOpen },
             { id: "study-plan", label: "Plan", icon: Calendar },
           ].map((tab) => {
@@ -789,7 +796,7 @@ export const StudentAICompanion: React.FC = () => {
           {/* ----------------------------------------------------
               TAB 3: Quiz Generator UI
              ---------------------------------------------------- */}
-          {activeTab === "quiz" && (
+          {activeTab === "quiz" && canGenerateAiQuiz && (
             <div className="p-4 sm:p-6 space-y-6">
               {/* Form Input (Show only if quiz questions not loaded or user wants to generate new) */}
               {generatedQuestions.length === 0 && (

@@ -16,12 +16,18 @@ interface IQuiz {
   description: string
   subjectId: string
   educationLevel: 'high_school' | 'university'
+  /** High school: grade_9–12; university: remedial | freshman | senior | gc */
   grade?: string
   stream?: string
+  /** University name (matches User.university) */
+  university?: string
+  /** Department name for senior/gc (matches User.department) */
+  department?: string
   questions: IQuestion[]
   timeLimit: number
   passingScore: number
   createdBy: string
+  isAiGenerated?: boolean
 }
 
 class Quiz extends Model<IQuiz> implements IQuiz {
@@ -32,10 +38,13 @@ class Quiz extends Model<IQuiz> implements IQuiz {
   public educationLevel!: 'high_school' | 'university'
   public grade?: string
   public stream?: string
+  public university?: string
+  public department?: string
   public questions!: IQuestion[]
   public timeLimit!: number
   public passingScore!: number
   public createdBy!: string
+  public isAiGenerated!: boolean
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 }
@@ -71,6 +80,14 @@ Quiz.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    university: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    department: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     questions: {
       type: DataTypes.JSON,
       defaultValue: [],
@@ -85,6 +102,11 @@ Quiz.init(
     },
     createdBy: {
       type: DataTypes.UUID,
+      allowNull: false,
+    },
+    isAiGenerated: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
       allowNull: false,
     },
   },

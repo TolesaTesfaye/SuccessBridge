@@ -239,6 +239,8 @@ export class AuthService {
         universityLevel: user.universityLevel,
         university: user.university,
         department: user.department,
+        universityId: user.universityId,
+        departmentId: user.departmentId,
       },
       token,
     };
@@ -264,6 +266,8 @@ export class AuthService {
       universityLevel: user.universityLevel,
       university: user.university,
       department: user.department,
+      universityId: user.universityId,
+      departmentId: user.departmentId,
     };
   }
 

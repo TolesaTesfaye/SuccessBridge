@@ -41,6 +41,7 @@ export const AdminDashboardQuizzes: React.FC<QuizTabProps> = ({
   onNavigateToTab,
 }) => {
   const navigate = useNavigate();
+  const [quizType, setQuizType] = useState<"official" | "ai">("official");
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [subjects, setSubjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,6 +62,7 @@ export const AdminDashboardQuizzes: React.FC<QuizTabProps> = ({
         quizService.getAll({
           page: currentPage,
           limit: 8,
+          isAiGenerated: quizType === "ai",
           ...(filter.educationLevel !== "all"
             ? { educationLevel: filter.educationLevel }
             : {}),
@@ -68,7 +70,7 @@ export const AdminDashboardQuizzes: React.FC<QuizTabProps> = ({
             ? { subjectId: filter.subjectId }
             : {}),
         }),
-        subjectService.getAll(),
+        subjectService.getSubjects(),
       ]);
 
       setQuizzes(quizzesRes);
@@ -90,7 +92,7 @@ export const AdminDashboardQuizzes: React.FC<QuizTabProps> = ({
 
   useEffect(() => {
     void loadData();
-  }, [currentPage, filter]);
+  }, [currentPage, filter, quizType]);
 
   const handleDeleteQuiz = async (id: string) => {
     if (
@@ -246,6 +248,36 @@ export const AdminDashboardQuizzes: React.FC<QuizTabProps> = ({
             </div>
           </CardHeader>
           <CardBody className="p-6 space-y-6">
+            <div className="space-y-3">
+              <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                Quiz Type
+              </label>
+              <div className="grid grid-cols-1 gap-2">
+                {[
+                  { label: "Official Quizzes", value: "official" },
+                  { label: "AI Generated Quizzes", value: "ai" },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    className={`flex items-center justify-between px-4 py-3 rounded-2xl border text-xs font-bold transition-all ${
+                      quizType === option.value
+                        ? "border-indigo-500 bg-indigo-50 text-indigo-700 dark:border-indigo-500/50 dark:bg-indigo-500/10 dark:text-indigo-200"
+                        : "border-slate-100 bg-slate-50/50 text-slate-500 hover:border-slate-200 dark:border-white/5 dark:bg-white/5 dark:text-slate-400"
+                    }`}
+                    onClick={() => {
+                      setCurrentPage(1);
+                      setQuizType(option.value as "official" | "ai");
+                    }}
+                  >
+                    {option.label}
+                    {quizType === option.value && (
+                      <CheckCircle2 className="h-4 w-4" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div className="space-y-3">
               <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                 Education Track

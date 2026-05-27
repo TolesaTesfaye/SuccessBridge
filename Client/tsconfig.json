@@ -4,7 +4,7 @@
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "ignoreDeprecations": "6.0",
+    "ignoreDeprecations": "5.0",
     "jsx": "react-jsx",
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -21,6 +21,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
+      "@/lib/utils": ["src/lib/utils.ts"],
+      "@components/common": ["src/components/common/index.ts"],
+      "@components/common/*": ["src/components/common/*"],
       "@components/*": ["src/components/*"],
       "@context/*": ["src/context/*"],
       "@dashboards/*": ["src/dashboards/*"],
