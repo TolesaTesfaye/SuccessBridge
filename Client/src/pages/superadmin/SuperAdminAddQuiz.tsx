@@ -68,7 +68,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useToast } from "@components/common/Toast";
 import { subjectService } from "@services/subjectService";
-import { quizService } from "@services/quizService";
+import { quizService, Quiz } from "@services/quizService";
 import { AIService } from "@services/aiService";
 import {
   UNIVERSITIES,
@@ -133,7 +133,140 @@ export function SuperAdminAddQuiz() {
   const [dark, setDark] = useState(false);
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState<Question[]>(seedQuestions);
+
   const [title, setTitle] = useState("Untitled assessment");
+
+  // ── Existing quizzes management ──
+  const [existingQuizzes, setExistingQuizzes] = useState<Quiz[]>([]);
+  const [quizzesLoading, setQuizzesLoading] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [showExistingQuizzes, setShowExistingQuizzes] = useState(true);
+
+  const fetchExistingQuizzes = async () => {
+    try {
+      setQuizzesLoading(true);
+      const data = await quizService.getAll();
+      setExistingQuizzes(data);
+    } catch (err) {
+      console.error("Failed to load existing quizzes:", err);
+    } finally {
+      setQuizzesLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchExistingQuizzes();
+  }, []);
+
+  const handleDeleteQuiz = async (quizId: string) => {
+    try {
+      await quizService.delete(quizId);
+      toast.success("Quiz deleted successfully");
+      setExistingQuizzes((qs) => qs.filter((q) => q.id !== quizId));
+      setDeleteConfirmId(null);
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to delete quiz");
+    }
+  };
+
+  const handleEditQuiz = (quiz: Quiz) => {
+    setTitle(quiz.title);
+    setDescription(quiz.description || "");
+    setEducationLevel(quiz.educationLevel || "high_school");
+    if (quiz.educationLevel === "high_school") {
+      setGrade(quiz.grade || "grade_9");
+      setStream((quiz as any).stream || "");
+    } else {
+      setUniversityId((quiz as any).university || "");
+      setCategory(quiz.grade || "");
+      setDepartmentId((quiz as any).department || "");
+    }
+    setSubjectId(quiz.subjectId || "");
+    setTimeLimit(quiz.timeLimit || 30);
+    setPassing(quiz.passingScore || 60);
+    const draft: Question[] = (quiz.questions || []).map((q: any) => {
+      const opts: { id: string; text: string }[] = (q.options || []).map(
+        (o: string, i: number) => ({
+          id: `opt_${i}_${newId()}`,
+          text: o,
+        }),
+      );
+      const correctOption = opts.find((o) => o.text === q.correctAnswer);
+      return {
+        id: q.id || newId(),
+        type:
+          q.type === "multiple_choice"
+            ? "mcq"
+            : q.type === "short_answer"
+              ? "short"
+              : "essay",
+        text: q.text || "",
+        options: opts,
+        correctId: correctOption?.id,
+        points: q.points || 5,
+        difficulty: "Medium" as Difficulty,
+        explanation: "",
+        tags: [],
+        timeEstimate: 60,
+      };
+    });
+    setQuestions(draft);
+    toast.success("Quiz loaded for editing — update and re‑publish to save");
+  };
+
+  const handleUpdateQuiz = async (quizId: string) => {
+    if (!title.trim()) {
+      toast.error("A title is required");
+      return;
+    }
+    if (questions.length === 0) {
+      toast.error("Please add at least one question");
+      return;
+    }
+    try {
+      setLoading(true);
+      const formatted = questions.map((q) => {
+        let answer = "";
+        if (q.type === "mcq") {
+          answer = q.options.find((o) => o.id === q.correctId)?.text || "";
+        } else {
+          answer = q.explanation || "";
+        }
+        return {
+          id: q.id,
+          text: q.text,
+          type:
+            q.type === "mcq"
+              ? "multiple_choice"
+              : q.type === "short"
+                ? "short_answer"
+                : "essay",
+          options:
+            q.type === "mcq"
+              ? q.options.map((o) => o.text).filter(Boolean)
+              : [],
+          correctAnswer: answer,
+          points: q.points || 5,
+        };
+      });
+      await quizService.update(quizId, {
+        title: title.trim(),
+        description: description.trim(),
+        questions: formatted as any,
+        timeLimit,
+        passingScore: passing,
+      } as any);
+      toast.success("Quiz updated successfully");
+      setTitle("Untitled assessment");
+      setDescription("");
+      setQuestions([]);
+      fetchExistingQuizzes();
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to update quiz");
+    } finally {
+      setLoading(false);
+    }
+  };
   const [description, setDescription] = useState("");
 
   // SuccessBridge targeting state
@@ -281,7 +414,11 @@ export function SuperAdminAddQuiz() {
         | "medium"
         | "hard";
 
-      const { questions: apiQuestions, aiFallback, fallbackMessage } = await AIService.generateQuiz(
+      const {
+        questions: apiQuestions,
+        aiFallback,
+        fallbackMessage,
+      } = await AIService.generateQuiz(
         topicName,
         subjectName,
         difficultyParam,
@@ -441,18 +578,15 @@ export function SuperAdminAddQuiz() {
         title: title.trim(),
         description: description.trim(),
         educationLevel,
-        grade:
-          educationLevel === "high_school" ? grade : category || undefined,
+        grade: educationLevel === "high_school" ? grade : category || undefined,
         stream:
           educationLevel === "high_school" &&
           ["grade_11", "grade_12"].includes(grade)
             ? stream
             : undefined,
-        university:
-          educationLevel === "university" ? universityId : undefined,
+        university: educationLevel === "university" ? universityId : undefined,
         department:
-          educationLevel === "university" &&
-          ["senior", "gc"].includes(category)
+          educationLevel === "university" && ["senior", "gc"].includes(category)
             ? departmentId
             : undefined,
         subjectId,
@@ -578,6 +712,120 @@ export function SuperAdminAddQuiz() {
         {/* Layout */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-10">
           <div className="space-y-6 lg:col-span-7">
+            {/* ══════ Existing Quizzes Management ══════ */}
+            <SectionCard>
+              <div className="border-b border-border/60 p-6">
+                <button
+                  onClick={() => setShowExistingQuizzes(!showExistingQuizzes)}
+                  className="flex w-full items-center justify-between"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="grid size-9 place-items-center rounded-lg bg-amber-500/10 text-amber-600">
+                      <ListChecks className="size-4" />
+                    </div>
+                    <div className="text-left">
+                      <h2 className="text-base font-semibold">
+                        Manage Published Quizzes
+                      </h2>
+                      <p className="text-xs text-muted-foreground">
+                        {existingQuizzes.length} quiz
+                        {existingQuizzes.length !== 1 ? "zes" : ""} published —
+                        edit or delete as needed.
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronDown
+                    className={cn(
+                      "size-5 text-muted-foreground transition-transform",
+                      showExistingQuizzes && "rotate-180",
+                    )}
+                  />
+                </button>
+              </div>
+              {showExistingQuizzes && (
+                <div className="p-4 sm:p-6">
+                  {quizzesLoading ? (
+                    <div className="py-8 text-center text-sm text-muted-foreground">
+                      Loading quizzes…
+                    </div>
+                  ) : existingQuizzes.length === 0 ? (
+                    <div className="py-8 text-center text-sm text-muted-foreground">
+                      No quizzes have been published yet.
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {existingQuizzes.map((quiz) => (
+                        <div
+                          key={quiz.id}
+                          className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border/60 bg-card/60 p-4 transition-all hover:border-primary/30"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-semibold truncate">
+                              {quiz.title}
+                            </p>
+                            <p className="mt-0.5 text-xs text-muted-foreground line-clamp-1">
+                              {quiz.description || "No description"}
+                            </p>
+                            <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                              <Badge variant="outline" className="text-[10px]">
+                                {quiz.questions?.length || 0} Qs
+                              </Badge>
+                              <Badge variant="outline" className="text-[10px]">
+                                Pass: {quiz.passingScore}%
+                              </Badge>
+                              <Badge variant="outline" className="text-[10px]">
+                                {quiz.timeLimit}m
+                              </Badge>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onClick={() => {
+                                handleEditQuiz(quiz);
+                                setShowExistingQuizzes(false);
+                              }}
+                            >
+                              <Pencil className="mr-1 size-3.5" />
+                              Edit
+                            </Button>
+                            {deleteConfirmId === quiz.id ? (
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  variant="secondary"
+                                  size="sm"
+                                  onClick={() => handleDeleteQuiz(quiz.id)}
+                                >
+                                  Confirm
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => setDeleteConfirmId(null)}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
+                            ) : (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setDeleteConfirmId(quiz.id)}
+                                className="text-rose-600 hover:bg-rose-50 hover:text-rose-700 dark:hover:bg-rose-500/10"
+                              >
+                                <Trash2 className="size-3.5" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </SectionCard>
+
             <QuizDetails
               title={title}
               setTitle={setTitle}
@@ -1033,7 +1281,9 @@ function AIGenerator(props: {
           <FloatingField label="Difficulty">
             <Select
               value={props.difficulty}
-              onValueChange={(v: string) => props.setDifficulty(v as Difficulty)}
+              onValueChange={(v: string) =>
+                props.setDifficulty(v as Difficulty)
+              }
             >
               <SelectTrigger className="h-10">
                 <SelectValue />
