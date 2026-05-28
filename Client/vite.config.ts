@@ -45,7 +45,6 @@ export default defineConfig({
       "/api": {
         target: "http://localhost:5000",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
   },
@@ -70,9 +69,9 @@ export default defineConfig({
         },
       },
     },
-    // Preload critical modules
-    assetsInclude: ["**/*.woff", "**/*.woff2"],
   },
+  // Preload critical modules
+  assetsInclude: ["**/*.woff", "**/*.woff2"],
   // Optimize dependencies
   optimizeDeps: {
     include: [

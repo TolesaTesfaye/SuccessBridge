@@ -209,18 +209,18 @@ export const AdminDashboardContent: React.FC = () => {
   }: (typeof dashboardTabs)[number]) => (
     <button
       key={id}
-      className={`group relative inline-flex shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-4 py-3.5 text-left text-sm font-semibold transition-all duration-300 ${
+      className={`group relative inline-flex h-11 md:h-12 shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-3 md:px-4 text-left text-xs md:text-sm font-semibold leading-none transition-all duration-300 ${
         activeTab === id
-          ? "border-blue-400 text-white"
-          : "border-transparent text-slate-400 hover:border-slate-500 hover:text-white"
+          ? "border-purple-600 text-purple-600 dark:text-purple-400 dark:border-purple-400"
+          : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
       }`}
       onClick={() => setActiveTab(id)}
     >
       <Icon
         className={`h-4 w-4 transition-colors duration-300 ${
           activeTab === id
-            ? "text-blue-300"
-            : "text-slate-500 group-hover:text-slate-200"
+            ? "text-purple-600 dark:text-purple-400"
+            : "text-gray-500 group-hover:text-gray-800 dark:text-gray-500 dark:group-hover:text-gray-200"
         }`}
         strokeWidth={2.2}
       />
@@ -268,8 +268,8 @@ export const AdminDashboardContent: React.FC = () => {
   return (
     <div className="space-y-0 pb-8 w-full pt-4 md:pt-6">
       {/* Top Tab Bar — Sticky at top */}
-      <div className="sticky top-0 z-40 -mx-4 md:-mx-6 overflow-x-auto border-b border-slate-700 bg-[#20212b] shadow-[0_10px_30px_-20px_rgba(0,0,0,0.55)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <div className="flex w-max min-w-full flex-nowrap items-end gap-1 px-4 md:px-6 py-1">
+      <div className="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b-2 border-gray-200 dark:border-slate-700 flex gap-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-2 md:-mx-6 px-2 md:px-6">
+        <div className="flex w-max min-w-full flex-nowrap items-end gap-0">
           {dashboardTabs.map((tab) => tabButton(tab))}
         </div>
       </div>

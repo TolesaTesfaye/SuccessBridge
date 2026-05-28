@@ -1,5 +1,5 @@
-import React from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   Shield,
   BarChart3,
@@ -12,66 +12,66 @@ import {
   Network,
   Menu,
   X,
-} from 'lucide-react'
+} from "lucide-react";
 
 interface AdminSidebarProps {
-  isOpen?: boolean
-  onClose?: () => void
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 const menuItems = [
   {
-    label: 'Dashboard Overview',
-    path: '/admin/security',
+    label: "Dashboard Overview",
+    path: "/superadmin/security",
     icon: Shield,
   },
   {
-    label: 'Audit Logs',
-    path: '/admin/security/audit-logs',
+    label: "Audit Logs",
+    path: "/superadmin/security/audit-logs",
     icon: FileText,
   },
   {
-    label: 'Failed Logins',
-    path: '/admin/security/failed-logins',
+    label: "Failed Logins",
+    path: "/superadmin/security/failed-logins",
     icon: AlertCircle,
   },
   {
-    label: 'Active Sessions',
-    path: '/admin/security/sessions',
+    label: "Active Sessions",
+    path: "/superadmin/security/sessions",
     icon: Activity,
   },
   {
-    label: 'Rate Limiting',
-    path: '/admin/security/rate-limits',
+    label: "Rate Limiting",
+    path: "/superadmin/security/rate-limits",
     icon: Zap,
   },
   {
-    label: 'File Uploads',
-    path: '/admin/security/uploads',
+    label: "File Uploads",
+    path: "/superadmin/security/uploads",
     icon: Lock,
   },
   {
-    label: 'Security Alerts',
-    path: '/admin/security/alerts',
+    label: "Security Alerts",
+    path: "/superadmin/security/alerts",
     icon: AlertCircle,
   },
   {
-    label: 'CSRF Tokens',
-    path: '/admin/security/csrf',
+    label: "CSRF Tokens",
+    path: "/superadmin/security/csrf",
     icon: Network,
   },
   {
-    label: 'Security Headers',
-    path: '/admin/security/headers',
+    label: "Security Headers",
+    path: "/superadmin/security/headers",
     icon: Shield,
   },
-]
+];
 
 export const AdminSecuritySidebar: React.FC<AdminSidebarProps> = ({
   isOpen = true,
   onClose,
 }) => {
-  const location = useLocation()
+  const location = useLocation();
 
   return (
     <>
@@ -85,20 +85,25 @@ export const AdminSecuritySidebar: React.FC<AdminSidebarProps> = ({
 
       {/* Sidebar */}
       <aside
-        className={`fixed md:static left-0 top-0 h-screen w-64 bg-gray-900 text-white overflow-y-auto transition-all duration-300 z-40 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        className={`fixed md:static left-0 top-0 h-screen w-64 bg-gray-900 dark:bg-slate-950 text-white overflow-y-auto transition-all duration-300 z-40 ${
+          isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
         <div className="p-6">
           <div className="flex items-center gap-2 mb-8">
-            <Shield size={28} className="text-blue-400" />
-            <span className="font-bold text-xl">Security Center</span>
+            <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+              <Shield size={20} className="text-white" />
+            </div>
+            <div>
+              <span className="font-bold text-lg">Security</span>
+              <p className="text-[10px] text-gray-400">Control Center</p>
+            </div>
           </div>
 
           {/* Close button for mobile */}
           {onClose && (
             <button
-              className="md:hidden absolute top-4 right-4"
+              className="md:hidden absolute top-4 right-4 text-gray-400 hover:text-white"
               onClick={onClose}
             >
               <X size={24} />
@@ -107,8 +112,8 @@ export const AdminSecuritySidebar: React.FC<AdminSidebarProps> = ({
 
           <nav className="space-y-1">
             {menuItems.map((item) => {
-              const Icon = item.icon
-              const isActive = location.pathname === item.path
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
               return (
                 <Link
                   key={item.path}
@@ -116,14 +121,14 @@ export const AdminSecuritySidebar: React.FC<AdminSidebarProps> = ({
                   onClick={onClose}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                     isActive
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-300 hover:bg-gray-800'
+                      ? "bg-blue-600 text-white"
+                      : "text-gray-300 hover:bg-gray-800"
                   }`}
                 >
                   <Icon size={20} />
                   <span className="text-sm font-medium">{item.label}</span>
                 </Link>
-              )
+              );
             })}
           </nav>
 
@@ -139,7 +144,7 @@ export const AdminSecuritySidebar: React.FC<AdminSidebarProps> = ({
         </div>
       </aside>
     </>
-  )
-}
+  );
+};
 
-export default AdminSecuritySidebar
+export default AdminSecuritySidebar;

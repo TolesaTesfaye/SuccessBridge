@@ -15,7 +15,6 @@ import {
   FileQuestion,
   BookMarked,
   Server,
-  ShieldCheck,
   Megaphone,
   CreditCard,
   Sparkles,
@@ -143,12 +142,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       path: "/superadmin/users",
       icon: <Users className="w-5 h-5" />,
       emoji: "👥",
-    },
-    {
-      label: "Admins",
-      path: "/superadmin/admins",
-      icon: <ShieldCheck className="w-5 h-5" />,
-      emoji: "🛡️",
     },
     {
       label: "Analytics",

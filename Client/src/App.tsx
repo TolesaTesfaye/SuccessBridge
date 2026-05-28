@@ -131,30 +131,50 @@ const PromotionPage = lazy(() =>
   })),
 );
 
-// Lazy load security dashboard pages
+// Lazy load security dashboard pages (superadmin only)
 const SecurityDashboard = lazy(() =>
-  import("@dashboards/admin/SecurityDashboard").then((m) => ({
+  import("@dashboards/superadmin/security/SecurityDashboard").then((m) => ({
     default: m.SecurityDashboard,
   })),
 );
 const AuditLogsPage = lazy(() =>
-  import("@dashboards/admin/AuditLogsPage").then((m) => ({
+  import("@dashboards/superadmin/security/AuditLogsPage").then((m) => ({
     default: m.AuditLogsPage,
   })),
 );
 const FailedLoginsPage = lazy(() =>
-  import("@dashboards/admin/FailedLoginsPage").then((m) => ({
+  import("@dashboards/superadmin/security/FailedLoginsPage").then((m) => ({
     default: m.FailedLoginsPage,
   })),
 );
 const SessionsPage = lazy(() =>
-  import("@dashboards/admin/SessionsPage").then((m) => ({
+  import("@dashboards/superadmin/security/SessionsPage").then((m) => ({
     default: m.SessionsPage,
   })),
 );
 const RateLimitPage = lazy(() =>
-  import("@dashboards/admin/RateLimitPage").then((m) => ({
+  import("@dashboards/superadmin/security/RateLimitPage").then((m) => ({
     default: m.RateLimitPage,
+  })),
+);
+const FileUploadsPage = lazy(() =>
+  import("@dashboards/superadmin/security/FileUploadsPage").then((m) => ({
+    default: m.FileUploadsPage,
+  })),
+);
+const SecurityAlertsPage = lazy(() =>
+  import("@dashboards/superadmin/security/SecurityAlertsPage").then((m) => ({
+    default: m.SecurityAlertsPage,
+  })),
+);
+const CSRFPage = lazy(() =>
+  import("@dashboards/superadmin/security/CSRFPage").then((m) => ({
+    default: m.CSRFPage,
+  })),
+);
+const SecurityHeadersPage = lazy(() =>
+  import("@dashboards/superadmin/security/SecurityHeadersPage").then((m) => ({
+    default: m.SecurityHeadersPage,
   })),
 );
 
@@ -628,7 +648,7 @@ const AppContent: React.FC = () => {
 
               {/* Security Dashboard Routes */}
               <Route
-                path="/admin/security"
+                path="/superadmin/security"
                 element={
                   <ProtectedRoute requiredRole="super_admin">
                     <SecurityDashboard />
@@ -636,7 +656,7 @@ const AppContent: React.FC = () => {
                 }
               />
               <Route
-                path="/admin/security/audit-logs"
+                path="/superadmin/security/audit-logs"
                 element={
                   <ProtectedRoute requiredRole="super_admin">
                     <AuditLogsPage />
@@ -644,7 +664,7 @@ const AppContent: React.FC = () => {
                 }
               />
               <Route
-                path="/admin/security/failed-logins"
+                path="/superadmin/security/failed-logins"
                 element={
                   <ProtectedRoute requiredRole="super_admin">
                     <FailedLoginsPage />
@@ -652,7 +672,7 @@ const AppContent: React.FC = () => {
                 }
               />
               <Route
-                path="/admin/security/sessions"
+                path="/superadmin/security/sessions"
                 element={
                   <ProtectedRoute requiredRole="super_admin">
                     <SessionsPage />
@@ -660,10 +680,42 @@ const AppContent: React.FC = () => {
                 }
               />
               <Route
-                path="/admin/security/rate-limits"
+                path="/superadmin/security/rate-limits"
                 element={
                   <ProtectedRoute requiredRole="super_admin">
                     <RateLimitPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/superadmin/security/uploads"
+                element={
+                  <ProtectedRoute requiredRole="super_admin">
+                    <FileUploadsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/superadmin/security/alerts"
+                element={
+                  <ProtectedRoute requiredRole="super_admin">
+                    <SecurityAlertsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/superadmin/security/csrf"
+                element={
+                  <ProtectedRoute requiredRole="super_admin">
+                    <CSRFPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/superadmin/security/headers"
+                element={
+                  <ProtectedRoute requiredRole="super_admin">
+                    <SecurityHeadersPage />
                   </ProtectedRoute>
                 }
               />
