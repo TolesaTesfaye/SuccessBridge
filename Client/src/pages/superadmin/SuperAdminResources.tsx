@@ -135,7 +135,7 @@ export const SuperAdminResources: React.FC<SuperAdminResourcesProps> = ({
                 </div>
               )}
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-500 dark:text-slate-400 mb-1">Type</label>
                   <p className="text-gray-900 dark:text-white capitalize">
@@ -150,7 +150,7 @@ export const SuperAdminResources: React.FC<SuperAdminResourcesProps> = ({
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {selectedResource.subject && (
                   <div>
                     <label className="block text-sm font-semibold text-gray-500 dark:text-slate-400 mb-1">Subject</label>
@@ -216,7 +216,7 @@ export const SuperAdminResources: React.FC<SuperAdminResourcesProps> = ({
                 </div>
               )}
               
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-500 dark:text-slate-400 mb-1">Created At</label>
                   <p className="text-gray-900 dark:text-white">
@@ -271,7 +271,7 @@ export const SuperAdminResources: React.FC<SuperAdminResourcesProps> = ({
                 onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Type</label>
                 <select 

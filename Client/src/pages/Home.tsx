@@ -128,7 +128,7 @@ export const Home: React.FC = () => {
       {/* Hero Section */}
       <section className="relative pt-20 pb-12 md:pt-32 md:pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
         {/* Background Decorative Elements */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] opacity-30 pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] opacity-30 pointer-events-none hidden md:block">
           <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-indigo-600 blur-[100px] rounded-full mix-blend-screen"></div>
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-gradient-to-r from-cyan-500 to-blue-500 blur-[100px] rounded-full mix-blend-screen opacity-50"></div>
         </div>
@@ -309,7 +309,7 @@ export const Home: React.FC = () => {
       </section>
 
       {/* Target Audience Section */}
-      <section className="py-24 relative overflow-hidden bg-white dark:bg-slate-900/50 transition-colors">
+      <section className="py-12 md:py-24 relative overflow-hidden bg-white dark:bg-slate-900/50 transition-colors">
         <div className="absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-blue-50/50 dark:from-blue-900/20 to-transparent pointer-events-none"></div>
         <div className="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-indigo-50/50 dark:from-indigo-900/20 to-transparent pointer-events-none"></div>
 
@@ -361,7 +361,7 @@ export const Home: React.FC = () => {
 
             <div className="lg:w-1/2 relative w-full">
               {/* Abstract Representation of UI */}
-              <div className="relative aspect-square md:aspect-[4/3] w-full max-w-lg mx-auto">
+              <div className="relative aspect-video md:aspect-[4/3] w-full max-w-lg mx-auto">
                 <div className="absolute inset-0 bg-gradient-to-tr from-blue-200/50 dark:from-blue-500/20 to-indigo-200/50 dark:to-indigo-500/20 rounded-3xl transform rotate-3 scale-105 border border-slate-200 dark:border-white/5 backdrop-blur-sm"></div>
                 <div className="absolute inset-0 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-white/10 shadow-2xl overflow-hidden flex flex-col transition-colors">
                   {/* Mock UI Header */}

@@ -26,8 +26,6 @@ import {
   Megaphone,
   Sparkles,
   Upload,
-  Users,
-  GraduationCap,
   CreditCard,
   FileQuestion,
 } from "lucide-react";
@@ -37,7 +35,7 @@ import {
 } from "./components/SuperAdminTopTabNav";
 
 // Import extracted components
-import { OverviewTab, AdminsTab, StudentsTab } from "./components";
+import { OverviewTab } from "./components";
 
 const HIGH_SCHOOL_GRADES = [
   "grade_9",
@@ -48,21 +46,19 @@ const HIGH_SCHOOL_GRADES = [
 const UNIVERSITY_LEVELS = ["freshman", "remedial", "senior", "gc"] as const;
 
 const PLATFORM_TABS: SuperAdminTabItem[] = [
-  { id: "overview", label: "Overview", icon: LayoutDashboard },
-  { id: "universities", label: "Universities", icon: Building },
-  { id: "resources", label: "Resources", icon: BookOpen },
-  { id: "analytics", label: "Analytics", icon: BarChart3 },
-  { id: "promotion", label: "Promotion", icon: Megaphone },
+  { id: "overview", label: "Overview", shortLabel: "Home", icon: LayoutDashboard },
+  { id: "universities", label: "Universities", shortLabel: "Unis", icon: Building },
+  { id: "resources", label: "Resources", shortLabel: "Res", icon: BookOpen },
+  { id: "analytics", label: "Analytics", shortLabel: "Stats", icon: BarChart3 },
+  { id: "promotion", label: "Promotion", shortLabel: "Promo", icon: Megaphone },
   {
     id: "ai-companion",
     label: "AI Companion",
     shortLabel: "AI",
     icon: Sparkles,
   },
-  { id: "upload", label: "Upload", icon: Upload },
-  { id: "admins", label: "Admins", icon: Users },
-  { id: "students", label: "Students", icon: GraduationCap },
-  { id: "payments", label: "Payments", icon: CreditCard },
+  { id: "upload", label: "Upload", shortLabel: "Add", icon: Upload },
+  { id: "payments", label: "Payments", shortLabel: "Pay", icon: CreditCard },
   { id: "addquiz", label: "Add Quiz", shortLabel: "Quiz", icon: FileQuestion },
 ];
 
@@ -221,18 +217,6 @@ export const SuperAdminDashboard: React.FC = () => {
                 />
               </CardBody>
             </Card>
-          )}
-          {activeTab === "admins" && (
-            <AdminsTab
-              onViewAdmin={setSelectedAdmin}
-              onShowModal={() => setShowAdminModal(true)}
-            />
-          )}
-          {activeTab === "students" && (
-            <StudentsTab
-              onViewStudent={setSelectedStudent}
-              onShowModal={() => setShowStudentModal(true)}
-            />
           )}
           {activeTab === "payments" && <AdminDashboardPayments />}
           {activeTab === "addquiz" && <SuperAdminAddQuiz />}

@@ -118,6 +118,7 @@ export interface Quiz {
   timeLimit: number;
   passingScore: number;
   isAiGenerated?: boolean;
+  createdBy: string;
   createdAt: string | Date;
   updatedAt?: string | Date;
 }

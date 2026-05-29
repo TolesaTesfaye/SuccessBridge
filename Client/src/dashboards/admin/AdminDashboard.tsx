@@ -2,7 +2,6 @@ import React, { useMemo, useState } from "react";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { DashboardTopTabNav } from "@components/dashboards/DashboardTopTabNav";
 import {
-  ResourceUploadForm,
   UploadFormData,
 } from "@components/resources/ResourceUploadForm";
 import { subjectService } from "@services/subjectService";
@@ -12,39 +11,37 @@ import { resourceService } from "@services/resourceService";
 import { quizService } from "@services/quizService";
 import { userService } from "@services/userService";
 import { AdminDashboardOverview } from "./AdminDashboardOverview";
-import { AdminDashboardResources } from "./AdminDashboardResources";
 import { AdminDashboardStudents } from "./AdminDashboardStudents";
-import { AdminDashboardSubjects } from "./AdminDashboardSubjects";
-import { AdminDashboardDepartments } from "./AdminDashboardDepartments";
 import { AdminDashboardUniversities } from "./AdminDashboardUniversities";
 import { AdminDashboardQuizzes } from "./AdminDashboardQuizzes";
 import { AdminDashboardAnalytics } from "./AdminDashboardAnalytics";
 import { AdminDashboardUpload } from "./AdminDashboardUpload";
 import { AdminDashboardPromotion } from "./AdminDashboardPromotion";
+import { AdminDashboardResources } from "./AdminDashboardResources";
+import { AdminDashboardSubjects } from "./AdminDashboardSubjects";
+import { AdminDashboardDepartments } from "./AdminDashboardDepartments";
 import {
   AlertTriangle,
   BarChart3,
-  BookOpenCheck,
-  Building2,
   GraduationCap,
-  FileText,
   Upload,
   Users,
   School,
+  BookOpen,
+  Code2,
+  Building2,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-
 type TabKey =
   | "overview"
-  | "resources"
   | "students"
-  | "subjects"
-  | "departments"
   | "universities"
   | "quizzes"
   | "upload"
   | "reports"
-  | "promotion";
+  | "promotion"
+  | "resources"
+  | "subjects"
+  | "departments";
 
 type DashboardState = {
   loading: boolean;
@@ -92,7 +89,6 @@ const parseError = (err: any): string => {
 };
 
 export const AdminDashboardContent: React.FC = () => {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
   const [state, setState] = useState<DashboardState>(initialState);
   const [uploading, setUploading] = useState(false);
@@ -173,11 +169,11 @@ export const AdminDashboardContent: React.FC = () => {
   const dashboardTabs = useMemo(
     () => [
       { id: "overview" as TabKey, label: "Overview", icon: BarChart3 },
-      { id: "resources" as TabKey, label: "Resources", icon: FileText },
       { id: "students" as TabKey, label: "Students", icon: Users },
-      { id: "subjects" as TabKey, label: "Subjects", icon: BookOpenCheck },
-      { id: "departments" as TabKey, label: "Departments", icon: Building2 },
       { id: "universities" as TabKey, label: "Universities", icon: School },
+      { id: "departments" as TabKey, label: "Departments", icon: Building2 },
+      { id: "subjects" as TabKey, label: "Subjects", icon: Code2 },
+      { id: "resources" as TabKey, label: "Resources", icon: BookOpen },
       { id: "quizzes" as TabKey, label: "Quizzes", icon: GraduationCap },
       { id: "upload" as TabKey, label: "Upload", icon: Upload },
       { id: "reports" as TabKey, label: "Analytics", icon: BarChart3 },
@@ -188,11 +184,11 @@ export const AdminDashboardContent: React.FC = () => {
   const handleNavigateToTab = (tab: string) => {
     const valid: TabKey[] = [
       "overview",
-      "resources",
       "students",
-      "subjects",
-      "departments",
       "universities",
+      "departments",
+      "subjects",
+      "resources",
       "quizzes",
       "upload",
       "reports",
@@ -244,11 +240,11 @@ export const AdminDashboardContent: React.FC = () => {
           label: label.trim(),
           icon,
           shortLabel:
-            id === "departments"
-              ? "Depts"
-              : id === "universities"
-                ? "Unis"
-                : undefined,
+            id === "universities" ? "Unis" :
+            id === "departments" ? "Depts" :
+            id === "subjects" ? "Subj" :
+            id === "resources" ? "Res" :
+            undefined,
         }))}
         activeTab={activeTab}
         onTabChange={(id) => setActiveTab(id as TabKey)}
@@ -276,18 +272,9 @@ export const AdminDashboardContent: React.FC = () => {
         )}
 
         {activeTab === "overview" && (
-          <div className="-mx-2 md:-mx-6">
-            <AdminDashboardOverview
-              state={state}
-              onRefresh={fetchDashboardData}
-              onNavigateToTab={handleNavigateToTab}
-            />
-          </div>
-        )}
-
-        {activeTab === "resources" && (
-          <AdminDashboardResources
-            onUpload={() => setActiveTab("upload")}
+          <AdminDashboardOverview
+            state={state}
+            onRefresh={fetchDashboardData}
             onNavigateToTab={handleNavigateToTab}
           />
         )}
@@ -296,13 +283,20 @@ export const AdminDashboardContent: React.FC = () => {
           <AdminDashboardStudents onNavigateToTab={handleNavigateToTab} />
         )}
 
+        {activeTab === "universities" && <AdminDashboardUniversities />}
+
+        {activeTab === "departments" && <AdminDashboardDepartments />}
+
         {activeTab === "subjects" && (
           <AdminDashboardSubjects onNavigateToTab={handleNavigateToTab} />
         )}
 
-        {activeTab === "departments" && <AdminDashboardDepartments />}
-
-        {activeTab === "universities" && <AdminDashboardUniversities />}
+        {activeTab === "resources" && (
+          <AdminDashboardResources
+            onUpload={() => setActiveTab("upload")}
+            onNavigateToTab={handleNavigateToTab}
+          />
+        )}
 
         {activeTab === "quizzes" && (
           <AdminDashboardQuizzes onNavigateToTab={handleNavigateToTab} />

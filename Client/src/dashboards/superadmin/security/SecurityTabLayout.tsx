@@ -69,7 +69,11 @@ export const SecurityTabLayout: React.FC<SecurityTabLayoutProps> = ({
                   ? "Logins"
                   : id === "rate-limits"
                     ? "Limits"
-                    : undefined,
+                    : id === "uploads"
+                      ? "Uploads"
+                      : id === "alerts"
+                        ? "Alerts"
+                        : undefined,
           }))}
           activeTab={activeTab}
           onTabChange={(id) => {
@@ -78,7 +82,7 @@ export const SecurityTabLayout: React.FC<SecurityTabLayoutProps> = ({
           }}
           stickyClassName="-mx-6 px-6"
         />
-        <div className="p-6 space-y-6 max-w-7xl mx-auto">
+        <div className="p-3 md:p-6 space-y-4 md:space-y-6 max-w-7xl mx-auto">
           {children}
         </div>
       </div>

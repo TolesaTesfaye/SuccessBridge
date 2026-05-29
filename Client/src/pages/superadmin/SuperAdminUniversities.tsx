@@ -151,7 +151,39 @@ export const SuperAdminUniversities: React.FC<SuperAdminUniversitiesProps> = ({
           </Button>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-white/10 overflow-hidden">
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-3">
+          {universities.map(uni => (
+            <div key={uni.id} className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/10 p-4 space-y-3 shadow-sm">
+              <div className="flex items-start justify-between gap-2">
+                <h3 className="font-bold text-slate-900 dark:text-white text-sm leading-tight">{uni.name}</h3>
+                <div className="flex gap-2 shrink-0">
+                  <button onClick={() => handleView(uni)} className="px-2.5 py-1 text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-500/10 dark:text-blue-400 rounded-lg border border-blue-200 dark:border-blue-500/20 active:scale-95 transition-transform">View</button>
+                  <button onClick={() => handleEdit(uni)} className="px-2.5 py-1 text-xs font-bold text-amber-600 bg-amber-50 dark:bg-amber-500/10 dark:text-amber-400 rounded-lg border border-amber-200 dark:border-amber-500/20 active:scale-95 transition-transform">Edit</button>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-green-50 text-green-700 dark:bg-green-500/10 dark:text-green-400 border border-green-200 dark:border-green-500/20">
+                  {uni.students || '0'} Students
+                </span>
+                <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 border border-blue-200 dark:border-blue-500/20">
+                  {uni.departments || '0'} Depts
+                </span>
+              </div>
+              <button onClick={() => handleDeleteClick(uni)} className="w-full py-2 text-xs font-bold text-red-600 bg-red-50 dark:bg-red-500/10 dark:text-red-400 rounded-lg border border-red-200 dark:border-red-500/20 active:scale-95 transition-transform">
+                Delete
+              </button>
+            </div>
+          ))}
+          {universities.length === 0 && (
+            <div className="text-center py-8 text-slate-500 dark:text-slate-400 text-sm">
+              No universities have been added to the platform yet.
+            </div>
+          )}
+        </div>
+
+        {/* Desktop Table */}
+        <div className="hidden md:block bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-white/10 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm whitespace-nowrap">
               <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400">

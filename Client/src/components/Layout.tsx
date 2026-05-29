@@ -102,7 +102,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <>
               <NotificationBell />
               <div className="flex items-center space-x-3">
-                <div className="text-right">
+                <div className="text-right hidden sm:block">
                   <p className="text-sm font-medium text-gray-900 dark:text-white">
                     {user.name}
                   </p>
@@ -110,7 +110,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                     {user.role.replace("_", " ")}
                   </p>
                 </div>
-                <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold">
+                <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white font-bold shrink-0">
                   {user?.name?.charAt(0).toUpperCase() || "U"}
                 </div>
               </div>

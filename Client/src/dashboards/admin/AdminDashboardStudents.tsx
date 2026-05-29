@@ -304,12 +304,53 @@ export const AdminDashboardStudents: React.FC<StudentTabProps> = ({
             {loading ? (
               <Loading message="Loading student registry..." />
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[900px] text-left text-sm">
+              <><div className="md:hidden space-y-3">
+                {filteredStudents.map((student) => (
+                  <div key={student.id} className="bg-white dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <p className="font-bold text-slate-900 dark:text-white text-sm">{student.name}</p>
+                      </div>
+                      {student.isEmailVerified ? (
+                        <span className="shrink-0 inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200">
+                          <Check className="w-3 h-3" /> Verified
+                        </span>
+                      ) : (
+                        <span className="shrink-0 inline-flex items-center gap-1 rounded-full border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-semibold text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-200">
+                          <X className="w-3 h-3" /> Unverified
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
+                        student.studentType === "high_school"
+                          ? "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200"
+                          : "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-500/20 dark:bg-violet-500/10 dark:text-violet-200"
+                      }`}>
+                        {student.studentType === "high_school" ? "📚 High School" : "🎓 University"}
+                      </span>
+                      <span className="rounded-full bg-slate-100 dark:bg-slate-700 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:text-slate-300">
+                        {student.studentType === "high_school"
+                          ? student.highSchoolGrade || "N/A"
+                          : student.universityLevel || "N/A"}
+                      </span>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 self-center ml-auto">
+                        {formatDate(student.createdAt)}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+                {filteredStudents.length === 0 && !loading && (
+                  <div className="text-center py-8 text-slate-400 text-sm">
+                    No students found
+                  </div>
+                )}
+              </div>
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left text-sm">
                   <thead className="border-b border-slate-200 text-xs uppercase tracking-[0.18em] text-slate-500 dark:border-white/10 dark:text-slate-400">
                     <tr>
                       <th className="py-3 pr-4">Student</th>
-                      <th className="py-3 pr-4">Email</th>
                       <th className="py-3 pr-4">Type</th>
                       <th className="py-3 pr-4">Level</th>
                       <th className="py-3 pr-4">Verification</th>
@@ -326,12 +367,6 @@ export const AdminDashboardStudents: React.FC<StudentTabProps> = ({
                           <div className="font-bold text-slate-900 dark:text-white">
                             {student.name}
                           </div>
-                        </td>
-                        <td className="py-4 pr-4 text-slate-600 dark:text-slate-300">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-xs dark:bg-white/5">
-                            <Mail className="h-3 w-3" />
-                            {student.email}
-                          </span>
                         </td>
                         <td className="py-4 pr-4">
                           <span
@@ -389,6 +424,7 @@ export const AdminDashboardStudents: React.FC<StudentTabProps> = ({
                   </div>
                 )}
               </div>
+              </>
             )}
           </CardBody>
         </Card>
