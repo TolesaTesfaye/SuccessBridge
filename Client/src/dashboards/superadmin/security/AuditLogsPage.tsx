@@ -4,13 +4,11 @@ import { useAuthStore } from "@store/authStore";
 import { useToast } from "@components/common/Toast";
 import {
   FileText,
-  Menu,
-  X,
   Download,
   Search,
   Filter as FilterIcon,
 } from "lucide-react";
-import AdminSecuritySidebar from "./AdminSecuritySidebar";
+import { SecurityTabLayout } from "./SecurityTabLayout";
 import SecurityDataTable from "./SecurityDataTable";
 import { auditService } from "@services/auditService";
 
@@ -18,7 +16,6 @@ export const AuditLogsPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const toast = useToast();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [loading, setLoading] = useState(true);
   const [logs, setLogs] = useState<any[]>([]);
   const [page, setPage] = useState(1);
@@ -166,133 +163,112 @@ export const AuditLogsPage: React.FC = () => {
   ];
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-slate-900">
-      <AdminSecuritySidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      />
-
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="bg-white dark:bg-slate-800/80 border-b border-gray-200 dark:border-slate-700/50 px-6 py-4 flex items-center justify-between backdrop-blur-sm">
-          <div className="flex items-center gap-3">
-            <button
-              className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-            >
-              {sidebarOpen ? (
-                <X size={24} className="text-gray-600 dark:text-slate-300" />
-              ) : (
-                <Menu size={24} className="text-gray-600 dark:text-slate-300" />
-              )}
-            </button>
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <FileText size={20} className="text-white" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Audit Logs
-            </h1>
+    <SecurityTabLayout title="Audit Logs" subtitle="Security event audit trail">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+            <FileText size={20} className="text-white" />
           </div>
-          <button
-            onClick={handleExport}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
-          >
-            <Download size={18} />
-            Export CSV
-          </button>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Audit Logs
+          </h1>
         </div>
+        <button
+          onClick={handleExport}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+        >
+          <Download size={18} />
+          Export CSV
+        </button>
+      </div>
 
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          {/* Filters */}
-          <div className="bg-white dark:bg-slate-800/60 rounded-xl border border-gray-200 dark:border-slate-700/50 p-5 mb-6 shadow-sm backdrop-blur-sm">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-                  <Search size={16} className="inline mr-1" />
-                  Search
-                </label>
-                <input
-                  type="text"
-                  placeholder="User, Action, IP, Resource..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-                  <FilterIcon size={16} className="inline mr-1" />
-                  Action
-                </label>
-                <select
-                  value={actionFilter}
-                  onChange={(e) => {
-                    setActionFilter(e.target.value);
-                    setPage(1);
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">All Actions</option>
-                  <option value="login">Login</option>
-                  <option value="logout">Logout</option>
-                  <option value="password_change">Password Change</option>
-                  <option value="password_reset">Password Reset</option>
-                  <option value="user_create">User Create</option>
-                  <option value="user_delete">User Delete</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-                  Status
-                </label>
-                <select
-                  value={statusFilter}
-                  onChange={(e) => {
-                    setStatusFilter(e.target.value);
-                    setPage(1);
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">All Status</option>
-                  <option value="success">Success</option>
-                  <option value="failure">Failure</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-                  &nbsp;
-                </label>
-                <button
-                  onClick={() => {
-                    setSearchTerm("");
-                    setActionFilter("");
-                    setStatusFilter("");
-                    setPage(1);
-                  }}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
-                >
-                  Reset Filters
-                </button>
-              </div>
-            </div>
+      {/* Filters */}
+      <div className="bg-white dark:bg-slate-800/60 rounded-xl border border-gray-200 dark:border-slate-700/50 p-5 mb-6 shadow-sm backdrop-blur-sm">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+              <Search size={16} className="inline mr-1" />
+              Search
+            </label>
+            <input
+              type="text"
+              placeholder="User, Action, IP, Resource..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
-
-          {/* Table */}
-          <SecurityDataTable
-            columns={columns}
-            data={filteredLogs}
-            loading={loading}
-            pagination={{
-              page,
-              total: total,
-              pages: pages,
-              onPageChange: setPage,
-            }}
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+              <FilterIcon size={16} className="inline mr-1" />
+              Action
+            </label>
+            <select
+              value={actionFilter}
+              onChange={(e) => {
+                setActionFilter(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">All Actions</option>
+              <option value="login">Login</option>
+              <option value="logout">Logout</option>
+              <option value="password_change">Password Change</option>
+              <option value="password_reset">Password Reset</option>
+              <option value="user_create">User Create</option>
+              <option value="user_delete">User Delete</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+              Status
+            </label>
+            <select
+              value={statusFilter}
+              onChange={(e) => {
+                setStatusFilter(e.target.value);
+                setPage(1);
+              }}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">All Status</option>
+              <option value="success">Success</option>
+              <option value="failure">Failure</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
+              &nbsp;
+            </label>
+            <button
+              onClick={() => {
+                setSearchTerm("");
+                setActionFilter("");
+                setStatusFilter("");
+                setPage(1);
+              }}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
+            >
+              Reset Filters
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Table */}
+      <SecurityDataTable
+        columns={columns}
+        data={filteredLogs}
+        loading={loading}
+        pagination={{
+          page,
+          total: total,
+          pages: pages,
+          onPageChange: setPage,
+        }}
+      />
+    </SecurityTabLayout>
   );
 };
 

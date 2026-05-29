@@ -1,5 +1,5 @@
 import React from "react";
-import { Filter, Search, X, RefreshCw } from "lucide-react";
+import { Search, X, RefreshCw } from "lucide-react";
 import { ResourceCard } from "@components/resources/ResourceCard";
 import { DEPARTMENTS, UNIVERSITIES } from "@utils/constants";
 

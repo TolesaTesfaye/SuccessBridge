@@ -4,13 +4,10 @@ import { useAuthStore } from "@store/authStore";
 import { useToast } from "@components/common/Toast";
 import {
   AlertTriangle,
-  Menu,
-  X,
-  Bell,
   CheckCircle,
   Shield,
 } from "lucide-react";
-import AdminSecuritySidebar from "./AdminSecuritySidebar";
+import { SecurityTabLayout } from "./SecurityTabLayout";
 import SecurityMetricCard from "./SecurityMetricCard";
 import SecurityDataTable from "./SecurityDataTable";
 import { adminSecurityService } from "@services/adminSecurityService";
@@ -19,7 +16,6 @@ export const SecurityAlertsPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const toast = useToast();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [loading, setLoading] = useState(true);
   const [alerts, setAlerts] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
@@ -149,162 +145,130 @@ export const SecurityAlertsPage: React.FC = () => {
   ];
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-slate-900">
-      <AdminSecuritySidebar
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      />
+    <SecurityTabLayout title="Security Alerts" subtitle="Review and manage security alerts">
+      {/* Top Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <SecurityMetricCard
+          title="Total Alerts"
+          value={total}
+          icon="🔔"
+          loading={loading}
+        />
+        <SecurityMetricCard
+          title="Unresolved"
+          value={unresolved}
+          icon="⚠️"
+          loading={loading}
+        />
+        <SecurityMetricCard
+          title="Resolved"
+          value={total - unresolved}
+          icon="✅"
+          loading={loading}
+        />
+      </div>
 
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <div className="bg-white dark:bg-slate-800/80 border-b border-gray-200 dark:border-slate-700/50 px-6 py-4 flex items-center justify-between backdrop-blur-sm">
-          <div className="flex items-center gap-3">
-            <button
-              className="md:hidden p-2 hover:bg-gray-100 rounded"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-            >
-              {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-            <Bell size={28} className="text-red-600" />
-            <h1 className="text-2xl font-bold text-gray-900">
-              Security Alerts
-            </h1>
-          </div>
-          <button
-            onClick={fetchAlerts}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
-          >
-            Refresh
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          {/* Top Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <SecurityMetricCard
-              title="Total Alerts"
-              value={total}
-              icon="🔔"
-              loading={loading}
-            />
-            <SecurityMetricCard
-              title="Unresolved"
-              value={unresolved}
-              icon="⚠️"
-              loading={loading}
-            />
-            <SecurityMetricCard
-              title="Resolved"
-              value={total - unresolved}
-              icon="✅"
-              loading={loading}
-            />
-          </div>
-
-          {/* Critical Alert Banner */}
-          {alerts.some((a) => a.severity === "critical") && (
-            <div className="bg-red-50 border border-red-400 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <AlertTriangle size={20} className="text-red-600" />
-                <p className="text-sm font-bold text-red-800">
-                  🚨 CRITICAL SECURITY ALERTS DETECTED
-                </p>
-              </div>
-              <p className="text-sm text-red-700">
-                One or more critical security alerts require immediate
-                attention. Review the alerts below and take appropriate action.
-              </p>
-            </div>
-          )}
-
-          {/* Alerts Table */}
-          <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-            <div className="flex items-center gap-2 mb-4">
-              <Shield size={20} className="text-blue-600" />
-              <h2 className="text-lg font-semibold text-gray-900">
-                Active Security Alerts ({unresolved} unresolved)
-              </h2>
-            </div>
-            <SecurityDataTable
-              columns={columns}
-              data={alerts}
-              loading={loading}
-              pagination={
-                total > 0
-                  ? {
-                      page,
-                      total,
-                      pages,
-                      onPageChange: setPage,
-                    }
-                  : undefined
-              }
-            />
-          </div>
-
-          {/* Alert Categories */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              {
-                type: "brute_force_ip",
-                icon: "🌐",
-                label: "Brute Force (IP)",
-                desc: "Multiple failed login attempts from a single IP address",
-              },
-              {
-                type: "targeted_user",
-                icon: "👤",
-                label: "Targeted User",
-                desc: "Focused attack on a specific user account",
-              },
-              {
-                type: "distributed_attack",
-                icon: "🕸️",
-                label: "Distributed Attack",
-                desc: "Coordinated attack from multiple IP addresses",
-              },
-            ].map((cat) => {
-              const catCount = alerts.filter(
-                (a) => a.type === cat.type && a.status === "unresolved",
-              ).length;
-              return (
-                <div
-                  key={cat.type}
-                  className={`p-4 rounded-lg border ${
-                    catCount > 0
-                      ? "bg-red-50 border-red-200"
-                      : "bg-gray-50 border-gray-200"
-                  }`}
-                >
-                  <p className="font-semibold text-gray-900 mb-1">
-                    {cat.icon} {cat.label}
-                  </p>
-                  <p className="text-xs text-gray-600 mb-2">{cat.desc}</p>
-                  <span
-                    className={`text-sm font-bold ${
-                      catCount > 0 ? "text-red-600" : "text-green-600"
-                    }`}
-                  >
-                    {catCount > 0 ? `${catCount} active alert(s)` : "No alerts"}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* About Security Alerts */}
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <p className="text-sm text-gray-600">
-              🔔 Security alerts are automatically generated from suspicious
-              activity patterns detected in the audit logs. Alerts are derived
-              from the same data used for suspicious patterns on the main
-              dashboard. Resolving an alert acknowledges it has been reviewed.
+      {/* Critical Alert Banner */}
+      {alerts.some((a) => a.severity === "critical") && (
+        <div className="bg-red-50 border border-red-400 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <AlertTriangle size={20} className="text-red-600" />
+            <p className="text-sm font-bold text-red-800">
+              🚨 CRITICAL SECURITY ALERTS DETECTED
             </p>
           </div>
+          <p className="text-sm text-red-700">
+            One or more critical security alerts require immediate
+            attention. Review the alerts below and take appropriate action.
+          </p>
         </div>
+      )}
+
+      {/* Alerts Table */}
+      <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+        <div className="flex items-center gap-2 mb-4">
+          <Shield size={20} className="text-blue-600" />
+          <h2 className="text-lg font-semibold text-gray-900">
+            Active Security Alerts ({unresolved} unresolved)
+          </h2>
+        </div>
+        <SecurityDataTable
+          columns={columns}
+          data={alerts}
+          loading={loading}
+          pagination={
+            total > 0
+              ? {
+                  page,
+                  total,
+                  pages,
+                  onPageChange: setPage,
+                }
+              : undefined
+          }
+        />
       </div>
-    </div>
+
+      {/* Alert Categories */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {[
+          {
+            type: "brute_force_ip",
+            icon: "🌐",
+            label: "Brute Force (IP)",
+            desc: "Multiple failed login attempts from a single IP address",
+          },
+          {
+            type: "targeted_user",
+            icon: "👤",
+            label: "Targeted User",
+            desc: "Focused attack on a specific user account",
+          },
+          {
+            type: "distributed_attack",
+            icon: "🕸️",
+            label: "Distributed Attack",
+            desc: "Coordinated attack from multiple IP addresses",
+          },
+        ].map((cat) => {
+          const catCount = alerts.filter(
+            (a) => a.type === cat.type && a.status === "unresolved",
+          ).length;
+          return (
+            <div
+              key={cat.type}
+              className={`p-4 rounded-lg border ${
+                catCount > 0
+                  ? "bg-red-50 border-red-200"
+                  : "bg-gray-50 border-gray-200"
+              }`}
+            >
+              <p className="font-semibold text-gray-900 mb-1">
+                {cat.icon} {cat.label}
+              </p>
+              <p className="text-xs text-gray-600 mb-2">{cat.desc}</p>
+              <span
+                className={`text-sm font-bold ${
+                  catCount > 0 ? "text-red-600" : "text-green-600"
+                }`}
+              >
+                {catCount > 0 ? `${catCount} active alert(s)` : "No alerts"}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* About Security Alerts */}
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+        <p className="text-sm text-gray-600">
+          🔔 Security alerts are automatically generated from suspicious
+          activity patterns detected in the audit logs. Alerts are derived
+          from the same data used for suspicious patterns on the main
+          dashboard. Resolving an alert acknowledges it has been reviewed.
+        </p>
+      </div>
+    </SecurityTabLayout>
   );
 };
 

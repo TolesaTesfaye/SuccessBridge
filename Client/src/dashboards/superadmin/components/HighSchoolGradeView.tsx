@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { BookOpen, FileText, Plus, X } from "lucide-react";
+import { BookOpen, FileText, X } from "lucide-react";
 import { resourceService } from "@services/resourceService";
 import { HIGH_SCHOOL } from "@utils/constants";
 import { ResourceCard } from "@components/resources/ResourceCard";

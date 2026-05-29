@@ -1,5 +1,5 @@
 import React from "react";
-import { Filter, Search, X, RefreshCw } from "lucide-react";
+import { Search, X, RefreshCw } from "lucide-react";
 import { ResourceCard } from "@components/resources/ResourceCard";
 
 type Grade = "grade_9" | "grade_10" | "grade_11" | "grade_12";

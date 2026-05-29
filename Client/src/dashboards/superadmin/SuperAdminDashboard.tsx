@@ -11,25 +11,64 @@ import {
   UploadFormData,
 } from "@components/resources/ResourceUploadForm";
 import { SuperAdminAddQuiz } from "@pages/superadmin/SuperAdminAddQuiz";
+import { SuperAdminUniversities } from "@pages/superadmin/SuperAdminUniversities";
+import { SuperAdminResources } from "@pages/superadmin/SuperAdminResources";
+import { SuperAdminAnalytics } from "@pages/superadmin/SuperAdminAnalytics";
+import { PromotionPage } from "@pages/PromotionPage";
+import { StudentAICompanion } from "@pages/student/StudentAICompanion";
 import { AdminDashboardPayments } from "@dashboards/admin/AdminDashboardPayments";
+import { useNavigate } from "react-router-dom";
+import {
+  LayoutDashboard,
+  Building,
+  BookOpen,
+  BarChart3,
+  Megaphone,
+  Sparkles,
+  Upload,
+  Users,
+  GraduationCap,
+  CreditCard,
+  FileQuestion,
+} from "lucide-react";
+import {
+  SuperAdminTopTabNav,
+  type SuperAdminTabItem,
+} from "./components/SuperAdminTopTabNav";
 
 // Import extracted components
-import {
-  OverviewTab,
-  AdminsTab,
-  StudentsTab,
-  ResourcesTab,
-  AdminDashboardView,
-  HighSchoolGradeView,
-  UniversityLevelView,
-  HighSchoolGradeDashboard,
-  UniversityLevelDashboard,
-  StudentViewWrapper,
-  SecurityTab,
-} from "./components";
+import { OverviewTab, AdminsTab, StudentsTab } from "./components";
+
+const HIGH_SCHOOL_GRADES = [
+  "grade_9",
+  "grade_10",
+  "grade_11",
+  "grade_12",
+] as const;
+const UNIVERSITY_LEVELS = ["freshman", "remedial", "senior", "gc"] as const;
+
+const PLATFORM_TABS: SuperAdminTabItem[] = [
+  { id: "overview", label: "Overview", icon: LayoutDashboard },
+  { id: "universities", label: "Universities", icon: Building },
+  { id: "resources", label: "Resources", icon: BookOpen },
+  { id: "analytics", label: "Analytics", icon: BarChart3 },
+  { id: "promotion", label: "Promotion", icon: Megaphone },
+  {
+    id: "ai-companion",
+    label: "AI Companion",
+    shortLabel: "AI",
+    icon: Sparkles,
+  },
+  { id: "upload", label: "Upload", icon: Upload },
+  { id: "admins", label: "Admins", icon: Users },
+  { id: "students", label: "Students", icon: GraduationCap },
+  { id: "payments", label: "Payments", icon: CreditCard },
+  { id: "addquiz", label: "Add Quiz", shortLabel: "Quiz", icon: FileQuestion },
+];
 
 export const SuperAdminDashboard: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [selectedAdmin, setSelectedAdmin] = useState<any>(null);
@@ -38,20 +77,40 @@ export const SuperAdminDashboard: React.FC = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
-  // Handle navigation state for activeTab
+  // Legacy tab state → dedicated view routes
   useEffect(() => {
-    if (location.state?.activeTab) {
-      setActiveTab(location.state.activeTab);
-    }
-  }, [location.state]);
+    const tab = location.state?.activeTab;
+    if (!tab) return;
 
-  // New state for High School and University views
-  const [highSchoolActiveGrade, setHighSchoolActiveGrade] = useState<
-    "grade_9" | "grade_10" | "grade_11" | "grade_12"
-  >("grade_9");
-  const [universityActiveLevel, setUniversityActiveLevel] = useState<
-    "freshman" | "remedial" | "senior" | "gc"
-  >("freshman");
+    if (tab === "admin-view") {
+      navigate("/superadmin/admin-view", { replace: true });
+      return;
+    }
+    if (tab === "security") {
+      navigate("/superadmin/security", { replace: true });
+      return;
+    }
+    if (tab === "management") {
+      navigate("/superadmin/management", { replace: true });
+      return;
+    }
+    if (HIGH_SCHOOL_GRADES.includes(tab)) {
+      navigate("/superadmin/highschool-view", {
+        replace: true,
+        state: { activeTab: tab },
+      });
+      return;
+    }
+    if (UNIVERSITY_LEVELS.includes(tab)) {
+      navigate("/superadmin/university-view", {
+        replace: true,
+        state: { activeTab: tab },
+      });
+      return;
+    }
+
+    setActiveTab(tab);
+  }, [location.state, navigate]);
 
   // Real data from database
   const [stats, setStats] = useState({
@@ -136,255 +195,21 @@ export const SuperAdminDashboard: React.FC = () => {
       disableTopPadding={true}
     >
       <div className="space-y-0 pb-8">
-        {/* Main Tabs - Compact & Scrollable */}
-        <div className="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b-2 border-gray-200 dark:border-slate-700 flex gap-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-2 md:-mx-6 px-2 md:px-6">
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "overview"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => setActiveTab("overview")}
-          >
-            Overview
-          </button>
-
-          {/* High School Tabs */}
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "grade_9"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => {
-              setActiveTab("grade_9");
-              setHighSchoolActiveGrade("grade_9");
-            }}
-          >
-            <span className="hidden sm:inline">Grade 9</span>
-            <span className="sm:hidden">G9</span>
-          </button>
-
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "grade_10"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => {
-              setActiveTab("grade_10");
-              setHighSchoolActiveGrade("grade_10");
-            }}
-          >
-            <span className="hidden sm:inline">Grade 10</span>
-            <span className="sm:hidden">G10</span>
-          </button>
-
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "grade_11"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => {
-              setActiveTab("grade_11");
-              setHighSchoolActiveGrade("grade_11");
-            }}
-          >
-            <span className="hidden sm:inline">Grade 11</span>
-            <span className="sm:hidden">G11</span>
-          </button>
-
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "grade_12"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => {
-              setActiveTab("grade_12");
-              setHighSchoolActiveGrade("grade_12");
-            }}
-          >
-            <span className="hidden sm:inline">Grade 12</span>
-            <span className="sm:hidden">G12</span>
-          </button>
-
-          {/* University Tabs */}
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "freshman"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => {
-              setActiveTab("freshman");
-              setUniversityActiveLevel("freshman");
-            }}
-          >
-            <span className="hidden sm:inline">Freshman</span>
-            <span className="sm:hidden">Fr</span>
-          </button>
-
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "remedial"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => {
-              setActiveTab("remedial");
-              setUniversityActiveLevel("remedial");
-            }}
-          >
-            <span className="hidden sm:inline">Remedial</span>
-            <span className="sm:hidden">Rm</span>
-          </button>
-
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "senior"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => {
-              setActiveTab("senior");
-              setUniversityActiveLevel("senior");
-            }}
-          >
-            <span className="hidden sm:inline">Senior</span>
-            <span className="sm:hidden">Sr</span>
-          </button>
-
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "gc"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => {
-              setActiveTab("gc");
-              setUniversityActiveLevel("gc");
-            }}
-          >
-            GC
-          </button>
-
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "upload"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => setActiveTab("upload")}
-          >
-            Upload
-          </button>
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "admins"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => setActiveTab("admins")}
-          >
-            Admins
-          </button>
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "students"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => setActiveTab("students")}
-          >
-            Students
-          </button>
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "payments"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => setActiveTab("payments")}
-          >
-            Payments
-          </button>
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "resources"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => setActiveTab("resources")}
-          >
-            Resources
-          </button>
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "addquiz"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => setActiveTab("addquiz")}
-          >
-            <span className="hidden sm:inline">Add Quiz</span>
-            <span className="sm:hidden">Quiz</span>
-          </button>
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "admin-view"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => setActiveTab("admin-view")}
-          >
-            Admin View
-          </button>
-          <button
-            className={`px-3 py-2 md:px-4 md:py-2 font-semibold transition-all duration-300 whitespace-nowrap border-b-2 text-xs md:text-sm ${
-              activeTab === "security"
-                ? "text-purple-600 dark:text-purple-400 border-purple-600 dark:border-purple-400 -mb-0.5"
-                : "text-gray-600 dark:text-gray-400 border-transparent hover:text-gray-900 dark:hover:text-white"
-            }`}
-            onClick={() => setActiveTab("security")}
-          >
-            <span className="hidden sm:inline">Security</span>
-            <span className="sm:hidden">🔒</span>
-          </button>
-        </div>
+        <SuperAdminTopTabNav
+          tabs={PLATFORM_TABS}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
 
         {/* Tab Content */}
         <div className="animate-fadeIn pt-4 md:pt-6 px-2 md:px-0">
           {activeTab === "overview" && <OverviewTab stats={stats} />}
 
-          {/* High School Grade Pages */}
-          {activeTab === "grade_9" && (
-            <StudentViewWrapper type="highschool" grade="grade_9" />
-          )}
-          {activeTab === "grade_10" && (
-            <StudentViewWrapper type="highschool" grade="grade_10" />
-          )}
-          {activeTab === "grade_11" && (
-            <StudentViewWrapper type="highschool" grade="grade_11" />
-          )}
-          {activeTab === "grade_12" && (
-            <StudentViewWrapper type="highschool" grade="grade_12" />
-          )}
-
-          {/* University Level Pages */}
-          {activeTab === "freshman" && (
-            <StudentViewWrapper type="university" level="freshman" />
-          )}
-          {activeTab === "remedial" && (
-            <StudentViewWrapper type="university" level="remedial" />
-          )}
-          {activeTab === "senior" && (
-            <StudentViewWrapper type="university" level="senior" />
-          )}
-          {activeTab === "gc" && (
-            <StudentViewWrapper type="university" level="gc" />
-          )}
+          {activeTab === "universities" && <SuperAdminUniversities embedded />}
+          {activeTab === "resources" && <SuperAdminResources embedded />}
+          {activeTab === "analytics" && <SuperAdminAnalytics embedded />}
+          {activeTab === "promotion" && <PromotionPage embedded />}
+          {activeTab === "ai-companion" && <StudentAICompanion embedded />}
 
           {activeTab === "upload" && (
             <Card>
@@ -410,12 +235,7 @@ export const SuperAdminDashboard: React.FC = () => {
             />
           )}
           {activeTab === "payments" && <AdminDashboardPayments />}
-          {activeTab === "resources" && (
-            <ResourcesTab onUpload={() => setShowUploadModal(true)} />
-          )}
           {activeTab === "addquiz" && <SuperAdminAddQuiz />}
-          {activeTab === "admin-view" && <AdminDashboardView />}
-          {activeTab === "security" && <SecurityTab />}
         </div>
 
         {/* Upload Modal */}

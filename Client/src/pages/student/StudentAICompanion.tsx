@@ -165,7 +165,13 @@ const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => {
   );
 };
 
-export const StudentAICompanion: React.FC = () => {
+type StudentAICompanionProps = {
+  embedded?: boolean;
+};
+
+export const StudentAICompanion: React.FC<StudentAICompanionProps> = ({
+  embedded = false,
+}) => {
   const [activeTab, setActiveTab] = useState<
     "chat" | "explain" | "quiz" | "summarize" | "study-plan"
   >("chat");
@@ -502,8 +508,8 @@ export const StudentAICompanion: React.FC = () => {
   // ----------------------------------------------------
   // Main Rendering
   // ----------------------------------------------------
-  return (
-    <DashboardLayout title="">
+  const content = (
+    <>
       <div className="w-full max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6 md:py-10 space-y-4 sm:space-y-6">
         {/* Banner with modern dark/light gradient */}
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-900 dark:via-indigo-900 dark:to-purple-900 text-white p-4 sm:p-6 md:p-10 shadow-xl border border-indigo-500/20">
@@ -1320,8 +1326,12 @@ export const StudentAICompanion: React.FC = () => {
       >
         <MessageSquare className="w-6 h-6" />
       </button>
-    </DashboardLayout>
+    </>
   );
+
+  if (embedded) return content;
+
+  return <DashboardLayout title="">{content}</DashboardLayout>;
 };
 
 export default StudentAICompanion;

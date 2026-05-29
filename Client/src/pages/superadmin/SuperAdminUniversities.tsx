@@ -7,7 +7,13 @@ import { DashboardLayout } from '@components/dashboards/DashboardLayout'
 import { Button } from '@components/common/Button'
 import { Modal } from '@components/common/Modal'
 
-export const SuperAdminUniversities: React.FC = () => {
+type SuperAdminUniversitiesProps = {
+  embedded?: boolean;
+};
+
+export const SuperAdminUniversities: React.FC<SuperAdminUniversitiesProps> = ({
+  embedded = false,
+}) => {
   const [showAdd, setShowAdd] = useState(false)
   const [showEdit, setShowEdit] = useState(false)
   const [showView, setShowView] = useState(false)
@@ -136,8 +142,7 @@ export const SuperAdminUniversities: React.FC = () => {
     return <LoadingOverlay message="Loading universities from database..." />
   }
 
-  return (
-    <DashboardLayout title="Universities" subtitle="Manage universities on the platform">
+  const content = (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-bold text-gray-900 m-0">All Universities</h2>
@@ -318,6 +323,13 @@ export const SuperAdminUniversities: React.FC = () => {
           </div>
         </Modal>
       </div>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <DashboardLayout title="Universities" subtitle="Manage universities on the platform">
+      {content}
     </DashboardLayout>
-  )
-}
+  );
+};

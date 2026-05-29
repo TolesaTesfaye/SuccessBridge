@@ -15,6 +15,7 @@ import {
 } from "./config/syncDatabase.js";
 import { connectRedis } from "./config/redis.js";
 import { seedSuperAdmin } from "./config/seedAdmin.js";
+import { seedSettings } from "./config/seedSettings.js";
 import { setupSwagger } from "./config/swagger.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { auditMiddleware } from "./middleware/auditLogger.js";
@@ -36,6 +37,8 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import diagnosticRoutes from "./routes/diagnostic.js";
 import auditRoutes from "./routes/audit.js";
 import securityRoutes from "./routes/securityRoutes.js";
+import managementRoutes from "./routes/managementRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import aiRoutes from "./routes/ai.js";
 
 // Import all models to ensure they are registered with Sequelize
@@ -253,6 +256,8 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/diagnostic", diagnosticRoutes);
 app.use("/api/admin", auditRoutes);
 app.use("/api/admin/security", securityRoutes);
+app.use("/api/admin/management", managementRoutes);
+app.use("/api/admin/admin", adminRoutes);
 app.use("/api/ai", aiRoutes);
 
 // Health check
@@ -327,6 +332,13 @@ const startServer = async () => {
 
         await seedSuperAdmin();
         logger.info("Super admin checked/seeded");
+
+        // Seed default system settings if empty
+        try {
+          await seedSettings();
+        } catch (settingsError) {
+          logger.error("Failed to seed system settings:", settingsError);
+        }
         dbSyncOk = true;
       } catch (syncError) {
         dbSyncOk = false;

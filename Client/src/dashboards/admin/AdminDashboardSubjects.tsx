@@ -6,7 +6,7 @@ import { Loading } from "@components/common/Loading";
 import { subjectService } from "@services/subjectService";
 import { departmentService } from "@services/departmentService";
 import type { Subject } from "@services/subjectService";
-import { BookOpen, Code2, Filter, Sparkles } from "lucide-react";
+import { BookOpen, Code2, Sparkles } from "lucide-react";
 import {
   DashboardHeroSkeleton,
   DashboardListSkeleton,

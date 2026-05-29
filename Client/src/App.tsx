@@ -230,6 +230,26 @@ const SuperAdminAboutProject = lazy(() =>
     default: m.SuperAdminAboutProject,
   })),
 );
+const SuperAdminManagementPanel = lazy(() =>
+  import("@pages/superadmin/SuperAdminManagementPanel").then((m) => ({
+    default: m.SuperAdminManagementPanel,
+  })),
+);
+const SuperAdminAdminView = lazy(() =>
+  import("@pages/superadmin/SuperAdminAdminView").then((m) => ({
+    default: m.SuperAdminAdminView,
+  })),
+);
+const SuperAdminHighSchoolView = lazy(() =>
+  import("@pages/superadmin/SuperAdminHighSchoolView").then((m) => ({
+    default: m.SuperAdminHighSchoolView,
+  })),
+);
+const SuperAdminUniversityView = lazy(() =>
+  import("@pages/superadmin/SuperAdminUniversityView").then((m) => ({
+    default: m.SuperAdminUniversityView,
+  })),
+);
 
 // Lazy load public pages
 const About = lazy(() =>
@@ -549,10 +569,38 @@ const AppContent: React.FC = () => {
                 }
               />
               <Route
+                path="/superadmin/admin-view"
+                element={
+                  <ProtectedRoute requiredRole="super_admin">
+                    <SuperAdminAdminView />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/superadmin/highschool-view"
+                element={
+                  <ProtectedRoute requiredRole="super_admin">
+                    <SuperAdminHighSchoolView />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/superadmin/university-view"
+                element={
+                  <ProtectedRoute requiredRole="super_admin">
+                    <SuperAdminUniversityView />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/superadmin/resources"
                 element={
                   <ProtectedRoute requiredRole="super_admin">
-                    <SuperAdminResources />
+                    <Navigate
+                      to="/superadmin/dashboard"
+                      replace
+                      state={{ activeTab: "resources" }}
+                    />
                   </ProtectedRoute>
                 }
               />
@@ -569,7 +617,11 @@ const AppContent: React.FC = () => {
                 path="/superadmin/universities"
                 element={
                   <ProtectedRoute requiredRole="super_admin">
-                    <SuperAdminUniversities />
+                    <Navigate
+                      to="/superadmin/dashboard"
+                      replace
+                      state={{ activeTab: "universities" }}
+                    />
                   </ProtectedRoute>
                 }
               />
@@ -593,7 +645,11 @@ const AppContent: React.FC = () => {
                 path="/superadmin/analytics"
                 element={
                   <ProtectedRoute requiredRole="super_admin">
-                    <SuperAdminAnalytics />
+                    <Navigate
+                      to="/superadmin/dashboard"
+                      replace
+                      state={{ activeTab: "analytics" }}
+                    />
                   </ProtectedRoute>
                 }
               />
@@ -630,10 +686,22 @@ const AppContent: React.FC = () => {
                 }
               />
               <Route
+                path="/superadmin/management"
+                element={
+                  <ProtectedRoute requiredRole="super_admin">
+                    <SuperAdminManagementPanel />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/superadmin/promotion"
                 element={
                   <ProtectedRoute requiredRole="super_admin">
-                    <PromotionPage />
+                    <Navigate
+                      to="/superadmin/dashboard"
+                      replace
+                      state={{ activeTab: "promotion" }}
+                    />
                   </ProtectedRoute>
                 }
               />
@@ -641,7 +709,11 @@ const AppContent: React.FC = () => {
                 path="/superadmin/ai-companion"
                 element={
                   <ProtectedRoute requiredRole="super_admin">
-                    <StudentAICompanion />
+                    <Navigate
+                      to="/superadmin/dashboard"
+                      replace
+                      state={{ activeTab: "ai-companion" }}
+                    />
                   </ProtectedRoute>
                 }
               />

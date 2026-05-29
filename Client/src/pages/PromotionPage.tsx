@@ -2,7 +2,15 @@ import React from 'react'
 import { DashboardLayout } from '@components/dashboards/DashboardLayout'
 import { PromotionTab } from '@components/dashboards/PromotionTab'
 
-export const PromotionPage: React.FC = () => {
+type PromotionPageProps = {
+  embedded?: boolean;
+};
+
+export const PromotionPage: React.FC<PromotionPageProps> = ({
+  embedded = false,
+}) => {
+  if (embedded) return <PromotionTab />;
+
   return (
     <DashboardLayout
       title="Promotions & Resources"
@@ -10,7 +18,7 @@ export const PromotionPage: React.FC = () => {
     >
       <PromotionTab />
     </DashboardLayout>
-  )
-}
+  );
+};
 
 export default PromotionPage

@@ -18,6 +18,9 @@ import {
   Megaphone,
   CreditCard,
   Sparkles,
+  ShieldCheck,
+  School,
+  GraduationCap,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -117,63 +120,51 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
   ];
 
-  // Super Admin navigation items
+  // Super Admin navigation items - original items + 3 dashboards with dynamic top nav
   const superAdminNavItems = [
+    // Original navigation items
     {
-      label: "Dashboard",
-      path: "/dashboard",
+      label: "Overview",
+      path: "/superadmin/dashboard",
       icon: <LayoutDashboard className="w-5 h-5" />,
       emoji: "📊",
+      section: "main",
+    },
+    // Views with dedicated top nav
+    {
+      label: "High School View",
+      path: "/superadmin/highschool-view",
+      icon: <School className="w-5 h-5" />,
+      emoji: "🏫",
+      section: "dashboard",
     },
     {
-      label: "Universities",
-      path: "/superadmin/universities",
-      icon: <Building className="w-5 h-5" />,
-      emoji: "🏢",
+      label: "University View",
+      path: "/superadmin/university-view",
+      icon: <GraduationCap className="w-5 h-5" />,
+      emoji: "🎓",
+      section: "dashboard",
     },
     {
-      label: "Resources",
-      path: "/superadmin/resources",
-      icon: <BookOpen className="w-5 h-5" />,
-      emoji: "📚",
+      label: "Admin View",
+      path: "/superadmin/admin-view",
+      icon: <LayoutDashboard className="w-5 h-5" />,
+      emoji: "📊",
+      section: "dashboard",
     },
     {
-      label: "Users",
-      path: "/superadmin/users",
-      icon: <Users className="w-5 h-5" />,
-      emoji: "👥",
+      label: "Security",
+      path: "/superadmin/security",
+      icon: <ShieldCheck className="w-5 h-5" />,
+      emoji: "🔒",
+      section: "dashboard",
     },
     {
-      label: "Analytics",
-      path: "/superadmin/analytics",
-      icon: <BarChart3 className="w-5 h-5" />,
-      emoji: "📈",
-    },
-    {
-      label: "System",
-      path: "/superadmin/system",
-      icon: <Server className="w-5 h-5" />,
-      emoji: "🖥️",
-    },
-    {
-      label: "Settings",
-      path: "/superadmin/settings",
+      label: "Management",
+      path: "/superadmin/management",
       icon: <Settings className="w-5 h-5" />,
       emoji: "⚙️",
-    },
-    {
-      label: "Promotion",
-      path: "/superadmin/promotion",
-      icon: <Megaphone className="w-5 h-5" />,
-      emoji: "📢",
-    },
-    {
-      label: "AI Companion",
-      path: "/superadmin/ai-companion",
-      icon: (
-        <Sparkles className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
-      ),
-      emoji: "🤖",
+      section: "dashboard",
     },
   ];
 
@@ -185,8 +176,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ? adminNavItems
         : studentNavItems;
 
-  const handleNav = (path: string) => {
-    navigate(path);
+  const handleNav = (path: string, tab?: string) => {
+    if (tab) {
+      navigate(path, { state: { activeTab: tab } });
+    } else {
+      navigate(path);
+    }
     if (onClose) onClose();
   };
 
@@ -206,48 +201,134 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Navigation Items */}
       <nav className="flex-1 pt-0 pb-2 md:pb-4 space-y-1 overflow-y-auto custom-scrollbar">
-        {navItems.map((item) => {
-          const isActive = location.pathname === item.path;
-          return (
-            <button
-              key={item.path}
-              onClick={() => handleNav(item.path)}
-              title={collapsed ? item.label : undefined}
-              className={`w-full flex items-center gap-3 md:gap-4 py-2.5 md:py-3.5 transition-all duration-200 group relative
-                                ${
-                                  isActive
-                                    ? "bg-blue-400 text-white"
-                                    : "text-slate-400 hover:bg-white/5 hover:text-white"
-                                }
-                                ${collapsed ? "justify-center px-0" : "px-3 md:px-5"}
-                            `}
-            >
-              {/* Icon */}
-              <span
-                className={`flex-shrink-0 transition-transform duration-200 group-hover:scale-110 ${isActive ? "text-white" : ""}`}
-              >
-                <div className="w-4 h-4 md:w-5 md:h-5">{item.icon}</div>
-              </span>
+        {user?.role === "super_admin" ? (
+          // Super Admin: Original items + Dashboard items
+          <>
+            {/* Original Navigation Items */}
+            {superAdminNavItems
+              .filter((item) => item.section === "main")
+              .map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <button
+                    key={item.path}
+                    onClick={() => handleNav(item.path)}
+                    title={collapsed ? item.label : undefined}
+                    className={`w-full flex items-center gap-3 md:gap-4 py-2.5 md:py-3.5 transition-all duration-200 group relative
+                      ${
+                        isActive
+                          ? "bg-blue-400 text-white"
+                          : "text-slate-400 hover:bg-white/5 hover:text-white"
+                      }
+                      ${collapsed ? "justify-center px-0" : "px-3 md:px-5"}
+                    `}
+                  >
+                    <span
+                      className={`flex-shrink-0 transition-transform duration-200 group-hover:scale-110 ${isActive ? "text-white" : ""}`}
+                    >
+                      <div className="w-4 h-4 md:w-5 md:h-5">{item.icon}</div>
+                    </span>
+                    {!collapsed && (
+                      <span className="text-xs md:text-sm font-semibold tracking-tight truncate">
+                        {item.label}
+                      </span>
+                    )}
+                    {collapsed && (
+                      <div className="absolute left-full ml-3 px-3 py-1.5 bg-slate-800 dark:bg-slate-700 text-white text-xs font-semibold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 whitespace-nowrap z-50 pointer-events-none shadow-lg">
+                        {item.label}
+                        <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-800 dark:border-r-slate-700" />
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
 
-              {/* Label */}
-              {!collapsed && (
-                <span className="text-xs md:text-sm font-semibold tracking-tight truncate">
-                  {item.label}
+            {/* Dashboard Section Divider */}
+            {!collapsed && (
+              <div className="px-3 md:px-5 pt-3 pb-1 border-t border-slate-700/30 mt-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  Views
                 </span>
-              )}
+              </div>
+            )}
 
-              {/* Active indicator bar - Removed as active item is full width blue now */}
-
-              {/* Tooltip on collapsed */}
-              {collapsed && (
-                <div className="absolute left-full ml-3 px-3 py-1.5 bg-slate-800 dark:bg-slate-700 text-white text-xs font-semibold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 whitespace-nowrap z-50 pointer-events-none shadow-lg">
-                  {item.label}
-                  <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-800 dark:border-r-slate-700" />
-                </div>
-              )}
-            </button>
-          );
-        })}
+            {/* Views with dedicated top nav */}
+            {superAdminNavItems
+              .filter((item) => item.section === "dashboard")
+              .map((item) => {
+                const isActive = location.pathname === item.path;
+                return (
+                  <button
+                    key={item.label}
+                    onClick={() => handleNav(item.path, (item as any).tab)}
+                    title={collapsed ? item.label : undefined}
+                    className={`w-full flex items-center gap-3 md:gap-4 py-2.5 md:py-3.5 transition-all duration-200 group relative
+                      ${
+                        isActive
+                          ? "bg-blue-400 text-white"
+                          : "text-slate-400 hover:bg-white/5 hover:text-white"
+                      }
+                      ${collapsed ? "justify-center px-0" : "px-3 md:px-5"}
+                    `}
+                  >
+                    <span
+                      className={`flex-shrink-0 transition-transform duration-200 group-hover:scale-110 ${isActive ? "text-white" : ""}`}
+                    >
+                      <div className="w-4 h-4 md:w-5 md:h-5">{item.icon}</div>
+                    </span>
+                    {!collapsed && (
+                      <span className="text-xs md:text-sm font-semibold tracking-tight truncate">
+                        {item.label}
+                      </span>
+                    )}
+                    {collapsed && (
+                      <div className="absolute left-full ml-3 px-3 py-1.5 bg-slate-800 dark:bg-slate-700 text-white text-xs font-semibold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 whitespace-nowrap z-50 pointer-events-none shadow-lg">
+                        {item.label}
+                        <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-800 dark:border-r-slate-700" />
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+          </>
+        ) : (
+          // Regular navigation for other roles
+          navItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <button
+                key={item.path}
+                onClick={() => handleNav(item.path)}
+                title={collapsed ? item.label : undefined}
+                className={`w-full flex items-center gap-3 md:gap-4 py-2.5 md:py-3.5 transition-all duration-200 group relative
+                  ${
+                    isActive
+                      ? "bg-blue-400 text-white"
+                      : "text-slate-400 hover:bg-white/5 hover:text-white"
+                  }
+                  ${collapsed ? "justify-center px-0" : "px-3 md:px-5"}
+                `}
+              >
+                <span
+                  className={`flex-shrink-0 transition-transform duration-200 group-hover:scale-110 ${isActive ? "text-white" : ""}`}
+                >
+                  <div className="w-4 h-4 md:w-5 md:h-5">{item.icon}</div>
+                </span>
+                {!collapsed && (
+                  <span className="text-xs md:text-sm font-semibold tracking-tight truncate">
+                    {item.label}
+                  </span>
+                )}
+                {collapsed && (
+                  <div className="absolute left-full ml-3 px-3 py-1.5 bg-slate-800 dark:bg-slate-700 text-white text-xs font-semibold rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 whitespace-nowrap z-50 pointer-events-none shadow-lg">
+                    {item.label}
+                    <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-slate-800 dark:border-r-slate-700" />
+                  </div>
+                )}
+              </button>
+            );
+          })
+        )}
       </nav>
     </div>
   );

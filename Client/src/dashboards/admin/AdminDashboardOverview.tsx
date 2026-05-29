@@ -2,10 +2,7 @@ import React, { useMemo } from "react";
 import { Card, CardBody, CardHeader } from "@components/common/Card";
 import { Button } from "@components/common/Button";
 import {
-  AlertTriangle,
-  BarChart3,
   BookOpenCheck,
-  Building2,
   CheckCircle,
   GraduationCap,
   RefreshCcw,
@@ -16,21 +13,13 @@ import {
   Zap,
   ArrowRight,
   Users,
-  Upload,
   FileText,
   Sparkles,
   ShieldCheck,
-  Server,
-  ChevronRight,
-  Clock,
-  LayoutDashboard,
-  Settings,
-  CalendarDays,
   Target,
   Star,
   LineChart,
   Lightbulb,
-  Award,
 } from "lucide-react";
 import {
   DashboardHeroSkeleton,

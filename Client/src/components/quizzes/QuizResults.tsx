@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { Card, CardBody } from '@components/common/Card'
 import { Button } from '@components/common/Button'
-import { Trophy, Target, Clock, CheckCircle2, XCircle, RotateCcw, Home, Sparkles, Star, Zap } from 'lucide-react'
+import { Trophy, Target, Clock, CheckCircle2, RotateCcw, Home, Sparkles, Star, Zap } from 'lucide-react'
 
 interface QuizResultsProps {
   score: number

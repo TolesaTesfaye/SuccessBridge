@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
+import { DashboardTopTabNav } from "@components/dashboards/DashboardTopTabNav";
 import {
   ResourceUploadForm,
   UploadFormData,
@@ -178,7 +179,7 @@ export const AdminDashboardContent: React.FC = () => {
       { id: "departments" as TabKey, label: "Departments", icon: Building2 },
       { id: "universities" as TabKey, label: "Universities", icon: School },
       { id: "quizzes" as TabKey, label: "Quizzes", icon: GraduationCap },
-      { id: "upload" as TabKey, label: " Upload", icon: Upload },
+      { id: "upload" as TabKey, label: "Upload", icon: Upload },
       { id: "reports" as TabKey, label: "Analytics", icon: BarChart3 },
     ],
     [],
@@ -201,36 +202,6 @@ export const AdminDashboardContent: React.FC = () => {
       setActiveTab(tab as TabKey);
     }
   };
-
-  const tabButton = ({
-    id,
-    label,
-    icon: Icon,
-  }: (typeof dashboardTabs)[number]) => (
-    <button
-      key={id}
-      className={`group relative inline-flex h-11 md:h-12 shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-3 md:px-4 text-left text-xs md:text-sm font-semibold leading-none transition-all duration-300 ${
-        activeTab === id
-          ? "border-purple-600 text-purple-600 dark:text-purple-400 dark:border-purple-400"
-          : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-      }`}
-      onClick={() => setActiveTab(id)}
-    >
-      <Icon
-        className={`h-4 w-4 transition-colors duration-300 ${
-          activeTab === id
-            ? "text-purple-600 dark:text-purple-400"
-            : "text-gray-500 group-hover:text-gray-800 dark:text-gray-500 dark:group-hover:text-gray-200"
-        }`}
-        strokeWidth={2.2}
-      />
-      <span className="flex min-w-0 flex-col">
-        <span className="leading-none tracking-[0.08em] uppercase">
-          {label}
-        </span>
-      </span>
-    </button>
-  );
 
   const resetAlerts = () => {
     setActionMessage(null);
@@ -266,73 +237,90 @@ export const AdminDashboardContent: React.FC = () => {
   };
 
   return (
-    <div className="space-y-0 pb-8 w-full pt-4 md:pt-6">
-      {/* Top Tab Bar — Sticky at top */}
-      <div className="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b-2 border-gray-200 dark:border-slate-700 flex gap-0 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden -mx-2 md:-mx-6 px-2 md:px-6">
-        <div className="flex w-max min-w-full flex-nowrap items-end gap-0">
-          {dashboardTabs.map((tab) => tabButton(tab))}
-        </div>
+    <div className="space-y-0 pb-8 w-full">
+      <DashboardTopTabNav
+        tabs={dashboardTabs.map(({ id, label, icon }) => ({
+          id,
+          label: label.trim(),
+          icon,
+          shortLabel:
+            id === "departments"
+              ? "Depts"
+              : id === "universities"
+                ? "Unis"
+                : undefined,
+        }))}
+        activeTab={activeTab}
+        onTabChange={(id) => setActiveTab(id as TabKey)}
+      />
+
+      <div
+        className={`animate-fadeIn px-2 md:px-0 ${
+          activeTab === "overview" ? "pt-0" : "pt-4 md:pt-6"
+        }`}
+      >
+        {state.error && (
+          <div className="border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800 text-sm flex items-center gap-2 mb-4">
+            <AlertTriangle className="w-4 h-4" /> {state.error}
+          </div>
+        )}
+        {actionMessage && (
+          <div className="border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-800 text-sm mb-4">
+            {actionMessage}
+          </div>
+        )}
+        {actionError && (
+          <div className="border border-rose-200 bg-rose-50 px-4 py-3 text-rose-800 text-sm mb-4">
+            {actionError}
+          </div>
+        )}
+
+        {activeTab === "overview" && (
+          <div className="-mx-2 md:-mx-6">
+            <AdminDashboardOverview
+              state={state}
+              onRefresh={fetchDashboardData}
+              onNavigateToTab={handleNavigateToTab}
+            />
+          </div>
+        )}
+
+        {activeTab === "resources" && (
+          <AdminDashboardResources
+            onUpload={() => setActiveTab("upload")}
+            onNavigateToTab={handleNavigateToTab}
+          />
+        )}
+
+        {activeTab === "students" && (
+          <AdminDashboardStudents onNavigateToTab={handleNavigateToTab} />
+        )}
+
+        {activeTab === "subjects" && (
+          <AdminDashboardSubjects onNavigateToTab={handleNavigateToTab} />
+        )}
+
+        {activeTab === "departments" && <AdminDashboardDepartments />}
+
+        {activeTab === "universities" && <AdminDashboardUniversities />}
+
+        {activeTab === "quizzes" && (
+          <AdminDashboardQuizzes onNavigateToTab={handleNavigateToTab} />
+        )}
+
+        {activeTab === "upload" && (
+          <AdminDashboardUpload
+            onUploadSubmit={handleUploadSubmit}
+            uploading={uploading}
+            uploadFormKey={uploadFormKey}
+          />
+        )}
+
+        {activeTab === "reports" && <AdminDashboardAnalytics />}
+
+        {/* Promotion is only accessible via sidebar → /admin/promotion */}
+        {activeTab === "promotion" && <AdminDashboardPromotion />}
       </div>
-
-      {state.error && (
-        <div className="border border-amber-200 bg-amber-50 px-4 py-3 text-amber-800 text-sm flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4" /> {state.error}
-        </div>
-      )}
-      {actionMessage && (
-        <div className="border border-emerald-200 bg-emerald-50 px-4 py-3 text-emerald-800 text-sm">
-          {actionMessage}
-        </div>
-      )}
-      {actionError && (
-        <div className="border border-rose-200 bg-rose-50 px-4 py-3 text-rose-800 text-sm">
-          {actionError}
-        </div>
-      )}
-
-      {activeTab === "overview" && (
-        <AdminDashboardOverview
-          state={state}
-          onRefresh={fetchDashboardData}
-          onNavigateToTab={handleNavigateToTab}
-        />
-      )}
-
-      {activeTab === "resources" && (
-        <AdminDashboardResources
-          onUpload={() => setActiveTab("upload")}
-          onNavigateToTab={handleNavigateToTab}
-        />
-      )}
-
-      {activeTab === "students" && (
-        <AdminDashboardStudents onNavigateToTab={handleNavigateToTab} />
-      )}
-
-      {activeTab === "subjects" && (
-        <AdminDashboardSubjects onNavigateToTab={handleNavigateToTab} />
-      )}
-
-      {activeTab === "departments" && <AdminDashboardDepartments />}
-
-      {activeTab === "universities" && <AdminDashboardUniversities />}
-
-      {activeTab === "quizzes" && (
-        <AdminDashboardQuizzes onNavigateToTab={handleNavigateToTab} />
-      )}
-
-      {activeTab === "upload" && (
-        <AdminDashboardUpload
-          onUploadSubmit={handleUploadSubmit}
-          uploading={uploading}
-          uploadFormKey={uploadFormKey}
-        />
-      )}
-
-      {activeTab === "reports" && <AdminDashboardAnalytics />}
-
-      {/* Promotion is only accessible via sidebar → /admin/promotion */}
-      {activeTab === "promotion" && <AdminDashboardPromotion />}
     </div>
   );
 };

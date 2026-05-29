@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { BookOpen, GraduationCap, Library, BrainCircuit, FileText, Filter, ArrowRight } from 'lucide-react'
+import { BookOpen, Library, BrainCircuit, FileText, Filter } from 'lucide-react'
 import { useAuthStore } from '@store/authStore'
 import { resourceService } from '@services/resourceService'
 import { HIGH_SCHOOL } from '@utils/constants'

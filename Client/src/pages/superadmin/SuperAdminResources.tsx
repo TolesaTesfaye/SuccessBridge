@@ -7,7 +7,13 @@ import { Modal } from '@components/common/Modal'
 import { Button } from '@components/common/Button'
 import type { Resource } from '@types'
 
-export const SuperAdminResources: React.FC = () => {
+type SuperAdminResourcesProps = {
+  embedded?: boolean;
+};
+
+export const SuperAdminResources: React.FC<SuperAdminResourcesProps> = ({
+  embedded = false,
+}) => {
   const [filters, setFilters] = useState({})
   const [resources, setResources] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
@@ -98,8 +104,7 @@ export const SuperAdminResources: React.FC = () => {
     }
   }
 
-  return (
-    <DashboardLayout title="Resources" subtitle="Platform-wide resource management">
+  const content = (
       <div className="space-y-6">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white m-0">All Resources</h2>
         <ResourceFilter onFilter={setFilters} />
@@ -317,6 +322,13 @@ export const SuperAdminResources: React.FC = () => {
           </div>
         </Modal>
       </div>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <DashboardLayout title="Resources" subtitle="Platform-wide resource management">
+      {content}
     </DashboardLayout>
-  )
-}
+  );
+};

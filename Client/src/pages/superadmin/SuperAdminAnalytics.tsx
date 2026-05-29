@@ -21,7 +21,13 @@ interface AnalyticsData {
   recentResources: number
 }
 
-export const SuperAdminAnalytics: React.FC = () => {
+type SuperAdminAnalyticsProps = {
+  embedded?: boolean;
+};
+
+export const SuperAdminAnalytics: React.FC<SuperAdminAnalyticsProps> = ({
+  embedded = false,
+}) => {
   const [loading, setLoading] = useState(true)
   const [analytics, setAnalytics] = useState<AnalyticsData>({
     totalUsers: 0,
@@ -115,15 +121,16 @@ export const SuperAdminAnalytics: React.FC = () => {
   }
 
   if (loading) {
+    const loadingContent = <Loading message="Loading analytics data..." />;
+    if (embedded) return loadingContent;
     return (
       <DashboardLayout title="Analytics" subtitle="Platform-wide analytics and insights">
-        <Loading message="Loading analytics data..." />
+        {loadingContent}
       </DashboardLayout>
-    )
+    );
   }
 
-  return (
-    <DashboardLayout title="Analytics" subtitle="Platform-wide analytics and insights">
+  const content = (
       <div className="space-y-6">
         {/* Overview Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -356,6 +363,13 @@ export const SuperAdminAnalytics: React.FC = () => {
           </CardBody>
         </Card>
       </div>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <DashboardLayout title="Analytics" subtitle="Platform-wide analytics and insights">
+      {content}
     </DashboardLayout>
-  )
-}
+  );
+};
