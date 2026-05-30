@@ -8,16 +8,13 @@ import {
   User,
   X,
   Settings,
-  BookOpen,
   Megaphone,
   CreditCard,
   ShieldCheck,
   School,
   GraduationCap,
   FileText,
-  TrendingUp,
-  Bell,
-  LogOut,
+
 } from "lucide-react";
 
 interface SidebarProps {
@@ -31,13 +28,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuthStore();
+  const { user } = useAuthStore();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-    if (onClose) onClose();
-  };
 
   const shouldShowQuizzes = !(
     user?.studentType === "university" &&
@@ -55,8 +47,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const adminNavItems = [
     { label: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard, desc: "Overview & stats" },
-    { label: "Analytics", path: "/admin/analytics", icon: TrendingUp, desc: "Reports & insights" },
     { label: "Reports", path: "/admin/reports", icon: FileText, desc: "Data & exports" },
+    { label: "Promotion", path: "/admin/promotion", icon: Megaphone, desc: "Student promotions" },
     { label: "Settings", path: "/admin/settings", icon: Settings, desc: "Configure platform" },
     { label: "Profile", path: "/admin/profile", icon: User, desc: "Your account" },
   ];
@@ -68,6 +60,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { label: "Admin View", path: "/superadmin/admin-view", icon: <LayoutDashboard className="w-5 h-5" />, emoji: "📊", section: "dashboard" },
     { label: "Security", path: "/superadmin/security", icon: <ShieldCheck className="w-5 h-5" />, emoji: "🔒", section: "dashboard" },
     { label: "Management", path: "/superadmin/management", icon: <Settings className="w-5 h-5" />, emoji: "⚙️", section: "dashboard" },
+    { label: "Profile", path: "/superadmin/profile", icon: <User className="w-5 h-5" />, emoji: "👤", section: "dashboard" },
   ];
 
   const isSuperAdmin = user?.role === "super_admin";
@@ -177,34 +170,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
       </nav>
 
-      {/* Bottom Section */}
-      {isAdmin && !collapsed && (
-        <div className="border-t border-slate-700/30 px-3 py-3 space-y-1">
-          {[
-            { label: "Notifications", path: "#", icon: Bell },
-            { label: "Help & Support", path: "#", icon: BookOpen },
-          ].map(item => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.label}
-                onClick={() => handleNav(item.path)}
-                className="w-full flex items-center gap-3 rounded-xl py-2 px-3 text-slate-400 hover:text-white hover:bg-white/[0.04] transition-all duration-200"
-              >
-                <Icon className="w-4 h-4 text-slate-500" />
-                <span className="text-xs font-medium text-slate-500">{item.label}</span>
-              </button>
-            );
-          })}
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 rounded-xl py-2 px-3 text-slate-400 hover:text-rose-400 hover:bg-rose-500/5 transition-all duration-200"
-          >
-            <LogOut className="w-4 h-4" />
-            <span className="text-xs font-medium">Logout</span>
-          </button>
-        </div>
-      )}
+
     </div>
   );
 };

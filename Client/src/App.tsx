@@ -115,11 +115,6 @@ const AdminQuizzes = lazy(() =>
     default: m.AdminQuizzes,
   })),
 );
-const AdminAnalytics = lazy(() =>
-  import("@pages/admin/AdminAnalytics").then((m) => ({
-    default: m.AdminAnalytics,
-  })),
-);
 const AdminSettings = lazy(() =>
   import("@pages/admin/AdminSettings").then((m) => ({
     default: m.AdminSettings,
@@ -128,6 +123,16 @@ const AdminSettings = lazy(() =>
 const PromotionPage = lazy(() =>
   import("@pages/PromotionPage").then((m) => ({
     default: m.PromotionPage,
+  })),
+);
+const AdminProfile = lazy(() =>
+  import("@pages/admin/AdminProfile").then((m) => ({
+    default: m.AdminProfile,
+  })),
+);
+const AdminReports = lazy(() =>
+  import("@pages/admin/AdminReports").then((m) => ({
+    default: m.AdminReports,
   })),
 );
 
@@ -233,6 +238,11 @@ const SuperAdminAboutProject = lazy(() =>
 const SuperAdminManagementPanel = lazy(() =>
   import("@pages/superadmin/SuperAdminManagementPanel").then((m) => ({
     default: m.SuperAdminManagementPanel,
+  })),
+);
+const SuperAdminProfile = lazy(() =>
+  import("@pages/superadmin/SuperAdminProfile").then((m) => ({
+    default: m.SuperAdminProfile,
   })),
 );
 const SuperAdminAdminView = lazy(() =>
@@ -535,14 +545,6 @@ const AppContent: React.FC = () => {
                 }
               />
               <Route
-                path="/admin/analytics"
-                element={
-                  <ProtectedRoute requiredRole="admin">
-                    <AdminAnalytics />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
                 path="/admin/settings"
                 element={
                   <ProtectedRoute requiredRole="admin">
@@ -555,6 +557,22 @@ const AppContent: React.FC = () => {
                 element={
                   <ProtectedRoute requiredRole="admin">
                     <PromotionPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/profile"
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <AdminProfile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/reports"
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <AdminReports />
                   </ProtectedRoute>
                 }
               />
@@ -690,6 +708,14 @@ const AppContent: React.FC = () => {
                 element={
                   <ProtectedRoute requiredRole="super_admin">
                     <SuperAdminManagementPanel />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/superadmin/profile"
+                element={
+                  <ProtectedRoute requiredRole="super_admin">
+                    <SuperAdminProfile />
                   </ProtectedRoute>
                 }
               />
