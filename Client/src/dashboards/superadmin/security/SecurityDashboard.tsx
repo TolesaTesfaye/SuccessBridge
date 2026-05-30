@@ -187,6 +187,7 @@ export const SecurityDashboard: React.FC = () => {
     <DashboardLayout
       title="Security Dashboard"
       subtitle="Real-time security monitoring & threat analysis"
+      disableTopPadding={true}
     >
       <div className="space-y-6">
         <DashboardTopTabNav
@@ -212,41 +213,7 @@ export const SecurityDashboard: React.FC = () => {
         />
 
         {/* Content */}
-        <div className="p-6 space-y-6 max-w-7xl mx-auto">
-          {/* Hero Summary */}
-          <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-2xl p-6 text-white shadow-xl shadow-blue-500/20">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <h2 className="text-2xl font-bold mb-1">Security Overview</h2>
-                <p className="text-blue-200 text-sm">
-                  Monitoring all security events across the platform
-                </p>
-              </div>
-              <div className="flex items-center gap-6">
-                <div className="text-center">
-                  <p className="text-3xl font-bold">
-                    {metrics?.totalEvents24h || 0}
-                  </p>
-                  <p className="text-blue-200 text-xs mt-0.5">Events Today</p>
-                </div>
-                <div className="w-px h-10 bg-blue-500/40" />
-                <div className="text-center">
-                  <p className="text-3xl font-bold">
-                    {metrics?.totalEventsAllTime || 0}
-                  </p>
-                  <p className="text-blue-200 text-xs mt-0.5">All Time</p>
-                </div>
-                <div className="w-px h-10 bg-blue-500/40" />
-                <div className="text-center">
-                  <p className="text-3xl font-bold">
-                    {suspiciousPatterns.length}
-                  </p>
-                  <p className="text-blue-200 text-xs mt-0.5">Threats</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
+        <div className="pt-2 px-4 md:px-6 pb-6 space-y-6 max-w-7xl mx-auto">
           {/* Top KPIs */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
             <SecurityMetricCard
@@ -282,7 +249,7 @@ export const SecurityDashboard: React.FC = () => {
           </div>
 
           {/* Security Status */}
-          <div className="bg-white dark:bg-slate-800/60 rounded-xl border border-gray-200 dark:border-slate-700/50 p-6 shadow-sm backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-800/80 rounded-xl border border-gray-200 dark:border-slate-700/50 p-6 shadow-sm backdrop-blur-sm">
             <div className="flex items-center gap-2 mb-6">
               <ShieldCheck
                 size={22}
@@ -310,7 +277,7 @@ export const SecurityDashboard: React.FC = () => {
 
           {/* Suspicious Patterns */}
           {suspiciousPatterns.length > 0 && (
-            <div className="bg-white dark:bg-slate-800/60 rounded-xl border border-gray-200 dark:border-slate-700/50 p-6 shadow-sm backdrop-blur-sm">
+            <div className="bg-white dark:bg-slate-800/80 rounded-xl border border-gray-200 dark:border-slate-700/50 p-6 shadow-sm backdrop-blur-sm">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 bg-gradient-to-br from-red-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg">
                   <AlertTriangle size={18} className="text-white" />
@@ -356,7 +323,7 @@ export const SecurityDashboard: React.FC = () => {
           )}
 
           {/* Quick Links */}
-          <div className="bg-white dark:bg-slate-800/60 rounded-xl border border-gray-200 dark:border-slate-700/50 p-6 shadow-sm backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-800/80 rounded-xl border border-gray-200 dark:border-slate-700/50 p-6 shadow-sm backdrop-blur-sm">
             <div className="flex items-center gap-2 mb-6">
               <Activity
                 size={22}

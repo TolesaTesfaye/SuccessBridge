@@ -18,6 +18,7 @@ interface DashboardTopTabNavProps {
   className?: string;
   stickyClassName?: string;
   accent?: AccentColor;
+  fill?: boolean;
 }
 
 const accentStyles: Record<
@@ -44,6 +45,7 @@ export const DashboardTopTabNav: React.FC<DashboardTopTabNavProps> = ({
   className = "",
   stickyClassName = "-mx-2 md:-mx-6 px-2 md:px-6",
   accent = "purple",
+  fill = false,
 }) => {
   const accentClass = accentStyles[accent];
 
@@ -56,7 +58,7 @@ export const DashboardTopTabNav: React.FC<DashboardTopTabNavProps> = ({
     <div
       className={`sticky top-0 z-40 bg-white dark:bg-slate-900 border-b-2 border-gray-200 dark:border-slate-700 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${stickyClassName} ${className}`}
     >
-      <div className="flex w-max min-w-full flex-nowrap items-end gap-0">
+      <div className={`flex ${fill ? "w-full" : "w-max min-w-full flex-nowrap"} items-end gap-0`}>
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           const Icon = tab.icon;
@@ -68,7 +70,7 @@ export const DashboardTopTabNav: React.FC<DashboardTopTabNavProps> = ({
               key={tab.id}
               type="button"
               onClick={() => handleClick(tab.id)}
-              className={`group relative inline-flex h-11 md:h-12 shrink-0 items-center gap-1.5 md:gap-2 whitespace-nowrap border-b-2 px-3 md:px-4 text-left text-xs md:text-sm font-semibold leading-none transition-all duration-300 ${
+              className={`group relative inline-flex h-11 md:h-12 ${fill ? "flex-1" : "shrink-0"} items-center gap-1.5 md:gap-2 whitespace-nowrap border-b-2 px-3 md:px-4 text-left text-xs md:text-sm font-semibold leading-none transition-all duration-300 ${
                 isActive
                   ? `${accentClass.active} -mb-0.5`
                   : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"

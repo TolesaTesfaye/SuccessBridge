@@ -252,7 +252,7 @@ export const AdminDashboardContent: React.FC = () => {
 
       <div
         className={`animate-fadeIn px-2 md:px-0 ${
-          activeTab === "overview" ? "pt-0" : "pt-4 md:pt-6"
+          activeTab === "overview" ? "pt-4" : "pt-4 md:pt-6"
         }`}
       >
         {state.error && (
@@ -274,7 +274,6 @@ export const AdminDashboardContent: React.FC = () => {
         {activeTab === "overview" && (
           <AdminDashboardOverview
             state={state}
-            onRefresh={fetchDashboardData}
             onNavigateToTab={handleNavigateToTab}
           />
         )}

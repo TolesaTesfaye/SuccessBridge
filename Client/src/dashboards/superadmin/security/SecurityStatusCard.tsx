@@ -36,7 +36,7 @@ export const SecurityStatusCard: React.FC<SecurityStatusCardProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-slate-800/60 rounded-xl border border-gray-200 dark:border-slate-700/50 p-5 shadow-sm backdrop-blur-sm">
+    <div className="bg-white dark:bg-slate-800/80 rounded-xl border border-gray-200 dark:border-slate-700/50 p-5 shadow-sm backdrop-blur-sm">
       <div className="flex items-center gap-2 mb-4">
         {Icon && (
           <Icon size={20} className="text-gray-700 dark:text-slate-300" />

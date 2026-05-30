@@ -235,7 +235,7 @@ export const UniversityDashboard: React.FC = () => {
       noPadding={activeTab === "learning"}
       showFooter={false}
       headerNav={
-        <div className="flex items-center gap-0.5 md:gap-1">
+        <div className="flex items-center w-full gap-0.5 md:gap-1">
           {[
             { id: "home", label: "Home", shortLabel: "Home", icon: Home },
             {
@@ -260,7 +260,7 @@ export const UniversityDashboard: React.FC = () => {
                   setActiveTab(tab.id as any);
                 }
               }}
-              className={`px-1.5 md:px-4 py-1 md:py-2 text-[7px] md:text-[10px] font-black uppercase tracking-wider md:tracking-widest transition-all flex items-center gap-1 md:gap-2 rounded-lg md:rounded-xl ${
+              className={`flex-1 px-1 md:px-2 py-1 md:py-2 text-[7px] md:text-[10px] font-black uppercase tracking-wider md:tracking-widest transition-all flex items-center justify-center gap-1 md:gap-2 rounded-lg md:rounded-xl ${
                 activeTab === tab.id
                   ? "bg-blue-600 text-white shadow-lg shadow-blue-500/25 scale-105"
                   : "text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"

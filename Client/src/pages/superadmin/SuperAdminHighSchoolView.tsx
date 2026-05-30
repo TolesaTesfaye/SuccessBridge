@@ -41,6 +41,7 @@ export const SuperAdminHighSchoolView: React.FC = () => {
           onTabChange={(id) => {
             if (isHighSchoolGrade(id)) setActiveGrade(id);
           }}
+          fill={true}
         />
         <div className="animate-fadeIn pt-4 md:pt-6 px-2 md:px-0">
           <StudentViewWrapper type="highschool" grade={activeGrade} />

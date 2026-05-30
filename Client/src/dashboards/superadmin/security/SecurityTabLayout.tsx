@@ -55,7 +55,7 @@ export const SecurityTabLayout: React.FC<SecurityTabLayoutProps> = ({
   const activeTab = getActiveTab(location.pathname);
 
   return (
-    <DashboardLayout title={title} subtitle={subtitle}>
+    <DashboardLayout title={title} subtitle={subtitle} disableTopPadding={true}>
       <div className="space-y-6">
         <DashboardTopTabNav
           tabs={SECURITY_TABS.map(({ id, label, icon }) => ({

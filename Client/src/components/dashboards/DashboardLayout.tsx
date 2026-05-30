@@ -41,7 +41,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f1c] flex flex-col transition-colors duration-300 overflow-hidden h-screen m-0 p-0">
       {/* 1. Full-Width Header at the Top */}
       <header className="h-12 md:h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 flex items-center justify-between px-0 md:px-3 flex-shrink-0 z-30 transition-colors duration-300 shadow-sm">
-        <div className="flex items-center gap-1 md:gap-4">
+        <div className="flex items-center flex-1 gap-1 md:gap-4">
           {/* Logo - Mobile First */}
           <div
             className="flex lg:hidden items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
@@ -81,7 +81,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
           {/* Navigation Items */}
           {headerNav && (
-            <div className="flex items-center gap-1 ml-1 md:ml-4 lg:absolute lg:left-1/2 lg:-translate-x-1/2">
+            <div className="flex items-center gap-1 ml-1 md:ml-4 lg:absolute lg:left-1/2 lg:-translate-x-1/2 w-full lg:w-auto">
               {headerNav}
             </div>
           )}

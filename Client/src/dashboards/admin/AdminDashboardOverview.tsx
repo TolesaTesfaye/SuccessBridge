@@ -1,16 +1,12 @@
 import React, { useMemo } from "react";
 import {
   GraduationCap,
-  RefreshCcw,
   School,
   ArrowRight,
   Users,
   Target,
   BookOpen,
-  Code2,
-  Building2,
 } from "lucide-react";
-import { useAuth } from "@hooks/useAuth";
 
 type DashboardState = {
   loading: boolean;
@@ -25,7 +21,6 @@ type DashboardState = {
 
 type AdminDashboardOverviewProps = {
   state: DashboardState;
-  onRefresh: () => void;
   onNavigateToTab: (tab: string) => void;
 };
 
@@ -55,18 +50,8 @@ const statCards = [
 
 export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
   state,
-  onRefresh,
   onNavigateToTab,
 }) => {
-  const { user } = useAuth();
-
-  const today = new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
   const overviewStats = useMemo(() => ({
     studentCount: state.studentCount,
     quizzes: state.quizzes.length,
@@ -119,26 +104,6 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
 
   return (
     <div className="space-y-4 md:space-y-6">
-      {/* Welcome Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="text-lg md:text-2xl font-bold text-slate-900 dark:text-white">
-            Welcome back, <span className="text-blue-600 dark:text-blue-400">{user?.name || "Admin"}</span>
-          </h1>
-          <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-            {today}
-          </p>
-        </div>
-        <button
-          onClick={onRefresh}
-          disabled={state.loading}
-          className="self-start inline-flex items-center gap-1.5 px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm font-medium text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 transition-all disabled:opacity-50"
-        >
-          <RefreshCcw className={`w-3.5 h-3.5 ${state.loading ? "animate-spin" : ""}`} />
-          Refresh
-        </button>
-      </div>
-
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
         {statCards.map((stat) => {
@@ -147,10 +112,10 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
           return (
             <div
               key={stat.key}
-              className="relative overflow-hidden bg-white dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 p-4 md:p-5 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-slate-800/80 rounded-xl border border-gray-200 dark:border-slate-700/50 shadow-sm p-4"
             >
-              <div className="flex items-center justify-between mb-3">
-                <div className={`p-2 rounded-lg bg-${stat.color}-100 dark:bg-${stat.color}-500/10 text-${stat.color}-600 dark:text-${stat.color}-400`}>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
                   <Icon className="w-4 h-4 md:w-5 md:h-5" />
                 </div>
               </div>
@@ -173,22 +138,21 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
           return (
             <div
               key={feature.title}
-              className="bg-white dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 p-4 md:p-6 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-slate-800/80 rounded-xl border border-gray-200 dark:border-slate-700/50 shadow-sm"
             >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
-                  <Icon className="w-5 h-5" />
+              <div className="flex items-center gap-2 p-4 border-b border-gray-100 dark:border-slate-700/30">
+                <div className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                  <Icon className="w-4 h-4" />
                 </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-                    {feature.title}
-                  </h3>
-                </div>
+                <h4 className="font-bold text-gray-900 dark:text-white text-sm">
+                  {feature.title}
+                </h4>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
-                {feature.description}
-              </p>
-              <ul className="space-y-2 mb-4">
+              <div className="p-4">
+                <p className="text-xs text-gray-500 dark:text-slate-400 mb-4 leading-relaxed">
+                  {feature.description}
+                </p>
+                <ul className="space-y-2 mb-4">
                 {feature.items.map((item, i) => (
                   <li
                     key={i}
@@ -206,6 +170,7 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
                 Open
                 <ArrowRight className="w-3 h-3" />
               </button>
+            </div>
             </div>
           );
         })}

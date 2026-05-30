@@ -11,9 +11,10 @@ interface SuperAdminTopTabNavProps {
   activeTab: string;
   onTabChange: (tabId: string) => void;
   accent?: "purple" | "blue";
+  fill?: boolean;
 }
 
 /** @deprecated Use DashboardTopTabNav — kept for existing superadmin view imports */
 export const SuperAdminTopTabNav: React.FC<SuperAdminTopTabNavProps> = (
-  props,
-) => <DashboardTopTabNav {...props} />;
+  { fill, ...props },
+) => <DashboardTopTabNav fill={fill} {...props} />;

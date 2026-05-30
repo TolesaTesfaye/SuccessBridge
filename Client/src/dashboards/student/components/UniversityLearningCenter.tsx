@@ -150,17 +150,17 @@ export const UniversityLearningCenter: React.FC<
   return (
     <div className="flex flex-col h-full m-0 p-0">
       {/* W3Schools Styled Top Navigation Bar */}
-      <div className="bg-[#282a35] overflow-x-auto no-scrollbar shadow-lg sticky top-0 z-50 border-b border-slate-700 m-0 p-0 flex-shrink-0">
-        <div className="flex items-center min-w-max h-10 md:h-12">
-          {subjects.map((subj) => (
-            <button
-              key={subj}
-              onClick={() => setLearningSubject(subj)}
-              className={`h-full px-3 md:px-6 text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center whitespace-nowrap border-r border-slate-700/50 ${
-                learningSubject === subj
-                  ? "bg-blue-600 text-white"
-                  : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
-              }`}
+        <div className="bg-[#282a35] overflow-x-auto no-scrollbar shadow-lg sticky top-0 z-50 border-b border-slate-700 m-0 p-0 flex-shrink-0">
+          <div className="flex items-center w-full h-10 md:h-12">
+            {subjects.map((subj) => (
+              <button
+                key={subj}
+                onClick={() => setLearningSubject(subj)}
+                className={`flex-1 h-full px-2 md:px-3 text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center whitespace-nowrap border-r border-slate-700/50 ${
+                  learningSubject === subj
+                    ? "bg-blue-600 text-white"
+                    : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
+                }`}
             >
               {subj}
             </button>

@@ -25,7 +25,7 @@ export const SecurityMetricCard: React.FC<MetricCardProps> = ({
 
   return (
     <div
-      className={`bg-white dark:bg-slate-800/60 rounded-xl border border-gray-200 dark:border-slate-700/50 p-5 shadow-sm hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700/50 transition-all duration-300 backdrop-blur-sm ${className}`}
+      className={`bg-white dark:bg-slate-800/80 rounded-xl border border-gray-200 dark:border-slate-700/50 p-5 shadow-sm hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700/50 transition-all duration-300 backdrop-blur-sm ${className}`}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
