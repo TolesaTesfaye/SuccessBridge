@@ -1,22 +1,24 @@
 import { Router } from 'express'
-import { SubjectService } from '../services/subjectService.js'
+import { StreamService } from '../services/streamService.js'
 import { authMiddleware, requireRole } from '../middleware/auth.js'
 
 const router = Router()
 
 router.get('/', async (req, res) => {
   try {
-    const subjects = await SubjectService.getSubjects(req.query)
-    res.json({ success: true, data: subjects })
+    const { gradeId } = req.query
+    const filters = gradeId ? { gradeId: String(gradeId) } : undefined
+    const streams = await StreamService.getAll(filters)
+    res.json({ success: true, data: streams })
   } catch (error: any) {
-    res.status(500).json({ success: false, error: error.message || 'Failed to fetch subjects' })
+    res.status(500).json({ success: false, error: error.message || 'Failed to fetch streams' })
   }
 })
 
 router.get('/:id', async (req, res) => {
   try {
-    const subject = await SubjectService.getById(req.params.id)
-    res.json({ success: true, data: subject })
+    const stream = await StreamService.getById(req.params.id)
+    res.json({ success: true, data: stream })
   } catch (error: any) {
     res.status(error.statusCode || 500).json({ success: false, error: error.message })
   }
@@ -24,8 +26,8 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', authMiddleware, requireRole('admin', 'super_admin'), async (req, res) => {
   try {
-    const subject = await SubjectService.create(req.body)
-    res.status(201).json({ success: true, data: subject })
+    const stream = await StreamService.create(req.body)
+    res.status(201).json({ success: true, data: stream })
   } catch (error: any) {
     res.status(error.statusCode || 500).json({ success: false, error: error.message })
   }
@@ -33,8 +35,8 @@ router.post('/', authMiddleware, requireRole('admin', 'super_admin'), async (req
 
 router.put('/:id', authMiddleware, requireRole('admin', 'super_admin'), async (req, res) => {
   try {
-    const subject = await SubjectService.update(req.params.id, req.body)
-    res.json({ success: true, data: subject })
+    const stream = await StreamService.update(req.params.id, req.body)
+    res.json({ success: true, data: stream })
   } catch (error: any) {
     res.status(error.statusCode || 500).json({ success: false, error: error.message })
   }
@@ -42,7 +44,7 @@ router.put('/:id', authMiddleware, requireRole('admin', 'super_admin'), async (r
 
 router.delete('/:id', authMiddleware, requireRole('super_admin'), async (req, res) => {
   try {
-    const result = await SubjectService.delete(req.params.id)
+    const result = await StreamService.delete(req.params.id)
     res.json({ success: true, ...result })
   } catch (error: any) {
     res.status(error.statusCode || 500).json({ success: false, error: error.message })

@@ -14,6 +14,11 @@ export const departmentService = {
     return response.data
   },
 
+  getByUniversity: async (universityId: string): Promise<Department[]> => {
+    const response = await api.get('/departments', { params: { universityId } })
+    return response.data
+  },
+
   getById: async (id: string): Promise<Department> => {
     const response = await api.get(`/departments/${id}`)
     return response.data

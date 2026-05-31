@@ -4,7 +4,7 @@ import sequelize from '../config/database.js'
 interface IStudentProgress {
   id: string
   studentId: string
-  subjectId: string
+  subjectId?: string | null
   resourcesCompleted: number
   quizzesCompleted: number
   averageScore: number
@@ -14,7 +14,7 @@ interface IStudentProgress {
 class StudentProgress extends Model<IStudentProgress> implements IStudentProgress {
   public id!: string
   public studentId!: string
-  public subjectId!: string
+  public subjectId?: string | null
   public resourcesCompleted!: number
   public quizzesCompleted!: number
   public averageScore!: number
@@ -36,7 +36,7 @@ StudentProgress.init(
     },
     subjectId: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
     },
     resourcesCompleted: {
       type: DataTypes.INTEGER,

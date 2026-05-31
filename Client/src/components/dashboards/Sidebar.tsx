@@ -14,7 +14,7 @@ import {
   School,
   GraduationCap,
   FileText,
-
+  Layers,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -56,6 +56,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const superAdminNavItems = [
     { label: "Overview", path: "/superadmin/dashboard", icon: <LayoutDashboard className="w-5 h-5" />, emoji: "📊", section: "main" },
     { label: "High School View", path: "/superadmin/highschool-view", icon: <School className="w-5 h-5" />, emoji: "🏫", section: "dashboard" },
+    { label: "Hierarchy", path: "/superadmin/dashboard", icon: <Layers className="w-5 h-5" />, emoji: "🌳", section: "main", tab: "hierarchy" },
     { label: "University View", path: "/superadmin/university-view", icon: <GraduationCap className="w-5 h-5" />, emoji: "🎓", section: "dashboard" },
     { label: "Admin View", path: "/superadmin/admin-view", icon: <LayoutDashboard className="w-5 h-5" />, emoji: "📊", section: "dashboard" },
     { label: "Security", path: "/superadmin/security", icon: <ShieldCheck className="w-5 h-5" />, emoji: "🔒", section: "dashboard" },
@@ -104,8 +105,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {isSuperAdmin ? (
           <>
             {superAdminNavItems.filter(i => i.section === "main").map(item => {
-              const isActive = location.pathname === item.path;
-              return <NavButton key={item.path} item={item} isActive={isActive} collapsed={collapsed} onClick={() => handleNav(item.path)} />;
+              const itemTab = (item as any).tab
+              const activeTab = (location.state as any)?.activeTab
+              const isActive = itemTab ? (location.pathname === item.path && activeTab === itemTab) : (location.pathname === item.path && !activeTab)
+              return <NavButton key={item.label} item={item} isActive={isActive} collapsed={collapsed} onClick={() => handleNav(item.path, itemTab)} />;
             })}
             {!collapsed && (
               <div className="px-3 md:px-5 pt-3 pb-1 border-t border-slate-700/30 mt-2">

@@ -12,20 +12,37 @@ export interface Subject {
 }
 
 class SubjectService {
-  /**
-   * Get all subjects
-   */
   async getSubjects(): Promise<Subject[]> {
     const response = await api.get('/subjects')
     return response.data.data || response.data
   }
 
-  /**
-   * Get subject by ID
-   */
+  async getAll(): Promise<Subject[]> {
+    return this.getSubjects()
+  }
+
+  async getSubjectsByFilter(filters: { gradeId?: string; departmentId?: string; streamId?: string }): Promise<Subject[]> {
+    const response = await api.get('/subjects', { params: filters })
+    return response.data.data || response.data
+  }
+
   async getSubjectById(id: string): Promise<Subject> {
     const response = await api.get(`/subjects/${id}`)
     return response.data.data || response.data
+  }
+
+  async createSubject(data: { name: string; code: string; gradeId?: string; streamId?: string; departmentId?: string }): Promise<Subject> {
+    const response = await api.post('/subjects', data)
+    return response.data.data || response.data
+  }
+
+  async updateSubject(id: string, data: Partial<Subject>): Promise<Subject> {
+    const response = await api.put(`/subjects/${id}`, data)
+    return response.data.data || response.data
+  }
+
+  async deleteSubject(id: string): Promise<void> {
+    await api.delete(`/subjects/${id}`)
   }
 
   /**

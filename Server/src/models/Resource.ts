@@ -50,7 +50,7 @@ Resource.init(
     stream: DataTypes.STRING,
     subjectId: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
     },
     universityId: DataTypes.UUID,
     departmentId: DataTypes.UUID,

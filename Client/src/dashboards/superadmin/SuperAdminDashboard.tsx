@@ -11,8 +11,8 @@ import {
   UploadFormData,
 } from "@components/resources/ResourceUploadForm";
 import { SuperAdminAddQuiz } from "@pages/superadmin/SuperAdminAddQuiz";
-import { SuperAdminUniversities } from "@pages/superadmin/SuperAdminUniversities";
 import { SuperAdminResources } from "@pages/superadmin/SuperAdminResources";
+import { EducationHierarchy } from "@pages/superadmin/EducationHierarchy";
 import { SuperAdminAnalytics } from "@pages/superadmin/SuperAdminAnalytics";
 import { PromotionPage } from "@pages/PromotionPage";
 import { StudentAICompanion } from "@pages/student/StudentAICompanion";
@@ -20,7 +20,6 @@ import { AdminDashboardPayments } from "@dashboards/admin/AdminDashboardPayments
 import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
-  Building,
   BookOpen,
   BarChart3,
   Megaphone,
@@ -47,7 +46,6 @@ const UNIVERSITY_LEVELS = ["freshman", "remedial", "senior", "gc"] as const;
 
 const PLATFORM_TABS: SuperAdminTabItem[] = [
   { id: "overview", label: "Overview", shortLabel: "Home", icon: LayoutDashboard },
-  { id: "universities", label: "Universities", shortLabel: "Unis", icon: Building },
   { id: "resources", label: "Resources", shortLabel: "Res", icon: BookOpen },
   { id: "analytics", label: "Analytics", shortLabel: "Stats", icon: BarChart3 },
   { id: "promotion", label: "Promotion", shortLabel: "Promo", icon: Megaphone },
@@ -158,7 +156,7 @@ export const SuperAdminDashboard: React.FC = () => {
       formData.append("subject", data.subject);
       formData.append("tags", data.tags);
       if (data.file) formData.append("file", data.file);
-      if (data.grade) formData.append("gradeId", data.grade);
+      if (data.grade) formData.append("grade", data.grade);
       if (data.stream) formData.append("stream", data.stream);
       if (data.universityId) formData.append("universityId", data.universityId);
       if (data.departmentId) formData.append("departmentId", data.departmentId);
@@ -201,7 +199,6 @@ export const SuperAdminDashboard: React.FC = () => {
         <div className="animate-fadeIn pt-4 md:pt-6 px-2 md:px-0">
           {activeTab === "overview" && <OverviewTab stats={stats} />}
 
-          {activeTab === "universities" && <SuperAdminUniversities embedded />}
           {activeTab === "resources" && <SuperAdminResources embedded />}
           {activeTab === "analytics" && <SuperAdminAnalytics embedded />}
           {activeTab === "promotion" && <PromotionPage embedded />}
@@ -219,6 +216,7 @@ export const SuperAdminDashboard: React.FC = () => {
             </Card>
           )}
           {activeTab === "payments" && <AdminDashboardPayments />}
+          {activeTab === "hierarchy" && <EducationHierarchy />}
           {activeTab === "addquiz" && <SuperAdminAddQuiz />}
         </div>
 

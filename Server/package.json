@@ -12,11 +12,6 @@
     "postbuild": "echo 'Build completed successfully'",
     "lint": "eslint src --ext .ts",
     "type-check": "tsc --noEmit",
-    "seed:freshman": "tsx src/scripts/seedFreshmanResources.ts",
-    "create:test-admin": "tsx src/scripts/createTestAdmin.ts",
-    "seed:pending-admins": "tsx src/scripts/seedPendingAdmins.ts",
-    "migrate:email-verification": "tsx src/scripts/migrateEmailVerification.ts",
-    "migrate:pending-users": "tsx src/scripts/ensurePendingUsersTable.ts",
     "cleanup:pending-users": "tsx src/scripts/cleanupExpiredPendingUsers.ts"
   },
   "dependencies": {

@@ -16,6 +16,7 @@ import {
 import { connectRedis } from "./config/redis.js";
 import { seedSuperAdmin } from "./config/seedAdmin.js";
 import { seedSettings } from "./config/seedSettings.js";
+import { seedEducationData } from "./config/seedEducationData.js";
 import { setupSwagger } from "./config/swagger.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { auditMiddleware } from "./middleware/auditLogger.js";
@@ -31,6 +32,7 @@ import departmentsRoutes from "./routes/departments.js";
 import studentRoutes from "./routes/student.js";
 import settingsRoutes from "./routes/settings.js";
 import gradesRoutes from "./routes/grades.js";
+import streamsRoutes from "./routes/streams.js";
 import systemRoutes from "./routes/system.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
@@ -40,6 +42,7 @@ import securityRoutes from "./routes/securityRoutes.js";
 import managementRoutes from "./routes/managementRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import aiRoutes from "./routes/ai.js";
+import resourceTypesRoutes from "./routes/resourceTypes.js";
 
 // Import all models to ensure they are registered with Sequelize
 import User from "./models/User.js";
@@ -59,6 +62,7 @@ import Payment from "./models/Payment.js";
 import SubjectAccess from "./models/SubjectAccess.js";
 import Notification from "./models/Notification.js";
 import AuditLog from "./models/AuditLog.js";
+import ResourceType from "./models/ResourceType.js";
 import { setupAssociations } from "./models/index.js";
 import { cacheMiddleware } from "./middleware/cacheMiddleware.js";
 
@@ -250,6 +254,7 @@ app.use("/api/departments", departmentsRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/grades", gradesRoutes);
+app.use("/api/streams", streamsRoutes);
 app.use("/api/system", systemRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/notifications", notificationRoutes);
@@ -259,6 +264,7 @@ app.use("/api/admin/security", securityRoutes);
 app.use("/api/admin/management", managementRoutes);
 app.use("/api/admin/admin", adminRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/resource-types", resourceTypesRoutes);
 
 // Health check
 app.get("/health", async (req, res) => {
@@ -338,6 +344,13 @@ const startServer = async () => {
           await seedSettings();
         } catch (settingsError) {
           logger.error("Failed to seed system settings:", settingsError);
+        }
+
+        // Seed education hierarchy data (grades, streams, subjects, universities)
+        try {
+          await seedEducationData();
+        } catch (educationError) {
+          logger.error("Failed to seed education data:", educationError);
         }
         dbSyncOk = true;
       } catch (syncError) {

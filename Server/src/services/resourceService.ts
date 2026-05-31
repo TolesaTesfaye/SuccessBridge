@@ -5,6 +5,7 @@ import Subject from '../models/Subject.js'
 import University from '../models/University.js'
 import Department from '../models/Department.js'
 import Grade from '../models/Grade.js'
+import Stream from '../models/Stream.js'
 import { AppError } from '../middleware/errorHandler.js'
 import { uploadToB2 } from '../middleware/b2Upload.js'
 
@@ -77,7 +78,7 @@ export class ResourceService {
     if (departmentId) {
       where.departmentId = departmentId
     } else if (departmentName) {
-      const dept = await Department.findOne({ where: { name: departmentName as string } })
+      const dept = await Department.findOne({ where: { name: { [Op.iLike]: departmentName as string } } })
       if (dept) {
         where.departmentId = dept.id
       }
@@ -86,7 +87,7 @@ export class ResourceService {
     if (subjectId) {
       where.subjectId = subjectId
     } else if (subjectName) {
-      const subj = await Subject.findOne({ where: { name: subjectName as string } })
+      const subj = await Subject.findOne({ where: { name: { [Op.iLike]: subjectName as string } } })
       if (subj) {
         where.subjectId = subj.id
       } else {
@@ -214,7 +215,7 @@ export class ResourceService {
       description,
       type,
       educationLevel,
-      gradeId,
+      grade,
       category,
       stream,
       subject,
@@ -234,31 +235,34 @@ export class ResourceService {
       throw new AppError(400, 'File or File URL is required')
     }
 
-    // Resolve subject
+    // Resolve subject — accepts UUID or name
     let subjectId: string
-    const existingSubject = await Subject.findOne({ where: { name: subject } })
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
-    if (existingSubject) {
-      subjectId = existingSubject.id
+    if (uuidRegex.test(subject)) {
+      subjectId = subject
     } else {
-      const subjectData: any = {
-        name: subject,
-        code: subject.toUpperCase().replace(/\s+/g, '_') + '_' + Math.random().toString(36).substring(2, 7) + '_' + Date.now().toString().slice(-4),
-      }
-
-      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-      if (gradeId) {
-        if (uuidRegex.test(gradeId)) {
-          subjectData.gradeId = gradeId
-        } else {
-          const gradeName = gradeId.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())
-          const g = await Grade.findOne({ where: { name: gradeName } })
-          if (g) subjectData.gradeId = g.id
+      const existingSubject = await Subject.findOne({ where: { name: subject } })
+      if (existingSubject) {
+        subjectId = existingSubject.id
+      } else {
+        const subjectData: any = {
+          name: subject,
+          code: subject.toUpperCase().replace(/\s+/g, '_') + '_' + Math.random().toString(36).substring(2, 7) + '_' + Date.now().toString().slice(-4),
         }
-      }
 
-      const newSubject = await Subject.create(subjectData)
-      subjectId = newSubject.id
+        if (grade) {
+          if (uuidRegex.test(grade)) {
+            subjectData.gradeId = grade
+          } else {
+            const g = await Grade.findOne({ where: { name: grade } })
+            if (g) subjectData.gradeId = g.id
+          }
+        }
+
+        const newSubject = await Subject.create(subjectData)
+        subjectId = newSubject.id
+      }
     }
 
     // Upload file to B2 and get public URL
@@ -289,7 +293,6 @@ export class ResourceService {
     // Resolve University and Department
     let finalUniversityId = null
     let finalDepartmentId = null
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
     if (universityName) {
       if (uuidRegex.test(universityName)) {
@@ -309,7 +312,37 @@ export class ResourceService {
       }
     }
 
-    const gradeValue = category || gradeId || ''
+    // Resolve grade — accept UUID or name string
+    let gradeValue = category || ''
+    if (!gradeValue && grade) {
+      if (uuidRegex.test(grade)) {
+        const g = await Grade.findByPk(grade)
+        gradeValue = g ? g.name : grade
+      } else {
+        gradeValue = grade
+      }
+    }
+
+    // Resolve stream — accept UUID or code string
+    let streamValue = stream || ''
+    if (stream && uuidRegex.test(stream)) {
+      const s = await Stream.findByPk(stream)
+      streamValue = s ? s.code : stream
+    }
+    // Extract base stream type from prefixed codes (e.g. "g11_natural" → "natural")
+    const streamParts = (streamValue || '').split('_')
+    const baseStream = streamParts.length > 1 ? streamParts[streamParts.length - 1] : streamValue
+
+    // Map grade name to User model format (e.g. "Grade 9" → "grade_9")
+    const gradeNameToKey = (name: string): string => {
+      const map: Record<string, string> = {
+        'grade 9': 'grade_9',
+        'grade 10': 'grade_10',
+        'grade 11': 'grade_11',
+        'grade 12': 'grade_12',
+      }
+      return map[name.toLowerCase()] || name.toLowerCase()
+    }
 
     const newResource = await Resource.create({
       title,
@@ -317,8 +350,8 @@ export class ResourceService {
       type: type.toLowerCase().replace(/\s+/g, '_'),
       fileUrl,
       educationLevel: educationLevel.toLowerCase() === 'university' ? 'university' : 'high_school',
-      grade: gradeValue.toLowerCase(),
-      stream: stream ? stream.toLowerCase() : undefined,
+      grade: gradeNameToKey(gradeValue),
+      stream: baseStream ? baseStream.toLowerCase() : undefined,
       subjectId,
       universityId: finalUniversityId,
       departmentId: finalDepartmentId,

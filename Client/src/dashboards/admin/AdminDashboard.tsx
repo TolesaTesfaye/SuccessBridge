@@ -216,7 +216,7 @@ export const AdminDashboardContent: React.FC = () => {
       formData.append("subject", data.subject);
       formData.append("tags", data.tags);
       if (data.file) formData.append("file", data.file);
-      if (data.grade) formData.append("gradeId", data.grade);
+      if (data.grade) formData.append("grade", data.grade);
       if (data.stream) formData.append("stream", data.stream);
       if (data.universityId) formData.append("universityId", data.universityId);
       if (data.departmentId) formData.append("departmentId", data.departmentId);

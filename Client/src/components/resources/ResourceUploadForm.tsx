@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FormInput } from "@components/forms/FormInput";
 import { FormSelect } from "@components/forms/FormSelect";
 import { FormTextarea } from "@components/forms/FormTextarea";
 import { Button } from "@components/common/Button";
-import {
-  UNIVERSITIES,
-  DEPARTMENTS,
-  HIGH_SCHOOL,
-  UNIVERSITY_CATEGORIES,
-} from "@utils/constants";
+import { gradeService, Grade } from "@services/gradeService";
+import { streamService, Stream } from "@services/streamService";
+import { subjectService, Subject } from "@services/subjectService";
+import { universityService } from "@services/universityService";
+import { departmentService, Department } from "@services/departmentService";
+import { resourceTypeService } from "@services/resourceTypeService";
 
 export interface UploadFormData {
   title: string;
@@ -31,6 +31,10 @@ interface ResourceUploadFormProps {
   initialData?: Partial<UploadFormData>;
 }
 
+type ResourceTypeData = { id: string; name: string; gradeId: string };
+
+type UniversityData = { id: string; name: string; location?: string };
+
 export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
   onSubmit,
   loading = false,
@@ -52,13 +56,163 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
   });
   const [error, setError] = useState<string | null>(null);
 
+  const [grades, setGrades] = useState<Grade[]>([]);
+  const [streams, setStreams] = useState<Stream[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [universities, setUniversities] = useState<UniversityData[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [resourceTypes, setResourceTypes] = useState<ResourceTypeData[]>([]);
+
+  useEffect(() => {
+    const fetchUniversities = async () => {
+      try {
+        const res = await universityService.getUniversities();
+        setUniversities(res?.data || []);
+      } catch {
+        setUniversities([]);
+      }
+    };
+    fetchUniversities();
+  }, []);
+
+  useEffect(() => {
+    const fetchGrades = async () => {
+      try {
+        const data = await gradeService.getGrades(formData.educationLevel);
+        setGrades(Array.isArray(data) ? data : []);
+      } catch {
+        setGrades([]);
+      }
+    };
+    fetchGrades();
+    setFormData((prev) => ({
+      ...prev,
+      grade: "",
+      stream: "",
+      category: "",
+      departmentId: "",
+      subject: "",
+    }));
+  }, [formData.educationLevel]);
+
+  useEffect(() => {
+    if (formData.grade) {
+      const fetchStreams = async () => {
+        try {
+          const data = await streamService.getStreams(formData.grade);
+          setStreams(Array.isArray(data) ? data : []);
+        } catch {
+          setStreams([]);
+        }
+      };
+      fetchStreams();
+      if (formData.educationLevel === "high_school") {
+        setFormData((prev) => ({ ...prev, stream: "", subject: "" }));
+      }
+    } else {
+      setStreams([]);
+    }
+  }, [formData.educationLevel, formData.grade]);
+
+  useEffect(() => {
+    if (formData.educationLevel === "university" && formData.universityId) {
+      const fetchDepartments = async () => {
+        try {
+          const data = await departmentService.getByUniversity(formData.universityId!);
+          setDepartments(Array.isArray(data) ? data : []);
+        } catch {
+          setDepartments([]);
+        }
+      };
+      fetchDepartments();
+      setFormData((prev) => ({ ...prev, departmentId: "", subject: "" }));
+    } else {
+      setDepartments([]);
+    }
+  }, [formData.educationLevel, formData.universityId]);
+
+  useEffect(() => {
+    const filters: Record<string, string> = {};
+    if (formData.educationLevel === "high_school") {
+      if (formData.grade) filters.gradeId = formData.grade;
+      if (formData.stream) filters.streamId = formData.stream;
+    } else {
+      if (formData.departmentId) {
+        filters.departmentId = formData.departmentId;
+      } else if (formData.grade) {
+        filters.gradeId = formData.grade;
+        if (formData.stream) filters.streamId = formData.stream;
+      }
+    }
+
+    const fetchSubjects = async () => {
+      try {
+        const data = await subjectService.getSubjectsByFilter(filters);
+        setSubjects(Array.isArray(data) ? data : []);
+      } catch {
+        setSubjects([]);
+      }
+    };
+
+    if (Object.keys(filters).length > 0) {
+      fetchSubjects();
+    } else {
+      setSubjects([]);
+    }
+  }, [formData.educationLevel, formData.grade, formData.stream, formData.departmentId]);
+
+  // Fetch resource types when grade changes
+  useEffect(() => {
+    setResourceTypes([]);
+    if (formData.grade) {
+      const controller = new AbortController();
+      resourceTypeService.getByGrade(formData.grade, controller.signal).then((data) => {
+        if (!controller.signal.aborted) setResourceTypes(Array.isArray(data) ? data : []);
+      }).catch(() => {
+        if (!controller.signal.aborted) setResourceTypes([]);
+      });
+      return () => controller.abort();
+    }
+  }, [formData.grade]);
+
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >,
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "educationLevel") {
+      setFormData((prev) => ({
+        ...prev,
+        educationLevel: value as "high_school" | "university",
+        grade: "",
+        stream: "",
+        category: "",
+        universityId: "",
+        departmentId: "",
+        subject: "",
+      }));
+    } else if (name === "grade") {
+      if (formData.educationLevel === "university") {
+        const selectedGrade = grades.find((g) => g.id === value);
+        const category = selectedGrade ? selectedGrade.name.toLowerCase() : "";
+        setFormData((prev) => ({
+          ...prev,
+          grade: value,
+          category,
+          stream: "",
+          departmentId: "",
+          subject: "",
+        }));
+      } else {
+        setFormData((prev) => ({ ...prev, grade: value, stream: "", subject: "" }));
+      }
+    } else if (name === "stream" || name === "departmentId") {
+      setFormData((prev) => ({ ...prev, [name]: value, subject: "" }));
+    } else if (name === "universityId") {
+      setFormData((prev) => ({ ...prev, universityId: value, departmentId: "", subject: "" }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
     setError(null);
   };
 
@@ -71,27 +225,18 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (
-      !formData.title ||
-      !formData.description ||
-      !formData.type ||
-      !formData.subject ||
-      (!formData.file && !loading)
-    ) {
+    if (!formData.title || !formData.description || !formData.type || !formData.subject || (!formData.file && !loading)) {
       setError("Please fill in all required fields");
       return;
     }
 
-    // Validate student targeting
     if (formData.educationLevel === "high_school") {
       if (!formData.grade) {
         setError("Please select a grade for high school students");
         return;
       }
-      if (
-        (formData.grade === "grade_11" || formData.grade === "grade_12") &&
-        !formData.stream
-      ) {
+      const selectedGrade = grades.find((g) => g.id === formData.grade);
+      if (selectedGrade && selectedGrade.level >= 11 && streams.length > 0 && !formData.stream) {
         setError("Please select a stream for grades 11-12");
         return;
       }
@@ -104,159 +249,58 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
         setError("Please select a student category");
         return;
       }
-      if (formData.category === "senior" || formData.category === "gc") {
-        if (!formData.departmentId) {
-          setError("Please select a department for senior/GC students");
-          return;
-        }
+      if ((formData.category === "senior" || formData.category === "gc") && !formData.departmentId) {
+        setError("Please select a department for senior/GC students");
+        return;
       }
     }
 
-    onSubmit(formData);
+    const resolvedType = resourceTypes.find((r) => r.id === formData.type)?.name || formData.type;
+    onSubmit({ ...formData, type: resolvedType });
   };
 
-  const getDynamicSubjects = () => {
-    if (formData.educationLevel === "high_school") {
-      if (formData.grade === "grade_9" || formData.grade === "grade_10") {
-        return HIGH_SCHOOL.GRADES_9_10.subjects.map((s) => ({
-          value: s,
-          label: s,
-        }));
-      }
-      if (formData.stream === "natural")
-        return HIGH_SCHOOL.GRADES_11_12.natural.subjects.map((s) => ({
-          value: s,
-          label: s,
-        }));
-      if (formData.stream === "social")
-        return HIGH_SCHOOL.GRADES_11_12.social.subjects.map((s) => ({
-          value: s,
-          label: s,
-        }));
-      return [];
-    } else {
-      const subjects: { value: string; label: string }[] = [];
-
-      // Add Common Course for all university students
-      subjects.push({ value: "Common Course", label: "Common Course" });
-
-      if (formData.category === "remedial") {
-        if (formData.stream === "natural") {
-          const remedialNaturalSubjects = [
-            "Math",
-            "Physics",
-            "Chemistry",
-            "Biology",
-          ];
-          remedialNaturalSubjects.forEach((s) =>
-            subjects.push({ value: s, label: s }),
-          );
-        } else if (formData.stream === "social") {
-          const remedialSocialSubjects = [
-            "History",
-            "Geography",
-            "Economics",
-            "Civics",
-          ];
-          remedialSocialSubjects.forEach((s) =>
-            subjects.push({ value: s, label: s }),
-          );
-        } else {
-          const defaultRemedialSubjects = [
-            "Math",
-            "English",
-            "Physics",
-            "Chemistry",
-            "Geography",
-            "History",
-          ];
-          defaultRemedialSubjects.forEach((s) =>
-            subjects.push({ value: s, label: s }),
-          );
-        }
-      }
-
-      if (formData.category === "freshman") {
-        const freshmanSubjects = [
-          "Math",
-          "Logic",
-          "Psychology",
-          "Physics",
-          "English",
-        ];
-        freshmanSubjects.forEach((s) => subjects.push({ value: s, label: s }));
-      }
-
-      // For senior and GC students, add department-specific subjects
-      if (
-        (formData.category === "senior" || formData.category === "gc") &&
-        formData.departmentId
-      ) {
-        const departments: string[] =
-          (DEPARTMENTS as any)[formData.departmentId] || [];
-        departments.forEach((s) => subjects.push({ value: s, label: s }));
-      }
-
-      return subjects;
-    }
-  };
-
-  const getDynamicResourceTypes = () => {
-    if (formData.educationLevel === "high_school") {
-      if (formData.grade === "grade_9" || formData.grade === "grade_10") {
-        return HIGH_SCHOOL.GRADES_9_10.resources.map((r) => ({
-          value: r.toLowerCase().replace(/ /g, "_"),
-          label: r,
-        }));
-      }
-      if (formData.stream === "natural")
-        return HIGH_SCHOOL.GRADES_11_12.natural.resources.map((r) => ({
-          value: r.toLowerCase().replace(/ /g, "_"),
-          label: r,
-        }));
-      if (formData.stream === "social")
-        return HIGH_SCHOOL.GRADES_11_12.social.resources.map((r) => ({
-          value: r.toLowerCase().replace(/ /g, "_"),
-          label: r,
-        }));
-      return [];
-    } else {
-      // University resource types depend on student category
-      if (!formData.category) return [];
-
-      const categoryData = (UNIVERSITY_CATEGORIES as any)[formData.category];
-      if (!categoryData || !categoryData.resources) return [];
-
-      return categoryData.resources.map((r: string) => ({
-        value: r.toLowerCase().replace(/ /g, "_"),
-        label: r,
-      }));
-    }
+  const getResourceTypes = () => {
+    return resourceTypes.map((rt) => ({
+      value: rt.id,
+      label: rt.name,
+    }));
   };
 
   const getTargetStudentInfo = () => {
     if (formData.educationLevel === "high_school") {
-      let info = `High School - ${formData.grade?.replace("grade_", "Grade ")}`;
-      if (formData.stream)
-        info += ` (${formData.stream === "natural" ? "Natural Science" : "Social Science"})`;
-      return info;
-    } else {
-      let info = `University - ${formData.universityId}`;
-      if (formData.category)
-        info += ` - ${(UNIVERSITY_CATEGORIES as any)[formData.category]?.label}`;
-      if (formData.departmentId) info += ` - ${formData.departmentId}`;
-      if (
-        formData.stream &&
-        (formData.category === "remedial" || formData.category === "freshman")
-      ) {
-        info += ` (${formData.stream === "natural" ? "Natural Science" : "Social Science"})`;
+      const selectedGrade = grades.find((g) => g.id === formData.grade);
+      if (!selectedGrade) return "";
+      let info = `High School - ${selectedGrade.name}`;
+      if (formData.stream) {
+        const streamData = streams.find((s) => s.id === formData.stream);
+        if (streamData) info += ` (${streamData.name})`;
       }
       return info;
     }
+
+    const selectedUni = universities.find((u) => u.id === formData.universityId);
+    let info = `University - ${selectedUni?.name || formData.universityId}`;
+    if (formData.category) {
+      const selectedGrade = grades.find((g) => g.id === formData.grade);
+      info += ` - ${selectedGrade?.name || formData.category}`;
+    }
+    if (formData.departmentId) {
+      const selectedDept = departments.find((d) => d.id === formData.departmentId);
+      info += ` - ${selectedDept?.name || formData.departmentId}`;
+    }
+    return info;
   };
 
-  const isIntroductory =
-    formData.category === "remedial" || formData.category === "freshman";
+  const selectedGrade = grades.find((g) => g.id === formData.grade);
+  const isHighSchoolStreamRequired = (() => {
+    if (formData.educationLevel !== "high_school") return false;
+    if (!selectedGrade) return false;
+    if (streams.length === 0) return false;
+    if (selectedGrade.level <= 10) return false;
+    return true;
+  })();
+
+  const showDepartmentDropdown = formData.category === "senior" || formData.category === "gc";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -266,7 +310,6 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
         </div>
       )}
 
-      {/* Target Student Information Display */}
       {formData.educationLevel && (formData.grade || formData.universityId) && (
         <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
           <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">
@@ -312,7 +355,6 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
         </div>
 
         <div className="space-y-6">
-          {/* Student Targeting Section */}
           <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
             <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">
               🎯 Target Student Information
@@ -338,10 +380,7 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
                   onChange={handleChange}
                   options={[
                     { value: "", label: "Select Grade" },
-                    { value: "grade_9", label: "Grade 9" },
-                    { value: "grade_10", label: "Grade 10" },
-                    { value: "grade_11", label: "Grade 11" },
-                    { value: "grade_12", label: "Grade 12" },
+                    ...grades.map((g) => ({ value: g.id, label: g.name })),
                   ]}
                 />
               ) : (
@@ -352,7 +391,7 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
                   onChange={handleChange}
                   options={[
                     { value: "", label: "Select University" },
-                    ...UNIVERSITIES.map((u) => ({ value: u, label: u })),
+                    ...universities.map((u) => ({ value: u.id, label: u.name })),
                   ]}
                 />
               )}
@@ -360,8 +399,7 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
               {formData.educationLevel === "high_school" ? (
-                (formData.grade === "grade_11" ||
-                  formData.grade === "grade_12") && (
+                isHighSchoolStreamRequired && (
                   <FormSelect
                     label="Stream *"
                     name="stream"
@@ -369,8 +407,7 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
                     onChange={handleChange}
                     options={[
                       { value: "", label: "Select Stream" },
-                      { value: "natural", label: "Natural Science" },
-                      { value: "social", label: "Social Science" },
+                      ...streams.map((s) => ({ value: s.id, label: s.name })),
                     ]}
                   />
                 )
@@ -378,51 +415,45 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
                 <>
                   <FormSelect
                     label="Student Category *"
-                    name="category"
-                    value={formData.category || ""}
+                    name="grade"
+                    value={formData.grade || ""}
                     onChange={handleChange}
                     options={[
                       { value: "", label: "Select Category" },
-                      ...Object.keys(UNIVERSITY_CATEGORIES).map((c) => ({
-                        value: c,
-                        label: (UNIVERSITY_CATEGORIES as any)[c].label,
-                      })),
+                      ...grades.map((g) => ({ value: g.id, label: g.name })),
                     ]}
                   />
-                  {formData.category === "senior" ||
-                  formData.category === "gc" ? (
-                    <FormSelect
-                      label="Department Group *"
-                      name="departmentId"
-                      value={formData.departmentId || ""}
-                      onChange={handleChange}
-                      options={[
-                        { value: "", label: "Select Department" },
-                        ...Object.keys(DEPARTMENTS).map((d) => ({
-                          value: d,
-                          label: d,
-                        })),
-                      ]}
-                    />
-                  ) : isIntroductory ? (
-                    <FormSelect
-                      label="Stream (Optional)"
-                      name="stream"
-                      value={formData.stream || ""}
-                      onChange={handleChange}
-                      options={[
-                        { value: "", label: "All Streams" },
-                        { value: "natural", label: "Natural Science" },
-                        { value: "social", label: "Social Science" },
-                      ]}
-                    />
-                  ) : null}
+                  {formData.grade && formData.category && (
+                    <>
+                      {showDepartmentDropdown && (
+                        <FormSelect
+                          label="Department *"
+                          name="departmentId"
+                          value={formData.departmentId || ""}
+                          onChange={handleChange}
+                          options={[
+                            { value: "", label: "Select Department" },
+                            ...departments.map((d) => ({ value: d.id, label: d.name })),
+                          ]}
+                        />
+                      )}
+                      <FormSelect
+                        label="Stream"
+                        name="stream"
+                        value={formData.stream || ""}
+                        onChange={handleChange}
+                        options={[
+                          { value: "", label: "All Streams" },
+                          ...streams.map((s) => ({ value: s.id, label: s.name })),
+                        ]}
+                      />
+                    </>
+                  )}
                 </>
               )}
             </div>
           </div>
 
-          {/* Resource Details Section */}
           <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
             <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-4">
               📄 Resource Details
@@ -435,14 +466,9 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
                 value={formData.type}
                 onChange={handleChange}
                 options={[
-                  { value: "", label: "Select Type" },
-                  ...getDynamicResourceTypes(),
+                  { value: "", label: resourceTypes.length === 0 && formData.grade ? "No types available" : "Select Type" },
+                  ...getResourceTypes(),
                 ]}
-                helperText={
-                  formData.category
-                    ? `Available for ${(UNIVERSITY_CATEGORIES as any)[formData.category]?.label || formData.category}`
-                    : ""
-                }
               />
 
               <FormSelect
@@ -451,14 +477,14 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
                 value={formData.subject}
                 onChange={handleChange}
                 options={[
-                  { value: "", label: "Select Subject" },
-                  ...getDynamicSubjects(),
+                  { value: "", label: subjects.length === 0 && (formData.grade || formData.departmentId) ? "No subjects available" : "Select Subject" },
+                  ...subjects.map((s) => ({ value: s.id, label: s.name })),
                 ]}
                 helperText={
                   formData.category === "freshman"
-                    ? "Freshman subjects + Common Course"
+                    ? "Freshman subjects"
                     : formData.category === "remedial"
-                      ? "Stream-based subjects + Common Course"
+                      ? "Stream-based subjects"
                       : ""
                 }
               />

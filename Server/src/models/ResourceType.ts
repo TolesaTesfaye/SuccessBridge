@@ -1,23 +1,21 @@
 import { DataTypes, Model } from 'sequelize'
 import sequelize from '../config/database.js'
 
-interface IStream {
+interface IResourceType {
   id: string
   name: string
-  code: string
   gradeId: string
 }
 
-class Stream extends Model<IStream> implements IStream {
+class ResourceType extends Model<IResourceType> implements IResourceType {
   public id!: string
   public name!: string
-  public code!: string
   public gradeId!: string
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 }
 
-Stream.init(
+ResourceType.init(
   {
     id: {
       type: DataTypes.UUID,
@@ -28,22 +26,17 @@ Stream.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    code: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: 'stream_code_grade',
-    },
     gradeId: {
       type: DataTypes.UUID,
       allowNull: false,
-      unique: 'stream_code_grade',
     },
   },
   {
     sequelize,
-    tableName: 'streams',
+    tableName: 'resource_types',
     timestamps: true,
+    indexes: [{ fields: ['gradeId'] }],
   },
 )
 
-export default Stream
+export default ResourceType

@@ -65,7 +65,7 @@ Quiz.init(
     },
     subjectId: {
       type: DataTypes.UUID,
-      allowNull: false,
+      allowNull: true,
     },
     educationLevel: {
       type: DataTypes.ENUM('high_school', 'university'),

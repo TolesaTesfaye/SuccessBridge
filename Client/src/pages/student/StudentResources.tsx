@@ -4,11 +4,35 @@ import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { ResourceList } from "@components/resources/ResourceList";
 import { ResourceFilter } from "@components/resources/ResourceFilter";
 import { useResources } from "@hooks/useResources";
+import { useAuthStore } from "@store/authStore";
+import type { FilterOptions } from "@components/resources/ResourceFilter";
 import { AIService, ChatMessage } from "@services/aiService";
 
 export const StudentResources: React.FC = () => {
-  const [filters, setFilters] = useState({});
-  const { resources, loading, error } = useResources(filters);
+  const { user } = useAuthStore();
+
+  const getInitialFilters = (): FilterOptions => {
+    const f: FilterOptions = {};
+    if (user?.studentType === "university") {
+      f.educationLevel = "university";
+      if (user.universityLevel) f.category = user.universityLevel;
+      if (user.university) f.university = user.university;
+      if (user.department) f.department = user.department;
+    } else {
+      f.educationLevel = "high_school";
+      if (user?.highSchoolGrade) f.grade = user.highSchoolGrade;
+      if (user?.highSchoolStream) f.stream = user.highSchoolStream;
+    }
+    return f;
+  };
+
+  const [filters, setFilters] = useState<FilterOptions>(getInitialFilters());
+
+  const handleFilterChange = (newFilters: FilterOptions) => {
+    setFilters({ ...newFilters, educationLevel: user?.studentType === "university" ? "university" as const : "high_school" as const });
+  };
+
+  const { resources, loading, error } = useResources(filters as any);
 
   // Chat state
   const [showChat, setShowChat] = useState(false);
@@ -67,7 +91,10 @@ export const StudentResources: React.FC = () => {
         <h2 className="text-xl font-bold text-gray-900 dark:text-white m-0">
           Available Resources
         </h2>
-        <ResourceFilter onFilter={setFilters} />
+        <ResourceFilter
+          onFilter={handleFilterChange}
+          educationLevel={filters.educationLevel as "high_school" | "university" | undefined}
+        />
         {error && (
           <div className="p-4 text-sm text-red-600 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-500/20">
             {error}
