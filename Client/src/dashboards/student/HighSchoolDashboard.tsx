@@ -135,7 +135,7 @@ export const HighSchoolDashboard: React.FC = () => {
       noPadding={activeTab === "learning"}
       showFooter={false}
       headerNav={
-        <div className="flex items-center w-full gap-0.5 md:gap-1">
+        <div className="flex items-center w-full md:w-auto md:mx-auto gap-0.5 md:gap-1">
           {[
             { id: "home", label: "Home", shortLabel: "Home", icon: Home },
             {
@@ -154,15 +154,16 @@ export const HighSchoolDashboard: React.FC = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex-1 px-1 md:px-2 py-1 md:py-2 text-[7px] md:text-[10px] font-black uppercase tracking-wider md:tracking-widest transition-all flex items-center justify-center gap-1 md:gap-2 rounded-lg md:rounded-xl ${
+              className={`flex-1 md:flex-none px-1 md:px-3 lg:px-5 py-1 md:py-2 text-[7px] md:text-[10px] lg:text-xs font-black uppercase tracking-wider md:tracking-widest transition-all flex items-center justify-center gap-1 md:gap-2 rounded-lg md:rounded-xl whitespace-nowrap ${
                 activeTab === tab.id
                   ? "bg-blue-600 text-white shadow-lg shadow-blue-500/25 scale-105"
                   : "text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               <tab.icon className="hidden md:inline-block w-3.5 h-3.5" />
-              <span className="md:hidden">{tab.shortLabel}</span>
-              <span className="hidden md:inline">{tab.label}</span>
+              <span className="text-[7px] md:text-[10px] lg:text-xs font-black uppercase tracking-wider md:tracking-widest">
+                {tab.label}
+              </span>
             </button>
           ))}
         </div>

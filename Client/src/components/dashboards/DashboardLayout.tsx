@@ -81,7 +81,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
           {/* Navigation Items */}
           {headerNav && (
-            <div className="flex items-center gap-1 ml-1 md:ml-4 lg:absolute lg:left-1/2 lg:-translate-x-1/2 w-full lg:w-auto">
+            <div className="flex items-center gap-1 ml-1 md:ml-4 lg:absolute lg:left-1/2 lg:-translate-x-1/2 w-full sm:w-auto">
               {headerNav}
             </div>
           )}
