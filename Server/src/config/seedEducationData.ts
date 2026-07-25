@@ -126,7 +126,7 @@ const DEPARTMENTS_BY_CATEGORY: Record<string, string[]> = {
 }
 
 function generateCode(name: string, prefix: string): string {
-  return name.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4) + prefix
+  return name.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 8) + prefix
 }
 
 export const seedEducationData = async (): Promise<void> => {

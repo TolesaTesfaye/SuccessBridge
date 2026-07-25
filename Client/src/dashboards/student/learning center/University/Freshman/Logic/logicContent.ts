@@ -7,8 +7,8 @@ export const LOGIC_CONTENT = {
       title: "Chapter 1: Introducing Philosophy",
       topics: [
         {
-          id: "lesson1",
-          title: "Lesson 1: Meaning and Nature of Philosophy",
+          id: "1.1",
+          title: "1.1 Meaning and Nature of Philosophy",
           content: [
             "**What is Philosophy?**",
             "Philosophy comes from the Greek words 'philos' (love) and 'sophia' (wisdom), literally meaning 'love of wisdom.' It is the systematic and critical examination of fundamental questions about existence, knowledge, values, reason, mind, and language.",
@@ -33,8 +33,8 @@ export const LOGIC_CONTENT = {
           ]
         },
         {
-          id: "lesson2",
-          title: "Lesson 2: Basic Features of Philosophy",
+          id: "1.2",
+          title: "1.2 Basic Features of Philosophy",
           content: [
             "**Distinctive Features of Philosophy**",
             "Philosophy possesses several unique characteristics that distinguish it from other academic disciplines and ways of thinking:",
@@ -81,8 +81,8 @@ export const LOGIC_CONTENT = {
           ]
         },
         {
-          id: "lesson3",
-          title: "Lesson 3: Metaphysics and Epistemology",
+          id: "1.3",
+          title: "1.3 Metaphysics and Epistemology",
           content: [
             "**Core Fields of Philosophy**",
             "Philosophy is divided into several major branches or fields, each addressing different fundamental questions. Two of the most important are Metaphysics and Epistemology.",
@@ -154,8 +154,8 @@ export const LOGIC_CONTENT = {
           ]
         },
         {
-          id: "lesson4",
-          title: "Lesson 4: Axiology and Logic",
+          id: "1.4",
+          title: "1.4 Axiology and Logic",
           content: [
             "**4.1 AXIOLOGY**",
             "Axiology is the philosophical study of value. It examines questions about what is valuable, what makes things valuable, and how we should evaluate different kinds of value. Axiology has two main branches: Ethics and Aesthetics.",
@@ -236,8 +236,8 @@ export const LOGIC_CONTENT = {
           ]
         },
         {
-          id: "lesson5",
-          title: "Lesson 5: Importance of Learning Philosophy",
+          id: "1.5",
+          title: "1.5 Importance of Learning Philosophy",
           content: [
             "**Why Study Philosophy?**",
             "Philosophy is not just an academic discipline—it is a practical tool for living a more thoughtful, examined, and meaningful life. Studying philosophy provides numerous benefits for personal, intellectual, and professional development.",
@@ -347,32 +347,32 @@ export const LOGIC_CONTENT = {
       title: "Chapter 2: Basic Concepts of Logic",
       topics: [
         {
-          id: "lesson1",
-          title: "Lesson 1: Arguments, Premises and Conclusions",
+          id: "2.1",
+          title: "2.1 Arguments, Premises and Conclusions",
           content: [
             "An argument consists of premises and a conclusion.",
             "Premises are statements that provide support for the conclusion."
           ]
         },
         {
-          id: "lesson2",
-          title: "Lesson 2: Techniques of Recognizing Arguments",
+          id: "2.2",
+          title: "2.2 Techniques of Recognizing Arguments",
           content: [
             "Learn to identify argumentative passages.",
             "Distinguish arguments from non-argumentative passages."
           ]
         },
         {
-          id: "lesson3",
-          title: "Lesson 3: Types of Arguments",
+          id: "2.3",
+          title: "2.3 Types of Arguments",
           content: [
             "Deductive arguments aim for certainty.",
             "Inductive arguments aim for probability."
           ]
         },
         {
-          id: "lesson4",
-          title: "Lesson 4: Evaluating Arguments",
+          id: "2.4",
+          title: "2.4 Evaluating Arguments",
           content: [
             "Evaluate deductive arguments for validity and soundness.",
             "Evaluate inductive arguments for strength and cogency."

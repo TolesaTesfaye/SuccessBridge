@@ -404,15 +404,6 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
           }}
         />
         <div className="relative z-10 p-5 md:p-10 lg:p-14">
-          <div className="animate-slide-up">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-violet-200 mb-4 md:mb-6">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
-              </span>
-              {categoryInfo.label}
-            </span>
-          </div>
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 md:gap-8 items-center">
             <div className="lg:col-span-3 space-y-4 md:space-y-5">
               <div className="animate-slide-up">

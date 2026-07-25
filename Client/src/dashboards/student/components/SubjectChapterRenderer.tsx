@@ -113,11 +113,47 @@ const MathNatCh1 = React.lazy(
   () =>
     import("@learningCenter/University/Freshman/mathnatural/chapters/Chapter1/Chapter1"),
 );
+const MathNatCh2 = React.lazy(
+  () =>
+    import("@learningCenter/University/Freshman/mathnatural/chapters/Chapter2/Chapter2"),
+);
+const MathNatCh3 = React.lazy(
+  () =>
+    import("@learningCenter/University/Freshman/mathnatural/chapters/Chapter3/Chapter3"),
+);
+const MathNatCh4 = React.lazy(
+  () =>
+    import("@learningCenter/University/Freshman/mathnatural/chapters/Chapter4/Chapter4"),
+);
+const MathNatCh5 = React.lazy(
+  () =>
+    import("@learningCenter/University/Freshman/mathnatural/chapters/Chapter5/Chapter5"),
+);
+const MathNatCh6 = React.lazy(
+  () =>
+    import("@learningCenter/University/Freshman/mathnatural/chapters/Chapter6/Chapter6"),
+);
+const MathNatCh7 = React.lazy(
+  () =>
+    import("@learningCenter/University/Freshman/mathnatural/chapters/Chapter7/Chapter7"),
+);
 
 // Lazy load Math (Social Science) chapters
 const MathSocCh1 = React.lazy(
   () =>
     import("@learningCenter/University/Freshman/mathsocial/chapters/Chapter1/Chapter1"),
+);
+const MathSocCh2 = React.lazy(
+  () =>
+    import("@learningCenter/University/Freshman/mathsocial/chapters/Chapter2/Chapter2"),
+);
+const MathSocCh3 = React.lazy(
+  () =>
+    import("@learningCenter/University/Freshman/mathsocial/chapters/Chapter3/Chapter3"),
+);
+const MathSocCh4 = React.lazy(
+  () =>
+    import("@learningCenter/University/Freshman/mathsocial/chapters/Chapter4/Chapter4"),
 );
 
 // Lazy load Geography chapters
@@ -178,9 +214,18 @@ const CHAPTER_COMPONENTS: Record<
   },
   "Math (Natural Science)": {
     chapter1: MathNatCh1,
+    chapter2: MathNatCh2,
+    chapter3: MathNatCh3,
+    chapter4: MathNatCh4,
+    chapter5: MathNatCh5,
+    chapter6: MathNatCh6,
+    chapter7: MathNatCh7,
   },
   "Math (Social Science)": {
     chapter1: MathSocCh1,
+    chapter2: MathSocCh2,
+    chapter3: MathSocCh3,
+    chapter4: MathSocCh4,
   },
   Geography: {
     chapter1: GeoCh1,

@@ -23,38 +23,24 @@ export const PhysicsChapterContent: React.FC<PhysicsChapterContentProps> = ({
   // Physics chapters list
   const physicsChapters = [
     { id: 'chapter1', title: 'Chapter 1: Preliminaries' },
-    { id: 'chapter2', title: 'Chapter 2: Kinematics and Dynamics of Particles' },
-    { id: 'chapter3', title: 'Chapter 3: Fluid Mechanics' },
-    { id: 'chapter4', title: 'Chapter 4: Heat and Thermodynamics' },
-    { id: 'chapter5', title: 'Chapter 5: Oscillations, Waves and Optics' },
-    { id: 'chapter6', title: 'Chapter 6: Electromagnetism and Electronics' },
-    { id: 'chapter7', title: 'Chapter 7: Cross Cutting Applications of Physics' }
+    { id: 'chapter2', title: 'Chapter 2: Motion in One Dimension' },
+    { id: 'chapter3', title: 'Chapter 3: Motion in Two Dimensions' },
+    { id: 'chapter4', title: 'Chapter 4: Laws of Motion' },
+    { id: 'chapter5', title: 'Chapter 5: Work, Energy and Power' },
+    { id: 'chapter6', title: 'Chapter 6: Linear Momentum and Collision' },
+    { id: 'chapter7', title: 'Chapter 7: Rotational Motion' }
   ];
 
   if (chapterId === 'chapter1') {
     return (
       <div className="space-y-3">
-        <Chapter1 />
-        
-        {/* Navigation Buttons */}
-        <div className="flex justify-between items-center p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-          <button
-            disabled
-            className="px-6 py-3 rounded text-sm font-medium bg-slate-200 text-slate-400 cursor-not-allowed"
-          >
-            ❮ Previous
-          </button>
-
-          <button
-            onClick={() => {
-              setSelectedPhysicsChapter('chapter2');
-              setSelectedSubtopic('');
-            }}
-            className="px-6 py-3 rounded text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
-          >
-            Next ❯
-          </button>
-        </div>
+        <Chapter1 
+          selectedSubtopic={selectedSubtopic} 
+          onNavigateChapter={(id) => {
+            setSelectedPhysicsChapter(id);
+            setSelectedSubtopic('');
+          }} 
+        />
       </div>
     );
   }
@@ -62,30 +48,13 @@ export const PhysicsChapterContent: React.FC<PhysicsChapterContentProps> = ({
   if (chapterId === 'chapter2') {
     return (
       <div className="space-y-3">
-        <Chapter2 />
-        
-        {/* Navigation Buttons */}
-        <div className="flex justify-between items-center p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-          <button
-            onClick={() => {
-              setSelectedPhysicsChapter('chapter1');
-              setSelectedSubtopic('');
-            }}
-            className="px-6 py-3 rounded text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
-          >
-            ❮ Previous
-          </button>
-
-          <button
-            onClick={() => {
-              setSelectedPhysicsChapter('chapter3');
-              setSelectedSubtopic('');
-            }}
-            className="px-6 py-3 rounded text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
-          >
-            Next ❯
-          </button>
-        </div>
+        <Chapter2 
+          selectedSubtopic={selectedSubtopic} 
+          onNavigateChapter={(id) => {
+            setSelectedPhysicsChapter(id);
+            setSelectedSubtopic('');
+          }} 
+        />
       </div>
     );
   }
@@ -93,30 +62,13 @@ export const PhysicsChapterContent: React.FC<PhysicsChapterContentProps> = ({
   if (chapterId === 'chapter3') {
     return (
       <div className="space-y-3">
-        <Chapter3 />
-        
-        {/* Navigation Buttons */}
-        <div className="flex justify-between items-center p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-          <button
-            onClick={() => {
-              setSelectedPhysicsChapter('chapter2');
-              setSelectedSubtopic('');
-            }}
-            className="px-6 py-3 rounded text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
-          >
-            ❮ Previous
-          </button>
-
-          <button
-            onClick={() => {
-              setSelectedPhysicsChapter('chapter4');
-              setSelectedSubtopic('');
-            }}
-            className="px-6 py-3 rounded text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
-          >
-            Next ❯
-          </button>
-        </div>
+        <Chapter3 
+          selectedSubtopic={selectedSubtopic} 
+          onNavigateChapter={(id) => {
+            setSelectedPhysicsChapter(id);
+            setSelectedSubtopic('');
+          }} 
+        />
       </div>
     );
   }
@@ -124,30 +76,13 @@ export const PhysicsChapterContent: React.FC<PhysicsChapterContentProps> = ({
   if (chapterId === 'chapter4') {
     return (
       <div className="space-y-3">
-        <Chapter4 />
-        
-        {/* Navigation Buttons */}
-        <div className="flex justify-between items-center p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-          <button
-            onClick={() => {
-              setSelectedPhysicsChapter('chapter3');
-              setSelectedSubtopic('');
-            }}
-            className="px-6 py-3 rounded text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
-          >
-            ❮ Previous
-          </button>
-
-          <button
-            onClick={() => {
-              setSelectedPhysicsChapter('chapter5');
-              setSelectedSubtopic('');
-            }}
-            className="px-6 py-3 rounded text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
-          >
-            Next ❯
-          </button>
-        </div>
+        <Chapter4 
+          selectedSubtopic={selectedSubtopic} 
+          onNavigateChapter={(id) => {
+            setSelectedPhysicsChapter(id);
+            setSelectedSubtopic('');
+          }} 
+        />
       </div>
     );
   }
@@ -155,30 +90,13 @@ export const PhysicsChapterContent: React.FC<PhysicsChapterContentProps> = ({
   if (chapterId === 'chapter5') {
     return (
       <div className="space-y-3">
-        <Chapter5 />
-        
-        {/* Navigation Buttons */}
-        <div className="flex justify-between items-center p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-          <button
-            onClick={() => {
-              setSelectedPhysicsChapter('chapter4');
-              setSelectedSubtopic('');
-            }}
-            className="px-6 py-3 rounded text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
-          >
-            ❮ Previous
-          </button>
-
-          <button
-            onClick={() => {
-              setSelectedPhysicsChapter('chapter6');
-              setSelectedSubtopic('');
-            }}
-            className="px-6 py-3 rounded text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
-          >
-            Next ❯
-          </button>
-        </div>
+        <Chapter5 
+          selectedSubtopic={selectedSubtopic} 
+          onNavigateChapter={(id) => {
+            setSelectedPhysicsChapter(id);
+            setSelectedSubtopic('');
+          }} 
+        />
       </div>
     );
   }
@@ -186,30 +104,13 @@ export const PhysicsChapterContent: React.FC<PhysicsChapterContentProps> = ({
   if (chapterId === 'chapter6') {
     return (
       <div className="space-y-3">
-        <Chapter6 />
-        
-        {/* Navigation Buttons */}
-        <div className="flex justify-between items-center p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-          <button
-            onClick={() => {
-              setSelectedPhysicsChapter('chapter5');
-              setSelectedSubtopic('');
-            }}
-            className="px-6 py-3 rounded text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
-          >
-            ❮ Previous
-          </button>
-
-          <button
-            onClick={() => {
-              setSelectedPhysicsChapter('chapter7');
-              setSelectedSubtopic('');
-            }}
-            className="px-6 py-3 rounded text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
-          >
-            Next ❯
-          </button>
-        </div>
+        <Chapter6 
+          selectedSubtopic={selectedSubtopic} 
+          onNavigateChapter={(id) => {
+            setSelectedPhysicsChapter(id);
+            setSelectedSubtopic('');
+          }} 
+        />
       </div>
     );
   }
@@ -217,27 +118,13 @@ export const PhysicsChapterContent: React.FC<PhysicsChapterContentProps> = ({
   if (chapterId === 'chapter7') {
     return (
       <div className="space-y-3">
-        <Chapter7 />
-        
-        {/* Navigation Buttons */}
-        <div className="flex justify-between items-center p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-          <button
-            onClick={() => {
-              setSelectedPhysicsChapter('chapter6');
-              setSelectedSubtopic('');
-            }}
-            className="px-6 py-3 rounded text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
-          >
-            ❮ Previous
-          </button>
-
-          <button
-            disabled
-            className="px-6 py-3 rounded text-sm font-medium bg-slate-200 text-slate-400 cursor-not-allowed"
-          >
-            Next ❯
-          </button>
-        </div>
+        <Chapter7 
+          selectedSubtopic={selectedSubtopic} 
+          onNavigateChapter={(id) => {
+            setSelectedPhysicsChapter(id);
+            setSelectedSubtopic('');
+          }} 
+        />
       </div>
     );
   }

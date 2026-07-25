@@ -30,27 +30,13 @@ export const EnglishChapterContent: React.FC<EnglishChapterContentProps> = ({
   if (chapterId === 'chapter1') {
     return (
       <div className="space-y-3">
-        <Chapter1 />
-        
-        {/* Navigation Buttons */}
-        <div className="flex justify-between items-center p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-          <button
-            disabled
-            className="px-6 py-3 rounded text-sm font-medium bg-slate-200 text-slate-400 cursor-not-allowed"
-          >
-            ❮ Previous
-          </button>
-
-          <button
-            onClick={() => {
-              setSelectedEnglishChapter('chapter2');
-              setSelectedSubtopic('');
-            }}
-            className="px-6 py-3 rounded text-sm font-medium bg-rose-600 text-white hover:bg-rose-700 transition-colors"
-          >
-            Next ❯
-          </button>
-        </div>
+        <Chapter1 
+          selectedSubtopic={selectedSubtopic}
+          onNavigateChapter={(id) => {
+            setSelectedEnglishChapter(id);
+            setSelectedSubtopic('');
+          }}
+        />
       </div>
     );
   }
