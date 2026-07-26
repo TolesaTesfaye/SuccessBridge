@@ -366,7 +366,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
                   Apply these reading strategies to any text you encounter. The more you practice, the more automatic these skills become.
                 </p>
                 <div className="bg-rose-50 rounded-lg p-3 text-xs text-slate-700">
-                  <strong>Pro Tip:</strong> Start with shorter texts and gradually work up to longer, more complex passages.
+                  <strong>Pro Tip:</strong> Start with shorter texts and gradually work up to longer, more complex passages. Reading comprehension improves with consistent practice!
                 </div>
               </div>
             </div>
