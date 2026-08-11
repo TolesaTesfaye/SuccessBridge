@@ -27,41 +27,48 @@ const initializeTheme = () => {
 const registerServiceWorker = async () => {
   if ('serviceWorker' in navigator && import.meta.env.PROD) {
     try {
-      // Unregister any existing service workers first to avoid conflicts
-      const registrations = await navigator.serviceWorker.getRegistrations()
-      for (const registration of registrations) {
-        await registration.unregister()
-        console.log('Unregistered old service worker')
+      // Check if a service worker is already registered
+      const existingRegistration = await navigator.serviceWorker.getRegistration('/')
+      
+      if (existingRegistration) {
+        // Update existing service worker
+        console.log('Updating existing service worker...')
+        await existingRegistration.update()
+      } else {
+        // Register new service worker
+        const registration = await navigator.serviceWorker.register('/sw.js', {
+          scope: '/',
+          updateViaCache: 'none', // Always fetch fresh service worker
+        })
+        
+        console.log('Service Worker registered successfully:', registration)
       }
       
-      // Register new service worker
-      const registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/',
-        updateViaCache: 'none', // Always fetch fresh service worker
-      })
+      // Get the current registration
+      const registration = await navigator.serviceWorker.getRegistration('/')
       
-      console.log('Service Worker registered successfully:', registration)
-      
-      // Check for updates every 60 seconds
-      setInterval(() => {
-        registration.update().catch(err => {
-          console.log('Service Worker update check failed (non-critical):', err)
-        })
-      }, 60000)
-      
-      // Listen for updates
-      registration.addEventListener('updatefound', () => {
-        const newWorker = registration.installing
-        if (newWorker) {
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // New service worker available, reload the page
-              console.log('New version available! Reloading...')
-              window.location.reload()
-            }
+      if (registration) {
+        // Check for updates every 5 minutes
+        setInterval(() => {
+          registration.update().catch(err => {
+            console.log('Service Worker update check failed (non-critical):', err)
           })
-        }
-      })
+        }, 300000)
+        
+        // Listen for updates
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // New service worker available, notify user
+                console.log('New version available! Please refresh the page.')
+                // Optionally show a toast notification to user
+              }
+            })
+          }
+        })
+      }
     } catch (error) {
       console.log('Service Worker registration failed (non-critical):', error)
       // Service worker is optional, app will work without it
