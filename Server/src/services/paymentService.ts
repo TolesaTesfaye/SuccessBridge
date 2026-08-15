@@ -130,13 +130,46 @@ export class PaymentService {
         {
           model: Subject,
           as: 'subject',
-          attributes: ['id', 'name'], // Removed 'description' - field doesn't exist in Subject model
+          attributes: ['id', 'name'],
         },
       ],
     })
 
-    // Return payments as-is for now (signed URLs disabled temporarily)
-    const paymentsData = rows.map(payment => payment.toJSON())
+    // Convert screenshot URLs to signed URLs
+    const paymentsData = await Promise.all(
+      rows.map(async (payment) => {
+        const paymentJson = payment.toJSON()
+        
+        // Try to generate signed URL for better compatibility
+        try {
+          const { getB2SignedUrl } = await import('../middleware/b2Upload.js')
+          const url = paymentJson.screenshotUrl
+          
+          if (url && typeof url === 'string') {
+            // Extract the key from various URL formats
+            let key = ''
+            
+            if (url.includes('/payments/')) {
+              // Extract everything after /payments/
+              const parts = url.split('/payments/')
+              if (parts[1]) {
+                key = 'payments/' + parts[1]
+              }
+            }
+            
+            if (key) {
+              const signedUrl = await getB2SignedUrl(key, 86400, false) // 24-hour expiry
+              paymentJson.screenshotUrl = signedUrl
+            }
+          }
+        } catch (error) {
+          // If signed URL generation fails, keep original URL
+          console.error(`Error generating signed URL for payment ${payment.id}:`, error)
+        }
+        
+        return paymentJson
+      })
+    )
 
     return {
       data: paymentsData,
