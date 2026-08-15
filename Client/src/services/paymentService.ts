@@ -95,6 +95,15 @@ class PaymentService {
     if (data.notes) {
       formData.append('notes', data.notes)
     }
+    if (data.accountNumber) {
+      formData.append('accountNumber', data.accountNumber)
+    }
+    if (data.payerPhone) {
+      formData.append('payerPhone', data.payerPhone)
+    }
+    if (data.payerNote) {
+      formData.append('payerNote', data.payerNote)
+    }
     if (data.grade) {
       formData.append('grade', data.grade)
     }

@@ -14,6 +14,7 @@ import {
   Loader,
   DollarSign,
   TrendingUp,
+  User,
 } from 'lucide-react'
 import { Modal } from '@components/common/Modal'
 import { FormTextarea } from '@components/forms/FormTextarea'
@@ -599,6 +600,36 @@ export const AdminDashboardPayments: React.FC = () => {
                 <p className="font-medium text-gray-900 dark:text-white">
                   {selectedPayment.transactionReference}
                 </p>
+              </div>
+            )}
+
+            {/* User Payment Information */}
+            {(selectedPayment.accountNumber || selectedPayment.payerPhone || selectedPayment.payerNote) && (
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
+                <h4 className="text-sm font-bold text-blue-900 dark:text-blue-100 mb-3 flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  User Payment Details
+                </h4>
+                <div className="space-y-2">
+                  {selectedPayment.accountNumber && (
+                    <div>
+                      <p className="text-xs text-blue-700 dark:text-blue-300 font-medium">Account/Phone Used</p>
+                      <p className="font-mono text-sm text-blue-900 dark:text-blue-100">{selectedPayment.accountNumber}</p>
+                    </div>
+                  )}
+                  {selectedPayment.payerPhone && (
+                    <div>
+                      <p className="text-xs text-blue-700 dark:text-blue-300 font-medium">Contact Phone</p>
+                      <p className="font-mono text-sm text-blue-900 dark:text-blue-100">{selectedPayment.payerPhone}</p>
+                    </div>
+                  )}
+                  {selectedPayment.payerNote && (
+                    <div>
+                      <p className="text-xs text-blue-700 dark:text-blue-300 font-medium">User Note</p>
+                      <p className="text-sm text-blue-900 dark:text-blue-100">{selectedPayment.payerNote}</p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
 
