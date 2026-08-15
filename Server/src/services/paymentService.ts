@@ -15,6 +15,9 @@ interface CreatePaymentData {
   screenshotUrl: string
   transactionReference?: string
   notes?: string
+  accountNumber?: string  // User's account/phone number used for payment
+  payerPhone?: string     // User's phone number
+  payerNote?: string      // Additional note from user
   educationLevel: 'high_school' | 'university'
   grade?: string
   stream?: string
@@ -132,8 +135,56 @@ export class PaymentService {
       ],
     })
 
+    // Convert screenshot URLs to signed URLs for better accessibility
+    const { getB2SignedUrl } = await import('../middleware/b2Upload.js')
+    const paymentsWithSignedUrls = await Promise.all(
+      rows.map(async (payment) => {
+        const paymentJson = payment.toJSON()
+        
+        // Extract the B2 key from the URL
+        // URL formats:
+        // 1. https://f004.backblazeb2.com/file/bucket-name/payments/12345.jpg
+        // 2. https://s3.us-west-004.backblazeb2.com/bucket-name/payments/12345.jpg
+        let key = ''
+        try {
+          const url = paymentJson.screenshotUrl
+          if (url.includes('/file/')) {
+            // Format 1: Extract after /file/{bucket-name}/
+            const parts = url.split('/file/')
+            if (parts[1]) {
+              const pathParts = parts[1].split('/')
+              // Remove bucket name and join the rest
+              key = pathParts.slice(1).join('/')
+            }
+          } else if (url.includes('.backblazeb2.com/')) {
+            // Format 2: Extract after /{bucket-name}/
+            const parts = url.split('.backblazeb2.com/')
+            if (parts[1]) {
+              const pathParts = parts[1].split('/')
+              // Remove bucket name and join the rest
+              key = pathParts.slice(1).join('/')
+            }
+          }
+          
+          // If we successfully extracted a key, generate a signed URL
+          if (key) {
+            const signedUrl = await getB2SignedUrl(key, 86400, false) // 24-hour expiry
+            paymentJson.screenshotUrl = signedUrl
+            console.log(`🔐 Generated signed URL for payment ${payment.id}`)
+          } else {
+            console.warn(`⚠️ Could not extract key from URL for payment ${payment.id}:`, url)
+          }
+        } catch (error) {
+          console.error(`❌ Error generating signed URL for payment ${payment.id}:`, error)
+          // Keep the original URL if signed URL generation fails
+        }
+        
+        return paymentJson
+      })
+    )
+
     return {
-      data: rows,
+      data: paymentsWithSignedUrls,
       total: count,
       page: Number(page),
       limit: Number(limit),
@@ -164,7 +215,39 @@ export class PaymentService {
       throw new AppError(404, 'Payment not found')
     }
 
-    return payment
+    // Convert screenshot URL to signed URL
+    const paymentJson = payment.toJSON()
+    const { getB2SignedUrl } = await import('../middleware/b2Upload.js')
+    
+    let key = ''
+    try {
+      const url = paymentJson.screenshotUrl
+      if (url.includes('/file/')) {
+        // Format 1: Extract after /file/{bucket-name}/
+        const parts = url.split('/file/')
+        if (parts[1]) {
+          const pathParts = parts[1].split('/')
+          key = pathParts.slice(1).join('/')
+        }
+      } else if (url.includes('.backblazeb2.com/')) {
+        // Format 2: Extract after /{bucket-name}/
+        const parts = url.split('.backblazeb2.com/')
+        if (parts[1]) {
+          const pathParts = parts[1].split('/')
+          key = pathParts.slice(1).join('/')
+        }
+      }
+      
+      if (key) {
+        const signedUrl = await getB2SignedUrl(key, 86400, false) // 24-hour expiry
+        paymentJson.screenshotUrl = signedUrl
+        console.log(`🔐 Generated signed URL for payment ${paymentId}`)
+      }
+    } catch (error) {
+      console.error(`❌ Error generating signed URL for payment ${paymentId}:`, error)
+    }
+
+    return paymentJson
   }
 
   /**

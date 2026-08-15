@@ -15,6 +15,9 @@ export interface IPayment {
   approvedAt?: Date
   rejectionReason?: string
   notes?: string
+  accountNumber?: string  // User's account/phone number used for payment
+  payerPhone?: string     // User's phone number
+  payerNote?: string      // Additional note from user
   educationLevel: 'high_school' | 'university'
   grade?: string
   stream?: string
@@ -38,6 +41,9 @@ class Payment extends Model<IPayment> implements IPayment {
   public approvedAt?: Date
   public rejectionReason?: string
   public notes?: string
+  public accountNumber?: string  // User's account/phone number used for payment
+  public payerPhone?: string     // User's phone number
+  public payerNote?: string      // Additional note from user
   public educationLevel!: 'high_school' | 'university'
   public grade?: string
   public stream?: string
@@ -115,6 +121,21 @@ Payment.init(
     notes: {
       type: DataTypes.TEXT,
       allowNull: true,
+    },
+    accountNumber: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: 'User account/phone number used for payment',
+    },
+    payerPhone: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: 'User phone number for contact',
+    },
+    payerNote: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+      comment: 'Additional note from user',
     },
     educationLevel: {
       type: DataTypes.ENUM('high_school', 'university'),

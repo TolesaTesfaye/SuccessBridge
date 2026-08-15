@@ -14,6 +14,9 @@ export interface Payment {
   approvedAt?: Date
   rejectionReason?: string
   notes?: string
+  accountNumber?: string
+  payerPhone?: string
+  payerNote?: string
   educationLevel: 'high_school' | 'university'
   grade?: string
   stream?: string
@@ -42,6 +45,9 @@ export interface CreatePaymentData {
   screenshot: File
   transactionReference?: string
   notes?: string
+  accountNumber?: string
+  payerPhone?: string
+  payerNote?: string
   educationLevel: 'high_school' | 'university'
   grade?: string
   stream?: string

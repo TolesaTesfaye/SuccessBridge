@@ -9,11 +9,21 @@ import { Request } from 'express';
 export function getB2PublicUrl(key: string): string {
   const bucketName = B2_BUCKET;
   
-  // Extract bucket ID prefix (first 4 chars)
-  const bucketIdPrefix = B2_BUCKET_ID.substring(0, 4);
+  // For B2, check if we have a custom domain or use the default B2 format
+  // B2 public URL format: https://f{bucket_id}.backblazeb2.com/file/{bucket_name}/{key}
+  // OR use the S3-compatible endpoint
   
-  // B2 public URL format: https://f{bucket_id_prefix}.backblazeb2.com/file/{bucket_name}/{key}
-  return `https://f${bucketIdPrefix}.backblazeb2.com/file/${bucketName}/${key}`;
+  if (B2_BUCKET_ID && B2_BUCKET_ID.length > 0) {
+    // Extract bucket ID prefix (e.g., "004" from bucket ID)
+    // B2 bucket IDs are like "4a48fe8875c6214879c10d10" - use full ID
+    const bucketIdPrefix = B2_BUCKET_ID.substring(0, 4);
+    return `https://f${bucketIdPrefix}.backblazeb2.com/file/${bucketName}/${key}`;
+  }
+  
+  // Fallback: use S3-compatible URL (may not work for public access without proper bucket settings)
+  console.warn('⚠️ B2_BUCKET_ID not set, using fallback URL format. This may not work for public access.');
+  const endpoint = process.env.B2_ENDPOINT || 's3.us-west-004.backblazeb2.com';
+  return `https://${endpoint}/${bucketName}/${key}`;
 }
 
 // Get B2 signed URL for a file (for private buckets)
@@ -117,6 +127,7 @@ export async function uploadToB2(reqOrData: Request | any, file: Express.Multer.
     await b2Client.send(command);
     const publicUrl = getB2PublicUrl(key);
     console.log('✅ File uploaded successfully to B2:', publicUrl);
+    console.log('🔑 B2 Key:', key);
     return publicUrl;
   } catch (error) {
     console.error('❌ B2 upload error:', error);
