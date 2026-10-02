@@ -33,7 +33,7 @@ export class ResourceService {
   static async getResources(filters: ResourceFilters) {
     const {
       page = 1,
-      limit = 10,
+      limit = 1000,
       type,
       resourceType,
       educationLevel,

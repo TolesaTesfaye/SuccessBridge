@@ -99,6 +99,7 @@ export const UniversityLevelView: React.FC<UniversityLevelViewProps> = ({
       const params: any = {
         educationLevel: "university",
         grade: level,
+        limit: 1000,
       };
 
       if (selectedUniversity) params.university = selectedUniversity;

@@ -187,8 +187,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         const error = 'File size must be less than 5MB'
         setErrors({ ...errors, screenshot: error })
         showToast(error, 'error')
-        // Reset input value to allow re-selecting
-        e.target.value = ''
         return
       }
 
@@ -196,8 +194,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         const error = 'Please upload an image file (PNG, JPG, GIF)'
         setErrors({ ...errors, screenshot: error })
         showToast(error, 'error')
-        // Reset input value to allow re-selecting
-        e.target.value = ''
         return
       }
 
@@ -206,18 +202,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       reader.onloadend = () => {
         setPreviewUrl(reader.result as string)
       }
-      reader.onerror = () => {
-        const error = 'Failed to read image file'
-        setErrors({ ...errors, screenshot: error })
-        showToast(error, 'error')
-        setScreenshot(null)
-        setPreviewUrl(null)
-        e.target.value = ''
-      }
       reader.readAsDataURL(file)
     }
-    // Reset input value after processing to allow re-selecting the same file
-    e.target.value = ''
   }
 
   const validateForm = (): boolean => {
@@ -486,17 +472,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Payment Screenshot *
           </label>
-          <div
-            className={`mt-1 flex justify-center px-4 sm:px-6 pt-4 sm:pt-5 pb-4 sm:pb-6 border-2 border-dashed rounded-lg transition-colors ${
+          <label
+            htmlFor="file-upload"
+            className={`mt-1 flex justify-center px-4 sm:px-6 pt-4 sm:pt-5 pb-4 sm:pb-6 border-2 border-dashed rounded-lg transition-colors cursor-pointer ${
               errors.screenshot 
                 ? 'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/10' 
                 : 'border-gray-300 dark:border-gray-600 hover:border-primary-500 active:border-primary-600 hover:bg-gray-50 dark:hover:bg-gray-800/50'
-            } ${!previewUrl ? 'cursor-pointer' : ''}`}
-            onClick={() => {
-              if (!previewUrl) {
-                document.getElementById('file-upload')?.click()
-              }
-            }}
+            }`}
           >
             <div className="space-y-1 text-center w-full">
               {previewUrl ? (
@@ -506,34 +488,19 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     alt="Payment screenshot preview"
                     className="mx-auto h-40 sm:h-48 w-auto rounded-lg"
                   />
-                  <div className="flex gap-2 justify-center mt-3">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        document.getElementById('file-upload')?.click()
-                      }}
-                      className="px-3 py-1.5 bg-blue-500 text-white text-xs sm:text-sm rounded-md hover:bg-blue-600 active:scale-95 transition-all flex items-center gap-1.5"
-                    >
-                      <Upload className="w-3.5 h-3.5" />
-                      Change Image
-                    </button>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        setScreenshot(null)
-                        setPreviewUrl(null)
-                        setErrors({ ...errors, screenshot: undefined })
-                      }}
-                      className="px-3 py-1.5 bg-red-500 text-white text-xs sm:text-sm rounded-md hover:bg-red-600 active:scale-95 transition-all flex items-center gap-1.5"
-                    >
-                      ×
-                      Remove
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      setScreenshot(null)
+                      setPreviewUrl(null)
+                      setErrors({ ...errors, screenshot: undefined })
+                    }}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center hover:bg-red-600 active:scale-95 transition-all text-lg sm:text-xl font-bold"
+                  >
+                    ×
+                  </button>
                 </div>
               ) : (
                 <>
@@ -555,12 +522,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               className="sr-only"
               accept="image/*"
               onChange={handleFileChange}
-              onClick={(e) => {
-                // Prevent event bubbling to parent
-                e.stopPropagation()
-              }}
             />
-          </div>
+          </label>
           {errors.screenshot && (
             <div className="flex items-start gap-2 p-2 sm:p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg mt-2">
               <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />

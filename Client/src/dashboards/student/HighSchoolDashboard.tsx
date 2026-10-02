@@ -80,6 +80,7 @@ export const HighSchoolDashboard: React.FC = () => {
         stream: selectedStream || undefined,
         subject: selectedSubject || undefined,
         type: (selectedResourceType as any) || undefined,
+        limit: 1000,
       });
       setResources(response.data?.data || []);
     } catch (err) {

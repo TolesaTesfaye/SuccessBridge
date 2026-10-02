@@ -117,6 +117,7 @@ export const UniversityDashboard: React.FC = () => {
       const params: any = {
         educationLevel: "university",
         grade: activeCategory, // Backend stores university category in grade field
+        limit: 1000,
       };
 
       // Add university filter - try both universityName and university

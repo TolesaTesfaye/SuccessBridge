@@ -84,6 +84,7 @@ export const HighSchoolGradeView: React.FC<HighSchoolGradeViewProps> = ({
         stream: selectedStream || undefined,
         subject: selectedSubject || undefined,
         type: (selectedResourceType as any) || undefined, // Backend uses 'type' parameter
+        limit: 1000,
       });
       const resourceData = response.data?.data || [];
       setResources(resourceData);
