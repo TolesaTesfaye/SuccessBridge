@@ -11,14 +11,18 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ stats }) => {
   const [recentUsers, setRecentUsers] = useState<any[]>([]);
   const [recentResources, setRecentResources] = useState<any[]>([]);
   const [resourcesByType, setResourcesByType] = useState<any>({});
+  const [studentsByType, setStudentsByType] = useState<any>({});
+  const [studentsByUniversity, setStudentsByUniversity] = useState<any>({});
+  const [studentsByDepartment, setStudentsByDepartment] = useState<any>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchActivityData = async () => {
       try {
-        const [usersRes, resourcesRes] = await Promise.all([
+        const [usersRes, resourcesRes, allUsersRes] = await Promise.all([
           userService.getAllUsers(1, 5),
-          resourceService.getResources({ limit: 10 }),
+          resourceService.getResources({ limit: 1000 }),
+          userService.getAllUsers(),
         ]);
 
         const users = Array.isArray(usersRes) ? usersRes : usersRes.data || [];
@@ -26,6 +30,9 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ stats }) => {
           ? resourcesRes
           : resourcesRes.data?.data || resourcesRes.data || [];
         const resources = Array.isArray(resourcesData) ? resourcesData : [];
+        
+        // Get all users for student type distribution
+        const allUsers = Array.isArray(allUsersRes) ? allUsersRes : allUsersRes.data || [];
 
         setRecentUsers(users.slice(0, 5));
         setRecentResources(resources.slice(0, 5));
@@ -33,9 +40,100 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ stats }) => {
         // Calculate resource distribution by type
         const typeCount: any = {};
         resources.forEach((r: any) => {
-          typeCount[r.type] = (typeCount[r.type] || 0) + 1;
+          const type = r.type || "other";
+          typeCount[type] = (typeCount[type] || 0) + 1;
         });
         setResourcesByType(typeCount);
+
+        // Calculate student distribution by education level and grade
+        const studentCount: any = {
+          "High School - Grade 9": 0,
+          "High School - Grade 10": 0,
+          "High School - Grade 11": 0,
+          "High School - Grade 12": 0,
+          "University - Freshman": 0,
+          "University - Remedial": 0,
+          "University - Senior": 0,
+          "University - GC": 0,
+        };
+        
+        console.log('📊 All users fetched:', allUsers.length);
+        console.log('📊 Sample user data:', allUsers[0]);
+        
+        allUsers.forEach((user: any) => {
+          if (user.role === "student") {
+            const studentType = user.studentType?.toLowerCase();
+            const highSchoolGrade = user.highSchoolGrade?.toLowerCase();
+            const universityLevel = user.universityLevel?.toLowerCase();
+            
+            console.log('🎓 Student found:', {
+              name: user.name,
+              studentType,
+              highSchoolGrade,
+              universityLevel,
+              raw: {
+                studentType: user.studentType,
+                highSchoolGrade: user.highSchoolGrade,
+                universityLevel: user.universityLevel
+              }
+            });
+            
+            if (studentType === "high_school") {
+              if (highSchoolGrade === "grade_9") {
+                studentCount["High School - Grade 9"]++;
+              } else if (highSchoolGrade === "grade_10") {
+                studentCount["High School - Grade 10"]++;
+              } else if (highSchoolGrade === "grade_11") {
+                studentCount["High School - Grade 11"]++;
+              } else if (highSchoolGrade === "grade_12") {
+                studentCount["High School - Grade 12"]++;
+              } else {
+                console.warn('⚠️ High school student with unknown grade:', highSchoolGrade);
+              }
+            } else if (studentType === "university") {
+              if (universityLevel === "freshman") {
+                studentCount["University - Freshman"]++;
+              } else if (universityLevel === "remedial") {
+                studentCount["University - Remedial"]++;
+              } else if (universityLevel === "senior") {
+                studentCount["University - Senior"]++;
+              } else if (universityLevel === "gc") {
+                studentCount["University - GC"]++;
+              } else {
+                console.warn('⚠️ University student with unknown level:', universityLevel);
+              }
+            } else {
+              console.warn('⚠️ Student with unknown type:', studentType);
+            }
+          }
+        });
+        
+        console.log('📊 Final student count:', studentCount);
+        setStudentsByType(studentCount);
+
+        // Calculate university distribution
+        const universityCount: any = {};
+        allUsers.forEach((user: any) => {
+          if (user.role === "student" && user.studentType?.toLowerCase() === "university") {
+            // Get university name from the university object or universityId
+            const universityName = user.university?.name || user.universityName || "Unknown University";
+            universityCount[universityName] = (universityCount[universityName] || 0) + 1;
+          }
+        });
+        console.log('🏛️ University distribution:', universityCount);
+        setStudentsByUniversity(universityCount);
+
+        // Calculate department/course distribution
+        const departmentCount: any = {};
+        allUsers.forEach((user: any) => {
+          if (user.role === "student" && user.studentType?.toLowerCase() === "university") {
+            // Get department name from the department object or departmentId
+            const departmentName = user.department?.name || user.departmentName || "Undeclared";
+            departmentCount[departmentName] = (departmentCount[departmentName] || 0) + 1;
+          }
+        });
+        console.log('📚 Department distribution:', departmentCount);
+        setStudentsByDepartment(departmentCount);
 
         setLoading(false);
       } catch (error) {
@@ -65,6 +163,33 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ stats }) => {
   const resourceTypes = Object.keys(resourcesByType);
   const totalResourcesForChart =
     Object.values(resourcesByType).reduce(
+      (a: number, b: any) => a + (Number(b) || 0),
+      0,
+    ) || 1;
+
+  const studentTypes = Object.keys(studentsByType).filter(
+    (key) => studentsByType[key] > 0
+  );
+  const totalStudentsForChart =
+    Object.values(studentsByType).reduce(
+      (a: number, b: any) => a + (Number(b) || 0),
+      0,
+    ) || 1;
+
+  const universities = Object.keys(studentsByUniversity).filter(
+    (key) => studentsByUniversity[key] > 0
+  );
+  const totalUniversityStudents =
+    Object.values(studentsByUniversity).reduce(
+      (a: number, b: any) => a + (Number(b) || 0),
+      0,
+    ) || 1;
+
+  const departments = Object.keys(studentsByDepartment).filter(
+    (key) => studentsByDepartment[key] > 0
+  );
+  const totalDepartmentStudents =
+    Object.values(studentsByDepartment).reduce(
       (a: number, b: any) => a + (Number(b) || 0),
       0,
     ) || 1;
@@ -191,9 +316,9 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ stats }) => {
       </div>
 
       {/* Activity & Analytics */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+      <div className="space-y-4 md:space-y-6">
         {/* Recent Activity Timeline */}
-        <Card className="lg:col-span-2">
+        <Card>
           <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
               <div className="flex items-center gap-2">
@@ -292,8 +417,10 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ stats }) => {
           </CardBody>
         </Card>
 
-        {/* Resource Distribution Chart */}
-        <Card>
+        {/* Analytics Grid - 4 Pie Charts */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          {/* Resource Type Distribution Pie Chart */}
+          <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
@@ -361,7 +488,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ stats }) => {
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
                       <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
-                        {stats.totalResources}
+                        {totalResourcesForChart}
                       </p>
                       <p className="text-[10px] sm:text-xs text-slate-400">
                         Total
@@ -397,7 +524,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ stats }) => {
                             className={`w-3 h-3 rounded-full ${colors[idx % colors.length]}`}
                           ></div>
                           <span className="text-xs font-medium text-slate-700 dark:text-slate-300 capitalize">
-                            {type}
+                            {type.replace(/_/g, " ")}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -421,6 +548,397 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ stats }) => {
             )}
           </CardBody>
         </Card>
+
+        {/* Student Type Distribution Pie Chart */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                <span className="text-white text-sm">🎓</span>
+              </div>
+              <span className="font-bold text-slate-900 dark:text-white">
+                Student Distribution
+              </span>
+            </div>
+          </CardHeader>
+          <CardBody>
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin inline-block w-6 h-6 border-2 border-current border-t-transparent text-blue-600 rounded-full"></div>
+              </div>
+            ) : studentTypes.length > 0 ? (
+              <div className="space-y-4">
+                {/* Donut Chart Visualization */}
+                <div className="relative w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-4 sm:mb-6">
+                  <svg viewBox="0 0 100 100" className="transform -rotate-90">
+                    {studentTypes.map((type, idx) => {
+                      const colors = [
+                        "#3b82f6",
+                        "#06b6d4",
+                        "#8b5cf6",
+                        "#ec4899",
+                        "#f59e0b",
+                        "#10b981",
+                      ];
+                      const percentage =
+                        totalStudentsForChart > 0
+                          ? (studentsByType[type] / totalStudentsForChart) *
+                            100
+                          : 0;
+                      const circumference = 2 * Math.PI * 30;
+                      const offset = studentTypes
+                        .slice(0, idx)
+                        .reduce(
+                          (acc, t) =>
+                            acc +
+                            (totalStudentsForChart > 0
+                              ? (studentsByType[t] / totalStudentsForChart) *
+                                circumference
+                              : 0),
+                          0,
+                        );
+                      const strokeDasharray = `${(percentage / 100) * circumference} ${circumference}`;
+
+                      return (
+                        <circle
+                          key={type}
+                          cx="50"
+                          cy="50"
+                          r="30"
+                          fill="none"
+                          stroke={colors[idx % colors.length]}
+                          strokeWidth="15"
+                          strokeDasharray={strokeDasharray}
+                          strokeDashoffset={-offset}
+                          className="transition-all duration-500"
+                        />
+                      );
+                    })}
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                        {totalStudentsForChart}
+                      </p>
+                      <p className="text-[10px] sm:text-xs text-slate-400">
+                        Students
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Legend */}
+                <div className="space-y-2">
+                  {studentTypes.map((type, idx) => {
+                    const colors = [
+                      "bg-blue-500",
+                      "bg-cyan-500",
+                      "bg-purple-500",
+                      "bg-pink-500",
+                      "bg-amber-500",
+                      "bg-emerald-500",
+                    ];
+                    const count = studentsByType[type];
+                    const percentage =
+                      totalStudentsForChart > 0
+                        ? ((count / totalStudentsForChart) * 100).toFixed(1)
+                        : "0.0";
+
+                    return (
+                      <div
+                        key={type}
+                        className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`w-3 h-3 rounded-full ${colors[idx % colors.length]}`}
+                          ></div>
+                          <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                            {type}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-slate-900 dark:text-white">
+                            {count}
+                          </span>
+                          <span className="text-xs text-slate-400">
+                            ({percentage}%)
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8 text-slate-400">
+                <p className="text-4xl mb-2">👥</p>
+                <p className="text-sm">No students yet</p>
+              </div>
+            )}
+          </CardBody>
+        </Card>
+
+        {/* University Distribution Pie Chart */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-fuchsia-600 rounded-lg flex items-center justify-center">
+                <span className="text-white text-sm">🏛️</span>
+              </div>
+              <span className="font-bold text-slate-900 dark:text-white">
+                University Distribution
+              </span>
+            </div>
+          </CardHeader>
+          <CardBody>
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin inline-block w-6 h-6 border-2 border-current border-t-transparent text-violet-600 rounded-full"></div>
+              </div>
+            ) : universities.length > 0 ? (
+              <div className="space-y-4">
+                {/* Donut Chart Visualization */}
+                <div className="relative w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-4 sm:mb-6">
+                  <svg viewBox="0 0 100 100" className="transform -rotate-90">
+                    {universities.map((university, idx) => {
+                      const colors = [
+                        "#8b5cf6",
+                        "#d946ef",
+                        "#a855f7",
+                        "#c026d3",
+                        "#9333ea",
+                        "#e879f9",
+                      ];
+                      const percentage =
+                        totalUniversityStudents > 0
+                          ? (studentsByUniversity[university] / totalUniversityStudents) *
+                            100
+                          : 0;
+                      const circumference = 2 * Math.PI * 30;
+                      const offset = universities
+                        .slice(0, idx)
+                        .reduce(
+                          (acc, u) =>
+                            acc +
+                            (totalUniversityStudents > 0
+                              ? (studentsByUniversity[u] / totalUniversityStudents) *
+                                circumference
+                              : 0),
+                          0,
+                        );
+                      const strokeDasharray = `${(percentage / 100) * circumference} ${circumference}`;
+
+                      return (
+                        <circle
+                          key={university}
+                          cx="50"
+                          cy="50"
+                          r="30"
+                          fill="none"
+                          stroke={colors[idx % colors.length]}
+                          strokeWidth="15"
+                          strokeDasharray={strokeDasharray}
+                          strokeDashoffset={-offset}
+                          className="transition-all duration-500"
+                        />
+                      );
+                    })}
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                        {totalUniversityStudents}
+                      </p>
+                      <p className="text-[10px] sm:text-xs text-slate-400">
+                        Students
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Legend */}
+                <div className="space-y-2">
+                  {universities.map((university, idx) => {
+                    const colors = [
+                      "bg-violet-500",
+                      "bg-fuchsia-500",
+                      "bg-purple-500",
+                      "bg-fuchsia-600",
+                      "bg-violet-600",
+                      "bg-pink-400",
+                    ];
+                    const count = studentsByUniversity[university];
+                    const percentage =
+                      totalUniversityStudents > 0
+                        ? ((count / totalUniversityStudents) * 100).toFixed(1)
+                        : "0.0";
+
+                    return (
+                      <div
+                        key={university}
+                        className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`w-3 h-3 rounded-full ${colors[idx % colors.length]}`}
+                          ></div>
+                          <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                            {university}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-slate-900 dark:text-white">
+                            {count}
+                          </span>
+                          <span className="text-xs text-slate-400">
+                            ({percentage}%)
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8 text-slate-400">
+                <p className="text-4xl mb-2">🏛️</p>
+                <p className="text-sm">No university students yet</p>
+              </div>
+            )}
+          </CardBody>
+        </Card>
+
+        {/* Department/Course Distribution Pie Chart */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-rose-500 to-orange-600 rounded-lg flex items-center justify-center">
+                <span className="text-white text-sm">📚</span>
+              </div>
+              <span className="font-bold text-slate-900 dark:text-white">
+                Department Distribution
+              </span>
+            </div>
+          </CardHeader>
+          <CardBody>
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin inline-block w-6 h-6 border-2 border-current border-t-transparent text-rose-600 rounded-full"></div>
+              </div>
+            ) : departments.length > 0 ? (
+              <div className="space-y-4">
+                {/* Donut Chart Visualization */}
+                <div className="relative w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-4 sm:mb-6">
+                  <svg viewBox="0 0 100 100" className="transform -rotate-90">
+                    {departments.map((department, idx) => {
+                      const colors = [
+                        "#f43f5e",
+                        "#fb923c",
+                        "#ef4444",
+                        "#f97316",
+                        "#ea580c",
+                        "#fb7185",
+                      ];
+                      const percentage =
+                        totalDepartmentStudents > 0
+                          ? (studentsByDepartment[department] / totalDepartmentStudents) *
+                            100
+                          : 0;
+                      const circumference = 2 * Math.PI * 30;
+                      const offset = departments
+                        .slice(0, idx)
+                        .reduce(
+                          (acc, d) =>
+                            acc +
+                            (totalDepartmentStudents > 0
+                              ? (studentsByDepartment[d] / totalDepartmentStudents) *
+                                circumference
+                              : 0),
+                          0,
+                        );
+                      const strokeDasharray = `${(percentage / 100) * circumference} ${circumference}`;
+
+                      return (
+                        <circle
+                          key={department}
+                          cx="50"
+                          cy="50"
+                          r="30"
+                          fill="none"
+                          stroke={colors[idx % colors.length]}
+                          strokeWidth="15"
+                          strokeDasharray={strokeDasharray}
+                          strokeDashoffset={-offset}
+                          className="transition-all duration-500"
+                        />
+                      );
+                    })}
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center">
+                      <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+                        {totalDepartmentStudents}
+                      </p>
+                      <p className="text-[10px] sm:text-xs text-slate-400">
+                        Students
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Legend */}
+                <div className="space-y-2">
+                  {departments.map((department, idx) => {
+                    const colors = [
+                      "bg-rose-500",
+                      "bg-orange-400",
+                      "bg-red-500",
+                      "bg-orange-500",
+                      "bg-orange-600",
+                      "bg-rose-400",
+                    ];
+                    const count = studentsByDepartment[department];
+                    const percentage =
+                      totalDepartmentStudents > 0
+                        ? ((count / totalDepartmentStudents) * 100).toFixed(1)
+                        : "0.0";
+
+                    return (
+                      <div
+                        key={department}
+                        className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`w-3 h-3 rounded-full ${colors[idx % colors.length]}`}
+                          ></div>
+                          <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                            {department}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold text-slate-900 dark:text-white">
+                            {count}
+                          </span>
+                          <span className="text-xs text-slate-400">
+                            ({percentage}%)
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8 text-slate-400">
+                <p className="text-4xl mb-2">📖</p>
+                <p className="text-sm">No department data yet</p>
+              </div>
+            )}
+          </CardBody>
+        </Card>
+        </div>
       </div>
     </div>
   );

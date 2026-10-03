@@ -70,7 +70,7 @@ export const Footer: React.FC = () => {
               {[
                 [
                   "FaTelegram",
-                  "https://t.me/tolinaaftt",
+                  "https://t.me/+fWV4xTZsUXw3ODg8",
                   "text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-500/15",
                 ],
                 [
@@ -225,7 +225,7 @@ export const Footer: React.FC = () => {
               {[
                 [
                   "FaTelegram",
-                  "https://t.me/tolinaaftt",
+                  "https://t.me/+fWV4xTZsUXw3ODg8",
                   "text-sky-600 hover:bg-sky-50 dark:hover:bg-sky-500/15",
                 ],
                 [
