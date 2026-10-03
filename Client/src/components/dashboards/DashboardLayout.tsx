@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useAuthStore } from "@store/authStore";
 import { useThemeStore } from "@store/themeStore";
 import { useNavigate } from "react-router-dom";
 import { Footer } from "@components/common/Footer";
-import { Menu } from "lucide-react";
+import { Menu, Bell, Moon, Sun, LogOut, User, ChevronDown } from "lucide-react";
 import { AppLogo } from "@components/common/AppLogo";
 import { Sidebar } from "./Sidebar";
 import NotificationBell from "@components/notifications/NotificationBell";
@@ -31,6 +31,29 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
+  const { isDark, toggleTheme } = useThemeStore();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsProfileDropdownOpen(false);
+      }
+    };
+
+    if (isProfileDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isProfileDropdownOpen]);
 
   const handleLogout = () => {
     logout();
@@ -88,56 +111,28 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </div>
 
         <div className="flex items-center gap-0.5 md:gap-2">
-          {/* Notifications */}
-          <div className="flex items-center">
+          {/* Notifications - Desktop only */}
+          <div className="hidden md:flex items-center">
             <NotificationBell />
           </div>
 
-          {/* Theme Toggle */}
-          <div className="flex items-center">
+          {/* Theme Toggle - Desktop only */}
+          <div className="hidden md:flex items-center">
             <button
-              onClick={useThemeStore.getState().toggleTheme}
+              onClick={toggleTheme}
               className="p-1.5 md:p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-yellow-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors active:scale-95"
               aria-label="Toggle theme"
             >
-              {useThemeStore.getState().isDark ? (
-                // Sun icon for dark mode (click to go light)
-                <svg
-                  className="w-4 h-4 md:w-5 md:h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                  />
-                </svg>
+              {isDark ? (
+                <Sun className="w-4 h-4 md:w-5 md:h-5" />
               ) : (
-                // Moon icon for light mode (click to go dark)
-                <svg
-                  className="w-4 h-4 md:w-5 md:h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                  />
-                </svg>
+                <Moon className="w-4 h-4 md:w-5 md:h-5" />
               )}
             </button>
           </div>
 
-          {/* Profile */}
-          <div className="flex items-center gap-0.5 md:gap-2">
+          {/* Profile - Desktop only shows avatar without dropdown */}
+          <div className="hidden md:flex items-center gap-0.5 md:gap-2">
             <div className="w-6 h-6 md:w-8 md:h-8 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px] md:text-sm font-bold shadow-lg shadow-blue-500/20">
               {user?.name
                 ?.split(" ")
@@ -147,8 +142,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </div>
           </div>
 
-          {/* Logout */}
-          <div className="flex items-center">
+          {/* Logout - Desktop only */}
+          <div className="hidden md:flex items-center">
             <button
               onClick={handleLogout}
               className="px-1.5 md:px-3 py-1 md:py-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg transition-all duration-300 font-semibold text-[9px] md:text-xs normal-case tracking-normal border border-rose-500/20 hover:border-rose-500 h-7 md:h-auto"
@@ -156,6 +151,119 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             >
               <span>Logout</span>
             </button>
+          </div>
+
+          {/* Profile Dropdown - Mobile only */}
+          <div className="md:hidden relative" ref={profileDropdownRef}>
+            <button
+              onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+              className="flex items-center gap-1 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all active:scale-95"
+            >
+              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex-shrink-0 flex items-center justify-center text-white text-[10px] font-bold shadow-lg shadow-blue-500/20">
+                {user?.name
+                  ?.split(" ")
+                  .map((n) => n.charAt(0).toUpperCase())
+                  .slice(0, 2)
+                  .join("")}
+              </div>
+              <ChevronDown className="w-3 h-3 text-slate-500 dark:text-slate-400" />
+            </button>
+
+            {/* Dropdown Menu - Mobile only */}
+            {isProfileDropdownOpen && (
+              <>
+                {/* Backdrop for mobile */}
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setIsProfileDropdownOpen(false)}
+                />
+                
+                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden z-50">
+                  {/* User Info */}
+                  <div className="p-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-lg font-bold shadow-lg">
+                        {user?.name
+                          ?.split(" ")
+                          .map((n) => n.charAt(0).toUpperCase())
+                          .slice(0, 2)
+                          .join("")}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-slate-900 dark:text-white truncate text-sm">
+                          {user?.name}
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 capitalize truncate">
+                          {user?.role.replace("_", " ")}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Menu Items */}
+                  <div className="py-2">
+                    {/* Notification - Mobile only */}
+                    <button
+                      onClick={() => {
+                        setIsProfileDropdownOpen(false);
+                        // Navigate to notifications or trigger notification bell
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      <Bell className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+                      <span>Notifications</span>
+                    </button>
+
+                    {/* Dark Mode Toggle - Mobile only */}
+                    <button
+                      onClick={() => {
+                        toggleTheme();
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      {isDark ? (
+                        <>
+                          <Sun className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+                          <span>Light Mode</span>
+                        </>
+                      ) : (
+                        <>
+                          <Moon className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+                          <span>Dark Mode</span>
+                        </>
+                      )}
+                    </button>
+
+                    {/* Profile */}
+                    <button
+                      onClick={() => {
+                        setIsProfileDropdownOpen(false);
+                        navigate(`/${user?.role}/profile`);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      <User className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+                      <span>My Profile</span>
+                    </button>
+
+                    {/* Divider */}
+                    <div className="my-2 border-t border-slate-200 dark:border-slate-700" />
+
+                    {/* Logout */}
+                    <button
+                      onClick={() => {
+                        setIsProfileDropdownOpen(false);
+                        handleLogout();
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 transition-colors"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </header>
