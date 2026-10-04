@@ -314,7 +314,7 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
                   <MobileFilterButton label="Subject" value={filters.subject || ""} filterKey="subject" options={subjectOptions} />
                 )}
                 {resourceTypes.length > 0 && (
-                  <MobileFilterButton label="R.Type" value={filters.type || ""} filterKey="type" options={typeOptions} />
+                  <MobileFilterButton label="R Type" value={filters.type || ""} filterKey="type" options={typeOptions} />
                 )}
               </>
             ) : (
@@ -331,7 +331,7 @@ export const ResourceFilter: React.FC<ResourceFilterProps> = ({
                   <MobileFilterButton label="Subject" value={filters.subject || ""} filterKey="subject" options={subjectOptions} />
                 )}
                 {resourceTypes.length > 0 && (
-                  <MobileFilterButton label="R.Type" value={filters.type || ""} filterKey="type" options={typeOptions} />
+                  <MobileFilterButton label="R Type" value={filters.type || ""} filterKey="type" options={typeOptions} />
                 )}
               </>
             )}

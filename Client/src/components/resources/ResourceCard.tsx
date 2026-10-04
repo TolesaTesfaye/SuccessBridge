@@ -15,6 +15,15 @@ import {
   Target,
 } from "lucide-react";
 
+// Import preview images
+import examPreview from "@assets/periview template/exam.jpg";
+import finalExamPreview from "@assets/periview template/final exam .jpg";
+import handoutPreview from "@assets/periview template/handout.jpg";
+import lectureNotePreview from "@assets/periview template/lecture note.jpg";
+import midExamPreview from "@assets/periview template/mid exam.jpg";
+import notePreview from "@assets/periview template/note.jpg";
+import referenceBookPreview from "@assets/periview template/referance book.jpg";
+
 interface ResourceCardProps {
   resource: Resource;
   onEdit?: () => void;
@@ -109,6 +118,23 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     return type.replace("_", " ");
   };
 
+  // Get preview image based on resource type (mobile only)
+  const getPreviewImage = (type: string) => {
+    const previewMap: Record<string, string> = {
+      textbook: referenceBookPreview,
+      past_exam: examPreview,
+      final_exam: finalExamPreview,
+      mid_exam: midExamPreview,
+      module: handoutPreview,
+      quiz: examPreview,
+      worksheet: handoutPreview,
+      lecture_note: lectureNotePreview,
+      note: notePreview,
+      handout: handoutPreview,
+    };
+    return previewMap[type] || notePreview;
+  };
+
   const getFullUrl = (url: string) => {
     if (!url) return "";
     if (url.startsWith("http")) return url;
@@ -124,6 +150,24 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   };
 
   const renderThumbnail = () => {
+    // Check if on mobile device
+    const isMobile = window.innerWidth < 768;
+
+    // For mobile: Always use custom preview images
+    if (isMobile) {
+      return (
+        <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900">
+          <img
+            src={getPreviewImage(resource.type)}
+            alt={resource.title}
+            className="w-full h-24 object-cover"
+            loading="lazy"
+          />
+        </div>
+      );
+    }
+
+    // Desktop preview logic (keep existing behavior)
     if (!resource.fileUrl) {
       // Show default thumbnail based on type when no file URL
       return (
@@ -136,13 +180,9 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     }
 
     const lowerUrl = resource.fileUrl.toLowerCase();
-    
-    // For mobile: Always show icon-based thumbnails (better performance and compatibility)
-    // For desktop: Show actual previews when available
-    const isMobile = window.innerWidth < 768;
 
     // If we have a preview URL and NOT on mobile, show actual preview
-    if (previewUrl && !isMobile) {
+    if (previewUrl) {
       // PDF preview (desktop only)
       if (lowerUrl.endsWith(".pdf")) {
         return (
@@ -243,7 +283,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       }
     }
 
-    // Mobile-friendly icon-based thumbnails (always on mobile, fallback on desktop)
+    // Desktop fallback icon-based thumbnails
     
     // PDF thumbnail
     if (lowerUrl.endsWith(".pdf")) {
