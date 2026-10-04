@@ -120,7 +120,9 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
 
   // Get preview image based on resource type (mobile only)
   const getPreviewImage = (type: string) => {
+    console.log("Resource type:", type); // Debug log
     const previewMap: Record<string, string> = {
+      // Main resource types
       textbook: referenceBookPreview,
       past_exam: examPreview,
       final_exam: finalExamPreview,
@@ -131,8 +133,16 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       lecture_note: lectureNotePreview,
       note: notePreview,
       handout: handoutPreview,
+      
+      // Additional types from getTypeColor function
+      video: notePreview, // You can change this to a specific video preview if you have one
+      project: handoutPreview,
+      research: lectureNotePreview,
+      career: handoutPreview,
     };
-    return previewMap[type] || notePreview;
+    const selectedPreview = previewMap[type] || notePreview;
+    console.log("Selected preview:", selectedPreview); // Debug log
+    return selectedPreview;
   };
 
   const getFullUrl = (url: string) => {
