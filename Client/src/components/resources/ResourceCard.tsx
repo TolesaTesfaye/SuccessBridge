@@ -118,67 +118,100 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     return type.replace("_", " ");
   };
 
-  // Get preview image based on resource type (mobile only)
-  const getPreviewImage = (type: string) => {
+  // Get preview image based on resource type & title (mobile only)
+  const getPreviewImage = (res: Resource) => {
+    const type = (res.type || "").toLowerCase();
+    const title = (res.title || "").toLowerCase();
+
+    // Specific title keyword checks for fine-grained exam types
+    if (
+      type === "final_exam" ||
+      title.includes("final exam") ||
+      title.includes("final-exam") ||
+      title.includes("final")
+    ) {
+      return finalExamPreview;
+    }
+    if (
+      type === "mid_exam" ||
+      title.includes("mid exam") ||
+      title.includes("mid-exam") ||
+      title.includes("midterm")
+    ) {
+      return midExamPreview;
+    }
+    if (
+      title.includes("lecture") ||
+      title.includes("chapter") ||
+      title.includes("ch ")
+    ) {
+      return lectureNotePreview;
+    }
+
+    // Direct type mappings
     const previewMap: Record<string, string> = {
-      // Main resource types
       textbook: referenceBookPreview,
+      reference_book: referenceBookPreview,
       past_exam: examPreview,
+      entrance_exam: examPreview,
       final_exam: finalExamPreview,
       mid_exam: midExamPreview,
       module: handoutPreview,
       quiz: examPreview,
+      interactive_quiz: examPreview,
+      remedial_quiz: examPreview,
       worksheet: handoutPreview,
+      study_guide: handoutPreview,
+      formula_sheet: handoutPreview,
+      practice_question: examPreview,
       lecture_note: lectureNotePreview,
       note: notePreview,
       handout: handoutPreview,
-      
-      // Additional types from getTypeColor function
       video: notePreview,
+      educational_video: notePreview,
       project: handoutPreview,
+      project_guide: handoutPreview,
       research: lectureNotePreview,
+      research_paper: lectureNotePreview,
       career: handoutPreview,
+      career_guidance: handoutPreview,
+      professional_module: handoutPreview,
+      assignment: handoutPreview,
+      recommendation: handoutPreview,
     };
-    return previewMap[type] || notePreview;
-  };
 
-  const getFullUrl = (url: string) => {
-    if (!url) return "";
-    if (url.startsWith("http")) return url;
-
-    // Get the base URL from environment or default to localhost
-    const baseUrl = import.meta.env.VITE_API_URL
-      ? import.meta.env.VITE_API_URL.replace("/api", "")
-      : "http://localhost:5000";
-
-    // Ensure the URL starts with / for file resources
-    const cleanUrl = url.startsWith("/") ? url : `/${url}`;
-    return `${baseUrl}${cleanUrl}`;
-  };
-
-  const renderThumbnail = () => {
-    // Check if on mobile device
-    const isMobile = window.innerWidth < 768;
-
-    // For mobile: Always use custom preview images
-    if (isMobile) {
-      return (
-        <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 relative">
-          <img
-            src={getPreviewImage(resource.type)}
-            alt={resource.title}
-            className="w-full h-24 object-cover"
-            loading="lazy"
-          />
-          {/* Temporary debug overlay - remove this later */}
-          <div className="absolute top-1 left-1 bg-black/70 text-white text-[8px] px-1 rounded">
-            {resource.type}
-          </div>
-        </div>
-      );
+    if (previewMap[type]) {
+      return previewMap[type];
     }
 
-    // Desktop preview logic (keep existing behavior)
+    // Title fallbacks
+    if (title.includes("exam") || title.includes("quiz") || title.includes("test")) {
+      return examPreview;
+    }
+    if (title.includes("book") || title.includes("reference")) {
+      return referenceBookPreview;
+    }
+    if (title.includes("handout") || title.includes("module") || title.includes("sheet")) {
+      return handoutPreview;
+    }
+
+    return notePreview;
+  };
+
+  const renderMobileThumbnail = () => {
+    return (
+      <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 relative">
+        <img
+          src={getPreviewImage(resource)}
+          alt={resource.title}
+          className="w-full h-24 sm:h-28 object-cover"
+          loading="lazy"
+        />
+      </div>
+    );
+  };
+
+  const renderDesktopThumbnail = () => {
     if (!resource.fileUrl) {
       // Show default thumbnail based on type when no file URL
       return (
@@ -192,9 +225,9 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
 
     const lowerUrl = resource.fileUrl.toLowerCase();
 
-    // If we have a preview URL and NOT on mobile, show actual preview
+    // If we have a preview URL, show actual preview on desktop
     if (previewUrl) {
-      // PDF preview (desktop only)
+      // PDF preview
       if (lowerUrl.endsWith(".pdf")) {
         return (
           <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
@@ -223,7 +256,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         );
       }
 
-      // Image preview (desktop only)
+      // Image preview
       if (
         lowerUrl.endsWith(".jpg") ||
         lowerUrl.endsWith(".jpeg") ||
@@ -257,7 +290,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         );
       }
 
-      // Video preview (desktop only - show poster/thumbnail)
+      // Video preview
       if (resource.type === "video" || lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".webm") || lowerUrl.endsWith(".mov")) {
         return (
           <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-black/80 relative">
@@ -295,8 +328,6 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     }
 
     // Desktop fallback icon-based thumbnails
-    
-    // PDF thumbnail
     if (lowerUrl.endsWith(".pdf")) {
       return (
         <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 flex flex-col items-center justify-center h-24 md:h-32 lg:h-40 gap-1.5">
@@ -310,7 +341,6 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       );
     }
 
-    // Image thumbnail
     if (
       lowerUrl.endsWith(".jpg") ||
       lowerUrl.endsWith(".jpeg") ||
@@ -330,7 +360,6 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       );
     }
 
-    // Video thumbnail
     if (resource.type === "video" || lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".webm") || lowerUrl.endsWith(".mov")) {
       return (
         <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 flex flex-col items-center justify-center h-24 md:h-32 lg:h-40 gap-1.5 relative">
@@ -340,58 +369,10 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           <span className="text-[10px] md:text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide">
             Video File
           </span>
-          <div className="absolute top-2 right-2 w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
-            <svg className="w-4 h-4 text-purple-600 dark:text-purple-400 ml-0.5" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
-            </svg>
-          </div>
         </div>
       );
     }
 
-    // Word document thumbnail
-    if (lowerUrl.endsWith(".doc") || lowerUrl.endsWith(".docx")) {
-      return (
-        <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 flex flex-col items-center justify-center h-24 md:h-32 lg:h-40 gap-1.5">
-          <svg className="w-10 h-10 md:w-12 md:h-12 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
-          </svg>
-          <span className="text-[10px] md:text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
-            Word Document
-          </span>
-        </div>
-      );
-    }
-
-    // Excel document thumbnail
-    if (lowerUrl.endsWith(".xls") || lowerUrl.endsWith(".xlsx")) {
-      return (
-        <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 flex flex-col items-center justify-center h-24 md:h-32 lg:h-40 gap-1.5">
-          <svg className="w-10 h-10 md:w-12 md:h-12 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
-          </svg>
-          <span className="text-[10px] md:text-xs font-semibold text-green-600 dark:text-green-400 uppercase tracking-wide">
-            Excel Spreadsheet
-          </span>
-        </div>
-      );
-    }
-
-    // PowerPoint document thumbnail
-    if (lowerUrl.endsWith(".ppt") || lowerUrl.endsWith(".pptx")) {
-      return (
-        <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 flex flex-col items-center justify-center h-24 md:h-32 lg:h-40 gap-1.5">
-          <svg className="w-10 h-10 md:w-12 md:h-12 text-orange-600 dark:text-orange-400" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
-          </svg>
-          <span className="text-[10px] md:text-xs font-semibold text-orange-600 dark:text-orange-400 uppercase tracking-wide">
-            PowerPoint
-          </span>
-        </div>
-      );
-    }
-
-    // Fallback thumbnail for other file types
     return (
       <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 flex flex-col items-center justify-center h-24 md:h-32 lg:h-40 gap-1.5">
         <div className="text-slate-500 dark:text-slate-400 scale-150">
@@ -401,6 +382,21 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           {lowerUrl.split('.').pop()?.toUpperCase() || 'File'}
         </span>
       </div>
+    );
+  };
+
+  const renderThumbnail = () => {
+    return (
+      <>
+        {/* Mobile View: preview image on mobile phone only */}
+        <div className="block md:hidden">
+          {renderMobileThumbnail()}
+        </div>
+        {/* Desktop View: Interactive preview / iframe / icon thumbnail */}
+        <div className="hidden md:block">
+          {renderDesktopThumbnail()}
+        </div>
+      </>
     );
   };
 
