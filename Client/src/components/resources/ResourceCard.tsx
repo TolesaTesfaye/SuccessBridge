@@ -16,13 +16,13 @@ import {
 } from "lucide-react";
 
 // Import preview images
-import examPreview from "@assets/periview template/exam.jpg";
-import finalExamPreview from "@assets/periview template/final exam .jpg";
-import handoutPreview from "@assets/periview template/handout.jpg";
-import lectureNotePreview from "@assets/periview template/lecture note.jpg";
-import midExamPreview from "@assets/periview template/mid exam.jpg";
-import notePreview from "@assets/periview template/note.jpg";
-import referenceBookPreview from "@assets/periview template/referance book.jpg";
+import examPreview from "../../assets/previews/exam.jpg";
+import finalExamPreview from "../../assets/previews/final-exam.jpg";
+import handoutPreview from "../../assets/previews/handout.jpg";
+import lectureNotePreview from "../../assets/previews/lecture-note.jpg";
+import midExamPreview from "../../assets/previews/mid-exam.jpg";
+import notePreview from "../../assets/previews/note.jpg";
+import referenceBookPreview from "../../assets/previews/reference-book.jpg";
 
 interface ResourceCardProps {
   resource: Resource;
