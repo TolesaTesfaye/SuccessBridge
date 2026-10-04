@@ -120,7 +120,6 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
 
   // Get preview image based on resource type (mobile only)
   const getPreviewImage = (type: string) => {
-    console.log("Resource type:", type); // Debug log
     const previewMap: Record<string, string> = {
       // Main resource types
       textbook: referenceBookPreview,
@@ -135,14 +134,12 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       handout: handoutPreview,
       
       // Additional types from getTypeColor function
-      video: notePreview, // You can change this to a specific video preview if you have one
+      video: notePreview,
       project: handoutPreview,
       research: lectureNotePreview,
       career: handoutPreview,
     };
-    const selectedPreview = previewMap[type] || notePreview;
-    console.log("Selected preview:", selectedPreview); // Debug log
-    return selectedPreview;
+    return previewMap[type] || notePreview;
   };
 
   const getFullUrl = (url: string) => {
@@ -166,13 +163,17 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     // For mobile: Always use custom preview images
     if (isMobile) {
       return (
-        <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900">
+        <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 relative">
           <img
             src={getPreviewImage(resource.type)}
             alt={resource.title}
             className="w-full h-24 object-cover"
             loading="lazy"
           />
+          {/* Temporary debug overlay - remove this later */}
+          <div className="absolute top-1 left-1 bg-black/70 text-white text-[8px] px-1 rounded">
+            {resource.type}
+          </div>
         </div>
       );
     }
