@@ -16,10 +16,12 @@ import {
 } from "lucide-react";
 
 // Import preview images
-import examPreview from "../../assets/previews/exam.jpg";
 import finalExamPreview from "../../assets/previews/final-exam.jpg";
 import handoutPreview from "../../assets/previews/handout.jpg";
+import lastYearExamPreview from "../../assets/previews/last-year-exam.jpg";
+import lectureSlidePreview from "../../assets/previews/lecture-slide.jpg";
 import midExamPreview from "../../assets/previews/mid-exam.jpg";
+import modulesPreview from "../../assets/previews/modules.jpg";
 import notePreview from "../../assets/previews/note.jpg";
 import referenceBookPreview from "../../assets/previews/reference-book.jpg";
 
@@ -122,7 +124,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     const type = (res.type || "").toLowerCase();
     const title = (res.title || "").toLowerCase();
 
-    // Specific title keyword checks for fine-grained exam types
+    // Specific title & type keyword checks for all 8 preview types
     if (
       type === "final_exam" ||
       title.includes("final exam") ||
@@ -140,41 +142,87 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       return midExamPreview;
     }
     if (
+      title.includes("last year") ||
+      title.includes("last-year") ||
+      title.includes("previous year") ||
+      title.includes("past exam") ||
+      title.includes("past-exam") ||
+      type === "past_exam" ||
+      type === "entrance_exam"
+    ) {
+      return lastYearExamPreview;
+    }
+    if (
+      title.includes("lecture slide") ||
+      title.includes("lecture-slide") ||
+      title.includes("slide") ||
+      title.includes("ppt") ||
+      title.includes("presentation")
+    ) {
+      return lectureSlidePreview;
+    }
+    if (
+      type === "module" ||
+      type === "professional_module" ||
+      title.includes("module") ||
+      title.includes("loe")
+    ) {
+      return modulesPreview;
+    }
+    if (
+      title.includes("note") ||
       title.includes("lecture") ||
       title.includes("chapter") ||
       title.includes("ch ")
     ) {
       return notePreview;
     }
+    if (
+      title.includes("handout") ||
+      title.includes("worksheet") ||
+      type === "handout" ||
+      type === "worksheet"
+    ) {
+      return handoutPreview;
+    }
+    if (
+      title.includes("book") ||
+      title.includes("reference") ||
+      type === "textbook" ||
+      type === "reference_book"
+    ) {
+      return referenceBookPreview;
+    }
 
     // Direct type mappings
     const previewMap: Record<string, string> = {
       textbook: referenceBookPreview,
       reference_book: referenceBookPreview,
-      past_exam: examPreview,
-      entrance_exam: examPreview,
+      past_exam: lastYearExamPreview,
+      entrance_exam: lastYearExamPreview,
       final_exam: finalExamPreview,
       mid_exam: midExamPreview,
-      module: handoutPreview,
-      quiz: examPreview,
-      interactive_quiz: examPreview,
-      remedial_quiz: examPreview,
+      module: modulesPreview,
+      quiz: lastYearExamPreview,
+      interactive_quiz: lastYearExamPreview,
+      remedial_quiz: lastYearExamPreview,
       worksheet: handoutPreview,
       study_guide: handoutPreview,
       formula_sheet: handoutPreview,
-      practice_question: examPreview,
+      practice_question: lastYearExamPreview,
       lecture_note: notePreview,
+      lecture_slide: lectureSlidePreview,
       note: notePreview,
       handout: handoutPreview,
-      video: notePreview,
-      educational_video: notePreview,
-      project: handoutPreview,
-      project_guide: handoutPreview,
+      video: lectureSlidePreview,
+      educational_video: lectureSlidePreview,
+      project: modulesPreview,
+      project_guide: modulesPreview,
       research: notePreview,
       research_paper: notePreview,
       career: handoutPreview,
       career_guidance: handoutPreview,
-      professional_module: handoutPreview,
+      professional_module: modulesPreview,
       assignment: handoutPreview,
       recommendation: handoutPreview,
     };
@@ -185,12 +233,15 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
 
     // Title fallbacks
     if (title.includes("exam") || title.includes("quiz") || title.includes("test")) {
-      return examPreview;
+      return lastYearExamPreview;
     }
     if (title.includes("book") || title.includes("reference")) {
       return referenceBookPreview;
     }
-    if (title.includes("handout") || title.includes("module") || title.includes("sheet")) {
+    if (title.includes("slide") || title.includes("ppt")) {
+      return lectureSlidePreview;
+    }
+    if (title.includes("handout") || title.includes("sheet")) {
       return handoutPreview;
     }
 
