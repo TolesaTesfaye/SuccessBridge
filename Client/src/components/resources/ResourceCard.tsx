@@ -19,7 +19,6 @@ import {
 import examPreview from "../../assets/previews/exam.jpg";
 import finalExamPreview from "../../assets/previews/final-exam.jpg";
 import handoutPreview from "../../assets/previews/handout.jpg";
-import lectureNotePreview from "../../assets/previews/lecture-note.jpg";
 import midExamPreview from "../../assets/previews/mid-exam.jpg";
 import notePreview from "../../assets/previews/note.jpg";
 import referenceBookPreview from "../../assets/previews/reference-book.jpg";
@@ -145,7 +144,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       title.includes("chapter") ||
       title.includes("ch ")
     ) {
-      return lectureNotePreview;
+      return notePreview;
     }
 
     // Direct type mappings
@@ -164,15 +163,15 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       study_guide: handoutPreview,
       formula_sheet: handoutPreview,
       practice_question: examPreview,
-      lecture_note: lectureNotePreview,
+      lecture_note: notePreview,
       note: notePreview,
       handout: handoutPreview,
       video: notePreview,
       educational_video: notePreview,
       project: handoutPreview,
       project_guide: handoutPreview,
-      research: lectureNotePreview,
-      research_paper: lectureNotePreview,
+      research: notePreview,
+      research_paper: notePreview,
       career: handoutPreview,
       career_guidance: handoutPreview,
       professional_module: handoutPreview,
