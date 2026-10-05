@@ -125,7 +125,8 @@ export const HighSchoolResourceHub: React.FC<HighSchoolResourceHubProps> = ({
             {/* Resource Type Filter */}
             <div>
               <label className="block text-xs font-medium text-slate-400 dark:text-slate-500 mb-2">
-                Resource Type
+                <span className="hidden sm:inline">Resource Type</span>
+                <span className="sm:hidden">R.type</span>
               </label>
               <select
                 value={selectedResourceType || ""}

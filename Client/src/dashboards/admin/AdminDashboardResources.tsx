@@ -249,7 +249,8 @@ export const AdminDashboardResources: React.FC<ResourceTabProps> = ({
 
               <div>
                 <label className="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
-                  Resource Type
+                  <span className="hidden sm:inline">Resource Type</span>
+                  <span className="sm:hidden">R.type</span>
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[

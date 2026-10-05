@@ -165,7 +165,8 @@ export const HighSchoolGradeView: React.FC<HighSchoolGradeViewProps> = ({
         {/* Resource Type Selector */}
         <div>
           <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-            Resource Type
+            <span className="hidden sm:inline">Resource Type</span>
+            <span className="sm:hidden">R.type</span>
           </label>
           <select
             value={selectedResourceType || ""}
