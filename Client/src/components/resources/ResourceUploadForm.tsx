@@ -10,6 +10,109 @@ import { universityService } from "@services/universityService";
 import { departmentService, Department } from "@services/departmentService";
 import { resourceTypeService } from "@services/resourceTypeService";
 
+// Import preview assets
+import finalExamPreview from "../../assets/previews/final-exam.jpg";
+import handoutPreview from "../../assets/previews/handout.jpg";
+import lastYearExamPreview from "../../assets/previews/last-year-exam.jpg";
+import lectureSlidePreview from "../../assets/previews/lecture-slide.jpg";
+import midExamPreview from "../../assets/previews/mid-exam.jpg";
+import modulesPreview from "../../assets/previews/modules.jpg";
+import notePreview from "../../assets/previews/note.jpg";
+import referenceBookPreview from "../../assets/previews/reference-book.jpg";
+
+const getPreviewImageForType = (typeInput: string, titleInput: string = "") => {
+  const type = typeInput.toLowerCase().trim();
+  const title = titleInput.toLowerCase().trim();
+
+  // 1. Module -> modules.jpg
+  if (
+    type.includes("module") ||
+    type === "professional_module" ||
+    type === "project" ||
+    title.includes("module") ||
+    title.includes("loe")
+  ) {
+    return modulesPreview;
+  }
+
+  // 2. Video Tutorial -> lecture-slide.jpg
+  if (
+    type.includes("video") ||
+    type.includes("tutorial") ||
+    title.includes("video") ||
+    title.includes("tutorial") ||
+    title.includes("slide")
+  ) {
+    return lectureSlidePreview;
+  }
+
+  // 3. Reference Book -> reference-book.jpg
+  if (
+    type.includes("book") ||
+    type.includes("reference") ||
+    type.includes("textbook") ||
+    title.includes("book") ||
+    title.includes("reference")
+  ) {
+    return referenceBookPreview;
+  }
+
+  // 4. Interactive Quiz -> mid-exam.jpg
+  if (
+    type.includes("quiz") ||
+    type.includes("interactive") ||
+    type.includes("practice") ||
+    title.includes("quiz")
+  ) {
+    return midExamPreview;
+  }
+
+  // 5. Worksheet -> handout.jpg
+  if (
+    type.includes("worksheet") ||
+    type.includes("handout") ||
+    type.includes("guide") ||
+    type.includes("sheet") ||
+    type.includes("assignment") ||
+    title.includes("worksheet") ||
+    title.includes("handout")
+  ) {
+    return handoutPreview;
+  }
+
+  // 6. Recommendation -> note.jpg
+  if (
+    type.includes("recommendation") ||
+    type.includes("career") ||
+    type.includes("guidance") ||
+    type.includes("research") ||
+    title.includes("recommendation")
+  ) {
+    return notePreview;
+  }
+
+  // 7. Last Year Exam -> last-year-exam.jpg
+  if (type.includes("final") || title.includes("final")) {
+    return finalExamPreview;
+  }
+
+  if (type.includes("mid") || title.includes("mid")) {
+    return midExamPreview;
+  }
+
+  if (
+    type.includes("exam") ||
+    type.includes("past") ||
+    type.includes("entrance") ||
+    title.includes("exam") ||
+    title.includes("last year")
+  ) {
+    return lastYearExamPreview;
+  }
+
+  return notePreview;
+};
+
 export interface UploadFormData {
   title: string;
   description: string;
@@ -260,11 +363,40 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
   };
 
   const getResourceTypes = () => {
-    return resourceTypes.map((rt) => ({
-      value: rt.id,
-      label: rt.name,
-    }));
+    if (resourceTypes.length > 0) {
+      return resourceTypes.map((rt) => ({
+        value: rt.id,
+        label: rt.name,
+      }));
+    }
+    return [
+      { value: "module", label: "Module" },
+      { value: "past_exam", label: "Last Year Exam" },
+      { value: "video", label: "Video Tutorial" },
+      { value: "reference_book", label: "Reference Book" },
+      { value: "worksheet", label: "Worksheet" },
+      { value: "interactive_quiz", label: "Interactive Quiz" },
+      { value: "recommendation", label: "Recommendation" },
+    ];
   };
+
+  const selectedTypeName =
+    resourceTypes.find((r) => r.id === formData.type)?.name ||
+    (formData.type === "module"
+      ? "Module"
+      : formData.type === "past_exam"
+      ? "Last Year Exam"
+      : formData.type === "video"
+      ? "Video Tutorial"
+      : formData.type === "reference_book"
+      ? "Reference Book"
+      : formData.type === "worksheet"
+      ? "Worksheet"
+      : formData.type === "interactive_quiz"
+      ? "Interactive Quiz"
+      : formData.type === "recommendation"
+      ? "Recommendation"
+      : formData.type);
 
   const getTargetStudentInfo = () => {
     if (formData.educationLevel === "high_school") {
@@ -489,6 +621,34 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
                 }
               />
             </div>
+
+            {formData.type && (
+              <div className="mt-4 p-3 bg-white dark:bg-slate-800 rounded-xl border border-blue-200 dark:border-blue-900/50 shadow-sm space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                    🖼️ Selected Resource Type Preview
+                  </span>
+                  <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/40 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">
+                    {selectedTypeName.toUpperCase()}
+                  </span>
+                </div>
+                <div className="rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 relative bg-slate-100 dark:bg-slate-900 group">
+                  <img
+                    src={getPreviewImageForType(selectedTypeName, formData.title)}
+                    alt="Resource Type Preview"
+                    className="w-full h-32 sm:h-36 md:h-40 object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/30 to-transparent flex flex-col justify-end p-3">
+                    <span className="text-[9px] font-extrabold uppercase tracking-widest text-blue-400">
+                      Card Preview Image
+                    </span>
+                    <h4 className="text-white font-bold text-xs md:text-sm line-clamp-1">
+                      {formData.title || "Resource Title Preview"}
+                    </h4>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">

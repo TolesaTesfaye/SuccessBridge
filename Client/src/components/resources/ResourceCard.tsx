@@ -41,65 +41,53 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   const [isDownloading, setIsDownloading] = useState(false);
   const [isOpening, setIsOpening] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const toast = useToast();
   const createdTime = new Date(resource.createdAt).getTime();
   const isNew = Date.now() - createdTime < 7 * 24 * 60 * 60 * 1000; // last 7 days
   
-  // Fetch preview URL for private bucket resources
-  React.useEffect(() => {
-    const fetchPreviewUrl = async () => {
-      if (!resource.fileUrl || !resource.fileUrl.includes('backblazeb2.com')) {
-        return; // Not a B2 file or no file
-      }
-      
-      try {
-        const baseUrl =
-          import.meta.env.VITE_API_URL || 
-          (window.location.hostname === 'localhost' 
-            ? "http://localhost:5000/api"
-            : "https://successbridge-tolesa-api.onrender.com/api");
-        
-        const response = await fetch(`${baseUrl}/resources/${resource.id}/preview`);
-        const data = await response.json();
-        
-        if (data.success && data.url) {
-          setPreviewUrl(data.url);
-        }
-      } catch (error) {
-        console.error('Failed to fetch preview URL:', error);
-        // Silently fail - will show icon thumbnail instead
-      }
-    };
-    
-    fetchPreviewUrl();
-  }, [resource.id, resource.fileUrl]);
-  
   const getResourceIcon = (type: string) => {
     const icons: Record<string, React.ReactNode> = {
       textbook: <BookOpen className="w-3.5 h-3.5 md:w-4 md:h-4" />,
+      reference_book: <BookOpen className="w-3.5 h-3.5 md:w-4 md:h-4" />,
       video: <Video className="w-3.5 h-3.5 md:w-4 md:h-4" />,
+      video_tutorial: <Video className="w-3.5 h-3.5 md:w-4 md:h-4" />,
+      educational_video: <Video className="w-3.5 h-3.5 md:w-4 md:h-4" />,
       past_exam: <ClipboardList className="w-3.5 h-3.5 md:w-4 md:h-4" />,
+      entrance_exam: <ClipboardList className="w-3.5 h-3.5 md:w-4 md:h-4" />,
       module: <Layers className="w-3.5 h-3.5 md:w-4 md:h-4" />,
+      professional_module: <Layers className="w-3.5 h-3.5 md:w-4 md:h-4" />,
       quiz: <PenTool className="w-3.5 h-3.5 md:w-4 md:h-4" />,
+      interactive_quiz: <PenTool className="w-3.5 h-3.5 md:w-4 md:h-4" />,
+      remedial_quiz: <PenTool className="w-3.5 h-3.5 md:w-4 md:h-4" />,
       worksheet: <FileText className="w-3.5 h-3.5 md:w-4 md:h-4" />,
       project: <Target className="w-3.5 h-3.5 md:w-4 md:h-4" />,
       research: <FlaskConical className="w-3.5 h-3.5 md:w-4 md:h-4" />,
       career: <Briefcase className="w-3.5 h-3.5 md:w-4 md:h-4" />,
+      recommendation: <Briefcase className="w-3.5 h-3.5 md:w-4 md:h-4" />,
     };
-    return icons[type] || <FileText className="w-5 h-5" />;
+    return icons[type] || <FileText className="w-3.5 h-3.5 md:w-4 md:h-4" />;
   };
 
   const getTypeColor = (type: string) => {
     const colors: Record<string, string> = {
       textbook:
         "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400",
+      reference_book:
+        "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400",
       video: "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400",
+      video_tutorial: "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400",
+      educational_video: "bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400",
       past_exam:
+        "bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400",
+      entrance_exam:
         "bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400",
       module:
         "bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400",
+      professional_module:
+        "bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400",
       quiz: "bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400",
+      interactive_quiz: "bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400",
+      remedial_quiz: "bg-pink-50 dark:bg-pink-500/10 text-pink-600 dark:text-pink-400",
       worksheet:
         "bg-cyan-50 dark:bg-cyan-500/10 text-cyan-600 dark:text-cyan-400",
       project:
@@ -107,6 +95,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       research:
         "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
       career: "bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400",
+      recommendation: "bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
     };
     return (
       colors[type] ||
@@ -115,60 +104,118 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   };
 
   const getTypeLabel = (type: string) => {
-    if (type === "module") return "LOE MODULE";
-    return type.replace("_", " ");
+    const t = (type || "").toLowerCase().trim();
+    if (t.includes("module")) return "LOE MODULE";
+    if (t.includes("exam") || t.includes("past")) return "LAST YEAR EXAM";
+    if (t.includes("video") || t.includes("tutorial") || t.includes("slide")) return "VIDEO TUTORIAL";
+    if (t.includes("book") || t.includes("reference") || t.includes("textbook")) return "REFERENCE BOOK";
+    if (t.includes("quiz") || t.includes("interactive")) return "INTERACTIVE QUIZ";
+    if (t.includes("worksheet") || t.includes("handout") || t.includes("sheet")) return "WORKSHEET";
+    if (t.includes("recommend")) return "RECOMMENDATION";
+    return type.replace("_", " ").toUpperCase();
   };
 
-  // Get preview image based on resource type & title (mobile only)
+  // Get preview image based on resource type & title
   const getPreviewImage = (res: Resource) => {
-    const type = (res.type || "").toLowerCase();
-    const title = (res.title || "").toLowerCase();
+    const type = (res.type || "").toLowerCase().trim();
+    const title = (res.title || "").toLowerCase().trim();
 
-    // Specific title & type keyword checks for all 8 preview types
+    // 1. Module -> modules.jpg
     if (
-      type === "final_exam" ||
-      title.includes("final exam") ||
-      title.includes("final-exam") ||
-      title.includes("final")
+      type.includes("module") ||
+      type.includes("project") ||
+      title.includes("module") ||
+      title.includes("loe")
     ) {
-      return finalExamPreview;
+      return modulesPreview;
     }
+
+    // 2. Video Tutorial / Lecture Slide -> lecture-slide.jpg
     if (
-      type === "mid_exam" ||
-      title.includes("mid exam") ||
-      title.includes("mid-exam") ||
-      title.includes("midterm")
-    ) {
-      return midExamPreview;
-    }
-    if (
-      title.includes("last year") ||
-      title.includes("last-year") ||
-      title.includes("previous year") ||
-      title.includes("past exam") ||
-      title.includes("past-exam") ||
-      type === "past_exam" ||
-      type === "entrance_exam"
-    ) {
-      return lastYearExamPreview;
-    }
-    if (
-      title.includes("lecture slide") ||
-      title.includes("lecture-slide") ||
+      type.includes("video") ||
+      type.includes("tutorial") ||
+      type.includes("slide") ||
+      type.includes("presentation") ||
+      title.includes("video") ||
+      title.includes("tutorial") ||
       title.includes("slide") ||
       title.includes("ppt") ||
       title.includes("presentation")
     ) {
       return lectureSlidePreview;
     }
+
+    // 3. Reference Book / Textbook -> reference-book.jpg
     if (
-      type === "module" ||
-      type === "professional_module" ||
-      title.includes("module") ||
-      title.includes("loe")
+      type.includes("book") ||
+      type.includes("reference") ||
+      type.includes("textbook") ||
+      title.includes("reference book") ||
+      title.includes("reference-book") ||
+      title.includes("textbook") ||
+      title.includes("book")
     ) {
-      return modulesPreview;
+      return referenceBookPreview;
     }
+
+    // 4. Interactive Quiz -> mid-exam.jpg
+    if (
+      type.includes("quiz") ||
+      type.includes("interactive") ||
+      title.includes("quiz") ||
+      title.includes("interactive")
+    ) {
+      return midExamPreview;
+    }
+
+    // 5. Worksheet / Handout -> handout.jpg
+    if (
+      type.includes("worksheet") ||
+      type.includes("handout") ||
+      type.includes("sheet") ||
+      type.includes("assignment") ||
+      title.includes("worksheet") ||
+      title.includes("handout") ||
+      title.includes("formula sheet")
+    ) {
+      return handoutPreview;
+    }
+
+    // 6. Recommendation -> note.jpg
+    if (
+      type.includes("recommendation") ||
+      type.includes("recommend") ||
+      type.includes("career") ||
+      type.includes("guidance") ||
+      title.includes("recommendation") ||
+      title.includes("recommend") ||
+      title.includes("career")
+    ) {
+      return notePreview;
+    }
+
+    // 7. Last Year Exam / Past Exam / Mid Exam / Final Exam -> last-year-exam.jpg (or mid/final)
+    if (
+      type.includes("exam") ||
+      type.includes("past") ||
+      type.includes("entrance") ||
+      type.includes("test") ||
+      title.includes("exam") ||
+      title.includes("test") ||
+      title.includes("mid") ||
+      title.includes("final") ||
+      title.includes("last year")
+    ) {
+      if (title.includes("final") || type.includes("final")) {
+        return finalExamPreview;
+      }
+      if (title.includes("mid") || type.includes("mid")) {
+        return midExamPreview;
+      }
+      return lastYearExamPreview;
+    }
+
+    // Fallbacks based on title keywords
     if (
       title.includes("note") ||
       title.includes("lecture") ||
@@ -177,276 +224,20 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     ) {
       return notePreview;
     }
-    if (
-      title.includes("handout") ||
-      title.includes("worksheet") ||
-      type === "handout" ||
-      type === "worksheet"
-    ) {
-      return handoutPreview;
-    }
-    if (
-      title.includes("book") ||
-      title.includes("reference") ||
-      type === "textbook" ||
-      type === "reference_book"
-    ) {
-      return referenceBookPreview;
-    }
-
-    // Direct type mappings
-    const previewMap: Record<string, string> = {
-      textbook: referenceBookPreview,
-      reference_book: referenceBookPreview,
-      past_exam: lastYearExamPreview,
-      entrance_exam: lastYearExamPreview,
-      final_exam: finalExamPreview,
-      mid_exam: midExamPreview,
-      module: modulesPreview,
-      quiz: lastYearExamPreview,
-      interactive_quiz: lastYearExamPreview,
-      remedial_quiz: lastYearExamPreview,
-      worksheet: handoutPreview,
-      study_guide: handoutPreview,
-      formula_sheet: handoutPreview,
-      practice_question: lastYearExamPreview,
-      lecture_note: notePreview,
-      lecture_slide: lectureSlidePreview,
-      note: notePreview,
-      handout: handoutPreview,
-      video: lectureSlidePreview,
-      educational_video: lectureSlidePreview,
-      project: modulesPreview,
-      project_guide: modulesPreview,
-      research: notePreview,
-      research_paper: notePreview,
-      career: handoutPreview,
-      career_guidance: handoutPreview,
-      professional_module: modulesPreview,
-      assignment: handoutPreview,
-      recommendation: handoutPreview,
-    };
-
-    if (previewMap[type]) {
-      return previewMap[type];
-    }
-
-    // Title fallbacks
-    if (title.includes("exam") || title.includes("quiz") || title.includes("test")) {
-      return lastYearExamPreview;
-    }
-    if (title.includes("book") || title.includes("reference")) {
-      return referenceBookPreview;
-    }
-    if (title.includes("slide") || title.includes("ppt")) {
-      return lectureSlidePreview;
-    }
-    if (title.includes("handout") || title.includes("sheet")) {
-      return handoutPreview;
-    }
 
     return notePreview;
   };
 
-  const renderMobileThumbnail = () => {
+  const renderThumbnail = () => {
     return (
       <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 relative">
         <img
           src={getPreviewImage(resource)}
           alt={resource.title}
-          className="w-full h-24 sm:h-28 object-cover"
+          className="w-full h-24 sm:h-28 md:h-32 lg:h-36 object-cover"
           loading="lazy"
         />
       </div>
-    );
-  };
-
-  const renderDesktopThumbnail = () => {
-    if (!resource.fileUrl) {
-      // Show default thumbnail based on type when no file URL
-      return (
-        <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center h-24 md:h-32 lg:h-40">
-          <div className="text-slate-400 dark:text-slate-600">
-            {getResourceIcon(resource.type)}
-          </div>
-        </div>
-      );
-    }
-
-    const lowerUrl = resource.fileUrl.toLowerCase();
-
-    // If we have a preview URL, show actual preview on desktop
-    if (previewUrl) {
-      // PDF preview
-      if (lowerUrl.endsWith(".pdf")) {
-        return (
-          <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
-            <iframe
-              src={`${previewUrl}#page=1&view=fitH`}
-              title={resource.title}
-              className="w-full h-32 lg:h-40 bg-white"
-              scrolling="no"
-              loading="lazy"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                const parent = e.currentTarget.parentElement;
-                if (parent) {
-                  parent.innerHTML = `
-                    <div class="w-full h-32 lg:h-40 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 flex flex-col items-center justify-center gap-2">
-                      <svg class="w-12 h-12 text-red-500 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
-                      </svg>
-                      <span class="text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">PDF</span>
-                    </div>
-                  `;
-                }
-              }}
-            />
-          </div>
-        );
-      }
-
-      // Image preview
-      if (
-        lowerUrl.endsWith(".jpg") ||
-        lowerUrl.endsWith(".jpeg") ||
-        lowerUrl.endsWith(".png") ||
-        lowerUrl.endsWith(".gif") ||
-        lowerUrl.endsWith(".webp")
-      ) {
-        return (
-          <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900">
-            <img
-              src={previewUrl}
-              alt={resource.title}
-              className="w-full h-32 lg:h-40 object-cover"
-              loading="lazy"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                const parent = e.currentTarget.parentElement;
-                if (parent) {
-                  parent.innerHTML = `
-                    <div class="w-full h-32 lg:h-40 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 flex flex-col items-center justify-center gap-2">
-                      <svg class="w-12 h-12 text-blue-500 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
-                      </svg>
-                      <span class="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">Image</span>
-                    </div>
-                  `;
-                }
-              }}
-            />
-          </div>
-        );
-      }
-
-      // Video preview
-      if (resource.type === "video" || lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".webm") || lowerUrl.endsWith(".mov")) {
-        return (
-          <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-black/80 relative">
-            <video
-              src={previewUrl}
-              className="w-full h-32 lg:h-40 object-cover"
-              muted
-              playsInline
-              preload="metadata"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                const parent = e.currentTarget.parentElement;
-                if (parent) {
-                  parent.innerHTML = `
-                    <div class="w-full h-32 lg:h-40 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 flex flex-col items-center justify-center gap-2">
-                      <svg class="w-12 h-12 text-purple-500 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
-                      </svg>
-                      <span class="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide">Video</span>
-                    </div>
-                  `;
-                }
-              }}
-            />
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
-                <svg className="w-6 h-6 text-slate-900 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
-                </svg>
-              </div>
-            </div>
-          </div>
-        );
-      }
-    }
-
-    // Desktop fallback icon-based thumbnails
-    if (lowerUrl.endsWith(".pdf")) {
-      return (
-        <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 flex flex-col items-center justify-center h-24 md:h-32 lg:h-40 gap-1.5">
-          <svg className="w-10 h-10 md:w-12 md:h-12 text-red-500 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
-          </svg>
-          <span className="text-[10px] md:text-xs font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">
-            PDF Document
-          </span>
-        </div>
-      );
-    }
-
-    if (
-      lowerUrl.endsWith(".jpg") ||
-      lowerUrl.endsWith(".jpeg") ||
-      lowerUrl.endsWith(".png") ||
-      lowerUrl.endsWith(".gif") ||
-      lowerUrl.endsWith(".webp")
-    ) {
-      return (
-        <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 flex flex-col items-center justify-center h-24 md:h-32 lg:h-40 gap-1.5">
-          <svg className="w-10 h-10 md:w-12 md:h-12 text-blue-500 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd"/>
-          </svg>
-          <span className="text-[10px] md:text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wide">
-            Image File
-          </span>
-        </div>
-      );
-    }
-
-    if (resource.type === "video" || lowerUrl.endsWith(".mp4") || lowerUrl.endsWith(".webm") || lowerUrl.endsWith(".mov")) {
-      return (
-        <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 flex flex-col items-center justify-center h-24 md:h-32 lg:h-40 gap-1.5 relative">
-          <svg className="w-10 h-10 md:w-12 md:h-12 text-purple-500 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
-          </svg>
-          <span className="text-[10px] md:text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wide">
-            Video File
-          </span>
-        </div>
-      );
-    }
-
-    return (
-      <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 flex flex-col items-center justify-center h-24 md:h-32 lg:h-40 gap-1.5">
-        <div className="text-slate-500 dark:text-slate-400 scale-150">
-          {getResourceIcon(resource.type)}
-        </div>
-        <span className="text-[10px] md:text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
-          {lowerUrl.split('.').pop()?.toUpperCase() || 'File'}
-        </span>
-      </div>
-    );
-  };
-
-  const renderThumbnail = () => {
-    return (
-      <>
-        {/* Mobile View: preview image on mobile phone only */}
-        <div className="block md:hidden">
-          {renderMobileThumbnail()}
-        </div>
-        {/* Desktop View: Interactive preview / iframe / icon thumbnail */}
-        <div className="hidden md:block">
-          {renderDesktopThumbnail()}
-        </div>
-      </>
     );
   };
 
