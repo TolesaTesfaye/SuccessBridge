@@ -156,4 +156,5 @@ export const testMainConnection = async () => {
   return success;
 };
 
+export { sequelize };
 export default sequelize;

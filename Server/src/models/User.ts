@@ -9,6 +9,12 @@ class User extends Model<IUser> implements IUser {
   public fatherName?: string
   public password?: string
   public googleId?: string
+  public microsoftId?: string
+  public telegramId?: string
+  public username?: string
+  public firstName?: string
+  public lastName?: string
+  public isActive?: boolean
   public role!: 'student' | 'admin' | 'super_admin'
   public studentType?: 'high_school' | 'university'
   public highSchoolGrade?: 'grade_9' | 'grade_10' | 'grade_11' | 'grade_12'
@@ -68,6 +74,23 @@ User.init(
       type: DataTypes.STRING,
       allowNull: true,
       unique: true,
+    },
+    telegramId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      unique: true,
+    },
+    username: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    firstName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    lastName: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     role: {
       type: DataTypes.ENUM('student', 'admin', 'super_admin'),

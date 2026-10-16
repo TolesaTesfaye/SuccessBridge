@@ -6,6 +6,11 @@ export interface IUser {
   fatherName?: string;
   password?: string; // Optional for OAuth users
   googleId?: string;
+  microsoftId?: string;
+  telegramId?: string;
+  username?: string;
+  firstName?: string;
+  lastName?: string;
   role: "student" | "admin" | "super_admin";
   studentType?: "high_school" | "university";
   highSchoolGrade?: "grade_9" | "grade_10" | "grade_11" | "grade_12";
@@ -24,6 +29,7 @@ export interface IUser {
   emailVerificationExpires?: Date;
   passwordResetToken?: string;
   passwordResetExpires?: Date;
+  isActive?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

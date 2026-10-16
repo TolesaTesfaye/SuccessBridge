@@ -65,6 +65,7 @@ import AuditLog from "./models/AuditLog.js";
 import ResourceType from "./models/ResourceType.js";
 import { setupAssociations } from "./models/index.js";
 import { cacheMiddleware } from "./middleware/cacheMiddleware.js";
+import TelegramBotService from "./bot/index.js";
 
 dotenv.config();
 
@@ -150,7 +151,7 @@ const corsOptions = {
       "http://127.0.0.1:3000",
       "http://localhost:5173",
       "http://127.0.0.1:5173",
-      "https://successbridge.pages.dev",
+      "https://success-bridge-ten.vercel.app",
       "http://192.168.0.114:3000/",
     ].filter(Boolean);
 
@@ -370,6 +371,18 @@ const startServer = async () => {
       await connectRedis();
     } catch (redisError) {
       logger.warn("Redis connection failed, continuing without Redis");
+    }
+
+    // Initialize Telegram Bot (optional, don't fail if token is missing)
+    try {
+      if (process.env.TELEGRAM_BOT_TOKEN) {
+        TelegramBotService.getInstance();
+        logger.info("🤖 Telegram Bot initialized");
+      } else {
+        logger.warn("Telegram Bot token not found, skipping bot initialization");
+      }
+    } catch (botError) {
+      logger.warn("Telegram Bot initialization failed:", botError);
     }
 
     // Start the server regardless of database status

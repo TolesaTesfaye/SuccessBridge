@@ -77,3 +77,7 @@ services:
         sync: false # Set in Render Dashboard
       - key: SUPER_ADMIN_NAME
         sync: false # Set in Render Dashboard
+      
+      # Telegram Bot Configuration
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false # Set in Render Dashboard
