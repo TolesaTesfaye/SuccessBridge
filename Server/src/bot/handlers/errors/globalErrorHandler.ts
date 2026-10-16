@@ -94,6 +94,8 @@ export class GlobalErrorHandler {
   private errorCount: Map<string, number> = new Map();
   private readonly ERROR_THRESHOLD = 10; // Alert after 10 errors in 5 minutes
   private readonly TIME_WINDOW = 5 * 60 * 1000; // 5 minutes
+  private lastAdminNotification: number = 0;
+  private readonly ADMIN_ALERT_COOLDOWN = 60 * 1000; // 1 minute cooldown between admin alerts
 
   private constructor() {
     // Clean up error counts periodically
@@ -227,6 +229,7 @@ ${context.action ? `• Action: ${context.action}` : ''}
 ${error.stack ? `\`\`\`\n${error.stack.substring(0, 500)}\n\`\`\`` : ''}
       `.trim();
 
+      this.lastAdminNotification = Date.now();
       await bot.sendMessage(superAdminTelegramId, message, {
         parse_mode: 'Markdown',
       });
@@ -304,6 +307,23 @@ ${error.stack ? `\`\`\`\n${error.stack.substring(0, 500)}\n\`\`\`` : ''}
    * Check if admins should be notified
    */
   private shouldNotifyAdmins(error: Error, context: ErrorContext): boolean {
+    // Never notify admins for polling/internal network disconnects
+    if (
+      context.action === 'polling' ||
+      error.message?.includes('getUpdates') ||
+      error.message?.includes('Conflict') ||
+      error.message?.includes('EFATAL') ||
+      error.message?.includes('ETIMEDOUT')
+    ) {
+      return false;
+    }
+
+    // Cooldown check to prevent rate-limit flooding
+    const now = Date.now();
+    if (now - this.lastAdminNotification < this.ADMIN_ALERT_COOLDOWN) {
+      return false;
+    }
+
     // Always notify for critical errors
     if (this.getSeverity(error) === 'critical') {
       return true;

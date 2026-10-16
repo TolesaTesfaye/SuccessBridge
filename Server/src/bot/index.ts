@@ -160,19 +160,14 @@ class TelegramBotService {
       }
     });
 
-    // Polling error handler
-    this.bot.on('polling_error', async (error: any) => {
+    // Polling error handler - log only, never send messages via bot or trigger admin alert spam
+    this.bot.on('polling_error', (error: any) => {
       const description = error?.response?.body?.description || error?.message || String(error);
-      console.error('❌ Telegram Bot polling error:', description);
-      
-      // 409 Conflict occurs when another instance (e.g. local dev or deploying container) is polling
       if (error?.response?.statusCode === 409 || error?.response?.body?.error_code === 409) {
+        console.warn('⚠️ Telegram polling: 409 conflict during container switch (temporary)');
         return;
       }
-      
-      await handleError(error, this.bot, {
-        action: 'polling',
-      });
+      console.error('❌ Telegram Bot polling error:', description);
     });
     
     console.log('✅ Bot handlers registered successfully with global error handling');

@@ -20,9 +20,11 @@ export async function handleStart(bot: any, msg: any): Promise<void> {
       });
     }
 
-    const displayName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.name || msg.from?.first_name || username;
-    const roleBadge = formatRoleBadge(user.role);
-    const isAdmin = user.role === 'admin' || user.role === 'super_admin';
+    const displayName = user
+      ? [user.firstName, user.lastName].filter(Boolean).join(' ') || user.name || user.username || msg.from?.first_name || username
+      : msg.from?.first_name || username;
+    const roleBadge = formatRoleBadge(user?.role);
+    const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
 
     const welcomeBanner = `🎓 <b>SUCCESSBRIDGE LEARNING HUB</b>\n` +
       `${formatDivider()}\n` +
