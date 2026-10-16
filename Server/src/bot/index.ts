@@ -162,7 +162,14 @@ class TelegramBotService {
 
     // Polling error handler
     this.bot.on('polling_error', async (error: any) => {
-      console.error('❌ Telegram Bot polling error:', error);
+      const description = error?.response?.body?.description || error?.message || String(error);
+      console.error('❌ Telegram Bot polling error:', description);
+      
+      // 409 Conflict occurs when another instance (e.g. local dev or deploying container) is polling
+      if (error?.response?.statusCode === 409 || error?.response?.body?.error_code === 409) {
+        return;
+      }
+      
       await handleError(error, this.bot, {
         action: 'polling',
       });
