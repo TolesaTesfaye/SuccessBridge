@@ -37,7 +37,8 @@ export const AdminSettings: React.FC = () => {
           defaultLanguage: data.defaultLanguage || "en",
           timezone: data.timezone || "UTC",
           enableRecommendations: data.enableRecommendations ?? true,
-          enableEmailVerification: data.enableEmailVerification ?? true,
+          enableEmailVerification:
+            data.enableEmailVerification ?? data.requireEmailVerification ?? true,
         }));
       } catch {
         // Use defaults if API unavailable

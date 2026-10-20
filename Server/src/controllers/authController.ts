@@ -877,3 +877,28 @@ export const getPendingUsers = async (
       .json({ success: false, error: 'Failed to get pending users' });
   }
 };
+
+export const getRegistrationSettings = async (
+  _req: Request,
+  res: Response,
+  _next: NextFunction,
+) => {
+  try {
+    const requireEmailVerification = await AuthService.isEmailVerificationRequired();
+    res.json({
+      success: true,
+      data: {
+        requireEmailVerification,
+        enableEmailVerification: requireEmailVerification,
+      },
+    });
+  } catch (error: any) {
+    res.json({
+      success: true,
+      data: {
+        requireEmailVerification: true,
+        enableEmailVerification: true,
+      },
+    });
+  }
+};

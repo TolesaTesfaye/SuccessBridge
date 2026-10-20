@@ -38,7 +38,7 @@ export const authService = {
     universityLevel?: string
     university?: string
     department?: string
-  }): Promise<ApiResponse<{ user: User; token: string }>> => {
+  }): Promise<ApiResponse<{ user?: User; token?: string; requiresVerification?: boolean; email?: string }>> => {
     try {
       const response = await api.post('/auth/register', userData)
       return response.data
@@ -48,6 +48,15 @@ export const authService = {
         ...error as any,
         userFriendlyError: userError
       }
+    }
+  },
+
+  getRegistrationSettings: async (): Promise<{ requireEmailVerification: boolean }> => {
+    try {
+      const response = await api.get('/auth/registration-settings')
+      return response.data?.data || { requireEmailVerification: true }
+    } catch (error) {
+      return { requireEmailVerification: true }
     }
   },
 

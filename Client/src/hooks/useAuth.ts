@@ -52,32 +52,40 @@ export const useAuth = () => {
     }
   };
 
-  const register = async (userData: any): Promise<boolean> => {
+  const register = async (
+    userData: any,
+  ): Promise<{ success: boolean; requiresVerification: boolean } | null> => {
     setLoading(true);
     setError(null);
     try {
       const response = await authService.register(userData);
       if (response.success && response.data) {
+        const data = response.data as any;
         if (userData.role === "admin") {
-          return true; // Don't auto-login for admins
+          return { success: true, requiresVerification: false }; // Don't auto-login for admins
         } else {
-          // Student registration - show verification message (no auto-login)
-          if (response.data.requiresVerification) {
+          // Student registration
+          if (data.requiresVerification) {
             toast.success(
-              "🎉 Registration successful!\n\n📧 Please check your email and click the verification link to activate your account.\n\n⚠️ You must verify your email before you can log in.",
+              "🎉 Registration initiated!\n\n📧 Please check your email for a 6-digit verification code to activate your account.\n\n⚠️ You must verify your email before you can log in.",
               8000,
             );
-            return true;
+            return { success: true, requiresVerification: true };
           } else {
-            // Fallback for backward compatibility
-            setUser(response.data.user);
-            setToken(response.data.token);
-            toast.success(SUCCESS_MESSAGES.REGISTER);
-            return true;
+            // Email verification disabled: student registered and automatically authenticated
+            if (data.user && data.token) {
+              setUser(data.user);
+              setToken(data.token);
+            }
+            toast.success(
+              "🎉 Registration successful! Welcome to SuccessBridge.",
+              5000,
+            );
+            return { success: true, requiresVerification: false };
           }
         }
       }
-      const errorMsg = response.error || "Registration failed";
+      const errorMsg = response.error || (response as any).message || "Registration failed";
       setError(errorMsg);
       toast.error(errorMsg);
     } catch (err: any) {
@@ -94,7 +102,7 @@ export const useAuth = () => {
     } finally {
       setLoading(false);
     }
-    return false;
+    return null;
   };
 
   const handleLogout = async () => {

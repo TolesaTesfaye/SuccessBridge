@@ -5,6 +5,7 @@ import crypto from "crypto";
 import User from "../models/User.js";
 import AdminRequest from "../models/AdminRequest.js";
 import PendingUser from "../models/PendingUser.js";
+import SystemSetting from "../models/SystemSetting.js";
 import { ILoginRequest, IRegisterRequest } from "../types/index.js";
 import { AppError } from "../middleware/errorHandler.js";
 import redisClient from "../config/redis.js";
@@ -12,6 +13,23 @@ import redisClient from "../config/redis.js";
 import { EmailService } from "./emailService.js";
 
 export class AuthService {
+  /**
+   * Check if email verification is required for student registration
+   */
+  static async isEmailVerificationRequired(): Promise<boolean> {
+    try {
+      const setting = await SystemSetting.findOne({
+        where: { settingKey: "require_email_verification" },
+      });
+      if (setting && setting.settingValue !== undefined && setting.settingValue !== null) {
+        return Boolean(setting.settingValue);
+      }
+    } catch (error) {
+      console.warn("Failed to check require_email_verification setting, defaulting to true:", error);
+    }
+    return true;
+  }
+
   /**
    * Generate 6-digit verification code
    */
@@ -60,11 +78,18 @@ export class AuthService {
       throw new AppError(400, "An account with this email already exists. Please try logging in instead, or use a different email address.");
     }
 
+    // Check if email verification is required by admin settings
+    const requireEmailVerification = await this.isEmailVerificationRequired();
+
     // Check if there's a pending registration
     const existingPending = await PendingUser.findOne({ where: { email } });
     if (existingPending) {
-      // If the pending registration has expired, delete it and allow re-registration
-      if (existingPending.verificationExpires < new Date()) {
+      if (!requireEmailVerification) {
+        // If email verification is now disabled, clear pending registration and continue with direct registration
+        console.log('Email verification disabled: clearing existing pending registration for', email);
+        await existingPending.destroy();
+      } else if (existingPending.verificationExpires < new Date()) {
+        // If the pending registration has expired, delete it and allow re-registration
         console.log('Expired pending registration found, deleting and allowing re-registration');
         await existingPending.destroy();
       } else {
@@ -149,9 +174,53 @@ export class AuthService {
         token,
       };
     } else {
-      // For student registration, store in PendingUser table until email is verified
+      // For student registration: check if email verification is enabled or disabled
+      if (!requireEmailVerification) {
+        console.log('Registering student directly without email verification:', email);
+
+        const newStudent = await User.create({
+          email,
+          name,
+          password: hashedPassword,
+          role: "student",
+          studentType: studentType || null,
+          highSchoolGrade: highSchoolGrade || null,
+          highSchoolStream: highSchoolStream || null,
+          universityLevel: universityLevel || null,
+          university: university || null,
+          department: department || null,
+          isApproved: true,
+          approvalStatus: "approved",
+          approvedAt: new Date(),
+          isEmailVerified: true,
+          emailVerificationToken: null,
+          emailVerificationExpires: null,
+        } as any);
+
+        const token = this.generateToken(newStudent);
+
+        return {
+          message: "Registration successful! Welcome to SuccessBridge.",
+          requiresVerification: false,
+          user: {
+            id: newStudent.id,
+            email: newStudent.email,
+            name: newStudent.name,
+            role: newStudent.role,
+            studentType: newStudent.studentType,
+            highSchoolGrade: newStudent.highSchoolGrade,
+            highSchoolStream: newStudent.highSchoolStream,
+            universityLevel: newStudent.universityLevel,
+            university: newStudent.university,
+            department: newStudent.department,
+          },
+          token,
+        };
+      }
+
+      // If email verification IS enabled, store in PendingUser table until email is verified
       const verificationCode = this.generateVerificationCode();
-      const verificationExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes (increased from 2)
+      const verificationExpires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
       const pendingData = {
         email,
@@ -205,10 +274,48 @@ export class AuthService {
       throw new AppError(400, "Email and password are required. Please fill in both fields.");
     }
 
-    const user = await User.findOne({ where: { email } });
+    let user = await User.findOne({ where: { email } });
 
     if (!user) {
-      throw new AppError(401, "No account found with this email address. Please check your email or create a new account.");
+      // Check if user is pending verification
+      const pendingUser = await PendingUser.findOne({ where: { email } });
+      if (pendingUser) {
+        const requireEmailVerification = await this.isEmailVerificationRequired();
+        if (!requireEmailVerification) {
+          const isPasswordValid = await bcrypt.compare(password, pendingUser.password);
+          if (isPasswordValid) {
+            // Email verification was disabled after they signed up - auto-promote them to active User
+            console.log('Auto-promoting pending user to active student since verification is disabled:', email);
+            user = await User.create({
+              email: pendingUser.email,
+              name: pendingUser.name,
+              password: pendingUser.password,
+              role: pendingUser.role,
+              studentType: pendingUser.studentType || null,
+              highSchoolGrade: pendingUser.highSchoolGrade || null,
+              highSchoolStream: pendingUser.highSchoolStream || null,
+              universityLevel: pendingUser.universityLevel || null,
+              university: pendingUser.university || null,
+              department: pendingUser.department || null,
+              isApproved: true,
+              approvalStatus: "approved",
+              approvedAt: new Date(),
+              isEmailVerified: true,
+            } as any);
+
+            await pendingUser.destroy();
+          } else {
+            throw new AppError(401, "Incorrect password. Please try again or use 'Forgot Password' to reset it.");
+          }
+        } else {
+          throw new AppError(
+            400,
+            "Please verify your email address before logging in. Check your inbox for the verification code.",
+          );
+        }
+      } else {
+        throw new AppError(401, "No account found with this email address. Please check your email or create a new account.");
+      }
     }
 
     // OAuth users may not have a password set

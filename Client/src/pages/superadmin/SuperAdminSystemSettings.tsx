@@ -42,8 +42,14 @@ export const SuperAdminSystemSettings: React.FC = () => {
       try {
         setInitialLoading(true)
         const response = await api.get('/settings')
-        if (response.data) {
-          setSettings(response.data)
+        const data = response.data?.data || response.data
+        if (data && typeof data === 'object') {
+          setSettings(prev => ({
+            ...prev,
+            ...data,
+            requireEmailVerification:
+              data.requireEmailVerification ?? data.enableEmailVerification ?? prev.requireEmailVerification,
+          }))
         }
       } catch (err: any) {
         ApiErrorHandler.handle(err, 'Failed to load settings. Using defaults.')

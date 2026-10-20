@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { authService } from "@services/authService";
 import { FormInput } from "@components/forms/FormInput";
 import { FormSelect } from "@components/forms/FormSelect";
 import { AppLogo } from "@components/common/AppLogo";
@@ -112,6 +113,26 @@ export const Register: React.FC = () => {
     confirmPassword: "",
   });
   const [formError, setFormError] = useState<string | null>(null);
+  const [requireVerification, setRequireVerification] = useState<boolean | null>(null);
+
+  React.useEffect(() => {
+    let isMounted = true;
+    authService
+      .getRegistrationSettings()
+      .then((settings) => {
+        if (isMounted) {
+          setRequireVerification(settings.requireEmailVerification);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setRequireVerification(true);
+        }
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -260,15 +281,20 @@ export const Register: React.FC = () => {
 
       console.log("Registration result:", result);
 
-      if (result) {
-        // Student registration - redirect to verification page with email
-        navigate("/verify-email", {
-          state: {
-            email: formData.email,
-            message:
-              "Registration successful! Please check your email for a 6-digit verification code.",
-          },
-        });
+      if (result && result.success) {
+        if (result.requiresVerification) {
+          // Email verification required - redirect to verification page with email
+          navigate("/verify-email", {
+            state: {
+              email: formData.email,
+              message:
+                "Registration successful! Please check your email for a 6-digit verification code.",
+            },
+          });
+        } else {
+          // Email verification disabled - navigate directly to dashboard
+          navigate("/dashboard");
+        }
       }
     } catch (err) {
       // Error handling is now done in useAuth hook with toast notifications
@@ -355,6 +381,23 @@ export const Register: React.FC = () => {
             <p className="text-base md:text-xl font-bold text-slate-800 dark:text-slate-200 mt-0.5 md:mt-1 transition-colors">
               {getStepTitle()}
             </p>
+
+            {requireVerification !== null && (
+              <div
+                className={`mt-2.5 px-3 py-1.5 rounded-xl text-xs font-medium inline-flex items-center gap-1.5 border transition-all ${
+                  requireVerification
+                    ? "bg-blue-50/80 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200/60 dark:border-blue-800/40"
+                    : "bg-emerald-50/80 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 border-emerald-200/60 dark:border-emerald-800/40"
+                }`}
+              >
+                <span>{requireVerification ? "✉️" : "⚡"}</span>
+                <span>
+                  {requireVerification
+                    ? "Email verification active (code sent after signup)"
+                    : "Instant registration: Email verification is disabled"}
+                </span>
+              </div>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">

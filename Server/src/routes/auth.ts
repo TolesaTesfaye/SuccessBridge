@@ -23,6 +23,7 @@ import {
   resetPassword,
   cleanupExpiredPendingUsers,
   getPendingUsers,
+  getRegistrationSettings,
 } from "../controllers/authController.js";
 import passport from "passport";
 
@@ -116,6 +117,9 @@ const router = Router();
 
 // Register
 router.post("/register", authAttemptLimiter, register);
+
+// Get registration configuration / verification settings (public)
+router.get("/registration-settings", getRegistrationSettings);
 
 /**
  * @swagger
