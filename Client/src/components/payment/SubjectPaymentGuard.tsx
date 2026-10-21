@@ -73,12 +73,12 @@ export const SubjectPaymentGuard: React.FC<SubjectPaymentGuardProps> = ({
       if (access) {
         onAccessGranted()
       } else {
-        // Check if there's a pending payment
-        const payments = await paymentService.getPayments({ 
-          subjectId,
-          status: 'pending' 
-        })
-        setPendingPayment(payments.data && payments.data.length > 0)
+        // Check if there's a pending payment (any payment, not per subject)
+        const payments = await paymentService.getUserPayments()
+        const hasPending = payments.data && payments.data.some(
+          (payment) => payment.status === 'pending'
+        )
+        setPendingPayment(hasPending)
       }
     } catch (error) {
       console.error('Failed to check subject access:', error)
@@ -122,25 +122,33 @@ export const SubjectPaymentGuard: React.FC<SubjectPaymentGuardProps> = ({
         {showButton && (
           <button
             onClick={() => setShowPaymentModal(true)}
-            className="px-3 py-1 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors"
+            disabled={pendingPayment}
+            className={`px-3 py-1 text-white text-sm font-medium rounded-lg transition-colors ${
+              pendingPayment 
+                ? 'bg-gray-400 cursor-not-allowed' 
+                : 'bg-primary-600 hover:bg-primary-700'
+            }`}
+            title={pendingPayment ? 'You already have a pending payment' : 'Unlock this subject'}
           >
-            Unlock Subject
+            {pendingPayment ? 'Payment Pending' : 'Unlock Subject'}
           </button>
         )}
       </div>
 
-      <PaymentModal
-        isOpen={showPaymentModal}
-        onClose={() => setShowPaymentModal(false)}
-        subjectId={subjectId}
-        subjectName={subjectName}
-        educationLevel={educationLevel}
-        grade={grade}
-        stream={stream}
-        universityId={universityId}
-        departmentId={departmentId}
-        onSuccess={checkAccess}
-      />
+      {!pendingPayment && (
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          subjectId={subjectId}
+          subjectName={subjectName}
+          educationLevel={educationLevel}
+          grade={grade}
+          stream={stream}
+          universityId={universityId}
+          departmentId={departmentId}
+          onSuccess={checkAccess}
+        />
+      )}
     </>
   )
 }

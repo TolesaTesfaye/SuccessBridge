@@ -49,9 +49,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     paymentMethod: 'bank_transfer' as CreatePaymentData['paymentMethod'],
     transactionReference: '',
     notes: '',
-    accountNumber: '',
-    payerPhone: '',
-    payerNote: '',
   })
 
   const MINIMUM_PAYMENT = 200 // Minimum payment amount in ETB
@@ -263,9 +260,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         screenshot: screenshot!,
         transactionReference: formData.transactionReference || undefined,
         notes: formData.notes || undefined,
-        accountNumber: formData.accountNumber || undefined,
-        payerPhone: formData.payerPhone || undefined,
-        payerNote: formData.payerNote || undefined,
         educationLevel,
         grade,
         stream,
@@ -302,9 +296,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         paymentMethod: 'bank_transfer',
         transactionReference: '',
         notes: '',
-        accountNumber: '',
-        payerPhone: '',
-        payerNote: '',
       })
       setScreenshot(null)
       setPreviewUrl(null)
@@ -441,40 +432,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             <p className="text-xs sm:text-sm text-red-600 dark:text-red-400 font-medium">{errors.amount}</p>
           </div>
         )}
-
-        {/* User Contact Information */}
-        <div className="space-y-3 sm:space-y-4">
-          <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wide border-b pb-2 border-gray-200 dark:border-gray-700">
-            Your Payment Information
-          </h3>
-          
-          <FormInput
-            label="Your Account/Phone Number Used for Payment"
-            type="text"
-            value={formData.accountNumber}
-            onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
-            placeholder="e.g., 0975863448 or 1000531877156"
-            helperText="Enter the account or phone number you're paying from"
-          />
-
-          <FormInput
-            label="Your Contact Phone Number"
-            type="tel"
-            value={formData.payerPhone}
-            onChange={(e) => setFormData({ ...formData, payerPhone: e.target.value })}
-            placeholder="e.g., 0912345678"
-            helperText="We'll use this to contact you if needed"
-          />
-
-          <FormTextarea
-            label="Additional Note (Optional)"
-            value={formData.payerNote}
-            onChange={(e) => setFormData({ ...formData, payerNote: e.target.value })}
-            placeholder="Any additional information about your payment..."
-            rows={2}
-            helperText="Optional: Add any details that might help us verify your payment"
-          />
-        </div>
 
         {/* Screenshot Upload Section */}
         <div className="space-y-3">

@@ -34,6 +34,7 @@ export const SubjectAccessGuard: React.FC<SubjectAccessGuardProps> = ({
   const [loading, setLoading] = useState(true);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [availableSubjects, setAvailableSubjects] = useState<string[]>([]);
+  const [pendingPayment, setPendingPayment] = useState(false);
 
   // Get available subjects for this education level
   useEffect(() => {
@@ -81,6 +82,15 @@ export const SubjectAccessGuard: React.FC<SubjectAccessGuardProps> = ({
       // One payment unlocks ALL subjects
       const mySubjects = await paymentService.getMySubjectAccess();
       setHasAccess(mySubjects.length > 0); // If they have any access, they have access to all
+      
+      // Check if there's a pending payment
+      if (mySubjects.length === 0) {
+        const payments = await paymentService.getUserPayments();
+        const hasPending = payments.data && payments.data.some(
+          (payment) => payment.status === 'pending'
+        );
+        setPendingPayment(hasPending);
+      }
     } catch (error) {
       console.error("Failed to check subject access:", error);
       setHasAccess(false);
@@ -173,19 +183,25 @@ export const SubjectAccessGuard: React.FC<SubjectAccessGuardProps> = ({
 
         <Button
           onClick={() => setShowPaymentModal(true)}
+          disabled={pendingPayment}
           size="lg"
-          className="w-full sm:w-auto"
+          className={`w-full sm:w-auto ${
+            pendingPayment ? 'opacity-60 cursor-not-allowed' : ''
+          }`}
         >
-          Pay Once - Unlock Everything
+          {pendingPayment ? 'Payment Pending - Awaiting Approval' : 'Pay Once - Unlock Everything'}
         </Button>
 
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-          Payment will be verified by our admin team within 24 hours
+          {pendingPayment 
+            ? 'Your payment is being reviewed. You will be notified once approved.'
+            : 'Payment will be verified by our admin team within 24 hours'
+          }
         </p>
       </div>
 
       <PaymentModal
-        isOpen={showPaymentModal}
+        isOpen={showPaymentModal && !pendingPayment}
         onClose={() => setShowPaymentModal(false)}
         subjectId={subjectId}
         subjectName={subjectName}
