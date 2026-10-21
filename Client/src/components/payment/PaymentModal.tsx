@@ -6,7 +6,7 @@ import { FormSelect } from '@components/forms/FormSelect'
 import { FormTextarea } from '@components/forms/FormTextarea'
 import { paymentService, CreatePaymentData } from '@services/paymentService'
 import { useToast } from '@components/common/Toast'
-import { Upload, CreditCard, Loader, Copy, Check, Smartphone, Building2, AlertTriangle } from 'lucide-react'
+import { Upload, CreditCard, Loader, Copy, Check, CheckCircle, Smartphone, Building2, AlertTriangle } from 'lucide-react'
 
 interface PaymentModalProps {
   isOpen: boolean
@@ -183,6 +183,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       // Clear previous error
       setErrors({ ...errors, screenshot: undefined })
       
+      console.log('File selected:', file.name, file.size, file.type)
+      
       if (file.size > 5 * 1024 * 1024) {
         const error = 'File size must be less than 5MB'
         setErrors({ ...errors, screenshot: error })
@@ -200,7 +202,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       setScreenshot(file)
       const reader = new FileReader()
       reader.onloadend = () => {
-        setPreviewUrl(reader.result as string)
+        const result = reader.result as string
+        console.log('Preview URL created, length:', result.length)
+        setPreviewUrl(result)
+      }
+      reader.onerror = () => {
+        console.error('FileReader error')
+        showToast('Failed to read file', 'error')
       }
       reader.readAsDataURL(file)
     }
@@ -468,84 +476,114 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        {/* Screenshot Upload Section */}
+        <div className="space-y-3">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Payment Screenshot *
           </label>
-          <label
-            htmlFor="file-upload"
-            className={`mt-1 flex justify-center px-4 sm:px-6 pt-4 sm:pt-5 pb-4 sm:pb-6 border-2 border-dashed rounded-lg transition-colors cursor-pointer ${
-              errors.screenshot 
-                ? 'border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/10' 
-                : 'border-gray-300 dark:border-gray-600 hover:border-primary-500 active:border-primary-600 hover:bg-gray-50 dark:hover:bg-gray-800/50'
-            }`}
-          >
-            <div className="space-y-1 text-center w-full">
-              {previewUrl ? (
-                <div className="relative">
-                  <img
-                    src={previewUrl}
-                    alt="Payment screenshot preview"
-                    className="mx-auto h-40 sm:h-48 w-auto rounded-lg"
-                  />
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      e.stopPropagation()
-                      setScreenshot(null)
-                      setPreviewUrl(null)
-                      setErrors({ ...errors, screenshot: undefined })
-                    }}
-                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center hover:bg-red-600 active:scale-95 transition-all text-lg sm:text-xl font-bold"
-                  >
-                    ×
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <Upload className={`mx-auto h-10 w-10 sm:h-12 sm:w-12 ${errors.screenshot ? 'text-red-400' : 'text-gray-400'}`} />
-                  <div className="flex flex-col sm:flex-row items-center justify-center text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                    <span className="font-medium text-primary-600 hover:text-primary-500">
-                      Click to upload
-                    </span>
-                    <p className="sm:pl-1">or drag and drop</p>
-                  </div>
-                  <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF up to 5MB</p>
-                </>
-              )}
+          
+          {/* Show preview if uploaded */}
+          {previewUrl && screenshot && (
+            <div className="space-y-3">
+              <div className="relative border-4 border-green-500 rounded-xl p-4 bg-white dark:bg-gray-800">
+                <img
+                  src={previewUrl}
+                  alt="Payment screenshot"
+                  className="w-full h-auto rounded-lg"
+                  onLoad={() => console.log('Image loaded successfully')}
+                  onError={() => console.error('Image failed to load')}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setScreenshot(null)
+                    setPreviewUrl(null)
+                    setErrors({ ...errors, screenshot: undefined })
+                  }}
+                  className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-2xl shadow-lg"
+                >
+                  ×
+                </button>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                <CheckCircle size={20} className="text-green-600 dark:text-green-400" />
+                <span className="text-sm font-semibold text-green-700 dark:text-green-300">
+                  Screenshot uploaded: {screenshot.name}
+                </span>
+              </div>
             </div>
-            <input
-              id="file-upload"
-              name="file-upload"
-              type="file"
-              className="sr-only"
-              accept="image/*"
-              onChange={handleFileChange}
-            />
-          </label>
+          )}
+          
+          {/* Show upload area if no preview */}
+          {!previewUrl && (
+            <label
+              htmlFor="screenshot-upload"
+              className={`block border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
+                errors.screenshot 
+                  ? 'border-red-400 bg-red-50 dark:bg-red-900/20' 
+                  : 'border-gray-300 dark:border-gray-600 hover:border-primary-500 hover:bg-gray-50 dark:hover:bg-gray-800/50'
+              }`}
+            >
+              <Upload className={`mx-auto h-12 w-12 mb-3 ${errors.screenshot ? 'text-red-400' : 'text-gray-400'}`} />
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Click to upload screenshot
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                PNG, JPG, GIF up to 5MB
+              </p>
+            </label>
+          )}
+          
+          <input
+            id="screenshot-upload"
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          
           {errors.screenshot && (
-            <div className="flex items-start gap-2 p-2 sm:p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg mt-2">
-              <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-              <p className="text-xs sm:text-sm text-red-600 dark:text-red-400 font-medium">{errors.screenshot}</p>
+            <div className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg">
+              <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-600 dark:text-red-400 font-medium">{errors.screenshot}</p>
             </div>
           )}
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 pt-2 sm:pt-4">
-          <Button type="button" variant="secondary" onClick={handleClose} disabled={loading} className="flex-1 w-full">
-            Cancel
-          </Button>
-          <Button type="submit" disabled={loading || !screenshot} className="flex-1 w-full">
-            {loading ? (
-              <>
-                <Loader className="animate-spin mr-2" size={16} />
-                Submitting...
-              </>
-            ) : (
-              'Submit Payment'
-            )}
-          </Button>
+        {/* Action Buttons - Always Visible */}
+        <div className="sticky bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t-2 border-gray-200 dark:border-gray-700 pt-4 pb-2 -mx-4 px-4 sm:-mx-8 sm:px-8 mt-6">
+          <div className="flex flex-col-reverse sm:flex-row gap-3">
+            <Button 
+              type="button" 
+              variant="secondary" 
+              onClick={handleClose} 
+              disabled={loading} 
+              className="flex-1 w-full py-3 text-base font-semibold"
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="submit" 
+              disabled={loading || !screenshot} 
+              className="flex-1 w-full py-3 text-base font-semibold bg-primary-600 hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                <>
+                  <Loader className="animate-spin mr-2" size={20} />
+                  Submitting Payment...
+                </>
+              ) : (
+                <>
+                  {screenshot ? '✓ Submit Payment' : '⚠ Upload Screenshot First'}
+                </>
+              )}
+            </Button>
+          </div>
+          {!screenshot && (
+            <p className="text-center text-xs text-amber-600 dark:text-amber-400 mt-2 font-medium">
+              Please upload a payment screenshot to continue
+            </p>
+          )}
         </div>
       </form>
     </Modal>
