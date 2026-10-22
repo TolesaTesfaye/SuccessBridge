@@ -15,6 +15,13 @@ import { handleAdminCallback } from '../admin/index.js';
 import { validateCallbackData } from '../middleware/validation.middleware.js';
 import { logger } from '../middleware/logger.middleware.js';
 import { escapeHtml, formatDivider, getMainKeyboard, formatRoleBadge, getWebUrl } from '../utils/ui.js';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export async function handleCallbackQuery(
   bot: any,
@@ -106,6 +113,9 @@ export async function handleCallbackQuery(
       await handleFaqCallback(bot, chatId, messageId, data);
     } else if (data === 'browse_courses') {
       await handleBrowseCourses(bot, { chat: { id: chatId } });
+    } else if (data === 'open_website') {
+      // Handle website preview - send screenshot image
+      await handleWebsitePreview(bot, chatId);
     } else if (data === 'main_menu') {
       const user = await getUserByTelegramId(query.from.id.toString());
       const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
@@ -133,7 +143,7 @@ export async function handleCallbackQuery(
               { text: '👤 Student ID', callback_data: 'view_profile' },
             ],
             [
-              { text: '🌐 Read Online on Web Portal', url: getWebUrl() },
+              { text: '🌐 Website Preview', callback_data: 'open_website' },
               { text: '❓ Help & FAQ', callback_data: 'faq_home' },
             ],
           ],
@@ -188,7 +198,7 @@ async function handleCourseDetails(
     reply_markup: {
       inline_keyboard: [
         [{ text: '📂 Explore Study Materials', callback_data: `resources_${courseId}` }],
-        [{ text: '🌐 Open Subject on Website', url: getWebUrl() }],
+        [{ text: '🌐 Website Preview', callback_data: 'open_website' }],
         [
           { text: '🔙 Back to Subjects', callback_data: backData },
           { text: '🏠 Main Menu', callback_data: 'main_menu' },
@@ -246,4 +256,51 @@ async function handleEnrollment(
       ],
     },
   });
+}
+
+async function handleWebsitePreview(bot: any, chatId: number): Promise<void> {
+  try {
+    // Path to the screenshot image in the public folder
+    const publicDir = path.resolve(__dirname, '../../../public');
+    const screenshotPath = path.join(publicDir, 'website_preview.jpg');
+
+    // Check if the image exists
+    if (!fs.existsSync(screenshotPath)) {
+      console.error('Screenshot not found at:', screenshotPath);
+      await bot.sendMessage(
+        chatId,
+        '❌ <i>Website preview image not found.</i>',
+        { parse_mode: 'HTML' }
+      );
+      return;
+    }
+
+    // Send the screenshot with a caption
+    await bot.sendPhoto(chatId, screenshotPath, {
+      caption: 
+        `🌐 <b>SuccessBridge Web Platform Preview</b>\n` +
+        `${formatDivider()}\n` +
+        `📚 Access our full-featured web platform for:\n` +
+        `• Interactive reading experience\n` +
+        `• Chapter quizzes & practice tests\n` +
+        `• Bookmark your progress\n` +
+        `• Study analytics & performance tracking\n` +
+        `${formatDivider()}\n` +
+        `👇 Click below to visit the website`,
+      parse_mode: 'HTML',
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '🌐 Visit Website Now', url: getWebUrl() }],
+          [{ text: '🏠 Back to Main Menu', callback_data: 'main_menu' }],
+        ],
+      },
+    });
+  } catch (error) {
+    console.error('Error sending website preview:', error);
+    await bot.sendMessage(
+      chatId,
+      '❌ <i>Failed to send website preview. Please try again.</i>',
+      { parse_mode: 'HTML' }
+    );
+  }
 }

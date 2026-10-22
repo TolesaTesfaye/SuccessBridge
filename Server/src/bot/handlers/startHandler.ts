@@ -55,7 +55,7 @@ export async function handleStart(bot: any, msg: any): Promise<void> {
               { text: '📚 Browse Subjects & Materials', callback_data: 'browse_courses' },
             ],
             [
-              { text: '🌐 Read Online on Web Platform', url: getWebUrl() },
+              { text: '🌐 Open Website Preview', callback_data: 'open_website' },
             ],
             [
               { text: '🔍 Search Materials', callback_data: 'search_prompt' },

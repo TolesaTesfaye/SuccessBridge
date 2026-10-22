@@ -216,7 +216,7 @@ export async function handleDownloadResource(bot: any, chatId: number, resourceI
         reply_markup: {
           inline_keyboard: [
             [{ text: '📥 Click to Download File', url: downloadUrl }],
-            [{ text: '📖 Read Online on Website', url: getWebUrl() }],
+            [{ text: '🌐 Website Preview', callback_data: 'open_website' }],
             [{ text: '🔙 Back to Materials', callback_data: `resources_${resource.subjectId || ''}` }],
             [{ text: '🏠 Main Menu', callback_data: 'main_menu' }],
           ],

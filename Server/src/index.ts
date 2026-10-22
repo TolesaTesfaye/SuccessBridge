@@ -3,9 +3,14 @@ import cors from "cors";
 import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
+import { fileURLToPath } from "url";
 import helmet from "helmet";
 import compression from "compression";
 import rateLimit from "express-rate-limit";
+
+// ES module equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 import { Op } from "sequelize";
 import sequelize, { testMainConnection } from "./config/database.js";
