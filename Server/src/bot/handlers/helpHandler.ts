@@ -11,6 +11,7 @@ export async function handleHelp(bot: any, msg: any): Promise<void> {
     `• /browse — Explore all high school & university subjects\n` +
     `• /mycourses — View your subjects\n` +
     `• /profile — View your student credentials\n` +
+    `• /payment — View subscription & payment guide\n` +
     `• /help — Open this Help Center\n\n` +
     `👇 <b>Choose a topic for instant answers:</b>\n` +
     `${formatDivider()}`;
@@ -26,10 +27,10 @@ export async function handleHelp(bot: any, msg: any): Promise<void> {
       { text: '🔍 How to Search by Keyword', callback_data: 'faq_search' },
     ],
     [
-      { text: '💳 Subscriptions & Access', callback_data: 'faq_sub' },
+      { text: '💳 Payment & Subscription Guide', callback_data: 'faq_sub' },
     ],
     [
-      { text: '📞 Contact Support / Admin', callback_data: 'faq_support' },
+      { text: '📞 Contact Support (Payment Help)', callback_data: 'faq_support' },
     ],
     [
       { text: '🏠 Main Menu', callback_data: 'main_menu' },
@@ -60,13 +61,26 @@ export async function handleFaqCallback(bot: any, chatId: number, messageId: num
       break;
 
     case 'faq_sub':
-      title = '💳 Subscriptions & Full Access';
-      content = `<b>How do I unlock all materials?</b>\n\n` +
-        `1. Visit our official web platform:\n` +
+      title = '💳 Subscriptions & Payment Guide';
+      content = `<b>How to Subscribe & Get Full Access:</b>\n\n` +
+        `📋 <b>STEP 1: Choose Your Plan</b>\n` +
+        `Visit the website to see available subscription plans:\n` +
         `👉 <a href="${getWebUrl()}">${getWebUrl()}</a>\n\n` +
-        `2. Log in or sign up using your email.\n\n` +
-        `3. Choose your desired grade or university department subscription.\n\n` +
-        `4. Once confirmed, all lecture slides, past exams, and worksheets unlock automatically in both the Web App and this Telegram Bot!`;
+        `📋 <b>STEP 2: Contact Payment Support</b>\n` +
+        `To complete your payment and activate access:\n` +
+        `📱 <b>Telegram:</b> @Tol_man27 or <a href="https://t.me/Tol_man27">t.me/Tol_man27</a>\n` +
+        `📧 <b>Email:</b> tolesatesfaye273@gmail.com\n\n` +
+        `📋 <b>STEP 3: Make Payment</b>\n` +
+        `Our support team will provide you with:\n` +
+        `• Available payment methods\n` +
+        `• Pricing for your selected plan\n` +
+        `• Payment instructions\n\n` +
+        `📋 <b>STEP 4: Instant Activation</b>\n` +
+        `Once payment is confirmed:\n` +
+        `✅ Full access unlocked on website\n` +
+        `✅ All materials available in Telegram bot\n` +
+        `✅ Download unlimited documents\n\n` +
+        `💡 <i>Questions? Contact @Tol_man27 anytime!</i>`;
       break;
 
     case 'faq_download':
@@ -89,12 +103,22 @@ export async function handleFaqCallback(bot: any, chatId: number, messageId: num
       break;
 
     case 'faq_support':
-      title = '📞 Contact Support / Admin';
-      content = `<b>Need personal assistance?</b>\n\n` +
-        `Our academic support team is ready to help you with account verification, subject access, or custom requests.\n\n` +
-        `📧 <b>Email:</b> <code>tolesatesfaye273@gmail.com</code>\n` +
-        `🌐 <b>Website:</b> <a href="${getWebUrl()}">${getWebUrl()}</a>\n` +
-        `⏱️ <i>Support hours: 24/7</i>`;
+      title = '📞 Contact Support & Payment Help';
+      content = `<b>Get Help From Our Team:</b>\n\n` +
+        `💳 <b>Payment & Subscription Support:</b>\n` +
+        `📱 Telegram: @Tol_man27\n` +
+        `🔗 Direct Link: <a href="https://t.me/Tol_man27">t.me/Tol_man27</a>\n` +
+        `📧 Email: tolesatesfaye273@gmail.com\n\n` +
+        `🆘 <b>What We Can Help With:</b>\n` +
+        `• Payment methods and pricing\n` +
+        `• Account verification and activation\n` +
+        `• Subscription plans and upgrades\n` +
+        `• Technical support and troubleshooting\n` +
+        `• Custom material requests\n` +
+        `• Access issues and account recovery\n\n` +
+        `⏱️ <b>Response Time:</b> Usually within 24 hours\n` +
+        `🌐 <b>Website:</b> <a href="${getWebUrl()}">${getWebUrl()}</a>\n\n` +
+        `💡 <i>For payment inquiries, always contact @Tol_man27 first!</i>`;
       break;
 
     default:

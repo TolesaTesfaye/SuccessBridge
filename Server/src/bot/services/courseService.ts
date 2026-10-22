@@ -167,7 +167,7 @@ export async function enrollInCourse(
 
     return {
       success: false,
-      message: 'To enroll, please visit the website and complete payment: https://success-bridge-ten.vercel.app',
+      message: 'To unlock full access, please subscribe! Contact @Tol_man27 on Telegram or use /payment command for details.',
     };
   } catch (error) {
     console.error('Error checking subject access:', error);

@@ -116,6 +116,11 @@ export async function handleCallbackQuery(
     } else if (data === 'open_website') {
       // Handle website preview - send screenshot image
       await handleWebsitePreview(bot, chatId);
+    } else if (data === 'payment_info' || data === 'subscribe_now') {
+      // Handle payment information request
+      const userMsg = { chat: { id: chatId }, from: query.from };
+      const { handlePayment } = await import('./paymentHandler.js');
+      await handlePayment(bot, userMsg);
     } else if (data === 'main_menu') {
       const user = await getUserByTelegramId(query.from.id.toString());
       const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
@@ -141,6 +146,9 @@ export async function handleCallbackQuery(
             [
               { text: '📖 My Subjects', callback_data: 'mycourses' },
               { text: '👤 Student ID', callback_data: 'view_profile' },
+            ],
+            [
+              { text: '💳 Payment Guide', callback_data: 'payment_info' },
             ],
             [
               { text: '🌐 Website Preview', callback_data: 'open_website' },
@@ -247,15 +255,42 @@ async function handleEnrollment(
   }
 
   const result = await enrollInCourse(user.id, courseId);
-  await bot.sendMessage(chatId, `✅ <b>${escapeHtml(result.message)}</b>`, {
-    parse_mode: 'HTML',
-    reply_markup: {
-      inline_keyboard: [
-        [{ text: '🔙 Back to Subjects', callback_data: 'browse_courses' }],
-        [{ text: '🏠 Main Menu', callback_data: 'main_menu' }],
-      ],
-    },
-  });
+  
+  if (result.success === false && result.message?.includes('already have access')) {
+    await bot.sendMessage(chatId, `✅ <b>${escapeHtml(result.message)}</b>`, {
+      parse_mode: 'HTML',
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '🔙 Back to Subjects', callback_data: 'browse_courses' }],
+          [{ text: '🏠 Main Menu', callback_data: 'main_menu' }],
+        ],
+      },
+    });
+  } else {
+    // Show payment information
+    await bot.sendMessage(
+      chatId, 
+      `🔒 <b>Subscription Required</b>\n` +
+      `${formatDivider()}\n` +
+      `To access this subject and all study materials, you need an active subscription.\n\n` +
+      `💡 <b>Get instant access by contacting:</b>\n` +
+      `📱 <b>Telegram:</b> @Tol_man27\n` +
+      `📧 <b>Email:</b> tolesatesfaye273@gmail.com\n` +
+      `${formatDivider()}\n` +
+      `Or use the /payment command for detailed subscription guide.`,
+      {
+        parse_mode: 'HTML',
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '📱 Contact @Tol_man27', url: 'https://t.me/Tol_man27' }],
+            [{ text: '💳 View Payment Guide', callback_data: 'payment_info' }],
+            [{ text: '🔙 Back to Subjects', callback_data: 'browse_courses' }],
+            [{ text: '🏠 Main Menu', callback_data: 'main_menu' }],
+          ],
+        },
+      }
+    );
+  }
 }
 
 async function handleWebsitePreview(bot: any, chatId: number): Promise<void> {

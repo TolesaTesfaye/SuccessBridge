@@ -9,6 +9,7 @@ import { handleCallbackQuery } from './handlers/callbackHandler.js';
 import { handleMessage } from './handlers/messageHandler.js';
 import { handleResourcesCommand } from './handlers/resourcesHandler.js';
 import { handleSearchPrompt } from './handlers/searchHandler.js';
+import { handlePayment } from './handlers/paymentHandler.js';
 import { handleAdminCommand } from './admin/index.js';
 import { handleError, withErrorHandling } from './handlers/errors/index.js';
 
@@ -96,6 +97,16 @@ class TelegramBotService {
       await wrapHandler(async (bot: any, m: any) => {
         await handleSearchPrompt(bot, m.chat.id);
       }, '/search')(this.bot, msg);
+    });
+
+    this.bot.onText(/\/payment/, async (msg: any) => {
+      console.log('📨 Received /payment from:', msg.from?.username);
+      await wrapHandler(handlePayment, '/payment')(this.bot, msg);
+    });
+
+    this.bot.onText(/\/subscribe/, async (msg: any) => {
+      console.log('📨 Received /subscribe from:', msg.from?.username);
+      await wrapHandler(handlePayment, '/subscribe')(this.bot, msg);
     });
 
     this.bot.onText(/\/admin/, async (msg: any) => {

@@ -62,6 +62,9 @@ export async function handleStart(bot: any, msg: any): Promise<void> {
               { text: '📖 My Subjects', callback_data: 'mycourses' },
             ],
             [
+              { text: '💳 Subscription & Payment', callback_data: 'payment_info' },
+            ],
+            [
               { text: '👤 Student Profile', callback_data: 'view_profile' },
               { text: '❓ How to Use & FAQ', callback_data: 'faq_home' },
             ],
