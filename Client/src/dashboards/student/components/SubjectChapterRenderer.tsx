@@ -174,6 +174,46 @@ const EngCh1 = React.lazy(
     import("@learningCenter/University/Freshman/english/chapters/Chapter1/Chapter1"),
 );
 
+// Lazy load Remedial Chemistry chapters
+const ChemistryCh1 = React.lazy(
+  () =>
+    import("@learningCenter/University/Remedial/chemistry/chapters/Chapter1/Chapter1"),
+);
+const ChemistryCh2 = React.lazy(
+  () =>
+    import("@learningCenter/University/Remedial/chemistry/chapters/Chapter2/Chapter2"),
+);
+
+// Lazy load Remedial English units
+const EnglishUnit1 = React.lazy(
+  () =>
+    import("@learningCenter/University/Remedial/english/chapters/Unit1/Unit1"),
+);
+
+// Lazy load Remedial Physics chapters
+const RemedialPhysicsCh1 = React.lazy(
+  () =>
+    import("@learningCenter/University/Remedial/physics/chapters/Chapter1/Chapter1"),
+);
+
+// Lazy load Remedial Math chapters
+const RemedialMathCh1 = React.lazy(
+  () =>
+    import("@learningCenter/University/Remedial/math/chapters/Chapter1/Chapter1"),
+);
+
+// Lazy load Remedial Geography units
+const RemedialGeographyUnit1 = React.lazy(
+  () =>
+    import("@learningCenter/University/Remedial/geography/chapters/Unit1/Unit1"),
+);
+
+// Lazy load Remedial History chapters
+const RemedialHistoryCh1 = React.lazy(
+  () =>
+    import("@learningCenter/University/Remedial/history/chapters/Chapter1/Chapter1"),
+);
+
 // Chapter component mapping
 const CHAPTER_COMPONENTS: Record<
   string,
@@ -229,12 +269,32 @@ const CHAPTER_COMPONENTS: Record<
   },
   Geography: {
     chapter1: GeoCh1,
+    "remedial-geography-unit1": RemedialGeographyUnit1,
   },
   History: {
     chapter1: HistCh1,
+    "remedial-history-ch1": RemedialHistoryCh1,
   },
   English: {
     chapter1: EngCh1,
+    "remedial-english-ch1": EnglishUnit1,
+  },
+  Chemistry: {
+    "remedial-chemistry-ch1": ChemistryCh1,
+    "remedial-chemistry-ch2": ChemistryCh2,
+  },
+  Physics: {
+    chapter1: PhysicsCh1,
+    chapter2: PhysicsCh2,
+    chapter3: PhysicsCh3,
+    chapter4: PhysicsCh4,
+    chapter5: PhysicsCh5,
+    chapter6: PhysicsCh6,
+    chapter7: PhysicsCh7,
+    "remedial-physics-ch1": RemedialPhysicsCh1,
+  },
+  Math: {
+    "remedial-math-ch1": RemedialMathCh1,
   },
 };
 
