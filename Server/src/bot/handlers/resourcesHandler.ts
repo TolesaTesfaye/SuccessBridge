@@ -1,7 +1,7 @@
 import { getSubjectResources, getResourceById, getResourceDownloadUrl } from '../services/resourceService.js';
 import { getUserByTelegramId } from '../services/userService.js';
 import { Subject } from '../../models/index.js';
-import { escapeHtml, formatDivider, getResourceIcon, formatResourceTypeTitle } from '../utils/ui.js';
+import { escapeHtml, formatDivider, getResourceIcon, formatResourceTypeTitle, getWebUrl } from '../utils/ui.js';
 
 /**
  * Handle /resources command - show subjects with resources
@@ -113,6 +113,7 @@ export async function handleViewResources(bot: any, chatId: number, subjectId: s
     }
 
     keyboard.push([{ text: `📁 View All Materials (${resources.length})`, callback_data: `filter_${subjectId}|all` }]);
+    keyboard.push([{ text: '🌐 Read & Practice on Website', url: getWebUrl() }]);
     keyboard.push([{ text: '🔙 Back to Subject', callback_data: `course_${subjectId}` }]);
 
     const header = `📚 <b>${escapeHtml(subjectName)} — Study Materials</b>\n` +
@@ -184,11 +185,15 @@ export async function handleDownloadResource(bot: any, chatId: number, resourceI
     if (directDeliverySuccessful) {
       await bot.sendMessage(
         chatId,
-        `✅ <b>Delivered to your chat!</b>\n<i>Happy studying! You can find more materials below:</i>`,
+        `✅ <b>Delivered to your chat!</b>\n` +
+        `${formatDivider()}\n` +
+        `💡 <b>Pro Tip:</b> Want to read this online in full HD, bookmark pages, and take chapter quizzes?\n` +
+        `<i>Enjoy interactive reading on our web platform!</i>`,
         {
           parse_mode: 'HTML',
           reply_markup: {
             inline_keyboard: [
+              [{ text: '🌐 Read & Practice on Website', url: getWebUrl() }],
               [{ text: '🔙 Back to Materials', callback_data: `resources_${resource.subjectId || ''}` }],
               [{ text: '🏠 Main Menu', callback_data: 'main_menu' }],
             ],
@@ -202,7 +207,8 @@ export async function handleDownloadResource(bot: any, chatId: number, resourceI
         `${icon} <b>Category:</b> ${escapeHtml(categoryName)}\n` +
         `${resource.subject ? `📚 <b>Subject:</b> ${escapeHtml(resource.subject.name)}\n` : ''}` +
         `${resource.description ? `📝 <b>Description:</b> ${escapeHtml(resource.description)}\n` : ''}` +
-        `⏱️ <i>Direct high-speed link valid for 1 hour.</i>\n` +
+        `⏱️ <i>Direct high-speed link valid for 1 hour.</i>\n\n` +
+        `💡 <i>You can also read this online in full screen on our website!</i>\n` +
         `${formatDivider()}`;
 
       await bot.sendMessage(chatId, fileCard, {
@@ -210,6 +216,7 @@ export async function handleDownloadResource(bot: any, chatId: number, resourceI
         reply_markup: {
           inline_keyboard: [
             [{ text: '📥 Click to Download File', url: downloadUrl }],
+            [{ text: '📖 Read Online on Website', url: getWebUrl() }],
             [{ text: '🔙 Back to Materials', callback_data: `resources_${resource.subjectId || ''}` }],
             [{ text: '🏠 Main Menu', callback_data: 'main_menu' }],
           ],
@@ -305,6 +312,9 @@ export async function handleFilterResources(
       },
     ]);
 
+    keyboard.push([
+      { text: '🌐 Read All Online on Website', url: getWebUrl() },
+    ]);
     keyboard.push([
       { text: '🔙 Back to Categories', callback_data: `resources_${subjectId}` },
       { text: '🏠 Main Menu', callback_data: 'main_menu' },

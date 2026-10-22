@@ -55,10 +55,18 @@ export function formatResourceTypeTitle(type?: string): string {
     .join(' ');
 }
 
+export function getWebUrl(path: string = ''): string {
+  const base = process.env.FRONTEND_URL || 'https://success-bridge-ten.vercel.app';
+  const cleanBase = base.endsWith('/') ? base.slice(0, -1) : base;
+  const cleanPath = path ? (path.startsWith('/') ? path : `/${path}`) : '';
+  return `${cleanBase}${cleanPath}`;
+}
+
 export function getMainKeyboard(isAdmin: boolean = false) {
   const rows: any[][] = [
-    [{ text: '📖 My Subjects' }, { text: '🔍 Search' }],
-    [{ text: '👤 Profile' }, { text: '❓ Help & FAQ' }],
+    [{ text: '📚 Browse Materials' }, { text: '🔍 Search Materials' }],
+    [{ text: '📖 My Subjects' }, { text: '🌐 Read on Website' }],
+    [{ text: '👤 Student ID' }, { text: '❓ Guide & Help' }],
   ];
 
   if (isAdmin) {

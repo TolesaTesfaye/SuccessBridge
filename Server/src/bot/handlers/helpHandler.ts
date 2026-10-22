@@ -1,4 +1,4 @@
-import { formatDivider } from '../utils/ui.js';
+import { formatDivider, getWebUrl } from '../utils/ui.js';
 
 export async function handleHelp(bot: any, msg: any): Promise<void> {
   const chatId = msg.chat.id;
@@ -8,22 +8,25 @@ export async function handleHelp(bot: any, msg: any): Promise<void> {
     `Welcome to the student support desk! Here you can find answers to frequently asked questions and learn how to make the most of the learning bot.\n\n` +
     `💡 <b>Quick Commands:</b>\n` +
     `• /start — Open main learning dashboard\n` +
-    `• /mycourses — View enrolled subjects\n` +
-    `• /browse — Explore all education levels\n` +
-    `• /profile — View your student ID card\n` +
+    `• /browse — Explore all high school & university subjects\n` +
+    `• /mycourses — View your subjects\n` +
+    `• /profile — View your student credentials\n` +
     `• /help — Open this Help Center\n\n` +
     `👇 <b>Choose a topic for instant answers:</b>\n` +
     `${formatDivider()}`;
 
   const keyboard = [
     [
-      { text: '💳 Subscriptions & Full Access', callback_data: 'faq_sub' },
+      { text: '🌐 Why & How to Read on Website', callback_data: 'faq_web' },
     ],
     [
       { text: '📥 How to Download Materials', callback_data: 'faq_download' },
     ],
     [
       { text: '🔍 How to Search by Keyword', callback_data: 'faq_search' },
+    ],
+    [
+      { text: '💳 Subscriptions & Access', callback_data: 'faq_sub' },
     ],
     [
       { text: '📞 Contact Support / Admin', callback_data: 'faq_support' },
@@ -46,11 +49,21 @@ export async function handleFaqCallback(bot: any, chatId: number, messageId: num
   let content = '';
 
   switch (data) {
+    case 'faq_web':
+      title = '🌐 Reading Online on the Web Platform';
+      content = `<b>Why study on the SuccessBridge website?</b>\n\n` +
+        `• 📖 <b>Interactive Full-Screen Reader:</b> Read slides, notes, and textbooks directly in your web browser with zoom, page-jumping, and clean reading layouts.\n\n` +
+        `• 📝 <b>Practice Quizzes:</b> Test your understanding with auto-graded chapter quizzes and instant answers.\n\n` +
+        `• 📊 <b>Progress Tracking:</b> See which subjects you have covered and stay on top of your studies.\n\n` +
+        `👉 <b>Launch the website now:</b>\n` +
+        `<a href="${getWebUrl()}">${getWebUrl()}</a>`;
+      break;
+
     case 'faq_sub':
       title = '💳 Subscriptions & Full Access';
       content = `<b>How do I unlock all materials?</b>\n\n` +
         `1. Visit our official web platform:\n` +
-        `👉 <a href="https://success-bridge-ten.vercel.app">success-bridge-ten.vercel.app</a>\n\n` +
+        `👉 <a href="${getWebUrl()}">${getWebUrl()}</a>\n\n` +
         `2. Log in or sign up using your email.\n\n` +
         `3. Choose your desired grade or university department subscription.\n\n` +
         `4. Once confirmed, all lecture slides, past exams, and worksheets unlock automatically in both the Web App and this Telegram Bot!`;
@@ -80,7 +93,7 @@ export async function handleFaqCallback(bot: any, chatId: number, messageId: num
       content = `<b>Need personal assistance?</b>\n\n` +
         `Our academic support team is ready to help you with account verification, subject access, or custom requests.\n\n` +
         `📧 <b>Email:</b> <code>tolesatesfaye273@gmail.com</code>\n` +
-        `🌐 <b>Website:</b> <a href="https://success-bridge-ten.vercel.app">success-bridge-ten.vercel.app</a>\n` +
+        `🌐 <b>Website:</b> <a href="${getWebUrl()}">${getWebUrl()}</a>\n` +
         `⏱️ <i>Support hours: 24/7</i>`;
       break;
 

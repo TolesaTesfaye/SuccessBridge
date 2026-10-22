@@ -1,5 +1,5 @@
 import { getUserByTelegramId, createTelegramUser } from '../services/userService.js';
-import { escapeHtml, formatDivider, formatRoleBadge, getMainKeyboard } from '../utils/ui.js';
+import { escapeHtml, formatDivider, formatRoleBadge, getMainKeyboard, getWebUrl } from '../utils/ui.js';
 
 export async function handleStart(bot: any, msg: any): Promise<void> {
   const chatId = msg.chat.id;
@@ -29,43 +29,41 @@ export async function handleStart(bot: any, msg: any): Promise<void> {
     const welcomeBanner = `🎓 <b>SUCCESSBRIDGE LEARNING HUB</b>\n` +
       `${formatDivider()}\n` +
       `👋 Welcome, <b>${escapeHtml(displayName)}</b>!\n` +
-      `<i>Your academic portal for high school and university excellence.</i>\n\n` +
-      `📊 <b>Member Summary:</b>\n` +
-      `• Tier: ${roleBadge}\n` +
-      `• Status: 🟢 Active Member\n` +
-      `• Telegram ID: <code>${escapeHtml(telegramUserId)}</code>\n\n` +
-      `✨ <b>What you can do:</b>\n` +
-      `• 📖 <b>My Subjects:</b> Access enrolled courses and materials\n` +
-      `• 🔍 <b>Live Search:</b> Type any topic or subject to find materials instantly\n` +
-      `• 📥 <b>Study Library:</b> Download slides, notes, exams & worksheets\n` +
-      `• 👤 <b>Student ID:</b> View your academic profile and credentials\n` +
+      `<i>Your all-in-one portal for high school and university academic excellence.</i>\n\n` +
+      `🚀 <b>How to Get Started in 3 Easy Steps:</b>\n` +
+      `1️⃣ <b>Browse Materials:</b> Select your Grade (9-12) or University program (Freshman / Remedial).\n` +
+      `2️⃣ <b>Download Docs:</b> Receive lecture slides, chapter modules, and past exams directly in this chat.\n` +
+      `3️⃣ <b>Read on Web:</b> Enjoy full-screen reading, bookmarks, and chapter practice quizzes on our website!\n\n` +
+      `💡 <i>Quick Tip: Type any topic (e.g. <code>Biology</code> or <code>Calculus</code>) anytime in this chat to search instantly!</i>\n` +
       `${formatDivider()}\n` +
-      `👇 <i>Choose an action below or send any keyword to search:</i>`;
+      `👤 <b>Student ID:</b> <code>${escapeHtml(telegramUserId)}</code> • ${roleBadge}`;
 
     await bot.sendMessage(chatId, welcomeBanner, {
       parse_mode: 'HTML',
       reply_markup: getMainKeyboard(isAdmin),
     });
 
-    // Also send quick action inline menu
+    // Send quick action inline menu with clear guidance
     await bot.sendMessage(
       chatId,
-      '⚡ <b>Quick Shortcuts:</b>',
+      '⚡ <b>Student Quick Actions:</b>',
       {
         parse_mode: 'HTML',
         reply_markup: {
           inline_keyboard: [
             [
-              { text: '📚 Browse by Level', callback_data: 'browse_courses' },
+              { text: '📚 Browse Subjects & Materials', callback_data: 'browse_courses' },
+            ],
+            [
+              { text: '🌐 Read Online on Web Platform', url: getWebUrl() },
+            ],
+            [
               { text: '🔍 Search Materials', callback_data: 'search_prompt' },
-            ],
-            [
               { text: '📖 My Subjects', callback_data: 'mycourses' },
-              { text: '👤 Student ID', callback_data: 'view_profile' },
             ],
             [
-              { text: '🌐 Open Web Platform', url: 'https://success-bridge-ten.vercel.app' },
-              { text: '❓ Help Desk', callback_data: 'faq_home' },
+              { text: '👤 Student Profile', callback_data: 'view_profile' },
+              { text: '❓ How to Use & FAQ', callback_data: 'faq_home' },
             ],
           ],
         },

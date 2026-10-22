@@ -14,7 +14,7 @@ import { handleMyCourses } from './myCoursesHandler.js';
 import { handleAdminCallback } from '../admin/index.js';
 import { validateCallbackData } from '../middleware/validation.middleware.js';
 import { logger } from '../middleware/logger.middleware.js';
-import { escapeHtml, formatDivider, getMainKeyboard, formatRoleBadge } from '../utils/ui.js';
+import { escapeHtml, formatDivider, getMainKeyboard, formatRoleBadge, getWebUrl } from '../utils/ui.js';
 
 export async function handleCallbackQuery(
   bot: any,
@@ -133,7 +133,7 @@ export async function handleCallbackQuery(
               { text: '👤 Student ID', callback_data: 'view_profile' },
             ],
             [
-              { text: '🌐 Open Web Portal', url: 'https://success-bridge-ten.vercel.app' },
+              { text: '🌐 Read Online on Web Portal', url: getWebUrl() },
               { text: '❓ Help & FAQ', callback_data: 'faq_home' },
             ],
           ],
@@ -188,6 +188,7 @@ async function handleCourseDetails(
     reply_markup: {
       inline_keyboard: [
         [{ text: '📂 Explore Study Materials', callback_data: `resources_${courseId}` }],
+        [{ text: '🌐 Open Subject on Website', url: getWebUrl() }],
         [
           { text: '🔙 Back to Subjects', callback_data: backData },
           { text: '🏠 Main Menu', callback_data: 'main_menu' },
