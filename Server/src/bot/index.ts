@@ -26,10 +26,14 @@ class TelegramBotService {
 
     console.log('🔧 Creating bot instance with v0.64.0...');
     
-    // Initialize bot with polling
-    this.bot = new TelegramBot(config.telegram.botToken, { 
-      polling: true 
-    });
+    // Initialize bot with polling and optional proxy
+    const botOptions: any = { polling: true };
+    const proxyUrl = process.env.HTTPS_PROXY || process.env.HTTP_PROXY;
+    if (proxyUrl) {
+      botOptions.request = { proxy: proxyUrl };
+    }
+
+    this.bot = new TelegramBot(config.telegram.botToken, botOptions);
     
     console.log('🔧 Bot instance created, setting up handlers...');
     this.setupHandlers();
@@ -161,12 +165,26 @@ class TelegramBotService {
     });
 
     // Polling error handler - log only, never send messages via bot or trigger admin alert spam
+    let lastNetworkWarn = 0;
+    const NETWORK_WARN_COOLDOWN = 5 * 60 * 1000; // 5 minutes
+
     this.bot.on('polling_error', (error: any) => {
       const description = error?.response?.body?.description || error?.message || String(error);
       if (error?.response?.statusCode === 409 || error?.response?.body?.error_code === 409) {
         console.warn('⚠️ Telegram polling: 409 conflict during container switch (temporary)');
         return;
       }
+
+      const isNetworkTimeout = /ETIMEDOUT|ECONNRESET|ECONNREFUSED|ENOTFOUND|EAI_AGAIN|EFATAL/i.test(description);
+      if (isNetworkTimeout) {
+        const now = Date.now();
+        if (now - lastNetworkWarn > NETWORK_WARN_COOLDOWN) {
+          lastNetworkWarn = now;
+          console.warn('⚠️ Telegram Bot: Unable to reach api.telegram.org (ETIMEDOUT / connection blocked). The server continues running normally. (To disable locally, set ENABLE_TELEGRAM_BOT=false in .env)');
+        }
+        return;
+      }
+
       console.error('❌ Telegram Bot polling error:', description);
     });
     

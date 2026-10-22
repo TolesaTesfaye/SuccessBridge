@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { getSubjectConfig as getFreshmanSubjectConfig } from "@learningCenter/University/Freshman/subjectRegistry";
 import { getSubjectConfig as getSeniorSubjectConfig } from "@learningCenter/University/Senior/subjectRegistry";
+import { getSubjectConfig as getRemedialSubjectConfig } from "@learningCenter/University/Remedial/subjectRegistry";
 import { SubjectChapterSidebar } from "./SubjectChapterSidebar";
 import { SubjectChapterRenderer } from "./SubjectChapterRenderer";
 import { SubjectAccessGuard } from "@components/payment/SubjectAccessGuard";
@@ -39,6 +40,9 @@ export const UniversityLearningCenter: React.FC<
 
   // Get subject configuration based on category
   const getSubjectConfig = (subjectName: string) => {
+    if (category === 'remedial') {
+      return getRemedialSubjectConfig(subjectName);
+    }
     if (category === 'senior' || category === 'gc') {
       return getSeniorSubjectConfig(subjectName);
     }

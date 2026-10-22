@@ -17,6 +17,7 @@ import { connectRedis } from "./config/redis.js";
 import { seedSuperAdmin } from "./config/seedAdmin.js";
 import { seedSettings } from "./config/seedSettings.js";
 import { seedEducationData } from "./config/seedEducationData.js";
+import { ensureUserTelegramColumns } from "./scripts/migrateTelegramColumns.js";
 import { setupSwagger } from "./config/swagger.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { auditMiddleware } from "./middleware/auditLogger.js";
@@ -337,6 +338,12 @@ const startServer = async () => {
           logger.error("Failed to sync AuditLog table:", auditLogError);
         }
 
+        try {
+          await ensureUserTelegramColumns();
+        } catch (colErr) {
+          logger.error("Failed to ensure Telegram columns on users table:", colErr);
+        }
+
         await seedSuperAdmin();
         logger.info("Super admin checked/seeded");
 
@@ -373,11 +380,14 @@ const startServer = async () => {
       logger.warn("Redis connection failed, continuing without Redis");
     }
 
-    // Initialize Telegram Bot (optional, don't fail if token is missing)
+    // Initialize Telegram Bot (optional, don't fail if token is missing or disabled)
     try {
-      if (process.env.TELEGRAM_BOT_TOKEN) {
+      const isBotDisabled = process.env.ENABLE_TELEGRAM_BOT === "false" || process.env.TELEGRAM_BOT_ENABLED === "false";
+      if (process.env.TELEGRAM_BOT_TOKEN && !isBotDisabled) {
         TelegramBotService.getInstance();
         logger.info("🤖 Telegram Bot initialized");
+      } else if (isBotDisabled) {
+        logger.info("🤖 Telegram Bot is disabled via ENABLE_TELEGRAM_BOT=false");
       } else {
         logger.warn("Telegram Bot token not found, skipping bot initialization");
       }

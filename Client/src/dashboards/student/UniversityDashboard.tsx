@@ -54,7 +54,7 @@ export const UniversityDashboard: React.FC = () => {
   // Learning Center Specific State
   const [learningSubject, setLearningSubject] = useState<string>(
     activeCategory === "remedial"
-      ? "Math"
+      ? "Chemistry"
       : activeCategory === "senior" || activeCategory === "gc"
         ? "Python"
         : "Psychology",
@@ -82,17 +82,17 @@ export const UniversityDashboard: React.FC = () => {
     if (activeCategory === "remedial") {
       // Show individual subjects by default for remedial courses
       if (selectedStream === "natural") {
-        return ["Common Course", "Math", "Physics", "Chemistry", "Biology"];
+        return ["Common Course", "Chemistry", "Physics", "Math", "Biology"];
       }
       if (selectedStream === "social") {
         return ["Common Course", "History", "Geography", "Economics", "Civics"];
       }
       // Default remedial subjects when no stream is selected
       return [
-        "Math",
+        "Chemistry",
         "English",
         "Physics",
-        "Chemistry",
+        "Math",
         "Geography",
         "History",
       ];
@@ -213,7 +213,7 @@ export const UniversityDashboard: React.FC = () => {
   // Update learning subject when category changes
   useEffect(() => {
     if (activeCategory === "remedial") {
-      setLearningSubject("Math");
+      setLearningSubject("Chemistry");
     } else if (activeCategory === "freshman") {
       setLearningSubject("Psychology");
     } else if (activeCategory === "senior" || activeCategory === "gc") {
