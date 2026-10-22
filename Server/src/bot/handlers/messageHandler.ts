@@ -55,16 +55,33 @@ export async function handleMessage(bot: any, msg: any): Promise<void> {
   } else if (text === '❓ Guide & Help' || text === '❓ Help & Guide' || text === '❓ Help & FAQ' || text === '❓ Help') {
     await handleHelp(bot, msg);
   } else if (text === '🌐 Read on Website' || text === '🌐 Open Website' || text === '🌐 Website') {
+    // Send an inspiring preview image of the website first
+    const previewImageUrl = `${process.env.BACKEND_URL || 'https://success-bridge-server.onrender.com'}/public/website_preview.jpg`;
+    const webPhotoCaption =
+      `✨ <b>SuccessBridge Learning Center</b>\n\n` +
+      `📖 Interactive reading • 📝 Quizzes • 📊 Visual diagrams\n` +
+      `<i>All on a beautiful, fast web platform — made for you!</i>`;
+
+    try {
+      await bot.sendPhoto(chatId, previewImageUrl, {
+        caption: webPhotoCaption,
+        parse_mode: 'HTML',
+      });
+    } catch (_) {
+      // If photo fails, fall through to text card silently
+    }
+
     const webCard = `🌐 <b>SUCCESSBRIDGE DIGITAL LEARNING PLATFORM</b>\n` +
       `━━━━━━━━━━━━━━━━━━━━\n` +
       `Experience the best way to study with our modern web portal:\n\n` +
       `✨ <b>What you can do on the website:</b>\n` +
-      `• 📖 <b>Interactive PDF Reader:</b> Read textbooks, slides, and notes in full HD with zoom and bookmarking.\n` +
-      `• 📝 <b>Practice Quizzes:</b> Test your understanding with chapter-by-chapter quizzes and get instant scores.\n` +
-      `• 📈 <b>Academic Progress:</b> Track completed lessons, quizzes, and university preparation.\n` +
+      `• 📖 <b>Interactive Reader:</b> Read textbooks, slides, and notes in full screen with zoom and bookmarking.\n` +
+      `• 📝 <b>Practice Quizzes:</b> Test your understanding with instant scores and feedback.\n` +
+      `• 📊 <b>Visual Diagrams:</b> Understand concepts through charts, graphs, and visual aids.\n` +
+      `• 📈 <b>Academic Progress:</b> Track completed lessons and university preparation.\n` +
       `• 🎓 <b>Tailored Portals:</b> High school streams and university departments organized for you.\n\n` +
       `━━━━━━━━━━━━━━━━━━━━\n` +
-      `👇 <i>Tap the button below to launch the web platform in your browser:</i>`;
+      `👇 <i>Tap below to launch the web platform:</i>`;
 
     await bot.sendMessage(chatId, webCard, {
       parse_mode: 'HTML',

@@ -238,6 +238,13 @@ const setupUploads = () => {
       "✅ Static file serving configured for /uploads ->",
       resolvedUploadDir,
     );
+
+  // Serve public assets (e.g., website preview image for Telegram bot)
+  const publicDir = path.resolve(__dirname, "../../public");
+  if (fs.existsSync(publicDir)) {
+    app.use("/public", express.static(publicDir));
+    console.log("✅ Static file serving configured for /public ->", publicDir);
+  }
   } catch (error) {
     console.error("❌ Upload directory setup failed:", error);
   }
