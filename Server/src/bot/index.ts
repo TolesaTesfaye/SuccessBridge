@@ -166,12 +166,44 @@ class TelegramBotService {
 
     // Polling error handler - log only, never send messages via bot or trigger admin alert spam
     let lastNetworkWarn = 0;
+    let lastConflictWarn = 0;
+    let isHandlingConflict = false;
     const NETWORK_WARN_COOLDOWN = 5 * 60 * 1000; // 5 minutes
+    const CONFLICT_WARN_COOLDOWN = 2 * 60 * 1000; // 2 minutes
 
     this.bot.on('polling_error', (error: any) => {
       const description = error?.response?.body?.description || error?.message || String(error);
       if (error?.response?.statusCode === 409 || error?.response?.body?.error_code === 409) {
-        console.warn('⚠️ Telegram polling: 409 conflict during container switch (temporary)');
+        const now = Date.now();
+        if (now - lastConflictWarn > CONFLICT_WARN_COOLDOWN) {
+          lastConflictWarn = now;
+          console.warn(
+            '⚠️ Telegram Bot 409 Conflict: Another instance is actively polling with this bot token (e.g., deployed server on Render or another local process). ' +
+            'Pausing polling for 60s to prevent spam. (To disable bot locally, set ENABLE_TELEGRAM_BOT=false in .env)'
+          );
+        }
+
+        // Temporarily pause polling to prevent CPU and network hammering
+        if (!isHandlingConflict) {
+          isHandlingConflict = true;
+          try {
+            this.bot.stopPolling().catch(() => {}).finally(() => {
+              setTimeout(async () => {
+                isHandlingConflict = false;
+                try {
+                  const isDisabled = process.env.ENABLE_TELEGRAM_BOT === 'false' || process.env.TELEGRAM_BOT_ENABLED === 'false';
+                  if (!isDisabled) {
+                    await this.bot.startPolling();
+                  }
+                } catch {
+                  // Handled silently
+                }
+              }, 60000);
+            });
+          } catch {
+            isHandlingConflict = false;
+          }
+        }
         return;
       }
 

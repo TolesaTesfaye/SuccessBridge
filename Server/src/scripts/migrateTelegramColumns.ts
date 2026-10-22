@@ -15,7 +15,14 @@ export async function ensureUserTelegramColumns() {
       CREATE UNIQUE INDEX IF NOT EXISTS "users_telegram_id_unique" ON "users" ("telegramId") WHERE "telegramId" IS NOT NULL;
     `);
 
-    console.log('✅ Users table Telegram Bot columns verified/added successfully.');
+    // Backfill any legacy users who had a temporary email before telegramId column existed
+    await sequelize.query(`
+      UPDATE users 
+      SET "telegramId" = SUBSTRING(email FROM 'telegram_([0-9]+)@')
+      WHERE "telegramId" IS NULL AND email LIKE 'telegram_%@temp.successbridge.com';
+    `);
+
+    console.log('✅ Users table Telegram Bot columns verified/added and legacy users synchronized successfully.');
   } catch (error) {
     console.error('❌ Failed to ensure Telegram columns on users table:', error);
     throw error;

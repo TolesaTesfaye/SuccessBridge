@@ -464,6 +464,11 @@ startServer();
 process.on("SIGTERM", async () => {
   logger.info("SIGTERM received, shutting down gracefully");
   try {
+    try {
+      await TelegramBotService.getInstance().stop();
+    } catch {
+      // Ignore if bot was not initialized
+    }
     await sequelize.close();
     logger.info("Database connection closed");
     process.exit(0);
@@ -476,6 +481,11 @@ process.on("SIGTERM", async () => {
 process.on("SIGINT", async () => {
   logger.info("SIGINT received, shutting down gracefully");
   try {
+    try {
+      await TelegramBotService.getInstance().stop();
+    } catch {
+      // Ignore if bot was not initialized
+    }
     await sequelize.close();
     logger.info("Database connection closed");
     process.exit(0);
