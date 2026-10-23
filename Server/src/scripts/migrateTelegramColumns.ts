@@ -8,6 +8,8 @@ export async function ensureUserTelegramColumns() {
       ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "username" VARCHAR(255);
       ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "firstName" VARCHAR(255);
       ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "lastName" VARCHAR(255);
+      ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "telegramDownloadCount" INTEGER DEFAULT 0;
+      UPDATE "users" SET "telegramDownloadCount" = 0 WHERE "telegramDownloadCount" IS NULL;
     `);
 
     // Create unique index on telegramId if it doesn't exist
