@@ -50,7 +50,6 @@ import adminRoutes from "./routes/adminRoutes.js";
 import aiRoutes from "./routes/ai.js";
 import resourceTypesRoutes from "./routes/resourceTypes.js";
 import telegramRoutes from "./routes/telegram.js";
-import telegramRoutes from "./routes/telegram.js";
 
 // Import all models to ensure they are registered with Sequelize
 import User from "./models/User.js";
