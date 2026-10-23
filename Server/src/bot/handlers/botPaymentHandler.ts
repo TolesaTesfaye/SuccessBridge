@@ -363,8 +363,7 @@ export async function handleRejectPayment(bot: any, query: any, userId: string):
       where: {
         userId: userId,
         status: 'pending'
-      },
-      include: [{ model: User, as: 'user' }]
+      }
     });
 
     if (!payment) {
@@ -375,12 +374,22 @@ export async function handleRejectPayment(bot: any, query: any, userId: string):
       return;
     }
 
+    // Get user separately
+    const user = await User.findByPk(payment.userId);
+    
+    if (!user) {
+      await bot.answerCallbackQuery(query.id, {
+        text: '❌ User not found',
+        show_alert: true
+      });
+      return;
+    }
+
     // Update payment status
     payment.status = 'rejected';
     await payment.save();
 
     // Update message to show it's rejected
-    const user = payment.user;
     const userName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.name || user.username || 'Unknown User';
 
     await bot.editMessageCaption(
