@@ -74,25 +74,30 @@ export async function handleViewResources(bot: any, chatId: number, subjectId: s
         }
       });
 
-      if (!hasAccess) {
-        // User doesn't have access - show payment prompt
+      const downloadCount = user.telegramDownloadCount || 0;
+      const FREE_DOWNLOAD_LIMIT = 15;
+
+      if (!hasAccess && downloadCount >= FREE_DOWNLOAD_LIMIT) {
+        // User doesn't have access and has reached the 15 free downloads limit - show payment prompt
         await bot.sendMessage(
           chatId,
-          `🔒 <b>Premium Content Locked</b>\n` +
+          `🔒 <b>Free Limit Reached — Premium Required</b>\n` +
           `${formatDivider()}\n` +
-          `To access study materials for this subject, you need to unlock premium access.\n\n` +
+          `You have used your <b>${downloadCount} free downloads</b>.\n` +
+          `To continue accessing study materials, please unlock premium access.\n\n` +
           `💳 <b>One payment unlocks ALL subjects!</b>\n` +
           `• Pay once (200 Birr)\n` +
-          `• Access all study materials\n` +
-          `• Instant approval (10-30 minutes)\n\n` +
+          `• Unlimited downloads directly in Telegram\n` +
+          `• Full access on web platform\n` +
+          `• Instant approval by Super Admin\n\n` +
           `${formatDivider()}\n` +
           `🗣️ <b>Afaan Oromoo:</b>\n` +
-          `<i>Barnoota kanaaf materiaalii argachuuf kaffaluu qabda. Yeroo tokko Qarshii 200 kaffaluun gosa barnoota hunda argataa!</i>`,
+          `<i>Faayilii ${downloadCount} bilisaan fayyadamteerta. Itti fufuuf Qarshii 200 kaffaluun gosa barnoota hunda guutummaatti argadhu!</i>`,
           {
             parse_mode: 'HTML',
             reply_markup: {
               inline_keyboard: [
-                [{ text: '💳 Pay Now via Bot', callback_data: 'ready_to_pay' }],
+                [{ text: '💳 Pay Now via Bot (200 Birr)', callback_data: 'ready_to_pay' }],
                 [{ text: '📱 Contact @Tol_man27', url: 'https://t.me/Tol_man27' }],
                 [{ text: '🔙 Back to Subject', callback_data: `course_${subjectId}` }],
               ],

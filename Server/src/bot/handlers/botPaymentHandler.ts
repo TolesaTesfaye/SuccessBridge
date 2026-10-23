@@ -4,6 +4,7 @@ import User from '../../models/User.js';
 import Payment from '../../models/Payment.js';
 import Subject from '../../models/Subject.js';
 import SubjectAccess from '../../models/SubjectAccess.js';
+import { Op } from 'sequelize';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -187,59 +188,6 @@ export async function handlePaymentScreenshot(bot: any, msg: any): Promise<void>
       { parse_mode: 'HTML' }
     );
 
-    // Get super admin
-    const superAdmin = await User.findOne({
-      where: { role: 'super_admin' }
-    });
-
-    if (!superAdmin || !superAdmin.telegramId) {
-      console.error('Super admin not found or has no Telegram ID');
-      
-      // Create payment record anyway (will be approved via web)
-      await Payment.create({
-        userId: user.id,
-        amount: 200,
-        paymentMethod: 'telegram_bot',
-        screenshotUrl: fileUrl,
-        status: 'pending',
-        transactionReference: `TG-${Date.now()}`,
-        notes: `Payment via Telegram Bot from @${msg.from?.username || 'unknown'}`
-      });
-
-      return;
-    }
-
-    // Forward screenshot to super admin with approval buttons
-    const userName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.name || user.username || 'Unknown User';
-    const userTelegramUsername = msg.from?.username ? `@${msg.from.username}` : 'No username';
-
-    await bot.sendPhoto(
-      superAdmin.telegramId,
-      fileId,
-      {
-        caption: 
-          `💳 <b>NEW PAYMENT REQUEST</b>\n` +
-          `${formatDivider()}\n` +
-          `👤 <b>Student:</b> ${userName}\n` +
-          `📱 <b>Telegram:</b> ${userTelegramUsername}\n` +
-          `🆔 <b>User ID:</b> <code>${user.id}</code>\n` +
-          `📧 <b>Email:</b> ${user.email || 'Not set'}\n` +
-          `💰 <b>Amount:</b> 200 Birr\n` +
-          `📅 <b>Date:</b> ${new Date().toLocaleString()}\n` +
-          `${formatDivider()}\n` +
-          `⚡ <b>Action Required:</b> Approve or Reject this payment`,
-        parse_mode: 'HTML',
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { text: '✅ Approve Payment', callback_data: `approve_payment_${user.id}` },
-              { text: '❌ Reject Payment', callback_data: `reject_payment_${user.id}` }
-            ]
-          ]
-        }
-      }
-    );
-
     // Create payment record
     await Payment.create({
       userId: user.id,
@@ -248,11 +196,78 @@ export async function handlePaymentScreenshot(bot: any, msg: any): Promise<void>
       screenshotUrl: fileUrl,
       status: 'pending',
       transactionReference: `TG-${Date.now()}`,
-      notes: `Payment via Telegram Bot from ${userTelegramUsername}`
+      notes: `Payment via Telegram Bot from @${msg.from?.username || 'unknown'}`
     });
 
     // Clear payment state
     paymentState.delete(telegramUserId);
+
+    // Collect super admin / admin Telegram IDs to notify
+    const adminTelegramIds: string[] = [];
+
+    if (process.env.SUPERADMIN_TELEGRAM_ID) {
+      adminTelegramIds.push(process.env.SUPERADMIN_TELEGRAM_ID.trim());
+    }
+    if (process.env.ADMIN_TELEGRAM_ID && !adminTelegramIds.includes(process.env.ADMIN_TELEGRAM_ID.trim())) {
+      adminTelegramIds.push(process.env.ADMIN_TELEGRAM_ID.trim());
+    }
+
+    // Also look up any super_admin or admin in database with a linked telegramId
+    const adminsWithTelegram = await User.findAll({
+      where: {
+        role: { [Op.in]: ['super_admin', 'admin'] },
+        telegramId: { [Op.ne]: null }
+      }
+    });
+
+    for (const adm of adminsWithTelegram) {
+      if (adm.telegramId && !adminTelegramIds.includes(adm.telegramId)) {
+        adminTelegramIds.push(adm.telegramId);
+      }
+    }
+
+    if (adminTelegramIds.length === 0) {
+      console.warn('⚠️ No super admin Telegram ID found! Please set SUPERADMIN_TELEGRAM_ID in your environment or link your superadmin account in Telegram.');
+      return;
+    }
+
+    // Forward screenshot to all super admins / admins with approval buttons
+    const userName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.name || user.username || 'Unknown User';
+    const userTelegramUsername = msg.from?.username ? `@${msg.from.username}` : 'No username';
+
+    for (const targetAdminId of adminTelegramIds) {
+      try {
+        await bot.sendPhoto(
+          targetAdminId,
+          fileId,
+          {
+            caption: 
+              `💳 <b>NEW PAYMENT REQUEST</b>\n` +
+              `${formatDivider()}\n` +
+              `👤 <b>Student:</b> ${userName}\n` +
+              `📱 <b>Telegram:</b> ${userTelegramUsername}\n` +
+              `🆔 <b>User ID:</b> <code>${user.id}</code>\n` +
+              `📧 <b>Email:</b> ${user.email || 'Not set'}\n` +
+              `💰 <b>Amount:</b> 200 Birr\n` +
+              `📅 <b>Date:</b> ${new Date().toLocaleString()}\n` +
+              `${formatDivider()}\n` +
+              `⚡ <b>Action Required:</b> Approve or Reject this payment:`,
+            parse_mode: 'HTML',
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  { text: '✅ Approve Payment', callback_data: `approve_payment_${user.id}` },
+                  { text: '❌ Reject Payment', callback_data: `reject_payment_${user.id}` }
+                ]
+              ]
+            }
+          }
+        );
+        console.log(`📤 Sent payment request for user ${user.id} to admin ${targetAdminId}`);
+      } catch (err: any) {
+        console.error(`❌ Failed to send payment screenshot to admin ${targetAdminId}:`, err?.message || err);
+      }
+    }
 
   } catch (error) {
     console.error('Error handling payment screenshot:', error);
@@ -347,19 +362,24 @@ export async function handleApprovePayment(bot: any, query: any, userId: string)
       await bot.sendMessage(
         user.telegramId,
         `🎉 <b>PAYMENT APPROVED!</b>\n\n` +
-        `✅ Your payment of 200 Birr has been approved!\n\n` +
-        `🎓 <b>You now have access to:</b>\n` +
-        `• ALL subjects and materials\n` +
-        `• Complete study resources\n` +
-        `• Practice quizzes\n` +
-        `• Downloadable content\n\n` +
-        `🌐 <b>Access the website now:</b>\n` +
-        `${getWebUrl()}\n\n` +
+        `✅ Your payment of 200 Birr has been approved by the Admin!\n\n` +
+        `🎓 <b>You now have full unlimited access:</b>\n` +
+        `• Unlimited downloads directly in Telegram Bot\n` +
+        `• ALL subjects and study materials unlocked\n` +
+        `• Full access on the web platform: ${getWebUrl()}\n\n` +
         `${formatDivider()}\n` +
         `🗣️ <b>Afaan Oromoo:</b>\n` +
-        `<i>Baga gammadde! Kaffaltiikee approve godhaaf. Amma gosa barnoota hunda argachuu dandeessa. Website kana irraa: ${getWebUrl()}</i>\n\n` +
+        `<i>Baga gammadde! Kaffaltiin kee approve godhameera. Amma Telegram Bot kana keessatti daangaa malee download gochuu dandeessa!</i>\n\n` +
         `🎊 Happy Learning! 📚`,
-        { parse_mode: 'HTML' }
+        {
+          parse_mode: 'HTML',
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: '📚 Browse & Download Materials', callback_data: 'browse_courses' }],
+              [{ text: '🏠 Main Menu', callback_data: 'main_menu' }],
+            ],
+          },
+        }
       );
     }
 
