@@ -10,6 +10,7 @@ import { handleMessage } from './handlers/messageHandler.js';
 import { handleResourcesCommand } from './handlers/resourcesHandler.js';
 import { handleSearchPrompt } from './handlers/searchHandler.js';
 import { handlePayment } from './handlers/paymentHandler.js';
+import { handleBotPayment, handlePaymentScreenshot } from './handlers/botPaymentHandler.js';
 import { handleAdminCommand } from './admin/index.js';
 import { handleError, withErrorHandling } from './handlers/errors/index.js';
 
@@ -118,6 +119,11 @@ class TelegramBotService {
       await wrapHandler(handlePayment, '/subscribe')(this.bot, msg);
     });
 
+    this.bot.onText(/\/botpayment/, async (msg: any) => {
+      console.log('📨 Received /botpayment from:', msg.from?.username);
+      await wrapHandler(handleBotPayment, '/botpayment')(this.bot, msg);
+    });
+
     this.bot.onText(/\/admin/, async (msg: any) => {
       console.log('📨 Received /admin from:', msg.from?.username);
       await wrapHandler(handleAdminCommand, '/admin')(this.bot, msg);
@@ -169,7 +175,22 @@ class TelegramBotService {
 
     // General message handler with error handling
     this.bot.on('message', async (msg: any) => {
-      // Only handle non-command messages
+      // Handle photos (payment screenshots)
+      if (msg.photo && msg.photo.length > 0) {
+        console.log('📸 Received photo from:', msg.from?.username);
+        try {
+          await handlePaymentScreenshot(this.bot, msg);
+        } catch (error) {
+          await handleError(error as Error, this.bot, {
+            chatId: msg.chat?.id,
+            userId: msg.from?.id?.toString(),
+            username: msg.from?.username,
+          });
+        }
+        return;
+      }
+
+      // Only handle non-command text messages
       if (msg.text && !msg.text.startsWith('/')) {
         console.log('📨 Received message:', msg.text);
         try {

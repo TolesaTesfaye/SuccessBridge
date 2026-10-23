@@ -7,7 +7,7 @@ export interface IPayment {
   subjectId?: string | null // Made optional for "one payment unlocks all" model
   amount: number
   currency: string
-  paymentMethod: 'bank_transfer' | 'telebirr' | 'cbe_birr' | 'mpesa' | 'other'
+  paymentMethod: 'bank_transfer' | 'telebirr' | 'cbe_birr' | 'mpesa' | 'telegram_bot' | 'other'
   screenshotUrl: string
   transactionReference?: string
   status: 'pending' | 'approved' | 'rejected'
@@ -86,7 +86,7 @@ Payment.init(
       allowNull: false,
     },
     paymentMethod: {
-      type: DataTypes.ENUM('bank_transfer', 'telebirr', 'cbe_birr', 'mpesa', 'other'),
+      type: DataTypes.ENUM('bank_transfer', 'telebirr', 'cbe_birr', 'mpesa', 'telegram_bot', 'other'),
       allowNull: false,
     },
     screenshotUrl: {
