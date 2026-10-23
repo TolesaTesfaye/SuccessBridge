@@ -3,9 +3,9 @@
 -- Free users are limited to 15 downloads before payment is required
 
 ALTER TABLE users 
-ADD COLUMN IF NOT EXISTS telegram_download_count INTEGER DEFAULT 0 NOT NULL;
+ADD COLUMN IF NOT EXISTS "telegramDownloadCount" INTEGER DEFAULT 0 NOT NULL;
 
 -- Update existing users to have 0 downloads
 UPDATE users 
-SET telegram_download_count = 0 
-WHERE telegram_download_count IS NULL;
+SET "telegramDownloadCount" = 0 
+WHERE "telegramDownloadCount" IS NULL;
