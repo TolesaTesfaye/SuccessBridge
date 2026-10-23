@@ -27,14 +27,23 @@ class TelegramBotService {
 
     console.log('🔧 Creating bot instance with v0.64.0...');
     
-    // Initialize bot with polling and optional proxy
-    const botOptions: any = { polling: true };
-    const proxyUrl = process.env.HTTPS_PROXY || process.env.HTTP_PROXY;
-    if (proxyUrl) {
-      botOptions.request = { proxy: proxyUrl };
+    // Check if we're on production/Render (use webhook) or local (use polling)
+    const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
+    
+    if (isProduction) {
+      console.log('🌐 Production mode detected - using webhook mode');
+      // In production, use webhook mode (no polling)
+      this.bot = new TelegramBot(config.telegram.botToken, { polling: false });
+    } else {
+      console.log('🖥️  Development mode - using polling mode');
+      // In development, use polling
+      const botOptions: any = { polling: true };
+      const proxyUrl = process.env.HTTPS_PROXY || process.env.HTTP_PROXY;
+      if (proxyUrl) {
+        botOptions.request = { proxy: proxyUrl };
+      }
+      this.bot = new TelegramBot(config.telegram.botToken, botOptions);
     }
-
-    this.bot = new TelegramBot(config.telegram.botToken, botOptions);
     
     console.log('🔧 Bot instance created, setting up handlers...');
     this.setupHandlers();
@@ -234,12 +243,38 @@ class TelegramBotService {
     console.log('✅ Bot handlers registered successfully with global error handling');
   }
 
+  public async setupWebhook(webhookUrl: string): Promise<void> {
+    try {
+      // Delete any existing webhook
+      await this.bot.deleteWebHook();
+      console.log('🗑️  Deleted existing webhook');
+
+      // Set new webhook
+      await this.bot.setWebHook(`${webhookUrl}/api/telegram/webhook`);
+      console.log('✅ Webhook set successfully:', `${webhookUrl}/api/telegram/webhook`);
+    } catch (error) {
+      console.error('❌ Failed to set webhook:', error);
+      throw error;
+    }
+  }
+
+  public async processUpdate(update: any): Promise<void> {
+    try {
+      await this.bot.processUpdate(update);
+    } catch (error) {
+      console.error('❌ Error processing update:', error);
+    }
+  }
+
   public getBot(): any {
     return this.bot;
   }
 
   public async stop(): Promise<void> {
-    await this.bot.stopPolling();
+    const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
+    if (!isProduction) {
+      await this.bot.stopPolling();
+    }
     console.log('Telegram Bot stopped');
   }
 }

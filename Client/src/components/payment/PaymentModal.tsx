@@ -57,6 +57,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     {
       id: 'cbe',
       name: 'CBE Bank',
+      accountHolder: 'Tolesa Tesfaye',
       type: 'Bank Transfer',
       account: '1000531877156',
       icon: Building2,
@@ -69,6 +70,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     {
       id: 'telebirr',
       name: 'TeleBirr',
+      accountHolder: 'Tolesa Tesfaye',
       type: 'Mobile Money',
       account: '0975863448',
       icon: Smartphone,
@@ -81,6 +83,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     {
       id: 'mpesa',
       name: 'M-Pesa',
+      accountHolder: 'Tolesa Tesfaye',
       type: 'Mobile Money',
       account: '0716000504',
       icon: Smartphone,
@@ -307,7 +310,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title={`Pay for ${subjectName}`}>
+    <Modal isOpen={isOpen} onClose={handleClose} title="Payment">
       <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-6">
         {/* Payment Instructions */}
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-2.5 sm:p-4 rounded-lg sm:rounded-xl border border-blue-200 dark:border-blue-700">
@@ -315,21 +318,33 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             <div className="p-1 sm:p-2 bg-blue-100 dark:bg-blue-800/50 rounded-md sm:rounded-lg flex-shrink-0">
               <CreditCard className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
             </div>
-            <div>
-              <h3 className="font-bold text-[11px] sm:text-base text-gray-900 dark:text-white mb-0.5 sm:mb-1">Payment Instructions</h3>
-              <p className="text-[10px] sm:text-sm text-blue-800 dark:text-blue-200 leading-relaxed">
+            <div className="w-full">
+              <h3 className="font-bold text-[11px] sm:text-base text-gray-900 dark:text-white mb-0.5 sm:mb-2">Payment Instructions</h3>
+              
+              {/* English Instructions */}
+              <p className="text-[10px] sm:text-sm text-blue-800 dark:text-blue-200 leading-relaxed mb-2 sm:mb-3">
                 Choose a payment method below, copy the account number, complete your payment, then upload a screenshot of the transaction.
               </p>
+              
+              {/* Oromo (Afaan Oromoo) Instructions */}
+              <div className="bg-white/60 dark:bg-gray-800/40 p-2 sm:p-3 rounded-lg border border-blue-300/50 dark:border-blue-600/50">
+                <p className="text-[9px] sm:text-xs font-semibold text-orange-700 dark:text-orange-400 mb-1">
+                  🗣️ Hubachiisa (Afaan Oromoo):
+                </p>
+                <p className="text-[9px] sm:text-xs text-blue-900 dark:text-blue-100 leading-relaxed font-medium">
+                  Account kana gadii fayyadamuun qarshii ergaa. Sanaa booda amma maallaqa ergitani fi screen shoot isaa iddoo armaan gadii kanatti galchuun submit godhaa. Daqiiqa 10 hin caalle keessatti approve siniif godhama.
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Payment Accounts - Interactive Cards */}
-        <div className="space-y-2 sm:space-y-3">
-          <h3 className="text-[10px] sm:text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wide">
-            Select Payment Method & Copy Account
+        <div className="space-y-2">
+          <h3 className="text-[9px] sm:text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wide">
+            Payment Accounts
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 sm:gap-2">
             {paymentAccounts.map((account) => {
               const Icon = account.icon
               const isCopied = copiedAccount === account.id
@@ -338,79 +353,61 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               return (
                 <div
                   key={account.id}
-                  className={`group relative ${account.bgLight} dark:${account.bgDark} p-2 sm:p-4 rounded-lg sm:rounded-xl border-2 ${account.borderColor} hover:shadow-lg active:scale-95 transition-all duration-300 cursor-pointer`}
-                  onClick={() => {
-                    // On mobile, toggle expansion; on desktop, copy directly
-                    if (window.innerWidth < 640) {
-                      setExpandedCard(isExpanded ? null : account.id)
-                    } else {
-                      copyToClipboard(account.account, account.id)
-                    }
-                  }}
+                  className={`group relative ${account.bgLight} dark:${account.bgDark} p-1.5 sm:p-2 rounded-md border ${account.borderColor} hover:shadow-sm transition-all duration-200`}
                 >
-                  {/* Icon with gradient */}
-                  <div className={`p-1.5 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br ${account.gradient} shadow-md sm:shadow-lg mb-1.5 sm:mb-3 mx-auto w-fit`}>
-                    <Icon className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
+                  {/* Icon with gradient - very small */}
+                  <div className={`p-0.5 sm:p-1 rounded bg-gradient-to-br ${account.gradient} shadow-sm mb-0.5 sm:mb-1 mx-auto w-fit`}>
+                    <Icon className="w-2.5 h-2.5 sm:w-4 sm:h-4 text-white" />
                   </div>
                   
-                  {/* Account Info */}
-                  <div className="text-center space-y-1 sm:space-y-2">
-                    <h4 className={`font-bold text-[10px] sm:text-sm ${account.textColor}`}>{account.name}</h4>
-                    <span className="inline-block text-[8px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
-                      {account.type}
-                    </span>
+                  {/* Account Info - very compact */}
+                  <div className="text-center space-y-0.5">
+                    <h4 className={`font-bold text-[8px] sm:text-[10px] ${account.textColor}`}>{account.name}</h4>
                     
-                    {/* Account number - hidden on mobile by default, shown when expanded or on desktop */}
-                    <p className={`font-mono text-xs sm:text-base font-bold text-gray-900 dark:text-white tracking-wide break-all transition-all duration-300 ${
-                      isExpanded || window.innerWidth >= 640 ? 'block' : 'hidden'
-                    }`}>
-                      {account.account}
+                    {/* Account holder name */}
+                    <p className="text-[7px] sm:text-[9px] text-gray-700 dark:text-gray-300 font-medium">
+                      {account.accountHolder}
                     </p>
                     
-                    {/* Show/Hide indicator on mobile */}
-                    <p className={`text-[9px] text-gray-500 dark:text-gray-400 sm:hidden ${isExpanded ? 'hidden' : 'block'}`}>
-                      Tap to view
+                    {/* Account number - smaller */}
+                    <p className="font-mono text-[9px] sm:text-xs font-bold text-gray-900 dark:text-white tracking-tight break-all">
+                      {account.account}
                     </p>
                   </div>
 
-                  {/* Copy Button - only show when expanded on mobile or always on desktop */}
+                  {/* Copy Button - very small */}
                   <button
                     type="button"
                     onClick={(e) => {
                       e.stopPropagation()
                       copyToClipboard(account.account, account.id)
                     }}
-                    className={`mt-1.5 sm:mt-3 w-full py-1.5 sm:py-2 rounded-md sm:rounded-lg transition-all duration-300 ${
+                    className={`mt-0.5 sm:mt-1 w-full py-0.5 sm:py-1 rounded text-[7px] sm:text-[9px] transition-all duration-200 ${
                       isCopied
-                        ? 'bg-green-500 scale-105'
-                        : `bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 active:scale-95`
-                    } shadow-sm sm:shadow-md border-2 ${
+                        ? 'bg-green-500'
+                        : `bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700`
+                    } shadow-sm border ${
                       isCopied ? 'border-green-400' : 'border-gray-200 dark:border-gray-700'
-                    } flex items-center justify-center gap-1 sm:gap-2 ${
-                      isExpanded || window.innerWidth >= 640 ? 'block' : 'hidden sm:flex'
-                    }`}
+                    } flex items-center justify-center gap-0.5 sm:gap-1`}
                   >
                     {isCopied ? (
                       <>
-                        <Check className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                        <span className="text-[10px] sm:text-sm font-bold text-white">Copied!</span>
+                        <Check className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-white" />
+                        <span className="font-bold text-white">Copied!</span>
                       </>
                     ) : (
                       <>
-                        <Copy className={`w-3 h-3 sm:w-4 sm:h-4 ${account.textColor}`} />
-                        <span className={`text-[10px] sm:text-sm font-bold ${account.textColor}`}>Copy</span>
+                        <Copy className={`w-2 h-2 sm:w-2.5 sm:h-2.5 ${account.textColor}`} />
+                        <span className={`font-bold ${account.textColor}`}>Copy</span>
                       </>
                     )}
                   </button>
-
-                  {/* Hover Effect Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg sm:rounded-xl pointer-events-none" />
                 </div>
               )
             })}
           </div>
-          <p className="text-[9px] sm:text-xs text-gray-500 dark:text-gray-400 text-center">
-            💡 <span className="sm:hidden">Tap card to view account, then tap copy</span><span className="hidden sm:inline">Tap on any card to copy the account number</span>
+          <p className="text-[7px] sm:text-[9px] text-gray-500 dark:text-gray-400 text-center">
+            💡 Tap copy button to copy account number
           </p>
         </div>
 
@@ -507,8 +504,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           )}
         </div>
 
-        {/* Action Buttons - Always Visible */}
-        <div className="sticky bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t-2 border-gray-200 dark:border-gray-700 pt-4 pb-2 -mx-4 px-4 sm:-mx-8 sm:px-8 mt-6">
+        {/* Action Buttons - At the end */}
+        <div className="pt-4 mt-6 border-t border-gray-200 dark:border-gray-700">
           <div className="flex flex-col-reverse sm:flex-row gap-3">
             <Button 
               type="button" 

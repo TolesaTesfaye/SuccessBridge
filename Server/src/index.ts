@@ -49,6 +49,8 @@ import managementRoutes from "./routes/managementRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import aiRoutes from "./routes/ai.js";
 import resourceTypesRoutes from "./routes/resourceTypes.js";
+import telegramRoutes from "./routes/telegram.js";
+import telegramRoutes from "./routes/telegram.js";
 
 // Import all models to ensure they are registered with Sequelize
 import User from "./models/User.js";
@@ -279,6 +281,7 @@ app.use("/api/admin/management", managementRoutes);
 app.use("/api/admin/admin", adminRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/resource-types", resourceTypesRoutes);
+app.use("/api/telegram", telegramRoutes);
 
 // Health check
 app.get("/health", async (req, res) => {
@@ -396,8 +399,19 @@ const startServer = async () => {
     try {
       const isBotDisabled = process.env.ENABLE_TELEGRAM_BOT === "false" || process.env.TELEGRAM_BOT_ENABLED === "false";
       if (process.env.TELEGRAM_BOT_TOKEN && !isBotDisabled) {
-        TelegramBotService.getInstance();
+        const botService = TelegramBotService.getInstance();
         logger.info("🤖 Telegram Bot initialized");
+        
+        // Set up webhook in production
+        const isProduction = process.env.NODE_ENV === "production" || process.env.RENDER === "true";
+        if (isProduction && process.env.WEBHOOK_URL) {
+          try {
+            await botService.setupWebhook(process.env.WEBHOOK_URL);
+            logger.info("✅ Telegram webhook configured for production");
+          } catch (webhookError) {
+            logger.warn("Failed to set up webhook, bot may not receive messages:", webhookError);
+          }
+        }
       } else if (isBotDisabled) {
         logger.info("🤖 Telegram Bot is disabled via ENABLE_TELEGRAM_BOT=false");
       } else {

@@ -124,13 +124,23 @@ export const SubjectAccessGuard: React.FC<SubjectAccessGuardProps> = ({
           Premium Content
         </h2>
 
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
+        <p className="text-gray-600 dark:text-gray-400 mb-3">
           Make{" "}
           <span className="font-semibold text-primary-600">one payment</span> to
           unlock{" "}
           <span className="font-semibold text-primary-600">ALL subjects</span>{" "}
           including {subjectName}.
         </p>
+
+        {/* Afaan Oromoo Translation */}
+        <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-2 border-orange-300 dark:border-orange-700 rounded-lg p-3 mb-6">
+          <p className="text-xs sm:text-sm font-semibold text-orange-700 dark:text-orange-400 mb-1">
+            🗣️ Afaan Oromoo:
+          </p>
+          <p className="text-xs sm:text-sm text-orange-900 dark:text-orange-100 font-medium leading-relaxed">
+            Gosa barnoota kanneen hafan hunda isaa banachuuf Qarshii 200 qofa account ykn Telebirri, M-pesa fuula itti anuu irratti erguun daqiiqa 5 keessatti banadha irraa fayyadamaa. Pay once tuqaa.
+          </p>
+        </div>
 
         <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-6 mb-6">
           <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
