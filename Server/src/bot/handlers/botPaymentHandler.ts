@@ -2,6 +2,8 @@ import { formatDivider, getWebUrl } from '../utils/ui.js';
 import { getUserByTelegramId } from '../services/userService.js';
 import User from '../../models/User.js';
 import Payment from '../../models/Payment.js';
+import Subject from '../../models/Subject.js';
+import SubjectAccess from '../../models/SubjectAccess.js';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -298,6 +300,28 @@ export async function handleApprovePayment(bot: any, query: any, userId: string)
     payment.status = 'approved';
     payment.approvedAt = new Date();
     await payment.save();
+
+    // Grant access to ALL subjects (one payment unlocks everything)
+    const allSubjects = await Subject.findAll();
+    
+    const accessRecords = allSubjects.map(subject => ({
+      userId: payment.userId,
+      subjectId: subject.id,
+      paymentId: payment.id,
+      accessGrantedAt: new Date(),
+      educationLevel: payment.educationLevel,
+      grade: payment.grade,
+      stream: payment.stream,
+      universityId: payment.universityId,
+      departmentId: payment.departmentId,
+    }));
+
+    // Bulk create all access records
+    await SubjectAccess.bulkCreate(accessRecords, {
+      ignoreDuplicates: true, // Skip if access already exists
+    });
+
+    console.log(`✅ [Telegram Bot] Granted access to ${allSubjects.length} subjects for user ${payment.userId}`);
 
     // Update message to show it's approved
     const userName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.name || user.username || 'Unknown User';

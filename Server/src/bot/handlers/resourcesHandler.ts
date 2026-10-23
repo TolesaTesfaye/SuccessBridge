@@ -1,6 +1,6 @@
 import { getSubjectResources, getResourceById, getResourceDownloadUrl } from '../services/resourceService.js';
 import { getUserByTelegramId } from '../services/userService.js';
-import { Subject } from '../../models/index.js';
+import { Subject, SubjectAccess, User } from '../../models/index.js';
 import { escapeHtml, formatDivider, getResourceIcon, formatResourceTypeTitle, getWebUrl } from '../utils/ui.js';
 
 /**
@@ -54,6 +54,55 @@ export async function handleResourcesCommand(bot: any, msg: any): Promise<void> 
 export async function handleViewResources(bot: any, chatId: number, subjectId: string, telegramUserId: string): Promise<void> {
   try {
     console.log(`📥 Fetching resources for subject: ${subjectId}`);
+    
+    // Get user and check access
+    const user = await getUserByTelegramId(telegramUserId);
+    
+    if (!user) {
+      await bot.sendMessage(chatId, '❌ <i>User not found. Please use /start to register first.</i>', { parse_mode: 'HTML' });
+      return;
+    }
+
+    // Check if user has access to this subject (unless admin/super_admin)
+    const isAdmin = user.role === 'admin' || user.role === 'super_admin';
+    
+    if (!isAdmin) {
+      const hasAccess = await SubjectAccess.findOne({
+        where: {
+          userId: user.id,
+          subjectId: subjectId
+        }
+      });
+
+      if (!hasAccess) {
+        // User doesn't have access - show payment prompt
+        await bot.sendMessage(
+          chatId,
+          `🔒 <b>Premium Content Locked</b>\n` +
+          `${formatDivider()}\n` +
+          `To access study materials for this subject, you need to unlock premium access.\n\n` +
+          `💳 <b>One payment unlocks ALL subjects!</b>\n` +
+          `• Pay once (200 Birr)\n` +
+          `• Access all study materials\n` +
+          `• Instant approval (10-30 minutes)\n\n` +
+          `${formatDivider()}\n` +
+          `🗣️ <b>Afaan Oromoo:</b>\n` +
+          `<i>Barnoota kanaaf materiaalii argachuuf kaffaluu qabda. Yeroo tokko Qarshii 200 kaffaluun gosa barnoota hunda argataa!</i>`,
+          {
+            parse_mode: 'HTML',
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: '💳 Pay Now via Bot', callback_data: 'ready_to_pay' }],
+                [{ text: '📱 Contact @Tol_man27', url: 'https://t.me/Tol_man27' }],
+                [{ text: '🔙 Back to Subject', callback_data: `course_${subjectId}` }],
+              ],
+            },
+          }
+        );
+        return;
+      }
+    }
+
     const [resources, subject] = await Promise.all([
       getSubjectResources(subjectId),
       Subject.findByPk(subjectId),
@@ -153,6 +202,67 @@ export async function handleDownloadResource(bot: any, chatId: number, resourceI
       return;
     }
 
+    // Check access before allowing download
+    const user = await getUserByTelegramId(telegramUserId);
+    
+    if (!user) {
+      await bot.editMessageText('❌ <i>User not found. Please use /start to register first.</i>', {
+        chat_id: chatId,
+        message_id: processingMsg.message_id,
+        parse_mode: 'HTML',
+      });
+      return;
+    }
+
+    const isAdmin = user.role === 'admin' || user.role === 'super_admin';
+    const downloadCount = user.telegramDownloadCount || 0;
+    const FREE_DOWNLOAD_LIMIT = 15;
+    
+    // Check if user has premium access (paid)
+    const hasPremiumAccess = resource.subjectId ? await SubjectAccess.findOne({
+      where: {
+        userId: user.id,
+        subjectId: resource.subjectId
+      }
+    }) : null;
+
+    // Non-admin users without premium access are subject to download limit
+    if (!isAdmin && !hasPremiumAccess) {
+      if (downloadCount >= FREE_DOWNLOAD_LIMIT) {
+        // Delete processing message
+        try {
+          await bot.deleteMessage(chatId, processingMsg.message_id);
+        } catch (_) {}
+
+        // User has reached the free download limit
+        await bot.sendMessage(
+          chatId,
+          `🚫 <b>Free Download Limit Reached</b>\n\n` +
+          `You have downloaded <b>${downloadCount} free resources</b>.\n` +
+          `Free limit: <b>${FREE_DOWNLOAD_LIMIT} downloads</b>\n\n` +
+          `💳 <b>Unlock Unlimited Downloads:</b>\n` +
+          `• Pay once (200 Birr)\n` +
+          `• Download unlimited resources\n` +
+          `• Access ALL subjects\n` +
+          `• Instant approval (10-30 minutes)\n\n` +
+          `${formatDivider()}\n` +
+          `🗣️ <b>Afaan Oromoo:</b>\n` +
+          `<i>Faayilii ${downloadCount} bilisaan download goote. Itti fufuuf Qarshii 200 kaffali. Sanaa booda faayilii hunda bilisaan argatta!</i>`,
+          {
+            parse_mode: 'HTML',
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: '💳 Pay Now - Unlock All', callback_data: 'ready_to_pay' }],
+                [{ text: '📱 Contact @Tol_man27', url: 'https://t.me/Tol_man27' }],
+                [{ text: '🔙 Back to Materials', callback_data: `resources_${resource.subjectId || ''}` }],
+              ],
+            },
+          }
+        );
+        return;
+      }
+    }
+
     // Get download URL
     const downloadUrl = await getResourceDownloadUrl(resource.fileUrl);
 
@@ -183,6 +293,42 @@ export async function handleDownloadResource(bot: any, chatId: number, resourceI
     }
 
     if (directDeliverySuccessful) {
+      // Increment download count for non-premium users
+      const user = await getUserByTelegramId(telegramUserId);
+      const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+      const hasPremiumAccess = resource.subjectId ? await SubjectAccess.findOne({
+        where: {
+          userId: user!.id,
+          subjectId: resource.subjectId
+        }
+      }) : null;
+
+      if (user && !isAdmin && !hasPremiumAccess) {
+        // Increment download count
+        user.telegramDownloadCount = (user.telegramDownloadCount || 0) + 1;
+        await user.save();
+
+        const remainingDownloads = 15 - user.telegramDownloadCount;
+        
+        if (remainingDownloads > 0 && remainingDownloads <= 5) {
+          // Warn user when they have 5 or fewer downloads left
+          await bot.sendMessage(
+            chatId,
+            `⚠️ <b>Download Limit Warning</b>\n\n` +
+            `You have <b>${remainingDownloads} free downloads</b> remaining.\n\n` +
+            `💡 Pay once to unlock unlimited downloads!`,
+            {
+              parse_mode: 'HTML',
+              reply_markup: {
+                inline_keyboard: [
+                  [{ text: '💳 Unlock Now', callback_data: 'ready_to_pay' }],
+                ],
+              },
+            }
+          );
+        }
+      }
+
       await bot.sendMessage(
         chatId,
         `✅ <b>Delivered to your chat!</b>\n` +

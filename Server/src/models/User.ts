@@ -37,6 +37,7 @@ class User extends Model<IUser> implements IUser {
   public emailVerificationExpires?: Date
   public passwordResetToken?: string
   public passwordResetExpires?: Date
+  public telegramDownloadCount?: number
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 }
@@ -200,6 +201,11 @@ User.init(
     passwordResetExpires: {
       type: DataTypes.DATE,
       allowNull: true,
+    },
+    telegramDownloadCount: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: false,
     },
   } as any,
   {

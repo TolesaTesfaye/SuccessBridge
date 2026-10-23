@@ -29,6 +29,7 @@ export interface IUser {
   emailVerificationExpires?: Date;
   passwordResetToken?: string;
   passwordResetExpires?: Date;
+  telegramDownloadCount?: number;
   isActive?: boolean;
   createdAt: Date;
   updatedAt: Date;
