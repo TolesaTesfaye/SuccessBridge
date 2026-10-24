@@ -29,8 +29,6 @@ const HS_STREAMS = [{ value: 'natural', label: 'Natural Science' }, { value: 'so
 const UNI_LEVELS = [
   { value: 'remedial', label: 'Remedial' },
   { value: 'freshman', label: 'Freshman' },
-  { value: 'senior', label: 'Senior' },
-  { value: 'gc', label: 'GC' },
 ];
 
 const SelectOption: React.FC<{ label: string; selected: boolean; onPress: () => void; icon?: keyof typeof Ionicons.glyphMap }> = ({ label, selected, onPress, icon }) => (

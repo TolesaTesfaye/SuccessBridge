@@ -15,7 +15,7 @@ export interface IUser {
   studentType?: "high_school" | "university";
   highSchoolGrade?: "grade_9" | "grade_10" | "grade_11" | "grade_12";
   highSchoolStream?: "natural" | "social";
-  universityLevel?: "remedial" | "freshman" | "senior" | "gc";
+  universityLevel?: "remedial" | "freshman";
   university?: string;
   department?: string;
   documents?: string[];
@@ -205,7 +205,7 @@ export interface IRegisterRequest {
   studentType?: "high_school" | "university";
   highSchoolGrade?: "grade_9" | "grade_10" | "grade_11" | "grade_12";
   highSchoolStream?: "natural" | "social";
-  universityLevel?: "remedial" | "freshman" | "senior" | "gc";
+  universityLevel?: "remedial" | "freshman";
   university?: string;
   department?: string;
 }

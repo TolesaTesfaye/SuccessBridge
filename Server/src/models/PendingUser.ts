@@ -10,7 +10,7 @@ interface IPendingUser {
   studentType?: 'high_school' | 'university';
   highSchoolGrade?: 'grade_9' | 'grade_10' | 'grade_11' | 'grade_12';
   highSchoolStream?: 'natural' | 'social';
-  universityLevel?: 'remedial' | 'freshman' | 'senior' | 'gc';
+  universityLevel?: 'remedial' | 'freshman';
   university?: string;
   department?: string;
   verificationCode: string;
@@ -28,7 +28,7 @@ class PendingUser extends Model<IPendingUser> implements IPendingUser {
   public studentType?: 'high_school' | 'university';
   public highSchoolGrade?: 'grade_9' | 'grade_10' | 'grade_11' | 'grade_12';
   public highSchoolStream?: 'natural' | 'social';
-  public universityLevel?: 'remedial' | 'freshman' | 'senior' | 'gc';
+  public universityLevel?: 'remedial' | 'freshman';
   public university?: string;
   public department?: string;
   public verificationCode!: string;
@@ -75,7 +75,7 @@ PendingUser.init(
       allowNull: true,
     },
     universityLevel: {
-      type: DataTypes.ENUM('remedial', 'freshman', 'senior', 'gc'),
+      type: DataTypes.ENUM('remedial', 'freshman'),
       allowNull: true,
     },
     university: {

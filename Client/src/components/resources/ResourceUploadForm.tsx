@@ -352,10 +352,7 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
         setError("Please select a student category");
         return;
       }
-      if ((formData.category === "senior" || formData.category === "gc") && !formData.departmentId) {
-        setError("Please select a department for senior/GC students");
-        return;
-      }
+      // Department is now optional for all university students
     }
 
     const resolvedType = resourceTypes.find((r) => r.id === formData.type)?.name || formData.type;
@@ -432,7 +429,7 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
     return true;
   })();
 
-  const showDepartmentDropdown = formData.category === "senior" || formData.category === "gc";
+  const showDepartmentDropdown = formData.grade && formData.category;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

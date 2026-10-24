@@ -184,17 +184,4 @@ export const UNIVERSITY_CATEGORIES = {
       "Recommendations",
     ],
   },
-  senior: {
-    label: "Senior Students",
-    resources: ["Textbooks", "Past exams", "Project guides", "Assignments"],
-  },
-  gc: {
-    label: "GC Students (Graduated)",
-    resources: [
-      "Research papers",
-      "Career guidance",
-      "Professional skill modules",
-      "Projects",
-    ],
-  },
 };

@@ -12,8 +12,6 @@ const GRADES = [
   { name: 'Grade 12', level: 12, educationLevel: 'high_school' as const },
   { name: 'Remedial', level: 0, educationLevel: 'university' as const },
   { name: 'Freshman', level: 1, educationLevel: 'university' as const },
-  { name: 'Senior', level: 4, educationLevel: 'university' as const },
-  { name: 'GC', level: 5, educationLevel: 'university' as const },
 ]
 
 const STREAMS = [

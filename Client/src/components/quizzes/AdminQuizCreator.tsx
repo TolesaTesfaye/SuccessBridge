@@ -158,7 +158,7 @@ export const AdminQuizCreator: React.FC<AdminQuizCreatorProps> = ({ onClose, onS
     } else {
       if (!universityId) { alert("Please select a target university"); return; }
       if (!category) { alert("Please select a student category"); return; }
-      if (["senior", "gc"].includes(category) && !departmentId) { alert("Please select a department for Senior / GC students"); return; }
+      // Department is now optional for all university students
     }
 
     setLoading(true);
@@ -184,7 +184,7 @@ export const AdminQuizCreator: React.FC<AdminQuizCreatorProps> = ({ onClose, onS
         grade: educationLevel === "high_school" ? grade : category || undefined,
         stream: educationLevel === "high_school" && ["grade_11", "grade_12"].includes(grade) ? stream : undefined,
         university: educationLevel === "university" ? universityId : undefined,
-        department: educationLevel === "university" && ["senior", "gc"].includes(category) ? departmentId : undefined,
+        department: educationLevel === "university" && departmentId ? departmentId : undefined,
         subjectId, questions: formattedQuestions as any, timeLimit: timeLimit || 30, passingScore: passing || 60,
       });
       onSuccess();
@@ -401,8 +401,7 @@ export const AdminQuizCreator: React.FC<AdminQuizCreatorProps> = ({ onClose, onS
                       </SelectContent>
                     </Select>
                   </FloatingField>
-                  {["senior", "gc"].includes(category) && (
-                    <FloatingField label="Department Group">
+                  <FloatingField label="Department Group (Optional)">
                       <Select value={departmentId} onValueChange={setDepartmentId}>
                         <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
                         <SelectContent>

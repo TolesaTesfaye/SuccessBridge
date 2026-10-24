@@ -309,8 +309,6 @@ export const CompleteProfile: React.FC = () => {
                 {[
                   { value: 'remedial', label: 'Remedial', desc: 'Preparatory courses' },
                   { value: 'freshman', label: 'Freshman', desc: '1st year undergraduate' },
-                  { value: 'senior', label: 'Senior', desc: 'Upper level undergraduate' },
-                  { value: 'gc', label: 'Graduate/Continuing', desc: 'Masters, PhD, or continuing education' }
                 ].map((level) => (
                   <button
                     key={level.value}

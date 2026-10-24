@@ -19,7 +19,7 @@ class User extends Model<IUser> implements IUser {
   public studentType?: 'high_school' | 'university'
   public highSchoolGrade?: 'grade_9' | 'grade_10' | 'grade_11' | 'grade_12'
   public highSchoolStream?: 'natural' | 'social'
-  public universityLevel?: 'remedial' | 'freshman' | 'senior' | 'gc'
+  public universityLevel?: 'remedial' | 'freshman'
   public university?: string
   public department?: string
   public universityId?: string
@@ -110,7 +110,7 @@ User.init(
       allowNull: true,
     },
     universityLevel: {
-      type: DataTypes.ENUM('remedial', 'freshman', 'senior', 'gc'),
+      type: DataTypes.ENUM('remedial', 'freshman'),
       allowNull: true,
     },
     university: {

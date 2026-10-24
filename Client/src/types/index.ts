@@ -7,7 +7,7 @@ export interface User {
   studentType?: "high_school" | "university";
   highSchoolGrade?: string;
   highSchoolStream?: string;
-  universityLevel?: "remedial" | "freshman" | "senior" | "gc";
+  universityLevel?: "remedial" | "freshman";
   university?: string;
   department?: string;
   universityId?: string;
@@ -150,7 +150,7 @@ export interface UniversityFilter {
   universityId?: string;
   department?: string;
   departmentId?: string;
-  category?: string; // 'remedial', 'freshman', 'senior', 'gc'
+  category?: string; // 'remedial', 'freshman'
   grade?: string; // Backend stores category in grade field
   stream?: string;
   subject?: string;

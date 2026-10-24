@@ -537,10 +537,7 @@ export function SuperAdminAddQuiz() {
         toast.error("Please select a student category");
         return;
       }
-      if (["senior", "gc"].includes(category) && !departmentId) {
-        toast.error("Please select a department for Senior / GC students");
-        return;
-      }
+      // Department is now optional for all university students
     }
 
     try {
@@ -586,7 +583,7 @@ export function SuperAdminAddQuiz() {
             : undefined,
         university: educationLevel === "university" ? universityId : undefined,
         department:
-          educationLevel === "university" && ["senior", "gc"].includes(category)
+          educationLevel === "university" && departmentId
             ? departmentId
             : undefined,
         subjectId,
@@ -1138,8 +1135,7 @@ function QuizDetails(props: {
               </Select>
             </FloatingField>
 
-            {["senior", "gc"].includes(props.category) && (
-              <FloatingField label="Department Group">
+            <FloatingField label="Department Group (Optional)">
                 <Select
                   value={props.departmentId}
                   onValueChange={props.setDepartmentId}
@@ -1156,7 +1152,6 @@ function QuizDetails(props: {
                   </SelectContent>
                 </Select>
               </FloatingField>
-            )}
           </>
         )}
 

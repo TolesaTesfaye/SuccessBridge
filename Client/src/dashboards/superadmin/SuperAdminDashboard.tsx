@@ -42,7 +42,7 @@ const HIGH_SCHOOL_GRADES = [
   "grade_11",
   "grade_12",
 ] as const;
-const UNIVERSITY_LEVELS = ["freshman", "remedial", "senior", "gc"] as const;
+const UNIVERSITY_LEVELS = ["freshman", "remedial"] as const;
 
 const PLATFORM_TABS: SuperAdminTabItem[] = [
   { id: "overview", label: "Overview", shortLabel: "Home", icon: LayoutDashboard },

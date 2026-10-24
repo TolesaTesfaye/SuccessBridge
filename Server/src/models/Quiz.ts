@@ -16,12 +16,12 @@ interface IQuiz {
   description: string
   subjectId: string
   educationLevel: 'high_school' | 'university'
-  /** High school: grade_9–12; university: remedial | freshman | senior | gc */
+  /** High school: grade_9–12; university: remedial | freshman */
   grade?: string
   stream?: string
   /** University name (matches User.university) */
   university?: string
-  /** Department name for senior/gc (matches User.department) */
+  /** Department name (optional for university students) */
   department?: string
   questions: IQuestion[]
   timeLimit: number

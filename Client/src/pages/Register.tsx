@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 
 type StudentType = "high_school" | "university" | null;
-type UniversityLevel = "remedial" | "freshman" | "senior" | "gc" | null;
+type UniversityLevel = "remedial" | "freshman" | null;
 type HighSchoolGrade = "grade_9" | "grade_10" | "grade_11" | "grade_12" | null;
 
 interface FormDataType {
@@ -205,16 +205,7 @@ export const Register: React.FC = () => {
         setFormError("Please select a university");
         return false;
       }
-      // Department is only required for senior and GC students
-      if (
-        formData.universityLevel !== "remedial" &&
-        formData.universityLevel !== "freshman"
-      ) {
-        if (!formData.department) {
-          setFormError("Please select a department");
-          return false;
-        }
-      }
+      // Department requirement has been removed for remedial/freshman
       return true;
     }
 
@@ -700,16 +691,6 @@ export const Register: React.FC = () => {
                             label: "Freshman",
                             desc: "First year common courses",
                           },
-                          {
-                            value: "senior",
-                            label: "Senior",
-                            desc: "Department specific courses",
-                          },
-                          {
-                            value: "gc",
-                            label: "Graduated",
-                            desc: "Alumni / Exam prep",
-                          },
                         ].map((level) => (
                           <button
                             key={level.value}
@@ -797,7 +778,7 @@ export const Register: React.FC = () => {
                 </>
               )}
 
-              {/* Step 4: University & Department Selection Wrapper */}
+              {/* Step 4: University Selection (no department needed now) */}
               {step === 4 && formData.studentType === "university" && (
                 <div className="space-y-3 md:space-y-5 mt-2 md:mt-4">
                   <div className="space-y-1.5 md:space-y-2">
@@ -846,55 +827,6 @@ export const Register: React.FC = () => {
                     </div>
                   </div>
 
-                  {formData.universityLevel !== "remedial" &&
-                    formData.universityLevel !== "freshman" && (
-                      <div className="space-y-1.5 md:space-y-2">
-                        <label className="block text-xs md:text-sm font-semibold text-slate-700 dark:text-slate-300 mt-2 md:mt-4">
-                          Select Department Category
-                        </label>
-                        <div className="relative">
-                          <select
-                            name="department"
-                            value={formData.department || ""}
-                            onChange={handleChange}
-                            className="w-full pl-3 md:pl-4 pr-10 md:pr-12 py-2.5 md:py-3 text-xs md:text-sm appearance-none border border-slate-300 dark:border-slate-700 rounded-lg md:rounded-xl bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors shadow-sm touch-manipulation min-h-[44px] md:min-h-[48px]"
-                          >
-                            <option
-                              value=""
-                              disabled
-                              className="text-xs md:text-sm"
-                            >
-                              Choose a department...
-                            </option>
-                            {Object.keys(DEPARTMENTS).map((dept) => (
-                              <option
-                                key={dept}
-                                value={dept}
-                                className="text-xs md:text-sm py-2"
-                              >
-                                {dept}
-                              </option>
-                            ))}
-                          </select>
-                          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 md:px-4 text-slate-500">
-                            <svg
-                              className="h-4 w-4 md:h-5 md:w-5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M19 9l-7 7-7-7"
-                              ></path>
-                            </svg>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
                   <div className="space-y-3 pt-4 md:pt-6">
                     <div className="flex gap-2 md:gap-4">
                       <button
@@ -909,10 +841,7 @@ export const Register: React.FC = () => {
                         type="submit"
                         disabled={
                           loading ||
-                          !formData.university ||
-                          (formData.universityLevel !== "remedial" &&
-                            formData.universityLevel !== "freshman" &&
-                            !formData.department)
+                          !formData.university
                         }
                         className="flex-1 py-2.5 md:py-3 px-3 md:px-4 border border-transparent rounded-lg md:rounded-xl shadow-lg text-xs md:text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-blue-600/30 flex justify-center items-center gap-1.5 md:gap-2"
                       >

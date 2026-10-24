@@ -45,8 +45,6 @@ export class GradeService {
       { name: 'Grade 12', level: 12, educationLevel: 'high_school' },
       { name: 'Remedial', level: 0, educationLevel: 'university' },
       { name: 'Freshman', level: 1, educationLevel: 'university' },
-      { name: 'Senior', level: 4, educationLevel: 'university' },
-      { name: 'GC', level: 5, educationLevel: 'university' },
     ]
     for (const g of grades) {
       const existing = await Grade.findOne({ where: { name: g.name } })

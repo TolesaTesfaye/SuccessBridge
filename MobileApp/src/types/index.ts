@@ -5,7 +5,7 @@ export type StudentType = 'high_school' | 'university';
 export type ApprovalStatus = 'pending' | 'approved' | 'rejected';
 export type HighSchoolGrade = 'grade_9' | 'grade_10' | 'grade_11' | 'grade_12';
 export type HighSchoolStream = 'natural' | 'social';
-export type UniversityLevel = 'remedial' | 'freshman' | 'senior' | 'gc';
+export type UniversityLevel = 'remedial' | 'freshman';
 
 export interface User {
   id: string;
