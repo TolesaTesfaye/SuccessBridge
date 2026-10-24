@@ -76,7 +76,8 @@ export const HighSchoolLearningCenter: React.FC<
   }
   
   // Check if current subject requires payment
-  const requiresPayment = grade === 'grade_12' && !freeSubjects.includes(learningSubject)
+  // For grade_11 and grade_12, check against free subjects list
+  const requiresPayment = (grade === 'grade_11' || grade === 'grade_12') && !freeSubjects.includes(learningSubject)
 
   // If no content is available for this grade/subject combination, show a message
   if (!learningContent && !subjectConfig) {
