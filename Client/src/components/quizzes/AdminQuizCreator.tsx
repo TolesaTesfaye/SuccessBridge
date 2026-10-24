@@ -402,14 +402,13 @@ export const AdminQuizCreator: React.FC<AdminQuizCreatorProps> = ({ onClose, onS
                     </Select>
                   </FloatingField>
                   <FloatingField label="Department Group (Optional)">
-                      <Select value={departmentId} onValueChange={setDepartmentId}>
-                        <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          {Object.keys(DEPARTMENTS).map((d) => (<SelectItem key={d} value={d}>{d}</SelectItem>))}
-                        </SelectContent>
-                      </Select>
-                    </FloatingField>
-                  )}
+                    <Select value={departmentId} onValueChange={setDepartmentId}>
+                      <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {Object.keys(DEPARTMENTS).map((d) => (<SelectItem key={d} value={d}>{d}</SelectItem>))}
+                      </SelectContent>
+                    </Select>
+                  </FloatingField>
                 </>
               )}
               <FloatingField label="Subject / Module">

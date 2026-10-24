@@ -243,15 +243,6 @@ const CHAPTER_COMPONENTS: Record<
     chapter5: LogicCh5,
     chapter6: LogicCh6,
   },
-  Physics: {
-    chapter1: PhysicsCh1,
-    chapter2: PhysicsCh2,
-    chapter3: PhysicsCh3,
-    chapter4: PhysicsCh4,
-    chapter5: PhysicsCh5,
-    chapter6: PhysicsCh6,
-    chapter7: PhysicsCh7,
-  },
   "Math (Natural Science)": {
     chapter1: MathNatCh1,
     chapter2: MathNatCh2,
