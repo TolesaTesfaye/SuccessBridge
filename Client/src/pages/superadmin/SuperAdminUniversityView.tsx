@@ -5,7 +5,7 @@ import { GraduationCap } from "lucide-react";
 import { SuperAdminTopTabNav } from "@dashboards/superadmin/components/SuperAdminTopTabNav";
 import { StudentViewWrapper } from "@dashboards/superadmin/components/StudentViewWrapper";
 
-type UniversityLevel = "freshman" | "remedial" | "senior" | "gc";
+type UniversityLevel = "freshman" | "remedial";
 
 const UNIVERSITY_TABS = [
   {
@@ -20,8 +20,6 @@ const UNIVERSITY_TABS = [
     shortLabel: "Rm",
     icon: GraduationCap,
   },
-  { id: "senior", label: "Senior", shortLabel: "Sr", icon: GraduationCap },
-  { id: "gc", label: "GC", icon: GraduationCap },
 ] as const;
 
 const isUniversityLevel = (tab: string): tab is UniversityLevel =>

@@ -381,7 +381,7 @@ router.post("/admin-request-status", getAdminRequestStatus);
  *                 description: Required for high school students
  *               universityLevel:
  *                 type: string
- *                 enum: [remedial, freshman, senior, gc]
+ *                 enum: [remedial, freshman]
  *                 description: Required for university students
  *               university:
  *                 type: string

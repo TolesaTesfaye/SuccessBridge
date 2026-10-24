@@ -14,7 +14,7 @@ interface UniversityLearningCenterProps {
   setLearningSubject: (subject: string) => void;
   setActiveTab: (tab: "home" | "learning" | "hub") => void;
   initialChapterId?: string;
-  category?: "remedial" | "freshman" | "senior" | "gc";
+  category?: "remedial" | "freshman";
 }
 
 export const UniversityLearningCenter: React.FC<
@@ -42,9 +42,6 @@ export const UniversityLearningCenter: React.FC<
   const getSubjectConfig = (subjectName: string) => {
     if (category === 'remedial') {
       return getRemedialSubjectConfig(subjectName);
-    }
-    if (category === 'senior' || category === 'gc') {
-      return getSeniorSubjectConfig(subjectName);
     }
     return getFreshmanSubjectConfig(subjectName);
   };

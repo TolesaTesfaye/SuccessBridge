@@ -15,7 +15,7 @@ import { UniversityOverview } from "./components/UniversityOverview";
 import { UniversityLearningCenter } from "./components/UniversityLearningCenter";
 import { UniversityResourceHub } from "./components/UniversityResourceHub";
 
-type StudentCategory = "remedial" | "freshman" | "senior" | "gc";
+type StudentCategory = "remedial" | "freshman";
 
 interface UniversityWithResources {
   id: string;
@@ -55,9 +55,7 @@ export const UniversityDashboard: React.FC = () => {
   const [learningSubject, setLearningSubject] = useState<string>(
     activeCategory === "remedial"
       ? "Chemistry"
-      : activeCategory === "senior" || activeCategory === "gc"
-        ? "Python"
-        : "Psychology",
+      : "Psychology",
   );
 
   const isIntroductory =
@@ -75,9 +73,6 @@ export const UniversityDashboard: React.FC = () => {
         "History",
         "English",
       ];
-    }
-    if (activeCategory === "senior" || activeCategory === "gc") {
-      return ["C++", "Python", "Java", "Data Structures", "Algorithms"];
     }
     if (activeCategory === "remedial") {
       // Show individual subjects by default for remedial courses
@@ -216,8 +211,6 @@ export const UniversityDashboard: React.FC = () => {
       setLearningSubject("Chemistry");
     } else if (activeCategory === "freshman") {
       setLearningSubject("Psychology");
-    } else if (activeCategory === "senior" || activeCategory === "gc") {
-      setLearningSubject("Python");
     }
   }, [activeCategory]);
 

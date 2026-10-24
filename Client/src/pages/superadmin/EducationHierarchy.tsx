@@ -755,7 +755,7 @@ export const EducationHierarchy: React.FC = () => {
             <input type="number" className="w-full px-4 py-2.5 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
               placeholder={educationLevel === 'high_school' ? 'e.g., 9' : 'e.g., 1'}
               value={formData.level || ''} onChange={e => setFormData({ ...formData, level: e.target.value })} required />
-            <p className="text-xs text-slate-400 mt-1.5">{educationLevel === 'high_school' ? 'Lower = younger grade' : '0=Remedial, 1=Freshman, 4=Senior, 5=GC'}</p>
+            <p className="text-xs text-slate-400 mt-1.5">{educationLevel === 'high_school' ? 'Lower = younger grade' : '0=Remedial, 1=Freshman'}</p>
           </div>
           <div className="flex gap-2 pt-2">
             <Button variant="primary" fullWidth type="submit">Create</Button>

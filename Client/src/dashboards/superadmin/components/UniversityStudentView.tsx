@@ -9,7 +9,7 @@ import { UniversityOverview } from "@dashboards/student/components/UniversityOve
 import { UniversityLearningCenter } from "@dashboards/student/components/UniversityLearningCenter";
 import { UniversityResourceHub } from "@dashboards/student/components/UniversityResourceHub";
 
-type StudentCategory = "remedial" | "freshman" | "senior" | "gc";
+type StudentCategory = "remedial" | "freshman";
 
 interface UniversityWithResources {
   id: string;
@@ -47,9 +47,7 @@ export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({
   const [learningSubject, setLearningSubject] = useState<string>(
     level === "remedial"
       ? "Math"
-      : level === "senior" || level === "gc"
-        ? "Python"
-        : "Psychology",
+      : "Psychology",
   );
 
   const isIntroductory = level === "remedial" || level === "freshman";
@@ -66,9 +64,6 @@ export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({
         "History",
         "English",
       ];
-    }
-    if (level === "senior" || level === "gc") {
-      return ["C++", "Python", "Java", "Data Structures", "Algorithms"];
     }
     if (level === "remedial") {
       if (selectedStream === "natural") {
@@ -187,8 +182,6 @@ export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({
       setLearningSubject("Math");
     } else if (level === "freshman") {
       setLearningSubject("Psychology");
-    } else if (level === "senior" || level === "gc") {
-      setLearningSubject("Python");
     }
   }, [level]);
 

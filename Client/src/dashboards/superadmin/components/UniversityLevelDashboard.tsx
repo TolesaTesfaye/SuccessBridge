@@ -7,7 +7,7 @@ import { AnalyticsChart } from "@components/analytics/AnalyticsChart";
 import { userService } from "@services/userService";
 import { resourceService } from "@services/resourceService";
 
-type UniversityLevel = "freshman" | "remedial" | "senior" | "gc";
+type UniversityLevel = "freshman" | "remedial";
 
 interface UniversityLevelDashboardProps {
   level: UniversityLevel;
@@ -50,15 +50,11 @@ export const UniversityLevelDashboard: React.FC<UniversityLevelDashboardProps> =
   const levelLabels = {
     freshman: "Freshman",
     remedial: "Remedial",
-    senior: "Senior",
-    gc: "Graduate Class (GC)",
   };
 
   const levelDescriptions = {
     freshman: "First-year university students",
     remedial: "Preparatory program students",
-    senior: "Final-year undergraduate students", 
-    gc: "Graduate and postgraduate students",
   };
 
   useEffect(() => {

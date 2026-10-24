@@ -4,7 +4,7 @@ import { HighSchoolStudentView } from "./HighSchoolStudentView";
 import { UniversityStudentView } from "./UniversityStudentView";
 
 type HighSchoolGrade = "grade_9" | "grade_10" | "grade_11" | "grade_12";
-type UniversityLevel = "freshman" | "remedial" | "senior" | "gc";
+type UniversityLevel = "freshman" | "remedial";
 
 interface StudentViewWrapperProps {
   type: "highschool" | "university";

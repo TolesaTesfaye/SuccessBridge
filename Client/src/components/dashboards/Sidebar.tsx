@@ -31,10 +31,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const { user } = useAuthStore();
 
 
-  const shouldShowQuizzes = !(
-    user?.studentType === "university" &&
-    (user?.universityLevel === "senior" || user?.universityLevel === "gc")
-  );
+  const shouldShowQuizzes = true;
 
   const studentNavItems = [
     { label: "Dashboard", path: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" />, emoji: "📊" },

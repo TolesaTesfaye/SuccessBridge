@@ -11,7 +11,7 @@ import { ResourceCard } from "@components/resources/ResourceCard";
 import { Card, CardBody, CardHeader } from "@components/common/Card";
 import { Button } from "@components/common/Button";
 
-type StudentCategory = "remedial" | "freshman" | "senior" | "gc";
+type StudentCategory = "remedial" | "freshman";
 
 interface UniversityLevelViewProps {
   level: StudentCategory;
@@ -42,8 +42,6 @@ export const UniversityLevelView: React.FC<UniversityLevelViewProps> = ({
   const levelLabels = {
     freshman: "Freshman",
     remedial: "Remedial",
-    senior: "Senior",
-    gc: "Graduate Class (GC)",
   };
 
   const isIntroductory = level === "remedial" || level === "freshman";
