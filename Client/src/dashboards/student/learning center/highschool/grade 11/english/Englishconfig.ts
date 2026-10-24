@@ -4,6 +4,7 @@ export interface ChapterConfig {
   id: string;
   title: string;
   subtopics?: string[];
+  component?: () => Promise<any>;
 }
 
 export interface SubjectConfig {
@@ -34,7 +35,8 @@ export const englishConfig: SubjectConfig = {
         '1.2. Inference and Interpretation',
         '1.3. Vocabulary in Context',
         '1.4. Critical Analysis'
-      ]
+      ],
+      component: () => import('./chapters/Chapter1')
     },
     {
       id: 'chapter2',

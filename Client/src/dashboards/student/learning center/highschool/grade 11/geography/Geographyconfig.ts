@@ -4,6 +4,7 @@ export interface ChapterConfig {
   id: string;
   title: string;
   subtopics?: string[];
+  component?: () => Promise<any>;
 }
 
 export interface SubjectConfig {
@@ -34,7 +35,8 @@ export const geographyConfig: SubjectConfig = {
         '1.2. Landforms',
         '1.3. Climate and Weather',
         '1.4. Natural Resources'
-      ]
+      ],
+      component: () => import('./chapters/Chapter1')
     },
     {
       id: 'chapter2',

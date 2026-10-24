@@ -41,8 +41,8 @@ export const FREE_SUBJECTS = {
   FRESHMAN: ['Psychology'], // Psychology is free to attract freshman students
   GRADE_9: ['Mathematics', 'English'], // Free subjects for grade 9
   GRADE_10: ['Mathematics', 'English'], // Free subjects for grade 10
-  GRADE_11_NATURAL: ['Mathematics'], // Free subjects for grade 11 natural stream
-  GRADE_11_SOCIAL: ['Mathematics'], // Free subjects for grade 11 social stream
+  GRADE_11_NATURAL: ['Chemistry'], // Chemistry is free for grade 11 natural stream
+  GRADE_11_SOCIAL: ['Chemistry'], // Chemistry is free for grade 11 social stream
   GRADE_12_NATURAL: ['Biology'], // Biology is free to attract grade 12 natural students
   GRADE_12_SOCIAL: ['Biology'], // Biology is free to attract grade 12 social students
 }
@@ -74,12 +74,12 @@ export const SUBJECT_PRICES = {
   // High school subjects
   GRADE_11: {
     BIOLOGY: 400,
-    CHEMISTRY: 400,
+    CHEMISTRY: 0, // Free - Teaser subject to attract users
     PHYSICS: 400,
     HISTORY: 350,
     GEOGRAPHY: 350,
     ECONOMICS: 350,
-    MATHEMATICS: 0, // Free
+    MATHEMATICS: 450,
     ENGLISH: 300,
   },
 

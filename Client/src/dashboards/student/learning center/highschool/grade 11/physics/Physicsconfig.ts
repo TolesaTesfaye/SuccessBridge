@@ -4,6 +4,7 @@ export interface ChapterConfig {
   id: string;
   title: string;
   subtopics?: string[];
+  component?: () => Promise<any>;
 }
 
 export interface SubjectConfig {
@@ -34,7 +35,8 @@ export const physicsConfig: SubjectConfig = {
         '1.2. Units and Measurements',
         '1.3. Dimensional Analysis',
         '1.4. Significant Figures'
-      ]
+      ],
+      component: () => import('./chapters/Chapter1')
     },
     {
       id: 'chapter2',

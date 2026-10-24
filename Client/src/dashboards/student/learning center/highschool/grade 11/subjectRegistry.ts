@@ -19,12 +19,14 @@ export interface SubjectConfig {
     gradient: string;
   };
   chapters: any[];
+  isFree?: boolean; // Whether this subject is free or requires payment
 }
 
 // Registry of all Grade 11 subjects with component-based rendering
+// Chemistry is listed first as the primary subject
 export const GRADE_11_SUBJECTS: Record<string, SubjectConfig> = {
-  'Biology': biologyConfig,
   'Chemistry': chemistryConfig,
+  'Biology': biologyConfig,
   'English': englishConfig,
   'Geography': geographyConfig,
   'History': historyConfig,

@@ -4,6 +4,7 @@ export interface ChapterConfig {
   id: string;
   title: string;
   subtopics?: string[];
+  component?: () => Promise<any>;
 }
 
 export interface SubjectConfig {
@@ -34,7 +35,8 @@ export const historyConfig: SubjectConfig = {
         '1.2. Egyptian Civilization',
         '1.3. Indus Valley Civilization',
         '1.4. Chinese Civilization'
-      ]
+      ],
+      component: () => import('./chapters/Chapter1')
     },
     {
       id: 'chapter2',

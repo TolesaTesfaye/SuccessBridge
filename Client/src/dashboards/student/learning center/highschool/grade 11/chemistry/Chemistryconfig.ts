@@ -4,11 +4,13 @@ export interface ChapterConfig {
   id: string;
   title: string;
   subtopics?: string[];
+  component?: () => Promise<any>;
 }
 
 export interface SubjectConfig {
   name: string;
   grade: string;
+  isFree?: boolean;
   color: {
     primary: string;
     secondary: string;
@@ -20,6 +22,7 @@ export interface SubjectConfig {
 export const chemistryConfig: SubjectConfig = {
   name: 'Chemistry',
   grade: 'Grade 11',
+  isFree: true, // Chemistry is free for all users
   color: {
     primary: 'green',
     secondary: 'teal',
@@ -28,13 +31,18 @@ export const chemistryConfig: SubjectConfig = {
   chapters: [
     {
       id: 'chapter1',
-      title: 'Chapter 1: Some Basic Concepts of Chemistry',
+      title: 'Unit 1: Atomic Structure and Periodic Properties',
       subtopics: [
-        '1.1. Matter and its Nature',
-        '1.2. Laws of Chemical Combination',
-        '1.3. Atomic and Molecular Masses',
-        '1.4. Mole Concept'
-      ]
+        '1.1. Introduction',
+        '1.2. Dalton\'s Atomic Theory and the Modern Atomic Theory',
+        '1.3. Early Experiments to Characterize the Atom',
+        '1.4. Make-up of the Nucleus',
+        '1.5. Electromagnetic Radiation and Atomic Spectra',
+        '1.6. The Quantum Mechanical Model of the Atom',
+        '1.7. Electronic Configurations and Orbital Diagrams',
+        '1.8. Electronic Configurations and the Periodic Table'
+      ],
+      component: () => import('./chapters/Chapter1')
     },
     {
       id: 'chapter2',

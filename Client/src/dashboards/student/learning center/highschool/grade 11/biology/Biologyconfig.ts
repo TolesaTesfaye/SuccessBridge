@@ -4,6 +4,7 @@ export interface ChapterConfig {
   id: string;
   title: string;
   subtopics?: string[];
+  component?: () => Promise<any>;
 }
 
 export interface SubjectConfig {
@@ -34,7 +35,8 @@ export const biologyConfig: SubjectConfig = {
         '1.2. Biodiversity',
         '1.3. Taxonomic Categories',
         '1.4. Nomenclature'
-      ]
+      ],
+      component: () => import('./chapters/Chapter1')
     },
     {
       id: 'chapter2',
