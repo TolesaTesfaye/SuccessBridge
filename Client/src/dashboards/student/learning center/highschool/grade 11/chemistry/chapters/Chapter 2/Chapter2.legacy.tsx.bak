@@ -1,0 +1,1994 @@
+import React, { useEffect } from "react";
+import {
+  ArrowRight,
+  Atom,
+  Beaker,
+  BookOpen,
+  CircleCheck,
+  CircleDot,
+  Clock,
+  GitBranch,
+  Layers,
+  Lightbulb,
+  Magnet,
+  Orbit,
+  Radiation,
+  RefreshCw,
+  Sigma,
+  Sparkles,
+  Table2,
+  Target,
+  Waves,
+  Zap,
+} from "lucide-react";
+import { motion } from "framer-motion";
+
+interface ChapterProps {
+  selectedSubtopic?: string;
+}
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const cardClass =
+  "bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-10 shadow-lg shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-slate-800 transition-all hover:shadow-xl";
+
+const sectionHeaderClass =
+  "flex items-center gap-4 mb-8 border-b border-slate-100 dark:border-slate-800 pb-6";
+
+const proseClass =
+  "prose prose-lg dark:prose-invert max-w-none text-slate-600 dark:text-slate-300";
+
+const numberBoxClass =
+  "w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg shadow-inner shrink-0";
+
+const exerciseAccents = {
+  green: {
+    icon: "text-green-500",
+    text: "text-green-700 dark:text-green-300",
+    chip: "border-green-200 dark:border-green-800 bg-green-50/60 dark:bg-green-900/20",
+  },
+  blue: {
+    icon: "text-blue-500",
+    text: "text-blue-700 dark:text-blue-300",
+    chip: "border-blue-200 dark:border-blue-800 bg-blue-50/60 dark:bg-blue-900/20",
+  },
+  purple: {
+    icon: "text-purple-500",
+    text: "text-purple-700 dark:text-purple-300",
+    chip: "border-purple-200 dark:border-purple-800 bg-purple-50/60 dark:bg-purple-900/20",
+  },
+  teal: {
+    icon: "text-teal-500",
+    text: "text-teal-700 dark:text-teal-300",
+    chip: "border-teal-200 dark:border-teal-800 bg-teal-50/60 dark:bg-teal-900/20",
+  },
+} as const;
+
+type ExerciseAccent = keyof typeof exerciseAccents;
+
+interface ExerciseProps {
+  number: string;
+  accent: ExerciseAccent;
+  question: React.ReactNode;
+  answer: React.ReactNode;
+}
+
+const Exercise: React.FC<ExerciseProps> = ({
+  number,
+  accent,
+  question,
+  answer,
+}) => {
+  const styles = exerciseAccents[accent];
+
+  return (
+    <div className="bg-white dark:bg-slate-900 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-6 sm:p-8 relative mt-12">
+      <div className="absolute -top-5 left-6 sm:left-8 bg-white dark:bg-slate-900 px-4 py-1 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300">
+        <BookOpen size={16} className={styles.icon} />
+        Inline Exercise {number}
+      </div>
+      <div className="mt-2">
+        <div className="font-medium text-slate-800 dark:text-slate-200 mb-4">
+          {question}
+        </div>
+
+        <details className="group">
+          <summary
+            className={`cursor-pointer font-medium transition-colors flex items-center gap-2 list-none [&::-webkit-details-marker]:hidden ${styles.text}`}
+          >
+            <span
+              className={`group-open:hidden border px-4 py-2 rounded-lg text-sm inline-block ${styles.chip}`}
+            >
+              Show Answer
+            </span>
+            <span
+              className={`hidden group-open:inline-block border px-4 py-2 rounded-lg text-sm ${styles.chip}`}
+            >
+              Hide Answer
+            </span>
+          </summary>
+          <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300 rounded-xl border border-green-200 dark:border-green-800/50 text-sm leading-relaxed">
+            {answer}
+          </div>
+        </details>
+      </div>
+    </div>
+  );
+};
+
+const atomicModels = [
+  {
+    year: "1803",
+    title: "Dalton's billiard-ball model",
+    idea: "Atoms are tiny, indivisible, indestructible spheres. Each element has atoms of a characteristic mass.",
+    limitation:
+      "Could not account for subatomic particles, ions, or isotopes.",
+  },
+  {
+    year: "1897",
+    title: "Thomson's plum-pudding model",
+    idea: "Negative electrons are embedded in a uniform sphere of positive charge, like seeds in a watermelon.",
+    limitation:
+      "Could not explain the large-angle scattering of alpha particles.",
+  },
+  {
+    year: "1911",
+    title: "Rutherford's nuclear model",
+    idea: "A tiny, dense, positive nucleus holds nearly all the mass, with electrons in the surrounding empty space.",
+    limitation:
+      "Classical physics predicted orbiting electrons would radiate energy and spiral into the nucleus; it also could not explain line spectra.",
+  },
+  {
+    year: "1913",
+    title: "Bohr's planetary model",
+    idea: "Electrons travel in fixed circular orbits. Angular momentum is quantized, and photons are emitted or absorbed during jumps between levels.",
+    limitation:
+      "Worked only for one-electron species such as H, He⁺, and Li²⁺; failed for multi-electron atoms and fine structure.",
+  },
+  {
+    year: "1926",
+    title: "Quantum mechanical model",
+    idea: "Schrödinger's wave equation replaces fixed orbits with orbitals — regions of high probability. Quantum numbers label each electron state.",
+    limitation:
+      "Abstract and probabilistic; it gives no definite electron path, consistent with the Heisenberg uncertainty principle.",
+  },
+];
+
+const hydrogenLevels = [
+  { level: "n = ∞", energy: "0 eV", width: "w-full" },
+  { level: "n = 4", energy: "−0.85 eV", width: "w-11/12" },
+  { level: "n = 3", energy: "−1.51 eV", width: "w-3/4" },
+  { level: "n = 2", energy: "−3.40 eV", width: "w-1/2" },
+  { level: "n = 1", energy: "−13.6 eV", width: "w-1/4" },
+];
+
+const orbitalFillingOrder = [
+  "1s",
+  "2s",
+  "2p",
+  "3s",
+  "3p",
+  "4s",
+  "3d",
+  "4p",
+  "5s",
+  "4d",
+  "5p",
+  "6s",
+  "4f",
+  "5d",
+  "6p",
+];
+
+interface OrbitalGroup {
+  label: string;
+  boxes: string[];
+}
+
+interface OrbitalDiagramProps {
+  element: string;
+  configuration: string;
+  groups: OrbitalGroup[];
+}
+
+const OrbitalDiagram: React.FC<OrbitalDiagramProps> = ({
+  element,
+  configuration,
+  groups,
+}) => (
+  <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 p-5">
+    <div className="flex flex-wrap items-baseline justify-between gap-2 mb-4">
+      <h5 className="m-0 text-base font-bold text-slate-900 dark:text-white">
+        {element}
+      </h5>
+      <code className="rounded-md bg-white dark:bg-slate-900 px-2 py-1 text-xs font-mono text-green-700 dark:text-green-400 border border-slate-200 dark:border-slate-700">
+        {configuration}
+      </code>
+    </div>
+    <div className="flex flex-wrap gap-4">
+      {groups.map((group) => (
+        <div key={group.label}>
+          <div className="mb-1 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            {group.label}
+          </div>
+          <div className="flex gap-1">
+            {group.boxes.map((electrons, index) => (
+              <div
+                key={`${group.label}-${index}`}
+                className="flex h-9 w-9 items-center justify-center rounded-md border border-slate-300 bg-white text-[11px] font-bold leading-none text-green-700 dark:border-slate-600 dark:bg-slate-900 dark:text-green-400"
+              >
+                {electrons}
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
+  // Scroll to subtopic when selected
+  useEffect(() => {
+    if (selectedSubtopic) {
+      const subtopicId = selectedSubtopic
+        .split(".")
+        .slice(0, 2)
+        .join(".")
+        .trim();
+      const element = document.getElementById(`subtopic-${subtopicId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, [selectedSubtopic]);
+
+  return (
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+      {/* Hero Section */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative mb-16 bg-gradient-to-br from-green-600 via-teal-700 to-slate-900 rounded-3xl p-8 sm:p-12 text-white overflow-hidden shadow-2xl"
+      >
+        <div className="absolute top-0 right-0 -mt-10 -mr-10 opacity-10">
+          <Atom size={280} />
+        </div>
+        <div className="absolute -bottom-16 left-1/3 h-48 w-48 rounded-full bg-green-400/20 blur-3xl" />
+        <div className="relative z-10">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/20 backdrop-blur-md text-white rounded-full text-xs font-bold tracking-widest uppercase mb-6 shadow-sm border border-white/30">
+            <Beaker size={14} />
+            Chapter 2
+          </span>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black leading-tight mb-6 tracking-tight">
+            Structure of the <br className="hidden sm:block" />
+            <span className="text-green-200">Atom</span>
+          </h1>
+          <p className="text-lg sm:text-xl text-green-50 max-w-2xl font-light leading-relaxed">
+            From cathode rays to quantum numbers — follow the experiments
+            that cracked the atom open and the rules that govern every electron
+            inside it.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-2">
+            {[
+              "2.1 Subatomic particles",
+              "2.2 Atomic models",
+              "2.3 Quantum numbers",
+              "2.4 Electronic configuration",
+            ].map((label) => (
+              <span
+                key={label}
+                className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-green-50 backdrop-blur-sm"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-16 pb-20"
+      >
+        {/* Section 2.1 */}
+        <motion.section
+          variants={itemVariants}
+          id="subtopic-2.1"
+          className="scroll-mt-24"
+        >
+          <div className={cardClass}>
+            <div className={sectionHeaderClass}>
+              <div
+                className={`${numberBoxClass} bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400`}
+              >
+                2.1
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+                Discovery of Subatomic Particles
+              </h3>
+            </div>
+
+            <div className={proseClass}>
+              <p className="lead text-xl text-slate-700 dark:text-slate-200 font-medium mb-8">
+                For centuries the atom was thought to be indivisible. Then
+                experiments with electric currents and gas-discharge tubes
+                revealed that the atom itself has an internal structure.
+              </p>
+
+              <p>
+                Three subatomic particles build every atom: the negatively
+                charged <strong>electron</strong>, the positively charged{" "}
+                <strong>proton</strong>, and the neutral{" "}
+                <strong>neutron</strong>. Their discovery happened over more
+                than three decades, each experiment sharpening the picture of
+                what matter is made of.
+              </p>
+
+              {/* Particle Cards */}
+              <div className="grid gap-4 md:grid-cols-3 my-8">
+                <div className="rounded-2xl border border-green-100 dark:border-green-800/60 bg-green-50/50 dark:bg-green-900/10 p-5">
+                  <div className="flex items-center justify-between gap-2 mb-4">
+                    <h4 className="m-0 text-lg font-bold text-green-900 dark:text-green-300">
+                      Electron
+                    </h4>
+                    <span className="rounded-full bg-green-100 dark:bg-green-900/50 px-2.5 py-1 text-xs font-bold text-green-700 dark:text-green-300">
+                      e⁻
+                    </span>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between gap-3">
+                      <span className="text-slate-500 dark:text-slate-400">
+                        Charge
+                      </span>
+                      <span className="font-semibold text-slate-800 dark:text-slate-200">
+                        −1
+                      </span>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <span className="text-slate-500 dark:text-slate-400">
+                        Mass
+                      </span>
+                      <span className="font-semibold text-slate-800 dark:text-slate-200">
+                        9.109 × 10⁻³¹ kg
+                      </span>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <span className="text-slate-500 dark:text-slate-400">
+                        Discovered
+                      </span>
+                      <span className="font-semibold text-slate-800 dark:text-slate-200 text-right">
+                        J. J. Thomson, 1897
+                      </span>
+                    </div>
+                    <p className="m-0 pt-2 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                      Orbits in the electron cloud; its mass is about 1/1837 of
+                      a proton.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-blue-100 dark:border-blue-800/60 bg-blue-50/50 dark:bg-blue-900/10 p-5">
+                  <div className="flex items-center justify-between gap-2 mb-4">
+                    <h4 className="m-0 text-lg font-bold text-blue-900 dark:text-blue-300">
+                      Proton
+                    </h4>
+                    <span className="rounded-full bg-blue-100 dark:bg-blue-900/50 px-2.5 py-1 text-xs font-bold text-blue-700 dark:text-blue-300">
+                      p⁺
+                    </span>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between gap-3">
+                      <span className="text-slate-500 dark:text-slate-400">
+                        Charge
+                      </span>
+                      <span className="font-semibold text-slate-800 dark:text-slate-200">
+                        +1
+                      </span>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <span className="text-slate-500 dark:text-slate-400">
+                        Mass
+                      </span>
+                      <span className="font-semibold text-slate-800 dark:text-slate-200">
+                        1.673 × 10⁻²⁷ kg
+                      </span>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <span className="text-slate-500 dark:text-slate-400">
+                        Discovered
+                      </span>
+                      <span className="font-semibold text-slate-800 dark:text-slate-200 text-right">
+                        E. Goldstein, 1886
+                      </span>
+                    </div>
+                    <p className="m-0 pt-2 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                      Found in the nucleus. The number of protons is the atomic
+                      number, Z.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-amber-100 dark:border-amber-800/60 bg-amber-50/50 dark:bg-amber-900/10 p-5">
+                  <div className="flex items-center justify-between gap-2 mb-4">
+                    <h4 className="m-0 text-lg font-bold text-amber-900 dark:text-amber-300">
+                      Neutron
+                    </h4>
+                    <span className="rounded-full bg-amber-100 dark:bg-amber-900/50 px-2.5 py-1 text-xs font-bold text-amber-700 dark:text-amber-300">
+                      n⁰
+                    </span>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between gap-3">
+                      <span className="text-slate-500 dark:text-slate-400">
+                        Charge
+                      </span>
+                      <span className="font-semibold text-slate-800 dark:text-slate-200">
+                        0
+                      </span>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <span className="text-slate-500 dark:text-slate-400">
+                        Mass
+                      </span>
+                      <span className="font-semibold text-slate-800 dark:text-slate-200">
+                        1.675 × 10⁻²⁷ kg
+                      </span>
+                    </div>
+                    <div className="flex justify-between gap-3">
+                      <span className="text-slate-500 dark:text-slate-400">
+                        Discovered
+                      </span>
+                      <span className="font-semibold text-slate-800 dark:text-slate-200 text-right">
+                        J. Chadwick, 1932
+                      </span>
+                    </div>
+                    <p className="m-0 pt-2 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                      Found in the nucleus; adds mass but no charge. Number of
+                      neutrons is A − Z.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Cathode Ray Experiment */}
+              <div className="my-8 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 p-6">
+                <h4 className="m-0 mb-4 flex items-center gap-2 text-lg font-bold text-slate-900 dark:text-white">
+                  <Zap className="h-5 w-5 text-green-500" />
+                  How cathode rays revealed the electron
+                </h4>
+                <ul className="m-0 space-y-3 pl-5 text-sm list-disc">
+                  <li>
+                    A high voltage across a gas-discharge tube produces a beam
+                    of rays from the cathode (negative electrode).
+                  </li>
+                  <li>
+                    The rays bend toward the positive plate in an electric
+                    field and in a magnetic field — proof they carry{" "}
+                    <strong>negative charge</strong>.
+                  </li>
+                  <li>
+                    The charge-to-mass ratio (e/m = 1.76 × 10¹¹ C/kg) was the
+                    same for every gas and electrode material. Electrons are
+                    therefore a universal part of all atoms.
+                  </li>
+                  <li>
+                    Millikan's oil-drop experiment (1909) measured the
+                    elementary charge: −1.602 × 10⁻¹⁹ C.
+                  </li>
+                </ul>
+              </div>
+
+              {/* Properties Table */}
+              <div className="my-8 overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
+                <table className="w-full min-w-[560px] text-sm m-0">
+                  <thead className="bg-slate-100 dark:bg-slate-800">
+                    <tr>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-slate-200">
+                        Property
+                      </th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-slate-200">
+                        Electron
+                      </th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-slate-200">
+                        Proton
+                      </th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-slate-200">
+                        Neutron
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                    <tr>
+                      <td className="px-4 py-3 font-medium text-slate-500 dark:text-slate-400">
+                        Symbol
+                      </td>
+                      <td className="px-4 py-3 text-slate-800 dark:text-slate-200">
+                        e⁻
+                      </td>
+                      <td className="px-4 py-3 text-slate-800 dark:text-slate-200">
+                        p⁺
+                      </td>
+                      <td className="px-4 py-3 text-slate-800 dark:text-slate-200">
+                        n⁰
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 font-medium text-slate-500 dark:text-slate-400">
+                        Relative charge
+                      </td>
+                      <td className="px-4 py-3 text-slate-800 dark:text-slate-200">
+                        −1
+                      </td>
+                      <td className="px-4 py-3 text-slate-800 dark:text-slate-200">
+                        +1
+                      </td>
+                      <td className="px-4 py-3 text-slate-800 dark:text-slate-200">
+                        0
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 font-medium text-slate-500 dark:text-slate-400">
+                        Absolute charge
+                      </td>
+                      <td className="px-4 py-3 text-slate-800 dark:text-slate-200">
+                        −1.602 × 10⁻¹⁹ C
+                      </td>
+                      <td className="px-4 py-3 text-slate-800 dark:text-slate-200">
+                        +1.602 × 10⁻¹⁹ C
+                      </td>
+                      <td className="px-4 py-3 text-slate-800 dark:text-slate-200">
+                        0
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 font-medium text-slate-500 dark:text-slate-400">
+                        Mass
+                      </td>
+                      <td className="px-4 py-3 text-slate-800 dark:text-slate-200">
+                        9.109 × 10⁻³¹ kg
+                      </td>
+                      <td className="px-4 py-3 text-slate-800 dark:text-slate-200">
+                        1.673 × 10⁻²⁷ kg
+                      </td>
+                      <td className="px-4 py-3 text-slate-800 dark:text-slate-200">
+                        1.675 × 10⁻²⁷ kg
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 font-medium text-slate-500 dark:text-slate-400">
+                        Mass in u
+                      </td>
+                      <td className="px-4 py-3 text-slate-800 dark:text-slate-200">
+                        ≈ 1/1837
+                      </td>
+                      <td className="px-4 py-3 text-slate-800 dark:text-slate-200">
+                        ≈ 1.007
+                      </td>
+                      <td className="px-4 py-3 text-slate-800 dark:text-slate-200">
+                        ≈ 1.008
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-3 font-medium text-slate-500 dark:text-slate-400">
+                        Location
+                      </td>
+                      <td className="px-4 py-3 text-slate-800 dark:text-slate-200">
+                        Electron cloud
+                      </td>
+                      <td className="px-4 py-3 text-slate-800 dark:text-slate-200">
+                        Nucleus
+                      </td>
+                      <td className="px-4 py-3 text-slate-800 dark:text-slate-200">
+                        Nucleus
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2 my-8">
+                <div className="rounded-2xl border border-green-100 dark:border-green-800/60 bg-green-50/50 dark:bg-green-900/10 p-5">
+                  <h4 className="m-0 mb-2 flex items-center gap-2 text-base font-bold text-green-900 dark:text-green-300">
+                    <CircleDot className="h-4 w-4" />
+                    Atomic number (Z)
+                  </h4>
+                  <p className="m-0 text-sm leading-relaxed">
+                    The number of protons in the nucleus. It identifies the
+                    element and equals the number of electrons in a neutral
+                    atom.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-teal-100 dark:border-teal-800/60 bg-teal-50/50 dark:bg-teal-900/10 p-5">
+                  <h4 className="m-0 mb-2 flex items-center gap-2 text-base font-bold text-teal-900 dark:text-teal-300">
+                    <Sigma className="h-4 w-4" />
+                    Mass number (A)
+                  </h4>
+                  <p className="m-0 text-sm leading-relaxed">
+                    The total number of protons and neutrons:{" "}
+                    <strong>A = Z + N</strong>. Isotopes of an element share Z
+                    but have different N and A.
+                  </p>
+                </div>
+              </div>
+
+              {/* Key Concept: Anatomy of the Atom */}
+              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 sm:p-8 my-8 border border-slate-200 dark:border-slate-700">
+                <h4 className="flex items-center gap-2 font-bold text-slate-900 dark:text-white mb-6 text-xl">
+                  <Target className="text-green-500" />
+                  Key Concept: Anatomy of the Atom
+                </h4>
+                <div className="grid gap-8 md:grid-cols-[230px_1fr] md:items-center">
+                  <div className="relative mx-auto flex h-52 w-52 items-center justify-center">
+                    <div className="absolute inset-0 rounded-full border-2 border-dashed border-green-300 dark:border-green-700/60" />
+                    <div className="absolute inset-8 rounded-full border-2 border-dashed border-teal-300 dark:border-teal-700/60" />
+                    <div className="absolute inset-16 rounded-full border-2 border-dashed border-emerald-300 dark:border-emerald-700/60" />
+                    <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-teal-600 text-[10px] font-bold text-white shadow-lg">
+                      p⁺ n⁰
+                    </div>
+                    {[
+                      "top-[16%] left-[30%]",
+                      "top-[8%] left-[58%]",
+                      "top-[40%] left-[10%]",
+                      "bottom-[18%] left-[22%]",
+                      "bottom-[10%] right-[30%]",
+                      "top-[30%] right-[10%]",
+                      "bottom-[34%] right-[14%]",
+                    ].map((position) => (
+                      <span
+                        key={position}
+                        className={`absolute h-2 w-2 rounded-full bg-emerald-500 shadow-sm ${position}`}
+                      />
+                    ))}
+                  </div>
+                  <ul className="m-0 space-y-3 pl-0 list-none text-sm">
+                    <li className="flex gap-3">
+                      <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-green-500" />
+                      <span>
+                        <strong className="text-slate-800 dark:text-slate-200">
+                          Nucleus:
+                        </strong>{" "}
+                        protons and neutrons packed into about 10⁻¹⁵ m. It
+                        holds more than 99.9% of the atom's mass.
+                      </span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-teal-500" />
+                      <span>
+                        <strong className="text-slate-800 dark:text-slate-200">
+                          Electron cloud:
+                        </strong>{" "}
+                        electrons occupy quantized orbitals around the nucleus.
+                        The whole atom is about 10⁻¹⁰ m across.
+                      </span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
+                      <span>
+                        <strong className="text-slate-800 dark:text-slate-200">
+                          Neutral atom:
+                        </strong>{" "}
+                        number of protons equals number of electrons. Ions form
+                        when electrons are gained or lost.
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Real World Example */}
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl p-6 sm:p-8 my-8 border border-amber-200/50 dark:border-amber-700/30">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-amber-100 dark:bg-amber-800/50 rounded-xl text-amber-600 dark:text-amber-400 mt-1">
+                    <Lightbulb size={24} />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-amber-900 dark:text-amber-300 mb-2 m-0">
+                      Real-World Example: Cathode Rays in Your Living Room
+                    </h4>
+                    <p className="m-0 text-amber-800/80 dark:text-amber-200/80 leading-relaxed">
+                      Old CRT televisions and computer monitors worked by firing
+                      a beam of electrons at a phosphor-coated screen. The same
+                      cathode-ray physics that revealed the electron in 1897
+                      powered displays for almost a century — and helped launch
+                      the entire electronics industry.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <Exercise
+                number="2.1"
+                accent="green"
+                question={
+                  <p className="m-0">
+                    An atom contains 16 protons, 16 electrons, and 18 neutrons.
+                    Identify the element, its atomic number (Z), its mass number
+                    (A), and its overall charge.
+                  </p>
+                }
+                answer={
+                  <div className="space-y-2">
+                    <p className="m-0">
+                      <strong>Element:</strong> sulfur (S), because Z = 16.
+                    </p>
+                    <p className="m-0">
+                      <strong>Atomic number:</strong> Z = 16.
+                    </p>
+                    <p className="m-0">
+                      <strong>Mass number:</strong> A = protons + neutrons = 16
+                      + 18 = 34 (sulfur-34).
+                    </p>
+                    <p className="m-0">
+                      <strong>Charge:</strong> 16 protons and 16 electrons
+                      cancel, so the atom is neutral (charge 0).
+                    </p>
+                  </div>
+                }
+              />
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Section 2.2 */}
+        <motion.section
+          variants={itemVariants}
+          id="subtopic-2.2"
+          className="scroll-mt-24"
+        >
+          <div className={cardClass}>
+            <div className={sectionHeaderClass}>
+              <div
+                className={`${numberBoxClass} bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400`}
+              >
+                2.2
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+                Atomic Models
+              </h3>
+            </div>
+
+            <div className={proseClass}>
+              <p className="lead text-xl text-slate-700 dark:text-slate-200 font-medium mb-8">
+                Every atomic model is a useful story that explains some
+                evidence — until a new experiment reveals what the story cannot
+                explain.
+              </p>
+
+              <p>
+                Atomic theory did not appear fully formed. It evolved as
+                physicists fired particles at matter and watched how they
+                scattered. Each model below kept what worked and replaced what
+                failed.
+              </p>
+
+              <h4 className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+                <Clock className="h-5 w-5 text-blue-500" />
+                A timeline of atomic models
+              </h4>
+
+              <div className="space-y-4 my-6">
+                {atomicModels.map((model, index) => (
+                  <div
+                    key={model.year}
+                    className="grid grid-cols-[2.5rem_1fr] gap-4"
+                  >
+                    <div className="flex flex-col items-center">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/40 text-sm font-bold text-blue-700 dark:text-blue-300">
+                        {index + 1}
+                      </div>
+                      {index < atomicModels.length - 1 && (
+                        <div className="mt-2 w-0.5 flex-1 bg-gradient-to-b from-blue-200 to-transparent dark:from-blue-800" />
+                      )}
+                    </div>
+                    <div className="mb-2 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 p-5">
+                      <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <span className="rounded-full bg-blue-600 px-2.5 py-0.5 text-[11px] font-bold tracking-wide text-white">
+                          {model.year}
+                        </span>
+                        <h4 className="m-0 text-lg font-bold text-slate-900 dark:text-white">
+                          {model.title}
+                        </h4>
+                      </div>
+                      <p className="m-0 mb-2 text-sm text-slate-600 dark:text-slate-300">
+                        {model.idea}
+                      </p>
+                      <p className="m-0 text-xs text-rose-600 dark:text-rose-400">
+                        <span className="font-bold">Limitation:</span>{" "}
+                        {model.limitation}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Rutherford Experiment */}
+              <h4 className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-white mt-10 mb-4">
+                <Radiation className="h-5 w-5 text-blue-500" />
+                Rutherford's gold-foil experiment (1909–1911)
+              </h4>
+
+              <p>
+                Rutherford's team (Geiger and Marsden) fired positively charged
+                alpha particles at an extremely thin gold foil and recorded
+                where they landed on a zinc-sulfide screen.
+              </p>
+
+              <div className="my-6 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-5">
+                <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+                  <div className="text-center">
+                    <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400">
+                      <Radiation size={22} />
+                    </div>
+                    <p className="m-0 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                      Alpha source
+                    </p>
+                  </div>
+                  <ArrowRight className="h-5 w-5 rotate-90 text-rose-400 sm:rotate-0" />
+                  <div className="text-center">
+                    <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/40 text-sm font-bold text-yellow-700 dark:text-yellow-300">
+                      Au
+                    </div>
+                    <p className="m-0 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                      Gold foil
+                    </p>
+                  </div>
+                  <ArrowRight className="h-5 w-5 rotate-90 text-rose-400 sm:rotate-0" />
+                  <div className="text-center">
+                    <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+                      ZnS
+                    </div>
+                    <p className="m-0 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                      Detector screen
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-3 my-6">
+                <div className="rounded-2xl border border-green-100 dark:border-green-800/60 bg-green-50/50 dark:bg-green-900/10 p-4">
+                  <p className="m-0 mb-1 text-2xl font-black text-green-600 dark:text-green-400">
+                    Most
+                  </p>
+                  <p className="m-0 text-sm font-semibold text-slate-800 dark:text-slate-200">
+                    passed straight through
+                  </p>
+                  <p className="m-0 mt-2 text-xs text-slate-600 dark:text-slate-400">
+                    The atom is mostly empty space.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-amber-100 dark:border-amber-800/60 bg-amber-50/50 dark:bg-amber-900/10 p-4">
+                  <p className="m-0 mb-1 text-2xl font-black text-amber-600 dark:text-amber-400">
+                    Some
+                  </p>
+                  <p className="m-0 text-sm font-semibold text-slate-800 dark:text-slate-200">
+                    deflected at small angles
+                  </p>
+                  <p className="m-0 mt-2 text-xs text-slate-600 dark:text-slate-400">
+                    Positive charge is concentrated somewhere.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-rose-100 dark:border-rose-800/60 bg-rose-50/50 dark:bg-rose-900/10 p-4">
+                  <p className="m-0 mb-1 text-2xl font-black text-rose-600 dark:text-rose-400">
+                    ≈ 1 in 20,000
+                  </p>
+                  <p className="m-0 text-sm font-semibold text-slate-800 dark:text-slate-200">
+                    bounced back
+                  </p>
+                  <p className="m-0 mt-2 text-xs text-slate-600 dark:text-slate-400">
+                    A tiny, massive, positive nucleus deflected them.
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-emerald-200 dark:border-emerald-800/60 bg-emerald-50/60 dark:bg-emerald-900/15 p-5 my-6">
+                <h4 className="m-0 mb-2 text-base font-bold text-emerald-900 dark:text-emerald-300">
+                  Conclusion: the nuclear model
+                </h4>
+                <p className="m-0 text-sm leading-relaxed">
+                  Nearly all the atom's mass and all of its positive charge sit
+                  in a minute nucleus. The nucleus is roughly 10⁻¹⁵ m across
+                  while the atom is about 10⁻¹⁰ m — if the atom were a football
+                  stadium, the nucleus would be a marble at the centre.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-rose-200 dark:border-rose-800/60 bg-rose-50/60 dark:bg-rose-900/15 p-5 my-6">
+                <h4 className="m-0 mb-2 text-base font-bold text-rose-900 dark:text-rose-300">
+                  Why the nuclear model was incomplete
+                </h4>
+                <p className="m-0 text-sm leading-relaxed">
+                  Classical electromagnetism says an accelerating charge
+                  radiates energy. An electron orbiting a nucleus would lose
+                  energy and spiral inward in a fraction of a second — atoms
+                  should not be stable. The model also could not explain the
+                  sharp, discrete lines in atomic spectra.
+                </p>
+              </div>
+
+              {/* Bohr Model */}
+              <h4 className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-white mt-10 mb-4">
+                <Orbit className="h-5 w-5 text-blue-500" />
+                Bohr's quantized orbits (1913)
+              </h4>
+
+              <p>
+                Niels Bohr rescued the atom by declaring that electrons can
+                occupy only certain allowed orbits, where they do not radiate.
+              </p>
+
+              <div className="grid gap-4 sm:grid-cols-3 my-6">
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 p-4">
+                  <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                    Postulate 1
+                  </span>
+                  <p className="m-0 mt-2 text-sm leading-relaxed">
+                    Electrons move in stationary circular orbits without losing
+                    energy.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 p-4">
+                  <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                    Postulate 2
+                  </span>
+                  <p className="m-0 mt-2 text-sm leading-relaxed">
+                    Angular momentum is quantized:{" "}
+                    <strong>mvr = nh/2π</strong>, so only certain orbits are
+                    allowed.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 p-4">
+                  <span className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                    Postulate 3
+                  </span>
+                  <p className="m-0 mt-2 text-sm leading-relaxed">
+                    A jump between levels absorbs or emits a photon with energy{" "}
+                    <strong>ΔE = hν</strong>.
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 my-6">
+                <h4 className="m-0 mb-5 text-base font-bold text-slate-900 dark:text-white">
+                  Hydrogen energy levels
+                </h4>
+                <div className="space-y-3">
+                  {hydrogenLevels.map((level) => (
+                    <div key={level.level} className="flex items-center gap-3">
+                      <span className="w-16 shrink-0 text-right font-mono text-xs text-slate-500 dark:text-slate-400">
+                        {level.level}
+                      </span>
+                      <div className="flex-1">
+                        <div
+                          className={`h-2.5 rounded-full bg-gradient-to-r from-green-500 to-teal-500 ${level.width}`}
+                        />
+                      </div>
+                      <span className="w-20 shrink-0 font-mono text-xs text-slate-600 dark:text-slate-300">
+                        {level.energy}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-5 flex items-start gap-2 rounded-xl bg-green-50 dark:bg-green-900/20 p-3">
+                  <RefreshCw className="mt-0.5 h-4 w-4 shrink-0 text-green-600 dark:text-green-400" />
+                  <p className="m-0 text-xs leading-relaxed text-green-800 dark:text-green-300">
+                    An electron dropping from n = 3 to n = 2 releases a photon
+                    of ΔE = 1.89 eV — the red 656 nm line of hydrogen.
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-sm">
+                <strong>Success:</strong> Bohr's model explained the hydrogen
+                spectrum and introduced quantized energy levels.{" "}
+                <strong>Limitations:</strong> it only works for one-electron
+                systems (H, He⁺, Li²⁺); it cannot explain multi-electron atoms,
+                fine structure, or the Zeeman effect.
+              </p>
+
+              {/* Quantum Mechanical Model */}
+              <h4 className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-white mt-10 mb-4">
+                <Waves className="h-5 w-5 text-blue-500" />
+                The quantum mechanical model (1926)
+              </h4>
+
+              <div className="grid gap-6 md:grid-cols-[180px_1fr] md:items-center my-6">
+                <div className="relative mx-auto h-40 w-40">
+                  <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(16,185,129,0.55)_0%,rgba(20,184,166,0.25)_45%,transparent_72%)] blur-sm" />
+                  <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-200">
+                    1s orbital
+                  </div>
+                </div>
+                <div>
+                  <p className="mt-0">
+                    Schrödinger's wave equation describes the electron as a
+                    standing wave. The square of the wavefunction gives the
+                    probability of finding the electron at a point.
+                  </p>
+                  <ul className="m-0 space-y-2 pl-0 list-none text-sm">
+                    <li className="flex gap-2">
+                      <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-green-500" />
+                      <span>
+                        <strong>1924:</strong> de Broglie proposes matter waves.
+                      </span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-teal-500" />
+                      <span>
+                        <strong>1926:</strong> Schrödinger writes the wave
+                        equation; orbitals replace orbits.
+                      </span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
+                      <span>
+                        <strong>1927:</strong> Heisenberg's uncertainty
+                        principle rules out definite electron paths.
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Key Takeaway */}
+              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 sm:p-8 my-8 border border-slate-200 dark:border-slate-700">
+                <h4 className="flex items-center gap-2 font-bold text-slate-900 dark:text-white mb-5 text-xl">
+                  <Target className="text-blue-500" />
+                  Key Takeaway: What Survived the Model Wars
+                </h4>
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div className="rounded-xl bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-700">
+                    <p className="m-0 text-sm font-bold text-slate-900 dark:text-white">
+                      A nuclear atom
+                    </p>
+                    <p className="m-0 mt-1 text-xs text-slate-600 dark:text-slate-400">
+                      A tiny, dense, positive nucleus surrounded by electrons.
+                    </p>
+                  </div>
+                  <div className="rounded-xl bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-700">
+                    <p className="m-0 text-sm font-bold text-slate-900 dark:text-white">
+                      Quantized energy
+                    </p>
+                    <p className="m-0 mt-1 text-xs text-slate-600 dark:text-slate-400">
+                      Electrons occupy discrete energy levels, not a continuum.
+                    </p>
+                  </div>
+                  <div className="rounded-xl bg-white dark:bg-slate-900 p-4 border border-slate-200 dark:border-slate-700">
+                    <p className="m-0 text-sm font-bold text-slate-900 dark:text-white">
+                      Probability orbitals
+                    </p>
+                    <p className="m-0 mt-1 text-xs text-slate-600 dark:text-slate-400">
+                      We describe where an electron is likely to be, not a
+                      precise orbit.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Real World Example */}
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl p-6 sm:p-8 my-8 border border-amber-200/50 dark:border-amber-700/30">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-amber-100 dark:bg-amber-800/50 rounded-xl text-amber-600 dark:text-amber-400 mt-1">
+                    <Lightbulb size={24} />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-amber-900 dark:text-amber-300 mb-2 m-0">
+                      Real-World Example: Why Neon Signs Glow
+                    </h4>
+                    <p className="m-0 text-amber-800/80 dark:text-amber-200/80 leading-relaxed">
+                      Electric current excites neon electrons into higher energy
+                      levels. When they fall back, they emit photons at specific
+                      wavelengths. Bohr's quantized jumps are exactly why each
+                      gas glows with its own signature colour: neon red-orange,
+                      argon blue, krypton pale violet.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <Exercise
+                number="2.2"
+                accent="blue"
+                question={
+                  <p className="m-0">
+                    In Rutherford's gold-foil experiment, why did most alpha
+                    particles pass through undeflected while a very small
+                    fraction bounced back?
+                  </p>
+                }
+                answer={
+                  <div className="space-y-2">
+                    <p className="m-0">
+                      <strong>Most passed through</strong> because the atom is
+                      mostly empty space; an alpha particle rarely comes close
+                      to a nucleus.
+                    </p>
+                    <p className="m-0">
+                      <strong>A few bounced back</strong> because they
+                      approached a tiny, dense region of concentrated positive
+                      charge — the nucleus. The strong electrostatic repulsion
+                      reversed their direction of motion.
+                    </p>
+                    <p className="m-0">
+                      The large-angle deflections also showed that this
+                      positive charge contains most of the atom's mass.
+                    </p>
+                  </div>
+                }
+              />
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Section 2.3 */}
+        <motion.section
+          variants={itemVariants}
+          id="subtopic-2.3"
+          className="scroll-mt-24"
+        >
+          <div className={cardClass}>
+            <div className={sectionHeaderClass}>
+              <div
+                className={`${numberBoxClass} bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400`}
+              >
+                2.3
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+                Quantum Numbers
+              </h3>
+            </div>
+
+            <div className={proseClass}>
+              <p className="lead text-xl text-slate-700 dark:text-slate-200 font-medium mb-8">
+                Four quantum numbers work like a postal address for an
+                electron. Together they specify its shell, subshell, orbital,
+                and spin.
+              </p>
+
+              <p>
+                The quantum mechanical model replaces Bohr's circular orbits
+                with three-dimensional probability regions called{" "}
+                <strong>orbitals</strong>. Solving the Schrödinger equation
+                produces four quantum numbers that completely describe an
+                electron's state in an atom.
+              </p>
+
+              {/* Four Quantum Number Cards */}
+              <div className="grid gap-4 md:grid-cols-2 my-8">
+                <div className="rounded-2xl border border-purple-100 dark:border-purple-800/60 bg-purple-50/40 dark:bg-purple-900/10 p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400">
+                      <Sigma className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h4 className="m-0 text-base font-bold text-slate-900 dark:text-white">
+                        Principal quantum number (n)
+                      </h4>
+                      <p className="m-0 text-[11px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">
+                        The shell
+                      </p>
+                    </div>
+                  </div>
+                  <ul className="m-0 space-y-1.5 pl-0 list-none text-sm">
+                    <li>
+                      Allowed values: <strong>1, 2, 3, …</strong>
+                    </li>
+                    <li>
+                      Determines the shell (K, L, M, N…) and the main energy and
+                      size of the orbital.
+                    </li>
+                    <li>
+                      Maximum electrons in the shell: <strong>2n²</strong>.
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="rounded-2xl border border-blue-100 dark:border-blue-800/60 bg-blue-50/40 dark:bg-blue-900/10 p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
+                      <Layers className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h4 className="m-0 text-base font-bold text-slate-900 dark:text-white">
+                        Angular momentum number (l)
+                      </h4>
+                      <p className="m-0 text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                        The subshell
+                      </p>
+                    </div>
+                  </div>
+                  <ul className="m-0 space-y-1.5 pl-0 list-none text-sm">
+                    <li>
+                      Allowed values: <strong>0 to n − 1</strong>.
+                    </li>
+                    <li>
+                      Determines the subshell type: l = 0 (s), 1 (p), 2 (d), 3
+                      (f).
+                    </li>
+                    <li>
+                      A shell with principal number n contains{" "}
+                      <strong>n subshells</strong> and sets the orbital shape.
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="rounded-2xl border border-rose-100 dark:border-rose-800/60 bg-rose-50/40 dark:bg-rose-900/10 p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400">
+                      <Magnet className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h4 className="m-0 text-base font-bold text-slate-900 dark:text-white">
+                        Magnetic quantum number (m<sub>l</sub>)
+                      </h4>
+                      <p className="m-0 text-[11px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400">
+                        The orbital
+                      </p>
+                    </div>
+                  </div>
+                  <ul className="m-0 space-y-1.5 pl-0 list-none text-sm">
+                    <li>
+                      Allowed values: <strong>−l to +l</strong>, including 0.
+                    </li>
+                    <li>
+                      Determines the orientation of the orbital in space.
+                    </li>
+                    <li>
+                      Number of orbitals in a subshell:{" "}
+                      <strong>2l + 1</strong>.
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="rounded-2xl border border-amber-100 dark:border-amber-800/60 bg-amber-50/40 dark:bg-amber-900/10 p-5">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400">
+                      <RefreshCw className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h4 className="m-0 text-base font-bold text-slate-900 dark:text-white">
+                        Spin quantum number (m<sub>s</sub>)
+                      </h4>
+                      <p className="m-0 text-[11px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                        The spin
+                      </p>
+                    </div>
+                  </div>
+                  <ul className="m-0 space-y-1.5 pl-0 list-none text-sm">
+                    <li>
+                      Allowed values: <strong>+½ or −½</strong>.
+                    </li>
+                    <li>Describes the electron's spin orientation.</li>
+                    <li>
+                      An orbital holds at most <strong>2 electrons</strong>{" "}
+                      with opposite spins.
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Worked Example */}
+              <div className="rounded-2xl border border-purple-200 dark:border-purple-800/60 bg-purple-50/50 dark:bg-purple-900/15 p-5 sm:p-6 my-8">
+                <h4 className="m-0 mb-4 flex items-center gap-2 text-base font-bold text-purple-900 dark:text-purple-300">
+                  <Sigma className="h-4 w-4" />
+                  Worked Example: Unpack the n = 3 shell
+                </h4>
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  {[
+                    { label: "Allowed l", value: "0, 1, 2" },
+                    { label: "Subshells", value: "3s, 3p, 3d" },
+                    { label: "Orbitals", value: "1 + 3 + 5 = 9" },
+                    { label: "Max electrons", value: "9 × 2 = 18" },
+                  ].map((step) => (
+                    <div
+                      key={step.label}
+                      className="rounded-xl bg-white dark:bg-slate-900 p-3 border border-purple-100 dark:border-purple-800/60"
+                    >
+                      <p className="m-0 text-[10px] font-bold uppercase tracking-wider text-purple-500 dark:text-purple-400">
+                        {step.label}
+                      </p>
+                      <p className="m-0 mt-1 font-mono text-sm font-bold text-slate-800 dark:text-slate-200">
+                        {step.value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <p className="m-0 mt-4 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                  For the 3d subshell (l = 2), m<sub>l</sub> can be −2, −1, 0,
+                  +1, +2 — five orbitals, each holding two electrons.
+                </p>
+              </div>
+
+              {/* Subshell Table */}
+              <h4 className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+                <Table2 className="h-5 w-5 text-purple-500" />
+                Subshell quick reference
+              </h4>
+
+              <div className="my-6 overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
+                <table className="w-full min-w-[520px] text-sm m-0">
+                  <thead className="bg-slate-100 dark:bg-slate-800">
+                    <tr>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-slate-200">
+                        Subshell
+                      </th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-slate-200">
+                        l value
+                      </th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-slate-200">
+                        Orbitals (2l + 1)
+                      </th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-slate-200">
+                        Max electrons
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                    {[
+                      { name: "s", l: "0", orbitals: "1", electrons: "2" },
+                      { name: "p", l: "1", orbitals: "3", electrons: "6" },
+                      { name: "d", l: "2", orbitals: "5", electrons: "10" },
+                      { name: "f", l: "3", orbitals: "7", electrons: "14" },
+                    ].map((row) => (
+                      <tr key={row.name}>
+                        <td className="px-4 py-3 font-bold text-purple-700 dark:text-purple-300">
+                          {row.name}
+                        </td>
+                        <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                          {row.l}
+                        </td>
+                        <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                          {row.orbitals}
+                        </td>
+                        <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                          {row.electrons}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Shell Table */}
+              <h4 className="flex items-center gap-2 text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+                <Table2 className="h-5 w-5 text-purple-500" />
+                Capacity of the first four shells
+              </h4>
+
+              <div className="my-6 overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
+                <table className="w-full min-w-[520px] text-sm m-0">
+                  <thead className="bg-slate-100 dark:bg-slate-800">
+                    <tr>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-slate-200">
+                        n
+                      </th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-slate-200">
+                        Shell
+                      </th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-slate-200">
+                        Subshells
+                      </th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-slate-200">
+                        Orbitals (n²)
+                      </th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-slate-200">
+                        Max e⁻ (2n²)
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                    {[
+                      { n: "1", shell: "K", subshells: "1s", orbitals: "1", electrons: "2" },
+                      { n: "2", shell: "L", subshells: "2s 2p", orbitals: "4", electrons: "8" },
+                      { n: "3", shell: "M", subshells: "3s 3p 3d", orbitals: "9", electrons: "18" },
+                      { n: "4", shell: "N", subshells: "4s 4p 4d 4f", orbitals: "16", electrons: "32" },
+                    ].map((row) => (
+                      <tr key={row.n}>
+                        <td className="px-4 py-3 font-bold text-purple-700 dark:text-purple-300">
+                          {row.n}
+                        </td>
+                        <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                          {row.shell}
+                        </td>
+                        <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                          {row.subshells}
+                        </td>
+                        <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                          {row.orbitals}
+                        </td>
+                        <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                          {row.electrons}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Orbital Shapes */}
+              <h4 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-2">
+                Orbital shapes
+              </h4>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                The l value controls the shape of the probability cloud. These
+                are schematic cross-sections, not particle paths.
+              </p>
+
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 my-6">
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 p-4 text-center">
+                  <div className="flex h-20 items-center justify-center">
+                    <div className="h-16 w-16 rounded-full border-2 border-purple-300 bg-purple-400/25 dark:border-purple-700 dark:bg-purple-500/20" />
+                  </div>
+                  <p className="m-0 mt-2 text-sm font-bold text-slate-900 dark:text-white">
+                    s orbital
+                  </p>
+                  <p className="m-0 text-xs text-slate-500 dark:text-slate-400">
+                    spherical · 1 orientation
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 p-4 text-center">
+                  <div className="flex h-20 items-center justify-center">
+                    <div className="flex flex-col items-center gap-0.5">
+                      <div className="h-7 w-10 rounded-t-full rounded-b-[40%] border-2 border-purple-300 bg-purple-400/25 dark:border-purple-700 dark:bg-purple-500/20" />
+                      <div className="h-7 w-10 rounded-b-full rounded-t-[40%] border-2 border-purple-300 bg-purple-400/25 dark:border-purple-700 dark:bg-purple-500/20" />
+                    </div>
+                  </div>
+                  <p className="m-0 mt-2 text-sm font-bold text-slate-900 dark:text-white">
+                    p orbital
+                  </p>
+                  <p className="m-0 text-xs text-slate-500 dark:text-slate-400">
+                    dumbbell · 3 orientations
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 p-4 text-center">
+                  <div className="flex h-20 items-center justify-center">
+                    <div className="grid grid-cols-2 gap-0.5 rotate-45">
+                      <div className="h-7 w-7 rounded-full border-2 border-purple-300 bg-purple-400/25 dark:border-purple-700 dark:bg-purple-500/20" />
+                      <div className="h-7 w-7 rounded-full border-2 border-purple-300 bg-purple-400/25 dark:border-purple-700 dark:bg-purple-500/20" />
+                      <div className="h-7 w-7 rounded-full border-2 border-purple-300 bg-purple-400/25 dark:border-purple-700 dark:bg-purple-500/20" />
+                      <div className="h-7 w-7 rounded-full border-2 border-purple-300 bg-purple-400/25 dark:border-purple-700 dark:bg-purple-500/20" />
+                    </div>
+                  </div>
+                  <p className="m-0 mt-2 text-sm font-bold text-slate-900 dark:text-white">
+                    d orbital
+                  </p>
+                  <p className="m-0 text-xs text-slate-500 dark:text-slate-400">
+                    double dumbbell · 5 orientations
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 p-4 text-center">
+                  <div className="flex h-20 items-center justify-center">
+                    <div className="grid grid-cols-3 gap-0.5">
+                      {[0, 1, 2, 3, 4, 5].map((petal) => (
+                        <div
+                          key={petal}
+                          className="h-5 w-5 rounded-full border-2 border-purple-300 bg-purple-400/25 dark:border-purple-700 dark:bg-purple-500/20"
+                        />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="m-0 mt-2 text-sm font-bold text-slate-900 dark:text-white">
+                    f orbital
+                  </p>
+                  <p className="m-0 text-xs text-slate-500 dark:text-slate-400">
+                    complex · 7 orientations
+                  </p>
+                </div>
+              </div>
+
+              {/* Real World Analogy */}
+              <div className="bg-gradient-to-r from-purple-50 to-fuchsia-50 dark:from-purple-900/20 dark:to-fuchsia-900/20 rounded-2xl p-6 sm:p-8 my-8 border border-purple-200/50 dark:border-purple-700/30">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-purple-100 dark:bg-purple-800/50 rounded-xl text-purple-600 dark:text-purple-400 mt-1">
+                    <Lightbulb size={24} />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-purple-900 dark:text-purple-300 mb-2 m-0">
+                      Real-World Analogy: An Electron's Postal Address
+                    </h4>
+                    <div className="space-y-1.5 text-sm text-purple-800/80 dark:text-purple-200/80">
+                      <p className="m-0">
+                        <strong>Country → n:</strong> which shell the electron
+                        lives in.
+                      </p>
+                      <p className="m-0">
+                        <strong>State → l:</strong> which subshell (s, p, d, f).
+                      </p>
+                      <p className="m-0">
+                        <strong>City → m<sub>l</sub>:</strong> which orbital
+                        within that subshell.
+                      </p>
+                      <p className="m-0">
+                        <strong>House number → m<sub>s</sub>:</strong> the
+                        electron's spin.
+                      </p>
+                      <p className="m-0 pt-2 text-xs italic">
+                        Pauli's exclusion principle says no two electrons in an
+                        atom may share the same complete address.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <Exercise
+                number="2.3"
+                accent="purple"
+                question={
+                  <div>
+                    <p className="m-0 mb-3">
+                      (a) How many orbitals and how many electrons can the n = 4
+                      shell hold? List its subshells.
+                    </p>
+                    <p className="m-0">
+                      (b) Which set of quantum numbers is not allowed: n = 2, l
+                      = 1, m<sub>l</sub> = 0, or n = 2, l = 2, m<sub>l</sub> =
+                      1?
+                    </p>
+                  </div>
+                }
+                answer={
+                  <div className="space-y-3">
+                    <div>
+                      <p className="m-0 font-bold">(a) The n = 4 shell:</p>
+                      <p className="m-0">
+                        Subshells: 4s, 4p, 4d, 4f.
+                      </p>
+                      <p className="m-0">
+                        Orbitals: 1 + 3 + 5 + 7 = <strong>16</strong> (n²).
+                      </p>
+                      <p className="m-0">
+                        Electrons: 16 × 2 = <strong>32</strong> (2n²).
+                      </p>
+                    </div>
+                    <div>
+                      <p className="m-0 font-bold">(b) The invalid set:</p>
+                      <p className="m-0">
+                        n = 2, l = 2 is not allowed. For n = 2, l may only be 0
+                        or 1 because l ≤ n − 1.
+                      </p>
+                    </div>
+                  </div>
+                }
+              />
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Section 2.4 */}
+        <motion.section
+          variants={itemVariants}
+          id="subtopic-2.4"
+          className="scroll-mt-24"
+        >
+          <div className={cardClass}>
+            <div className={sectionHeaderClass}>
+              <div
+                className={`${numberBoxClass} bg-teal-100 dark:bg-teal-900/40 text-teal-600 dark:text-teal-400`}
+              >
+                2.4
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+                Electronic Configuration
+              </h3>
+            </div>
+
+            <div className={proseClass}>
+              <p className="lead text-xl text-slate-700 dark:text-slate-200 font-medium mb-8">
+                Electronic configuration is the arrangement of electrons among
+                orbitals. Three rules decide the order, and those rules explain
+                the shape of the periodic table.
+              </p>
+
+              {/* Three Rules */}
+              <div className="grid gap-4 md:grid-cols-3 my-8">
+                <div className="rounded-2xl border border-green-100 dark:border-green-800/60 bg-green-50/50 dark:bg-green-900/10 p-5">
+                  <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400">
+                    <Zap className="h-4 w-4" />
+                  </div>
+                  <h4 className="m-0 text-base font-bold text-green-900 dark:text-green-300">
+                    Aufbau principle
+                  </h4>
+                  <p className="m-0 mt-2 text-sm leading-relaxed">
+                    Build up from the lowest-energy orbital. Orbitals fill in
+                    order of increasing (n + l); if two have the same (n + l),
+                    the one with lower n fills first.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-blue-100 dark:border-blue-800/60 bg-blue-50/50 dark:bg-blue-900/10 p-5">
+                  <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
+                    <CircleDot className="h-4 w-4" />
+                  </div>
+                  <h4 className="m-0 text-base font-bold text-blue-900 dark:text-blue-300">
+                    Pauli exclusion principle
+                  </h4>
+                  <p className="m-0 mt-2 text-sm leading-relaxed">
+                    No two electrons in an atom can have the same set of four
+                    quantum numbers. Therefore an orbital holds at most two
+                    electrons, with opposite spins.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-amber-100 dark:border-amber-800/60 bg-amber-50/50 dark:bg-amber-900/10 p-5">
+                  <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400">
+                    <GitBranch className="h-4 w-4" />
+                  </div>
+                  <h4 className="m-0 text-base font-bold text-amber-900 dark:text-amber-300">
+                    Hund's rule
+                  </h4>
+                  <p className="m-0 mt-2 text-sm leading-relaxed">
+                    Degenerate orbitals (same energy) are occupied singly with
+                    parallel spins first. Pairing begins only after every
+                    orbital in the subshell has one electron.
+                  </p>
+                </div>
+              </div>
+
+              {/* Filling Order */}
+              <h4 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3">
+                Orbital filling order
+              </h4>
+              <div className="my-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 p-5">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {orbitalFillingOrder.map((subshell, index) => (
+                    <React.Fragment key={subshell}>
+                      <span
+                        className={`rounded-lg border px-2.5 py-1 text-xs font-mono font-bold ${
+                          subshell === "4s" || subshell === "3d"
+                            ? "border-amber-300 bg-amber-100 text-amber-800 dark:border-amber-700 dark:bg-amber-900/40 dark:text-amber-300"
+                            : "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+                        }`}
+                      >
+                        {subshell}
+                      </span>
+                      {index < orbitalFillingOrder.length - 1 && (
+                        <ArrowRight className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+                <p className="m-0 mt-4 text-xs leading-relaxed text-slate-600 dark:text-slate-400">
+                  Note the highlighted pair: <strong>4s fills before 3d</strong>{" "}
+                  because 4s has a lower (n + l) value. Once filled, the 3d
+                  electrons are written before 4s in the final configuration.
+                </p>
+              </div>
+
+              {/* Orbital Diagrams */}
+              <h4 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-2">
+                Reading orbital diagrams
+              </h4>
+              <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                Each box is one orbital. Arrows show electron spin. Carbon,
+                nitrogen, and oxygen show Hund's rule in action.
+              </p>
+
+              <div className="space-y-3 my-5">
+                <OrbitalDiagram
+                  element="Carbon (Z = 6)"
+                  configuration="1s² 2s² 2p²"
+                  groups={[
+                    { label: "1s", boxes: ["↑↓"] },
+                    { label: "2s", boxes: ["↑↓"] },
+                    { label: "2p", boxes: ["↑", "↑", ""] },
+                  ]}
+                />
+                <OrbitalDiagram
+                  element="Nitrogen (Z = 7)"
+                  configuration="1s² 2s² 2p³"
+                  groups={[
+                    { label: "1s", boxes: ["↑↓"] },
+                    { label: "2s", boxes: ["↑↓"] },
+                    { label: "2p", boxes: ["↑", "↑", "↑"] },
+                  ]}
+                />
+                <OrbitalDiagram
+                  element="Oxygen (Z = 8)"
+                  configuration="1s² 2s² 2p⁴"
+                  groups={[
+                    { label: "1s", boxes: ["↑↓"] },
+                    { label: "2s", boxes: ["↑↓"] },
+                    { label: "2p", boxes: ["↑↓", "↑", "↑"] },
+                  ]}
+                />
+              </div>
+
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40 p-5 my-5">
+                <p className="m-0 text-sm leading-relaxed">
+                  In carbon, the third 2p electron enters an empty 2p orbital
+                  with parallel spin — not the orbital that already has one
+                  electron. Pairing costs energy because electrons repel one
+                  another; Hund's rule reflects that repulsion.
+                </p>
+              </div>
+
+              {/* Configuration Table */}
+              <h4 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3">
+                Worked configurations
+              </h4>
+              <div className="my-5 overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
+                <table className="w-full min-w-[520px] text-sm m-0">
+                  <thead className="bg-slate-100 dark:bg-slate-800">
+                    <tr>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-slate-200">
+                        Element
+                      </th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-slate-200">
+                        Z
+                      </th>
+                      <th className="px-4 py-3 text-left font-bold text-slate-700 dark:text-slate-200">
+                        Electronic configuration
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+                    {[
+                      { element: "Hydrogen", z: "1", config: "1s¹" },
+                      { element: "Carbon", z: "6", config: "1s² 2s² 2p²" },
+                      { element: "Sodium", z: "11", config: "[Ne] 3s¹" },
+                      { element: "Chlorine", z: "17", config: "[Ne] 3s² 3p⁵" },
+                      { element: "Iron", z: "26", config: "[Ar] 3d⁶ 4s²" },
+                    ].map((row) => (
+                      <tr key={row.element}>
+                        <td className="px-4 py-3 font-semibold text-slate-800 dark:text-slate-200">
+                          {row.element}
+                        </td>
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
+                          {row.z}
+                        </td>
+                        <td className="px-4 py-3 font-mono text-teal-700 dark:text-teal-400">
+                          {row.config}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Exceptions */}
+              <div className="rounded-2xl border border-amber-200 dark:border-amber-800/60 bg-amber-50/60 dark:bg-amber-900/15 p-5 sm:p-6 my-6">
+                <h4 className="m-0 mb-3 text-base font-bold text-amber-900 dark:text-amber-300">
+                  Two important exceptions: chromium and copper
+                </h4>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-xl bg-white dark:bg-slate-900 p-4 border border-amber-100 dark:border-amber-800/60">
+                    <p className="m-0 text-sm font-bold text-slate-900 dark:text-white">
+                      Chromium (Z = 24)
+                    </p>
+                    <p className="m-0 mt-1 font-mono text-sm text-amber-700 dark:text-amber-400">
+                      [Ar] 3d⁵ 4s¹
+                    </p>
+                  </div>
+                  <div className="rounded-xl bg-white dark:bg-slate-900 p-4 border border-amber-100 dark:border-amber-800/60">
+                    <p className="m-0 text-sm font-bold text-slate-900 dark:text-white">
+                      Copper (Z = 29)
+                    </p>
+                    <p className="m-0 mt-1 font-mono text-sm text-amber-700 dark:text-amber-400">
+                      [Ar] 3d¹⁰ 4s¹
+                    </p>
+                  </div>
+                </div>
+                <p className="m-0 mt-3 text-xs leading-relaxed text-slate-700 dark:text-slate-300">
+                  A half-filled (d⁵) or completely filled (d¹⁰) d subshell has
+                  extra stability. The atom promotes one 4s electron into 3d
+                  to reach that arrangement.
+                </p>
+              </div>
+
+              {/* Blocks */}
+              <h4 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-3">
+                Configurations and the periodic table
+              </h4>
+              <div className="grid gap-4 sm:grid-cols-2 my-5">
+                <div className="rounded-2xl border border-green-100 dark:border-green-800/60 bg-green-50/50 dark:bg-green-900/10 p-4">
+                  <p className="m-0 text-sm font-bold text-green-900 dark:text-green-300">
+                    s-block
+                  </p>
+                  <p className="m-0 mt-1 font-mono text-xs text-green-700 dark:text-green-400">
+                    ns¹⁻²
+                  </p>
+                  <p className="m-0 mt-1 text-xs text-slate-600 dark:text-slate-400">
+                    Groups 1–2 and helium.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-blue-100 dark:border-blue-800/60 bg-blue-50/50 dark:bg-blue-900/10 p-4">
+                  <p className="m-0 text-sm font-bold text-blue-900 dark:text-blue-300">
+                    p-block
+                  </p>
+                  <p className="m-0 mt-1 font-mono text-xs text-blue-700 dark:text-blue-400">
+                    ns² np¹⁻⁶
+                  </p>
+                  <p className="m-0 mt-1 text-xs text-slate-600 dark:text-slate-400">
+                    Groups 13–18.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-purple-100 dark:border-purple-800/60 bg-purple-50/50 dark:bg-purple-900/10 p-4">
+                  <p className="m-0 text-sm font-bold text-purple-900 dark:text-purple-300">
+                    d-block
+                  </p>
+                  <p className="m-0 mt-1 font-mono text-xs text-purple-700 dark:text-purple-400">
+                    (n − 1)d¹⁻¹⁰ ns⁰⁻²
+                  </p>
+                  <p className="m-0 mt-1 text-xs text-slate-600 dark:text-slate-400">
+                    Groups 3–12, the transition metals.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-rose-100 dark:border-rose-800/60 bg-rose-50/50 dark:bg-rose-900/10 p-4">
+                  <p className="m-0 text-sm font-bold text-rose-900 dark:text-rose-300">
+                    f-block
+                  </p>
+                  <p className="m-0 mt-1 font-mono text-xs text-rose-700 dark:text-rose-400">
+                    (n − 2)f¹⁻¹⁴
+                  </p>
+                  <p className="m-0 mt-1 text-xs text-slate-600 dark:text-slate-400">
+                    Lanthanides and actinides.
+                  </p>
+                </div>
+              </div>
+
+              {/* Real World Example */}
+              <div className="bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-900/20 dark:to-cyan-900/20 rounded-2xl p-6 sm:p-8 my-8 border border-teal-200/50 dark:border-teal-700/30">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-teal-100 dark:bg-teal-800/50 rounded-xl text-teal-600 dark:text-teal-400 mt-1">
+                    <Sparkles size={24} />
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-bold text-teal-900 dark:text-teal-300 mb-2 m-0">
+                      Real-World Example: Sodium Street Lamps
+                    </h4>
+                    <p className="m-0 text-teal-800/80 dark:text-teal-200/80 leading-relaxed">
+                      Sodium's configuration is [Ne] 3s¹. In a street lamp, the
+                      electrical discharge excites that 3s electron to 3p. When
+                      it drops back, it emits light at 589 nm — the familiar
+                      yellow glow. The same link between electron configuration
+                      and light explains the colours of fireworks and neon
+                      signs.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <Exercise
+                number="2.4"
+                accent="teal"
+                question={
+                  <p className="m-0">
+                    Write the full and noble-gas shorthand electronic
+                    configurations of chlorine (Z = 17) and iron (Z = 26). Then
+                    state how many unpaired electrons each atom has.
+                  </p>
+                }
+                answer={
+                  <div className="space-y-3">
+                    <div>
+                      <p className="m-0 font-bold">Chlorine (Z = 17)</p>
+                      <p className="m-0 font-mono">
+                        1s² 2s² 2p⁶ 3s² 3p⁵ = [Ne] 3s² 3p⁵
+                      </p>
+                      <p className="m-0">
+                        The 3p subshell has five electrons: two pairs and one
+                        unpaired electron. <strong>1 unpaired electron.</strong>
+                      </p>
+                    </div>
+                    <div>
+                      <p className="m-0 font-bold">Iron (Z = 26)</p>
+                      <p className="m-0 font-mono">
+                        1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁶ 4s² = [Ar] 3d⁶ 4s²
+                      </p>
+                      <p className="m-0">
+                        The five 3d orbitals hold six electrons: one pair plus
+                        four single electrons.{" "}
+                        <strong>4 unpaired electrons.</strong>
+                      </p>
+                    </div>
+                  </div>
+                }
+              />
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Summary */}
+        <motion.section variants={itemVariants} className="scroll-mt-24">
+          <div className="bg-gradient-to-br from-green-600 to-teal-700 rounded-3xl p-8 sm:p-10 text-white shadow-xl">
+            <h3 className="text-2xl sm:text-3xl font-bold mb-6">
+              Chapter 2 Summary
+            </h3>
+            <div className="space-y-3 text-green-50">
+              <div className="flex items-start gap-3">
+                <CircleCheck className="mt-0.5 h-5 w-5 shrink-0 text-green-200" />
+                <p className="m-0">
+                  Atoms contain electrons, protons, and neutrons. Atomic number
+                  Z counts protons; mass number A = Z + neutrons.
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <CircleCheck className="mt-0.5 h-5 w-5 shrink-0 text-green-200" />
+                <p className="m-0">
+                  Atomic models evolved from indivisible spheres to a nuclear
+                  model, quantized Bohr orbits, and finally probability
+                  orbitals.
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <CircleCheck className="mt-0.5 h-5 w-5 shrink-0 text-green-200" />
+                <p className="m-0">
+                  The four quantum numbers n, l, m<sub>l</sub>, and m<sub>s</sub>{" "}
+                  specify an electron's shell, subshell, orbital, and spin. A
+                  shell holds up to 2n² electrons.
+                </p>
+              </div>
+              <div className="flex items-start gap-3">
+                <CircleCheck className="mt-0.5 h-5 w-5 shrink-0 text-green-200" />
+                <p className="m-0">
+                  Configurations follow the Aufbau principle, Pauli exclusion
+                  principle, and Hund's rule; chromium and copper are the
+                  classic exceptions.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-8 rounded-2xl border border-white/20 bg-white/10 p-5 backdrop-blur-sm">
+              <p className="m-0 text-sm font-bold uppercase tracking-wider text-green-200">
+                Core formulas to remember
+              </p>
+              <div className="mt-3 grid gap-3 sm:grid-cols-3 text-sm">
+                <p className="m-0">
+                  <strong>Z = protons</strong>
+                </p>
+                <p className="m-0">
+                  <strong>A = Z + N</strong>
+                </p>
+                <p className="m-0">
+                  <strong>Max e⁻ in a shell = 2n²</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Next Up */}
+        <motion.section variants={itemVariants}>
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-100 dark:border-slate-800 shadow-lg shadow-slate-200/50 dark:shadow-none flex flex-col sm:flex-row sm:items-center gap-5">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400">
+              <ArrowRight className="h-6 w-6" />
+            </div>
+            <div className="flex-1">
+              <p className="m-0 text-xs font-bold uppercase tracking-wider text-green-600 dark:text-green-400">
+                Next up
+              </p>
+              <h3 className="m-0 mt-1 text-xl font-bold text-slate-900 dark:text-white">
+                Chapter 3: Chemical Bonding
+              </h3>
+              <p className="m-0 mt-1 text-sm text-slate-600 dark:text-slate-400">
+                Now that you know how electrons are arranged, see how atoms
+                share or transfer them to form ionic and covalent bonds.
+              </p>
+            </div>
+          </div>
+        </motion.section>
+      </motion.div>
+    </div>
+  );
+};
+
+export default Chapter2;

@@ -31,28 +31,31 @@ export const chemistryConfig: SubjectConfig = {
   chapters: [
     {
       id: 'chapter1',
-      title: 'Unit 1: Atomic Structure and Periodic Properties',
+      title: 'Chapter 1: Atomic Structure and Periodic Properties of the Elements',
       subtopics: [
         '1.1. Introduction',
-        '1.2. Dalton\'s Atomic Theory and the Modern Atomic Theory',
+        '1.2. Dalton’s Atomic Theory and the Modern Atomic Theory',
         '1.3. Early Experiments to Characterize the Atom',
         '1.4. Make-up of the Nucleus',
         '1.5. Electromagnetic Radiation and Atomic Spectra',
         '1.6. The Quantum Mechanical Model of the Atom',
         '1.7. Electronic Configurations and Orbital Diagrams',
-        '1.8. Electronic Configurations and the Periodic Table'
+        '1.8. Electronic Configurations and the Periodic Table of the Elements'
       ],
       component: () => import('./chapters/Chapter1')
     },
     {
       id: 'chapter2',
-      title: 'Chapter 2: Structure of Atom',
+      title: 'Chapter 2: Chemical Bonding and Structure',
       subtopics: [
-        '2.1. Discovery of Subatomic Particles',
-        '2.2. Atomic Models',
-        '2.3. Quantum Numbers',
-        '2.4. Electronic Configuration'
-      ]
+        '2.1. Introduction',
+        '2.2. Ionic Bonds',
+        '2.3. Covalent Bonds and Molecular Geometry',
+        '2.4. Metallic Bonding',
+        '2.5. Chemical Bonding Theories',
+        '2.6. Types of Crystals'
+      ],
+      component: () => import('./chapters/Chapter 2')
     },
     {
       id: 'chapter3',

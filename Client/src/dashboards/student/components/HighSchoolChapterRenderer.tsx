@@ -11,11 +11,19 @@ const Grade11ChemistryCh1 = React.lazy(
   () =>
     import("@learningCenter/highschool/grade 11/chemistry/chapters/Chapter1"),
 );
+const Grade11ChemistryCh2 = React.lazy(
+  () =>
+    import("@learningCenter/highschool/grade 11/chemistry/chapters/Chapter 2"),
+);
 
 // Lazy load Grade 11 Biology chapters
 const Grade11BiologyCh1 = React.lazy(
   () =>
     import("@learningCenter/highschool/grade 11/biology/chapters/Chapter1"),
+);
+const Grade11BiologyCh2 = React.lazy(
+  () =>
+    import("@learningCenter/highschool/grade 11/biology/chapters/Chapter2"),
 );
 
 // Lazy load Grade 11 Physics chapters
@@ -68,9 +76,11 @@ const CHAPTER_COMPONENTS: Record<
   grade_11: {
     Chemistry: {
       chapter1: Grade11ChemistryCh1,
+      chapter2: Grade11ChemistryCh2,
     },
     Biology: {
       chapter1: Grade11BiologyCh1,
+      chapter2: Grade11BiologyCh2,
     },
     Physics: {
       chapter1: Grade11PhysicsCh1,

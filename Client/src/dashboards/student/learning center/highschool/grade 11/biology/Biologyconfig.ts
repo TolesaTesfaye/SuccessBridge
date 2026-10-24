@@ -46,7 +46,8 @@ export const biologyConfig: SubjectConfig = {
         '2.2. Cell Structure',
         '2.3. Cell Organelles',
         '2.4. Cell Division'
-      ]
+      ],
+      component: () => import('./chapters/Chapter2')
     },
     {
       id: 'chapter3',
