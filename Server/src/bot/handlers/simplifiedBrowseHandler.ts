@@ -24,8 +24,28 @@ export async function handleSmartBrowse(bot: any, msg: any, telegramUserId: stri
     if (user && user.studentType) {
       // User has profile - show their subjects directly!
       const category = deriveStudentCategory(user);
-      const hasAccess = category ? await hasActiveAccess(user.id, category) : false;
+      
+      if (!category) {
+        // Profile incomplete - prompt to complete it
+        await bot.sendMessage(
+          chatId,
+          '⚠️ <b>Profile Incomplete</b>\n\n' +
+          'To browse resources, we need to know your student category.\n\n' +
+          '📝 Please complete your profile by selecting your education level and grade/level.',
+          {
+            parse_mode: 'HTML',
+            reply_markup: {
+              inline_keyboard: [
+                [{ text: '✏️ Complete Profile', callback_data: 'setup_profile' }],
+                [{ text: '🏠 Main Menu', callback_data: 'main_menu' }],
+              ],
+            },
+          }
+        );
+        return;
+      }
 
+      const hasAccess = await hasActiveAccess(user.id, category);
       await showUserSubjects(bot, chatId, user, hasAccess);
     } else {
       // No profile - show quick grade selector

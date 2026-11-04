@@ -5,6 +5,7 @@ import { handleHelp } from './handlers/helpHandler.js';
 import { handleSmartBrowse } from './handlers/simplifiedBrowseHandler.js';
 import { handleMyCourses } from './handlers/myCoursesHandler.js';
 import { handleProfile } from './handlers/profileHandler.js';
+import { handleProfileSetup } from './handlers/profileSetupHandler.js';
 import { handleCallbackQuery } from './handlers/callbackHandler.js';
 import { handleMessage } from './handlers/messageHandler.js';
 import { handleResourcesCommand } from './handlers/resourcesHandler.js';
@@ -129,6 +130,11 @@ class TelegramBotService {
     this.bot.onText(/\/admin/, async (msg: any) => {
       console.log('📨 Received /admin from:', msg.from?.username);
       await wrapHandler(handleAdminCommand, '/admin')(this.bot, msg);
+    });
+
+    this.bot.onText(/\/setupprofile/, async (msg: any) => {
+      console.log('📨 Received /setupprofile from:', msg.from?.username);
+      await wrapHandler(handleProfileSetup, '/setupprofile')(this.bot, msg);
     });
 
     this.bot.onText(/\/getid/, async (msg: any) => {

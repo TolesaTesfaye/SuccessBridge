@@ -16,6 +16,13 @@ import { validateCallbackData } from '../middleware/validation.middleware.js';
 import { logger } from '../middleware/logger.middleware.js';
 import { escapeHtml, formatDivider, getMainKeyboard, formatRoleBadge, getWebUrl } from '../utils/ui.js';
 import { handleReadyToPay, handleApprovePayment, handleRejectPayment } from './botPaymentHandler.js';
+import { 
+  handleProfileSetup, 
+  handleHighSchoolSetup, 
+  handleUniversitySetup,
+  handleGradeSelection as handleProfileGradeSelection,
+  handleUniversityLevelSelection
+} from './profileSetupHandler.js';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -215,6 +222,26 @@ export async function handleCallbackQuery(
           ],
         },
       });
+    } else if (data === 'setup_profile') {
+      // Start profile setup flow
+      const userMsg = { chat: { id: chatId }, from: query.from };
+      await handleProfileSetup(bot, userMsg);
+    } else if (data === 'setup_highschool') {
+      // Setup high school profile
+      await handleHighSchoolSetup(bot, query);
+    } else if (data === 'setup_university') {
+      // Setup university profile
+      await handleUniversitySetup(bot, query);
+    } else if (data.startsWith('setup_grade_')) {
+      // Handle grade selection (9, 10, 11, 12)
+      const grade = data.replace('setup_grade_', '');
+      await handleProfileGradeSelection(bot, query, grade);
+    } else if (data === 'setup_remedial') {
+      // Handle remedial level selection
+      await handleUniversityLevelSelection(bot, query, 'remedial');
+    } else if (data === 'setup_freshman') {
+      // Handle freshman level selection
+      await handleUniversityLevelSelection(bot, query, 'freshman');
     } else if (data.startsWith('admin_')) {
       await handleAdminCallback(bot, chatId, data, query.from.id.toString());
     }

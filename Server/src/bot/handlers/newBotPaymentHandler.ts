@@ -41,8 +41,18 @@ export async function handleBotPayment(bot: any, msg: any): Promise<void> {
     if (!studentCategory) {
       await bot.sendMessage(
         chatId,
-        '❌ <i>Unable to determine your student category. Please complete your profile first.</i>',
-        { parse_mode: 'HTML' }
+        '⚠️ <b>Profile Incomplete</b>\n\n' +
+        'To unlock resources and make payments, we need to know your student category.\n\n' +
+        '📝 Please complete your profile by selecting your education level and grade/level.',
+        {
+          parse_mode: 'HTML',
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: '✏️ Complete Profile', callback_data: 'setup_profile' }],
+              [{ text: '🏠 Main Menu', callback_data: 'main_menu' }],
+            ],
+          },
+        }
       );
       return;
     }
