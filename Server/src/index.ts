@@ -169,13 +169,10 @@ const corsOptions = {
       origin && (origin.includes("localhost") || origin.includes("127.0.0.1"));
 
     // Allow requests with no origin (like mobile apps, curl) or if origin is in allowed list
-    // Also allow: Cloudflare Pages (.pages.dev), Vercel (.vercel.app), Netlify (.netlify.app), GitHub Pages (.github.io)
+    // Allow Vercel deployments, including preview deployments.
     const isAllowedDomain =
       origin &&
-      (origin.endsWith(".pages.dev") ||
-        origin.endsWith(".vercel.app") ||
-        origin.endsWith(".netlify.app") ||
-        origin.includes(".github.io"));
+      origin.endsWith(".vercel.app");
 
     if (
       !origin ||
