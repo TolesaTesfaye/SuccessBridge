@@ -38,27 +38,30 @@ export async function showPaymentMenu(
       Payment.count(),
     ]);
 
-    const message = `💳 <b>PAYMENT MANAGEMENT</b>\n` +
+    // Get total revenue
+    const totalRevenue = await Payment.sum('amount', { where: { status: 'approved' } }) || 0;
+
+    const message = `💳 <b>PAYMENT MANAGEMENT DASHBOARD</b>\n` +
       `${formatDivider()}\n` +
-      `📊 <b>Statistics:</b>\n` +
-      `⏳ Pending: ${pending}\n` +
-      `✅ Approved: ${approved}\n` +
-      `❌ Rejected: ${rejected}\n` +
-      `📋 Total: ${total}\n` +
+      `📊 <b>OVERVIEW</b>\n` +
+      `⏳ <b>Pending Review:</b> ${pending}\n` +
+      `✅ <b>Approved:</b> ${approved}\n` +
+      `❌ <b>Rejected:</b> ${rejected}\n` +
+      `📋 <b>Total Payments:</b> ${total}\n` +
+      `💰 <b>Total Revenue:</b> ${totalRevenue.toFixed(2)} ETB\n` +
       `${formatDivider()}\n` +
-      `👇 <i>Select an action:</i>`;
+      `👇 <i>Select an action below:</i>`;
 
     await bot.sendMessage(chatId, message, {
       parse_mode: 'HTML',
       reply_markup: {
         inline_keyboard: [
-          [{ text: `⏳ Pending Payments (${pending})`, callback_data: 'admin_payments_pending' }],
+          [{ text: `⏳ Review Pending (${pending})`, callback_data: 'admin_payments_pending' }],
           [
-            { text: '✅ Approved', callback_data: 'admin_payments_approved' },
-            { text: '❌ Rejected', callback_data: 'admin_payments_rejected' },
+            { text: `✅ Approved (${approved})`, callback_data: 'admin_payments_approved' },
+            { text: `❌ Rejected (${rejected})`, callback_data: 'admin_payments_rejected' },
           ],
-          [{ text: '📊 Payment Stats', callback_data: 'admin_payment_stats' }],
-          [{ text: '🔍 Search Payment', callback_data: 'admin_payment_search' }],
+          [{ text: '📊 Detailed Statistics', callback_data: 'admin_payment_stats' }],
           [{ text: '🔙 Back to Admin Menu', callback_data: 'admin_menu' }],
         ],
       },
@@ -114,13 +117,17 @@ export async function listPayments(
 
     const totalPages = Math.ceil(count / limit);
     const statusEmoji = status === 'pending' ? '⏳' : status === 'approved' ? '✅' : '❌';
+    const statusTitle = status === 'pending' ? 'PENDING APPROVALS' : 
+                        status === 'approved' ? 'APPROVED PAYMENTS' : 
+                        'REJECTED PAYMENTS';
     
-    let message = `${statusEmoji} <b>${status.toUpperCase()} PAYMENTS</b>\n` +
+    let message = `${statusEmoji} <b>${statusTitle}</b>\n` +
       `${formatDivider()}\n` +
-      `Page ${page} of ${totalPages} (${count} total)\n` +
+      `📄 Page ${page} of ${totalPages} • Total: ${count}\n` +
       `${formatDivider()}\n\n`;
 
-    for (const payment of payments) {
+    for (let i = 0; i < payments.length; i++) {
+      const payment = payments[i];
       const user = (payment as any).user;
       const userName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.name || 'Unknown';
       const categoryDisplay = getStudentCategoryDisplayName(payment.studentCategory);
@@ -132,18 +139,27 @@ export async function listPayments(
         minute: '2-digit'
       });
 
-      message += `👤 <b>${userName}</b>\n`;
-      message += `${categoryEmoji} ${categoryDisplay} • ${payment.amount} ${payment.currency}\n`;
-      message += `📅 ${dateStr}\n`;
+      message += `<b>${i + 1 + offset}.</b> 👤 <b>${userName}</b>\n`;
+      message += `   ${categoryEmoji} ${categoryDisplay} • <b>${payment.amount} ${payment.currency}</b>\n`;
+      message += `   📅 ${dateStr}`;
       if (payment.transactionReference) {
-        message += `🔖 <code>${payment.transactionReference}</code>\n`;
+        message += ` • 🔖 <code>${payment.transactionReference}</code>`;
       }
+      message += `\n   📸 ${payment.screenshotUrl ? '✅ Screenshot Provided' : '⚠️ No Screenshot'}\n`;
       message += `\n`;
     }
 
+    message += `${formatDivider()}`;
+    if (status === 'pending') {
+      message += `\n💡 <i>Click on a payment to review and approve/reject</i>`;
+    }
+
     // Build keyboard
-    const keyboard: any[][] = payments.map(payment => [
-      { text: `View ${payment.id.substring(0, 8)}...`, callback_data: `admin_payment_view_${payment.id}` }
+    const keyboard: any[][] = payments.map((payment, index) => [
+      { 
+        text: `📋 View Payment #${index + 1 + offset}`, 
+        callback_data: `admin_payment_view_${payment.id}` 
+      }
     ]);
 
     // Pagination
@@ -172,7 +188,7 @@ export async function listPayments(
 }
 
 /**
- * View payment details
+ * View payment details with screenshot
  */
 export async function viewPaymentDetails(
   bot: any,
@@ -207,50 +223,81 @@ export async function viewPaymentDetails(
     const categoryEmoji = getStudentCategoryEmoji(payment.studentCategory);
     const statusEmoji = payment.status === 'pending' ? '⏳' : payment.status === 'approved' ? '✅' : '❌';
 
-    let message = `💳 <b>PAYMENT DETAILS</b>\n` +
+    // Build payment details message
+    let message = `💳 <b>PAYMENT VERIFICATION</b>\n` +
       `${formatDivider()}\n` +
       `${statusEmoji} <b>Status:</b> ${payment.status.toUpperCase()}\n` +
+      `🆔 <b>Payment ID:</b> <code>${payment.id.substring(0, 8)}...</code>\n` +
       `${formatDivider()}\n\n` +
-      `👤 <b>Student:</b> ${userName}\n` +
+      `<b>📋 STUDENT INFORMATION</b>\n` +
+      `👤 <b>Name:</b> ${userName}\n` +
       `📧 <b>Email:</b> ${user?.email || 'N/A'}\n` +
-      `📱 <b>Telegram ID:</b> <code>${user?.telegramId || 'N/A'}</code>\n\n` +
+      `📱 <b>Telegram:</b> <code>${user?.telegramId || 'N/A'}</code>\n\n` +
+      `<b>💰 PAYMENT DETAILS</b>\n` +
       `${categoryEmoji} <b>Category:</b> ${categoryDisplay}\n` +
-      `💰 <b>Amount:</b> ${payment.amount} ${payment.currency}\n` +
+      `💵 <b>Amount:</b> <b>${payment.amount} ${payment.currency}</b>\n` +
       `🔖 <b>Reference:</b> <code>${payment.transactionReference || 'N/A'}</code>\n` +
       `💳 <b>Method:</b> ${payment.paymentMethod}\n\n` +
-      `📅 <b>Submitted:</b> ${new Date(payment.createdAt).toLocaleString()}\n`;
+      `<b>📅 TIMELINE</b>\n` +
+      `📤 <b>Submitted:</b> ${new Date(payment.createdAt).toLocaleString('en-US', { 
+        dateStyle: 'medium', 
+        timeStyle: 'short' 
+      })}\n`;
 
     if (payment.status === 'approved') {
-      message += `✅ <b>Approved:</b> ${new Date(payment.approvedAt!).toLocaleString()}\n`;
+      message += `✅ <b>Approved:</b> ${new Date(payment.approvedAt!).toLocaleString('en-US', { 
+        dateStyle: 'medium', 
+        timeStyle: 'short' 
+      })}\n`;
       if (approver) {
-        message += `👨‍💼 <b>By:</b> ${approver.name}\n`;
+        message += `👨‍💼 <b>Approved By:</b> ${approver.name}\n`;
       }
     }
 
     if (payment.status === 'rejected' && payment.rejectionReason) {
-      message += `❌ <b>Reason:</b> ${payment.rejectionReason}\n`;
+      message += `\n❌ <b>REJECTION REASON</b>\n${payment.rejectionReason}\n`;
     }
+
+    message += `${formatDivider()}`;
 
     // Build keyboard
     const keyboard: any[][] = [];
 
     if (payment.status === 'pending') {
       keyboard.push([
-        { text: '✅ Approve', callback_data: `admin_payment_approve_${payment.id}` },
-        { text: '❌ Reject', callback_data: `admin_payment_reject_${payment.id}` },
+        { text: '✅ Approve Payment', callback_data: `admin_payment_approve_${payment.id}` },
+        { text: '❌ Reject Payment', callback_data: `admin_payment_reject_${payment.id}` },
       ]);
     }
 
-    // Show screenshot if available
+    keyboard.push([{ text: '🔙 Back to Pending List', callback_data: 'admin_payments_pending' }]);
+    keyboard.push([{ text: '🏠 Admin Menu', callback_data: 'admin_menu' }]);
+
+    // Send screenshot first if available
     if (payment.screenshotUrl) {
-      keyboard.push([{ text: '📸 View Screenshot', url: payment.screenshotUrl }]);
+      try {
+        // Try to send the screenshot as a photo
+        await bot.sendPhoto(chatId, payment.screenshotUrl, {
+          caption: `📸 <b>Payment Proof Screenshot</b>\n` +
+            `━━━━━━━━━━━━━━━━━━━━\n` +
+            `Student: ${userName}\n` +
+            `Amount: ${payment.amount} ${payment.currency}\n` +
+            `Reference: ${payment.transactionReference || 'N/A'}`,
+          parse_mode: 'HTML',
+        });
+      } catch (photoError) {
+        console.warn('Could not send screenshot as photo, sending details only:', photoError);
+        message += `\n\n📸 <b>Screenshot URL:</b>\n<a href="${payment.screenshotUrl}">View Payment Proof</a>`;
+      }
+    } else {
+      message += `\n\n⚠️ <i>No screenshot provided</i>`;
     }
 
-    keyboard.push([{ text: '🔙 Back to Pending', callback_data: 'admin_payments_pending' }]);
-
+    // Send payment details
     await bot.sendMessage(chatId, message, {
       parse_mode: 'HTML',
       reply_markup: { inline_keyboard: keyboard },
+      disable_web_page_preview: true,
     });
 
   } catch (error) {
@@ -304,23 +351,30 @@ export async function showPaymentStats(
       }),
     ]);
 
-    let message = `📊 <b>PAYMENT STATISTICS</b>\n` +
+    let message = `📊 <b>DETAILED PAYMENT STATISTICS</b>\n` +
       `${formatDivider()}\n` +
-      `💰 <b>Revenue:</b> ${totalRevenue || 0} ETB\n` +
-      `✅ <b>Approved:</b> ${approvedPayments} / ${totalPayments}\n` +
-      `📈 <b>Last 7 Days:</b> ${recentPayments} payments\n` +
+      `<b>💰 REVENUE SUMMARY</b>\n` +
+      `Total Revenue: <b>${totalRevenue || 0} ETB</b>\n` +
+      `Approved Payments: ${approvedPayments}\n` +
+      `Approval Rate: ${totalPayments > 0 ? Math.round((approvedPayments / totalPayments) * 100) : 0}%\n\n` +
+      `<b>📈 RECENT ACTIVITY</b>\n` +
+      `Last 7 Days: ${recentPayments} payments\n` +
       `${formatDivider()}\n\n` +
-      `<b>By Category:</b>\n`;
+      `<b>📚 REVENUE BY CATEGORY</b>\n`;
 
     if (categoryStats && categoryStats.length > 0) {
       for (const stat of categoryStats as any[]) {
         const categoryDisplay = getStudentCategoryDisplayName(stat.studentCategory);
         const emoji = getStudentCategoryEmoji(stat.studentCategory);
-        message += `${emoji} ${categoryDisplay}: ${stat.count} (${stat.revenue} ETB)\n`;
+        const revenue = parseFloat(stat.revenue) || 0;
+        message += `${emoji} <b>${categoryDisplay}</b>\n`;
+        message += `   Payments: ${stat.count} • Revenue: ${revenue.toFixed(2)} ETB\n`;
       }
     } else {
-      message += `<i>No approved payments yet</i>\n`;
+      message += `<i>📭 No approved payments yet</i>\n`;
     }
+
+    message += `${formatDivider()}`;
 
     await bot.sendMessage(chatId, message, {
       parse_mode: 'HTML',
