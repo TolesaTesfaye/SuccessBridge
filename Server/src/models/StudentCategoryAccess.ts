@@ -87,7 +87,17 @@ StudentCategoryAccess.init(
       field: 'expires_at',
       comment: 'Null means lifetime access',
     },
-  },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      field: 'created_at',
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      field: 'updated_at',
+    },
+  } as any,
   {
     sequelize,
     tableName: 'student_category_access',

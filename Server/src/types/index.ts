@@ -18,6 +18,10 @@ export interface IUser {
   universityLevel?: "remedial" | "freshman";
   university?: string;
   department?: string;
+  universityId?: string;
+  departmentId?: string;
+  gradeId?: string;
+  streamId?: string;
   documents?: string[];
   isApproved?: boolean;
   approvalStatus?: "pending" | "approved" | "rejected";

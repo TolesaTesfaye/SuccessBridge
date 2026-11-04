@@ -69,7 +69,17 @@ AccessPackage.init(
       defaultValue: true,
       field: 'is_active',
     },
-  },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      field: 'created_at',
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      field: 'updated_at',
+    },
+  } as any,
   {
     sequelize,
     tableName: 'access_packages',
