@@ -21,10 +21,10 @@ import { useNotificationStore } from '../store/notificationStore';
 
 export type StudentTabParamList = {
   HomeTab: undefined;
-  ResourcesTab: undefined;
-  QuizzesTab: undefined;
-  ProgressTab: undefined;
-  ProfileTab: undefined;
+  LearningCenterTab: undefined;
+  ResourceHubTab: undefined;
+  InfoTab: undefined;
+  MenuTab: undefined;
 };
 
 export type StudentStackParamList = {
@@ -69,7 +69,7 @@ const StudentTabNavigator: React.FC = () => {
         headerShown: false,
         tabBarStyle: styles.tabBar,
         tabBarActiveTintColor: '#00D4AA',
-        tabBarInactiveTintColor: Colors.textMuted,
+        tabBarInactiveTintColor: '#8E9AAF',
         tabBarShowLabel: false,
       }}
     >
@@ -83,38 +83,38 @@ const StudentTabNavigator: React.FC = () => {
         }}
       />
       <Tab.Screen
-        name="ResourcesTab"
+        name="LearningCenterTab"
         component={ResourcesScreen}
         options={{
           tabBarIcon: ({ color, size, focused }) => (
-            <TabIcon name={focused ? 'book' : 'book-outline'} color={color} size={size} label="Resources" focused={focused} />
+            <TabIcon name={focused ? 'calendar' : 'calendar-outline'} color={color} size={size} label="Learning" focused={focused} />
           ),
         }}
       />
       <Tab.Screen
-        name="QuizzesTab"
+        name="ResourceHubTab"
         component={QuizzesScreen}
         options={{
           tabBarIcon: ({ color, size, focused }) => (
-            <TabIcon name={focused ? 'flash' : 'flash-outline'} color={color} size={size} label="Quizzes" focused={focused} />
+            <TabIcon name={focused ? 'ticket' : 'ticket-outline'} color={color} size={size} label="Resources" focused={focused} />
           ),
         }}
       />
       <Tab.Screen
-        name="ProgressTab"
+        name="InfoTab"
         component={ProgressScreen}
         options={{
           tabBarIcon: ({ color, size, focused }) => (
-            <TabIcon name={focused ? 'stats-chart' : 'stats-chart-outline'} color={color} size={size} label="Progress" focused={focused} />
+            <TabIcon name={focused ? 'information-circle' : 'information-circle-outline'} color={color} size={size} label="Info" focused={focused} />
           ),
         }}
       />
       <Tab.Screen
-        name="ProfileTab"
+        name="MenuTab"
         component={ProfileScreen}
         options={{
           tabBarIcon: ({ color, size, focused }) => (
-            <TabIcon name={focused ? 'person' : 'person-outline'} color={color} size={size} label="Profile" focused={focused} />
+            <TabIcon name={focused ? 'menu' : 'menu-outline'} color={color} size={size} label="Menu" focused={focused} />
           ),
         }}
       />
@@ -162,45 +162,47 @@ export const StudentTabs: React.FC = () => {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#0F1322',
-    borderTopColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: '#1A1D2E',
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
     borderTopWidth: 1,
-    height: 72,
-    paddingBottom: 10,
+    height: 65,
+    paddingBottom: 8,
     paddingTop: 8,
+    paddingHorizontal: 10,
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
-    elevation: 12,
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 10,
   },
   tabIconContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: BorderRadius.lg,
-    minWidth: 58,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: BorderRadius.md,
+    minWidth: 50,
     position: 'relative',
   },
   tabIconActive: {
-    backgroundColor: 'rgba(0, 212, 170, 0.12)',
+    backgroundColor: 'rgba(0, 212, 170, 0.15)',
   },
   tabLabel: {
-    fontSize: 10,
+    fontSize: 9,
     fontFamily: 'Inter_500Medium',
-    marginTop: 2,
-    letterSpacing: 0.2,
+    marginTop: 3,
+    letterSpacing: 0.3,
   },
   tabLabelActive: {
     fontFamily: 'Inter_700Bold',
+    fontSize: 9.5,
   },
   tabGlowDot: {
-    width: 4,
-    height: 4,
-    borderRadius: 2,
+    width: 3,
+    height: 3,
+    borderRadius: 1.5,
     backgroundColor: '#00D4AA',
     position: 'absolute',
-    bottom: 0,
+    bottom: -2,
   },
 });

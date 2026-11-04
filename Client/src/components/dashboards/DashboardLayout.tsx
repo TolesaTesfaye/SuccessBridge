@@ -110,14 +110,14 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           )}
         </div>
 
-        <div className="flex items-center gap-0.5 md:gap-2">
-          {/* Notifications - Desktop only */}
-          <div className="hidden md:flex items-center">
+        <div className="flex items-center gap-1 md:gap-2">
+          {/* Notifications - Always visible */}
+          <div className="flex items-center">
             <NotificationBell />
           </div>
 
-          {/* Theme Toggle - Desktop only */}
-          <div className="hidden md:flex items-center">
+          {/* Theme Toggle - Always visible */}
+          <div className="flex items-center">
             <button
               onClick={toggleTheme}
               className="p-1.5 md:p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-yellow-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors active:scale-95"
@@ -202,38 +202,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
                   {/* Menu Items */}
                   <div className="py-2">
-                    {/* Notification - Mobile only */}
-                    <button
-                      onClick={() => {
-                        setIsProfileDropdownOpen(false);
-                        // Navigate to notifications or trigger notification bell
-                      }}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                    >
-                      <Bell className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-                      <span>Notifications</span>
-                    </button>
-
-                    {/* Dark Mode Toggle - Mobile only */}
-                    <button
-                      onClick={() => {
-                        toggleTheme();
-                      }}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                    >
-                      {isDark ? (
-                        <>
-                          <Sun className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-                          <span>Light Mode</span>
-                        </>
-                      ) : (
-                        <>
-                          <Moon className="w-4 h-4 text-slate-500 dark:text-slate-400" />
-                          <span>Dark Mode</span>
-                        </>
-                      )}
-                    </button>
-
                     {/* Profile */}
                     <button
                       onClick={() => {
@@ -292,7 +260,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
         <main
           className={
-            `flex-1 w-full m-0 p-0 bg-[#f1f1f1] dark:bg-slate-900 min-h-0 min-w-0 ` +
+            `flex-1 w-full m-0 p-0 bg-[#f1f1f1] dark:bg-slate-900 min-h-0 min-w-0 pb-16 md:pb-0 ` +
             (noPadding ? "overflow-hidden" : "overflow-y-auto custom-scrollbar")
           }
         >

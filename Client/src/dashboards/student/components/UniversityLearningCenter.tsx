@@ -174,7 +174,7 @@ export const UniversityLearningCenter: React.FC<
         {/* Mobile Menu Button */}
         <button
           onClick={() => setIsSidebarOpen(true)}
-          className="md:hidden fixed bottom-4 left-4 z-30 bg-[#04AA6D] text-white p-4 rounded-full shadow-lg hover:bg-[#059862] transition-colors"
+          className="md:hidden fixed bottom-20 left-4 z-30 bg-[#04AA6D] text-white p-4 rounded-full shadow-lg hover:bg-[#059862] transition-colors"
         >
           <svg
             className="w-6 h-6"

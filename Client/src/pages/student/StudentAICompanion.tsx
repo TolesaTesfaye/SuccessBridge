@@ -1320,7 +1320,7 @@ export const StudentAICompanion: React.FC<StudentAICompanionProps> = ({
       {/* Floating Chat Button - Mobile Only */}
       <button
         onClick={() => setActiveTab("chat")}
-        className="fixed bottom-4 right-4 md:hidden bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 z-40"
+        className="fixed bottom-20 md:bottom-4 right-4 md:hidden bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-110 z-40"
         title="Chat with AI"
         aria-label="Open AI chat"
       >

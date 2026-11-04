@@ -5,6 +5,7 @@ export { Badge } from "./Badge";
 export { Progress } from "./Progress";
 export { Slider } from "./Slider";
 export { Switch } from "./Switch";
+export { MobileBottomNav } from './MobileBottomNav';
 export {
   Select,
   SelectContent,
@@ -32,3 +33,4 @@ export {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "./Breadcrumb";
+export { MobileBottomNav } from './MobileBottomNav';

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { Footer } from "@components/common/Footer";
 import { AIChatIcon } from "@components/common/AIChatIcon";
+import { MobileBottomNav } from "@components/common/MobileBottomNav";
 import { resourceService } from "@services/resourceService";
 import { universityService } from "@services/universityService";
 import { useAuthStore } from "@store/authStore";
@@ -225,7 +226,7 @@ export const UniversityDashboard: React.FC = () => {
       noPadding={activeTab === "learning"}
       showFooter={false}
       headerNav={
-        <div className="flex items-center w-full md:w-auto md:mx-auto gap-0.5 md:gap-1">
+        <div className="hidden md:flex items-center w-full md:w-auto md:mx-auto gap-0.5 md:gap-1">
           {[
             { id: "home", label: "Home", shortLabel: "Home", icon: Home },
             {
@@ -315,6 +316,18 @@ export const UniversityDashboard: React.FC = () => {
         </>
       )}
       {(activeTab === "learning" || activeTab === "hub") && <AIChatIcon />}
+      
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav 
+        activeTab={activeTab} 
+        onTabChange={(tab) => {
+          if (tab === "learning") {
+            handleLearningCenterClick();
+          } else {
+            setActiveTab(tab);
+          }
+        }} 
+      />
     </DashboardLayout>
   );
 };
