@@ -121,7 +121,7 @@ export async function listPayments(
       `${formatDivider()}\n\n`;
 
     for (const payment of payments) {
-      const user = payment.user as any;
+      const user = (payment as any).user;
       const userName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.name || 'Unknown';
       const categoryDisplay = getStudentCategoryDisplayName(payment.studentCategory);
       const categoryEmoji = getStudentCategoryEmoji(payment.studentCategory);
@@ -200,8 +200,8 @@ export async function viewPaymentDetails(
       return;
     }
 
-    const user = payment.user as any;
-    const approver = payment.approver as any;
+    const user = (payment as any).user;
+    const approver = (payment as any).approver;
     const userName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.name || 'Unknown';
     const categoryDisplay = getStudentCategoryDisplayName(payment.studentCategory);
     const categoryEmoji = getStudentCategoryEmoji(payment.studentCategory);
