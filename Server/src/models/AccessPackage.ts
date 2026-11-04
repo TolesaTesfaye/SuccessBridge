@@ -42,6 +42,7 @@ AccessPackage.init(
     studentCategory: {
       type: DataTypes.ENUM('GRADE_9', 'GRADE_10', 'GRADE_11', 'GRADE_12', 'REMEDIAL', 'FRESHMAN'),
       allowNull: false,
+      field: 'student_category',
     },
     price: {
       type: DataTypes.DECIMAL(10, 2),
@@ -55,6 +56,7 @@ AccessPackage.init(
     durationDays: {
       type: DataTypes.INTEGER,
       allowNull: true,
+      field: 'duration_days',
       comment: 'Null means lifetime access',
     },
     description: {
@@ -65,18 +67,20 @@ AccessPackage.init(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
+      field: 'is_active',
     },
   },
   {
     sequelize,
     tableName: 'access_packages',
     timestamps: true,
+    underscored: true,
     indexes: [
       {
-        fields: ['studentCategory'],
+        fields: ['student_category'],
       },
       {
-        fields: ['isActive'],
+        fields: ['is_active'],
       },
     ],
   }

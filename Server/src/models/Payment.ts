@@ -91,10 +91,12 @@ Payment.init(
     studentCategory: {
       type: DataTypes.ENUM('GRADE_9', 'GRADE_10', 'GRADE_11', 'GRADE_12', 'REMEDIAL', 'FRESHMAN'),
       allowNull: false,
+      field: 'student_category',
     },
     packageId: {
       type: DataTypes.UUID,
       allowNull: true,
+      field: 'package_id',
       references: {
         model: 'access_packages',
         key: 'id',
@@ -129,10 +131,12 @@ Payment.init(
     providerTransactionId: {
       type: DataTypes.STRING,
       allowNull: true,
+      field: 'provider_transaction_id',
     },
     checkoutUrl: {
       type: DataTypes.STRING,
       allowNull: true,
+      field: 'checkout_url',
     },
     status: {
       type: DataTypes.ENUM('pending', 'approved', 'rejected', 'cancelled'),
@@ -205,6 +209,7 @@ Payment.init(
     paidAt: {
       type: DataTypes.DATE,
       allowNull: true,
+      field: 'paid_at',
     },
     createdAt: {
       type: DataTypes.DATE,

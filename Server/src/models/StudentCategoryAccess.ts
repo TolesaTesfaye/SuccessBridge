@@ -40,6 +40,7 @@ StudentCategoryAccess.init(
     userId: {
       type: DataTypes.UUID,
       allowNull: false,
+      field: 'user_id',
       references: {
         model: 'users',
         key: 'id',
@@ -49,10 +50,12 @@ StudentCategoryAccess.init(
     studentCategory: {
       type: DataTypes.ENUM('GRADE_9', 'GRADE_10', 'GRADE_11', 'GRADE_12', 'REMEDIAL', 'FRESHMAN'),
       allowNull: false,
+      field: 'student_category',
     },
     universityId: {
       type: DataTypes.UUID,
       allowNull: true,
+      field: 'university_id',
       references: {
         model: 'universities',
         key: 'id',
@@ -61,6 +64,7 @@ StudentCategoryAccess.init(
     paymentId: {
       type: DataTypes.UUID,
       allowNull: false,
+      field: 'payment_id',
       references: {
         model: 'payments',
         key: 'id',
@@ -75,10 +79,12 @@ StudentCategoryAccess.init(
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW,
+      field: 'granted_at',
     },
     expiresAt: {
       type: DataTypes.DATE,
       allowNull: true,
+      field: 'expires_at',
       comment: 'Null means lifetime access',
     },
   },
@@ -86,29 +92,30 @@ StudentCategoryAccess.init(
     sequelize,
     tableName: 'student_category_access',
     timestamps: true,
+    underscored: true,
     indexes: [
       {
         unique: true,
-        fields: ['userId', 'studentCategory', 'universityId'],
+        fields: ['user_id', 'student_category', 'university_id'],
         name: 'unique_user_category_university',
         where: {
           status: 'active',
         },
       },
       {
-        fields: ['userId'],
+        fields: ['user_id'],
       },
       {
-        fields: ['studentCategory'],
+        fields: ['student_category'],
       },
       {
-        fields: ['paymentId'],
+        fields: ['payment_id'],
       },
       {
         fields: ['status'],
       },
       {
-        fields: ['expiresAt'],
+        fields: ['expires_at'],
       },
     ],
   }
