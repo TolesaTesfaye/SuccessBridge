@@ -12,6 +12,12 @@ export async function isAuthorizedAdmin(telegramId: string): Promise<boolean> {
     // Check environment variables for super admin / admin IDs
     const authorizedIds: string[] = [];
 
+    console.log('🔐 Admin Auth Check:', {
+      telegramId,
+      SUPERADMIN_TELEGRAM_ID: process.env.SUPERADMIN_TELEGRAM_ID,
+      ADMIN_TELEGRAM_ID: process.env.ADMIN_TELEGRAM_ID
+    });
+
     if (process.env.SUPERADMIN_TELEGRAM_ID) {
       authorizedIds.push(...process.env.SUPERADMIN_TELEGRAM_ID.split(',').map(id => id.trim()));
     }
@@ -20,8 +26,11 @@ export async function isAuthorizedAdmin(telegramId: string): Promise<boolean> {
       authorizedIds.push(...process.env.ADMIN_TELEGRAM_ID.split(',').map(id => id.trim()));
     }
 
+    console.log('🔐 Authorized IDs from env:', authorizedIds);
+
     // Check if telegram ID is in environment list
     if (authorizedIds.includes(telegramId)) {
+      console.log('✅ Admin authorized via environment variable');
       return true;
     }
 
@@ -36,6 +45,16 @@ export async function isAuthorizedAdmin(telegramId: string): Promise<boolean> {
         isApproved: true,
       },
     });
+
+    if (adminUser) {
+      console.log('✅ Admin authorized via database:', {
+        id: adminUser.id,
+        email: adminUser.email,
+        role: adminUser.role
+      });
+    } else {
+      console.log('❌ Admin not found in database for telegram ID:', telegramId);
+    }
 
     return !!adminUser;
   } catch (error) {
