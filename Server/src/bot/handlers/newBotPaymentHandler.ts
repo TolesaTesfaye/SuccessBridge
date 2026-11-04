@@ -482,11 +482,12 @@ export async function handleApprovePayment(bot: any, query: any, paymentId: stri
       // Commit transaction
       await transaction.commit();
 
-      // Update admin message
+      // Send success message (new message, not edit)
       const userName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.name || user.username || 'Unknown';
       const categoryDisplay = getStudentCategoryDisplayName(payment.studentCategory);
 
-      await bot.editMessageCaption(
+      await bot.sendMessage(
+        chatId,
         `✅ <b>PAYMENT APPROVED</b>\n` +
         `${formatDivider()}\n` +
         `👤 <b>Student:</b> ${userName}\n` +
@@ -499,9 +500,13 @@ export async function handleApprovePayment(bot: any, query: any, paymentId: stri
         `${formatDivider()}\n` +
         `🎉 Student now has full access to all ${categoryDisplay} resources!`,
         {
-          chat_id: chatId,
-          message_id: messageId,
           parse_mode: 'HTML',
+          reply_markup: {
+            inline_keyboard: [
+              [{ text: '🔙 Back to Pending', callback_data: 'admin_payments_pending' }],
+              [{ text: '🏠 Admin Menu', callback_data: 'admin_menu' }],
+            ],
+          },
         }
       );
 
@@ -618,11 +623,12 @@ export async function handleRejectPayment(bot: any, query: any, paymentId: strin
 
     console.log(`❌ Payment ${payment.id} rejected by admin ${adminTelegramId}`);
 
-    // Update admin message
+    // Send rejection message (new message, not edit)
     const userName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.name || user.username || 'Unknown';
     const categoryDisplay = getStudentCategoryDisplayName(payment.studentCategory);
 
-    await bot.editMessageCaption(
+    await bot.sendMessage(
+      chatId,
       `❌ <b>PAYMENT REJECTED</b>\n` +
       `${formatDivider()}\n` +
       `👤 <b>Student:</b> ${userName}\n` +
@@ -634,9 +640,13 @@ export async function handleRejectPayment(bot: any, query: any, paymentId: strin
       `📅 <b>Rejected:</b> ${new Date().toLocaleString()}\n` +
       `${formatDivider()}`,
       {
-        chat_id: chatId,
-        message_id: messageId,
         parse_mode: 'HTML',
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '🔙 Back to Pending', callback_data: 'admin_payments_pending' }],
+            [{ text: '🏠 Admin Menu', callback_data: 'admin_menu' }],
+          ],
+        },
       }
     );
 
