@@ -14,6 +14,8 @@ import Payment from "./Payment.js";
 import SubjectAccess from "./SubjectAccess.js";
 import Notification from "./Notification.js";
 import AuditLog from "./AuditLog.js";
+import StudentCategoryAccess from "./StudentCategoryAccess.js";
+import AccessPackage from "./AccessPackage.js";
 
 // Define relationships
 export const setupAssociations = () => {
@@ -152,9 +154,19 @@ export const setupAssociations = () => {
     onDelete: "SET NULL",
   });
   Payment.belongsTo(User, { foreignKey: "approvedBy", as: "approver" });
+  Payment.belongsTo(AccessPackage, {
+    foreignKey: "packageId",
+    as: "package",
+    onDelete: "SET NULL",
+  });
   Payment.hasOne(SubjectAccess, {
     foreignKey: "paymentId",
     as: "subjectAccess",
+    onDelete: "CASCADE",
+  });
+  Payment.hasOne(StudentCategoryAccess, {
+    foreignKey: "paymentId",
+    as: "categoryAccess",
     onDelete: "CASCADE",
   });
 
@@ -170,6 +182,22 @@ export const setupAssociations = () => {
     as: "payment",
     onDelete: "CASCADE",
   });
+
+  // StudentCategoryAccess relationships
+  StudentCategoryAccess.belongsTo(User, { foreignKey: "userId", as: "user" });
+  StudentCategoryAccess.belongsTo(Payment, {
+    foreignKey: "paymentId",
+    as: "payment",
+    onDelete: "CASCADE",
+  });
+  StudentCategoryAccess.belongsTo(University, {
+    foreignKey: "universityId",
+    as: "university",
+    onDelete: "SET NULL",
+  });
+
+  // AccessPackage relationships
+  AccessPackage.hasMany(Payment, { foreignKey: "packageId", as: "payments" });
 
   // Notification relationships
   Notification.belongsTo(User, { foreignKey: "userId", as: "user" });
@@ -193,6 +221,8 @@ export {
   ResourceAccess,
   Payment,
   SubjectAccess,
+  StudentCategoryAccess,
+  AccessPackage,
   Notification,
   AuditLog,
 };

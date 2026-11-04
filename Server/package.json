@@ -14,7 +14,9 @@
     "type-check": "tsc --noEmit",
     "cleanup:pending-users": "tsx src/scripts/cleanupExpiredPendingUsers.ts",
     "make-admin": "tsx src/scripts/makeAdmin.ts",
-    "migrate:telegram-columns": "tsx src/scripts/migrateTelegramColumns.ts"
+    "migrate:telegram-columns": "tsx src/scripts/migrateTelegramColumns.ts",
+    "migrate:category-access": "tsx src/scripts/runMigration.ts",
+    "test:payment-system": "tsx src/scripts/testPaymentSystem.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1033.0",

@@ -5,12 +5,17 @@ export interface IPayment {
   id: string
   userId: string
   subjectId?: string | null // Made optional for "one payment unlocks all" model
+  studentCategory: 'GRADE_9' | 'GRADE_10' | 'GRADE_11' | 'GRADE_12' | 'REMEDIAL' | 'FRESHMAN'
+  packageId?: string
   amount: number
   currency: string
   paymentMethod: 'bank_transfer' | 'telebirr' | 'cbe_birr' | 'mpesa' | 'telegram_bot' | 'other'
   screenshotUrl: string
   transactionReference?: string
-  status: 'pending' | 'approved' | 'rejected'
+  provider?: string
+  providerTransactionId?: string
+  checkoutUrl?: string
+  status: 'pending' | 'approved' | 'rejected' | 'cancelled'
   approvedBy?: string
   approvedAt?: Date
   rejectionReason?: string
@@ -23,6 +28,7 @@ export interface IPayment {
   stream?: string
   universityId?: string
   departmentId?: string
+  paidAt?: Date
   readonly createdAt: Date
   readonly updatedAt: Date
 }
@@ -31,12 +37,17 @@ class Payment extends Model<IPayment> implements IPayment {
   public id!: string
   public userId!: string
   public subjectId?: string | null // Made optional for "one payment unlocks all" model
+  public studentCategory!: 'GRADE_9' | 'GRADE_10' | 'GRADE_11' | 'GRADE_12' | 'REMEDIAL' | 'FRESHMAN'
+  public packageId?: string
   public amount!: number
   public currency!: string
-  public paymentMethod!: 'bank_transfer' | 'telebirr' | 'cbe_birr' | 'mpesa' | 'other'
+  public paymentMethod!: 'bank_transfer' | 'telebirr' | 'cbe_birr' | 'mpesa' | 'telegram_bot' | 'other'
   public screenshotUrl!: string
   public transactionReference?: string
-  public status!: 'pending' | 'approved' | 'rejected'
+  public provider?: string
+  public providerTransactionId?: string
+  public checkoutUrl?: string
+  public status!: 'pending' | 'approved' | 'rejected' | 'cancelled'
   public approvedBy?: string
   public approvedAt?: Date
   public rejectionReason?: string
@@ -49,6 +60,7 @@ class Payment extends Model<IPayment> implements IPayment {
   public stream?: string
   public universityId?: string
   public departmentId?: string
+  public paidAt?: Date
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 }
@@ -76,6 +88,18 @@ Payment.init(
         key: 'id',
       },
     },
+    studentCategory: {
+      type: DataTypes.ENUM('GRADE_9', 'GRADE_10', 'GRADE_11', 'GRADE_12', 'REMEDIAL', 'FRESHMAN'),
+      allowNull: false,
+    },
+    packageId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: 'access_packages',
+        key: 'id',
+      },
+    },
     amount: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false,
@@ -97,8 +121,21 @@ Payment.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    provider: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      defaultValue: 'manual',
+    },
+    providerTransactionId: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    checkoutUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     status: {
-      type: DataTypes.ENUM('pending', 'approved', 'rejected'),
+      type: DataTypes.ENUM('pending', 'approved', 'rejected', 'cancelled'),
       defaultValue: 'pending',
       allowNull: false,
     },
@@ -164,6 +201,10 @@ Payment.init(
         model: 'departments',
         key: 'id',
       },
+    },
+    paidAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
     createdAt: {
       type: DataTypes.DATE,

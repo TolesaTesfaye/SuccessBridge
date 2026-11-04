@@ -123,16 +123,19 @@ export async function handleCallbackQuery(
       const { handlePayment } = await import('./paymentHandler.js');
       await handlePayment(bot, userMsg);
     } else if (data === 'ready_to_pay') {
-      // User ready to send payment screenshot
-      await handleReadyToPay(bot, chatId, query.from.id.toString());
+      // User ready to send payment screenshot - import new handler
+      const { handleReadyToPay: newReadyToPay } = await import('./newBotPaymentHandler.js');
+      await newReadyToPay(bot, chatId, query.from.id.toString());
     } else if (data.startsWith('approve_payment_')) {
-      // Admin approving payment
-      const userId = data.replace('approve_payment_', '');
-      await handleApprovePayment(bot, query, userId);
+      // Admin approving payment - import new handler
+      const paymentId = data.replace('approve_payment_', '');
+      const { handleApprovePayment: newApproveHandler } = await import('./newBotPaymentHandler.js');
+      await newApproveHandler(bot, query, paymentId);
     } else if (data.startsWith('reject_payment_')) {
-      // Admin rejecting payment
-      const userId = data.replace('reject_payment_', '');
-      await handleRejectPayment(bot, query, userId);
+      // Admin rejecting payment - import new handler
+      const paymentId = data.replace('reject_payment_', '');
+      const { handleRejectPayment: newRejectHandler } = await import('./newBotPaymentHandler.js');
+      await newRejectHandler(bot, query, paymentId);
     } else if (data === 'main_menu') {
       const user = await getUserByTelegramId(query.from.id.toString());
       const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';

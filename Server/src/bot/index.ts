@@ -10,7 +10,7 @@ import { handleMessage } from './handlers/messageHandler.js';
 import { handleResourcesCommand } from './handlers/resourcesHandler.js';
 import { handleSearchPrompt } from './handlers/searchHandler.js';
 import { handlePayment } from './handlers/paymentHandler.js';
-import { handleBotPayment, handlePaymentScreenshot } from './handlers/botPaymentHandler.js';
+import { handleBotPayment, handlePaymentScreenshot } from './handlers/newBotPaymentHandler.js';
 import { handleAdminCommand } from './admin/index.js';
 import { handleError, withErrorHandling } from './handlers/errors/index.js';
 
