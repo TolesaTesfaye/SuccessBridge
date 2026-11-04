@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Footer } from "@components/common/Footer";
 import { Menu, Moon, Sun } from "lucide-react";
 import { AppLogo } from "@components/common/AppLogo";
+import { MobileBottomNav } from "@components/common/MobileBottomNav";
 import { Sidebar } from "./Sidebar";
 import NotificationBell from "@components/notifications/NotificationBell";
 
@@ -16,6 +17,8 @@ interface DashboardLayoutProps {
   noPadding?: boolean;
   showFooter?: boolean;
   disableTopPadding?: boolean;
+  mobileNavActiveTab?: "home" | "learning" | "hub";
+  onMobileNavTabChange?: (tab: "home" | "learning" | "hub") => void;
 }
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
@@ -26,6 +29,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   noPadding = false,
   showFooter = true,
   disableTopPadding = false,
+  mobileNavActiveTab = "home",
+  onMobileNavTabChange,
 }) => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
@@ -46,6 +51,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const handleLogout = () => {
     logout();
     navigate("/login");
+  };
+
+  const handleMobileNavTabChange = (tab: "home" | "learning" | "hub") => {
+    if (onMobileNavTabChange) {
+      onMobileNavTabChange(tab);
+      return;
+    }
+
+    navigate("/dashboard", tab === "home" ? undefined : { state: { activeTab: tab } });
   };
 
   return (
@@ -143,7 +157,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             onClick={() => setIsSidebarOpen(false)}
           />
           <aside
-            className={`absolute top-0 bottom-0 left-0 w-56 md:w-64 bg-white dark:bg-slate-900 transition-transform duration-300 shadow-2xl ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
+            className={`absolute top-0 bottom-0 left-0 w-48 md:w-52 bg-white dark:bg-slate-900 transition-transform duration-300 shadow-2xl ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
           >
             <Sidebar onClose={() => setIsSidebarOpen(false)} />
           </aside>
@@ -175,6 +189,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           )}
         </main>
       </div>
+      <MobileBottomNav
+        activeTab={mobileNavActiveTab}
+        onTabChange={handleMobileNavTabChange}
+      />
     </div>
   );
 };

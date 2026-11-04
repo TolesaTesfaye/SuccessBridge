@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { Footer } from "@components/common/Footer";
-import { MobileBottomNav } from "@components/common/MobileBottomNav";
 import { resourceService } from "@services/resourceService";
 import { universityService } from "@services/universityService";
 import { useAuthStore } from "@store/authStore";
@@ -224,6 +223,14 @@ export const UniversityDashboard: React.FC = () => {
       title=""
       noPadding={activeTab === "learning"}
       showFooter={false}
+      mobileNavActiveTab={activeTab}
+      onMobileNavTabChange={(tab) => {
+        if (tab === "learning") {
+          handleLearningCenterClick();
+        } else {
+          setActiveTab(tab);
+        }
+      }}
       headerNav={
         <div className="hidden md:flex items-center w-full md:w-auto md:mx-auto gap-0.5 md:gap-1">
           {[
@@ -314,17 +321,6 @@ export const UniversityDashboard: React.FC = () => {
           <Footer />
         </>
       )}
-      {/* Mobile Bottom Navigation */}
-      <MobileBottomNav 
-        activeTab={activeTab} 
-        onTabChange={(tab) => {
-          if (tab === "learning") {
-            handleLearningCenterClick();
-          } else {
-            setActiveTab(tab);
-          }
-        }} 
-      />
     </DashboardLayout>
   );
 };

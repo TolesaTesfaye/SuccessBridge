@@ -18,12 +18,10 @@ import {
   Flame,
   CheckCircle2,
   ChevronRight,
-  Lightbulb,
   Rocket,
   School,
   Medal,
   Library,
-  Users,
   Star,
   Network,
   CodeXml,
@@ -301,25 +299,6 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
       accent: "text-amber-400",
       bg: "bg-amber-500/10",
       border: "border-amber-500/20",
-    },
-  ];
-
-  // ── Daily tips ───────────────────────────────────────────────────
-  const tips = [
-    {
-      icon: Lightbulb,
-      text: "Review freshman courses alongside your major for better concept integration",
-      gradient: "from-yellow-500/20 to-amber-500/5",
-    },
-    {
-      icon: Rocket,
-      text: "Use past exam papers to familiarize with university-style assessments",
-      gradient: "from-blue-500/20 to-indigo-500/5",
-    },
-    {
-      icon: Users,
-      text: "Collaborate with peers — group discussions deepen your understanding",
-      gradient: "from-emerald-500/20 to-teal-500/5",
     },
   ];
 
@@ -658,43 +637,7 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
         </div>
       </section>
 
-      {/* SECTION 5 — DAILY INSIGHTS & STUDY TIPS */}
-      <section className="px-2 md:px-4 lg:px-5">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
-          <div className="rounded-2xl bg-gradient-to-br from-violet-50/80 via-purple-50/50 to-slate-50 dark:from-violet-900/10 dark:via-purple-900/5 dark:to-slate-900/60 border border-violet-100/60 dark:border-violet-800/30 p-4 md:p-5 lg:p-6">
-            <div className="flex items-center gap-2 mb-4 md:mb-5">
-              <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
-                <Lightbulb className="w-4 h-4 md:w-5 md:h-5 text-white" />
-              </div>
-              <div>
-                <h3 className="text-sm md:text-base font-bold text-slate-900 dark:text-white">
-                  Daily Study Insights
-                </h3>
-                <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400">
-                  Tips to maximize your learning
-                </p>
-              </div>
-            </div>
-            <div className="space-y-2.5 md:space-y-3">
-              {tips.map((tip, i) => (
-                <div
-                  key={i}
-                  className={`flex items-start gap-3 p-3 md:p-3.5 rounded-xl bg-gradient-to-r ${tip.gradient} border border-white/50 dark:border-white/5 backdrop-blur-sm hover:scale-[1.01] transition-transform`}
-                >
-                  <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-white/80 dark:bg-white/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <tip.icon className="w-3.5 h-3.5 md:w-4 md:h-4 text-amber-600 dark:text-amber-400" />
-                  </div>
-                  <p className="text-xs md:text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                    {tip.text}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION 6 — TESTIMONIALS */}
+      {/* TESTIMONIALS */}
       <section className="px-2 md:px-4 lg:px-5">
         <div className="rounded-2xl bg-gradient-to-br from-slate-50/80 to-violet-50/30 dark:from-slate-900/40 dark:to-slate-900/20 border border-slate-200/60 dark:border-slate-800/50 p-3 md:p-5 lg:p-6 overflow-hidden">
           <Testimonials />
