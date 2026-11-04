@@ -43,12 +43,14 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     amount?: string
     screenshot?: string
     paymentMethod?: string
+    payerPhone?: string
   }>({})
   const [formData, setFormData] = useState({
     amount: '',
     paymentMethod: 'bank_transfer' as CreatePaymentData['paymentMethod'],
     transactionReference: '',
     notes: '',
+    payerPhone: '',
   })
 
   const MINIMUM_PAYMENT = 200 // Minimum payment amount in ETB
@@ -144,6 +146,24 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     return undefined
   }
 
+  const validatePhoneNumber = (value: string): string | undefined => {
+    if (!value || value.trim() === '') {
+      return 'Phone number is required'
+    }
+    
+    // Remove spaces and special characters for validation
+    const cleanedPhone = value.replace(/[\s\-\(\)]/g, '')
+    
+    // Check if it's a valid Ethiopian phone number (9 or 10 digits, optionally starting with +251 or 251)
+    const ethiopianPhoneRegex = /^(\+?251|0)?[79]\d{8}$/
+    
+    if (!ethiopianPhoneRegex.test(cleanedPhone)) {
+      return 'Please enter a valid Ethiopian phone number (e.g., 0912345678 or +251912345678)'
+    }
+    
+    return undefined
+  }
+
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     setFormData({ ...formData, amount: value })
@@ -166,6 +186,23 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     const error = validateAmount(formData.amount)
     if (error) {
       setErrors({ ...errors, amount: error })
+    }
+  }
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setFormData({ ...formData, payerPhone: value })
+    
+    // Clear error when user starts typing
+    if (errors.payerPhone) {
+      setErrors({ ...errors, payerPhone: undefined })
+    }
+  }
+
+  const handlePhoneBlur = () => {
+    const error = validatePhoneNumber(formData.payerPhone)
+    if (error) {
+      setErrors({ ...errors, payerPhone: error })
     }
   }
 
@@ -223,6 +260,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       newErrors.amount = amountError
     }
     
+    // Validate phone number
+    const phoneError = validatePhoneNumber(formData.payerPhone)
+    if (phoneError) {
+      newErrors.payerPhone = phoneError
+    }
+    
     // Validate screenshot
     if (!screenshot) {
       newErrors.screenshot = 'Payment screenshot is required'
@@ -263,6 +306,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         screenshot: screenshot!,
         transactionReference: formData.transactionReference || undefined,
         notes: formData.notes || undefined,
+        payerPhone: formData.payerPhone,
         educationLevel,
         grade,
         stream,
@@ -299,6 +343,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         paymentMethod: 'bank_transfer',
         transactionReference: '',
         notes: '',
+        payerPhone: '',
       })
       setScreenshot(null)
       setPreviewUrl(null)
@@ -427,6 +472,23 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           <div className="flex items-start gap-2 p-2 sm:p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg -mt-2">
             <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
             <p className="text-xs sm:text-sm text-red-600 dark:text-red-400 font-medium">{errors.amount}</p>
+          </div>
+        )}
+
+        <FormInput
+          label="Your Phone Number"
+          type="tel"
+          value={formData.payerPhone}
+          onChange={handlePhoneChange}
+          onBlur={handlePhoneBlur}
+          placeholder="e.g., 0912345678 or +251912345678"
+          required
+          error={errors.payerPhone}
+        />
+        {errors.payerPhone && (
+          <div className="flex items-start gap-2 p-2 sm:p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg -mt-2">
+            <AlertTriangle className="w-3 h-3 sm:w-4 sm:h-4 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+            <p className="text-xs sm:text-sm text-red-600 dark:text-red-400 font-medium">{errors.payerPhone}</p>
           </div>
         )}
 
