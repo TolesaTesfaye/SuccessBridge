@@ -2,7 +2,7 @@ import { createRequire } from 'module';
 import { config } from '../config/environment.js';
 import { handleStart } from './handlers/startHandler.js';
 import { handleHelp } from './handlers/helpHandler.js';
-import { handleBrowseCourses } from './handlers/browseCoursesHandler.js';
+import { handleSmartBrowse } from './handlers/simplifiedBrowseHandler.js';
 import { handleMyCourses } from './handlers/myCoursesHandler.js';
 import { handleProfile } from './handlers/profileHandler.js';
 import { handleCallbackQuery } from './handlers/callbackHandler.js';
@@ -84,7 +84,9 @@ class TelegramBotService {
     
     this.bot.onText(/\/browse/, async (msg: any) => {
       console.log('📨 Received /browse from:', msg.from?.username);
-      await wrapHandler(handleBrowseCourses, '/browse')(this.bot, msg);
+      await wrapHandler(async (bot: any, m: any) => {
+        await handleSmartBrowse(bot, m, m.from?.id?.toString());
+      }, '/browse')(this.bot, msg);
     });
     
     this.bot.onText(/\/mycourses/, async (msg: any) => {

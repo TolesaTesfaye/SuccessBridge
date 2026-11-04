@@ -113,7 +113,46 @@ export async function handleCallbackQuery(
     } else if (data.startsWith('faq_')) {
       await handleFaqCallback(bot, chatId, messageId, data);
     } else if (data === 'browse_courses') {
-      await handleBrowseCourses(bot, { chat: { id: chatId } });
+      // Use simplified browse instead
+      const { handleSmartBrowse } = await import('./simplifiedBrowseHandler.js');
+      await handleSmartBrowse(bot, { chat: { id: chatId } }, query.from.id.toString());
+    } else if (data === 'browse_all_grades') {
+      // Show quick grade selector
+      const { handleSmartBrowse } = await import('./simplifiedBrowseHandler.js');
+      const text = `📚 <b>QUICK BROWSE</b>\n` +
+        `${formatDivider()}\n` +
+        `Select your grade to view subjects instantly:\n` +
+        `${formatDivider()}`;
+
+      await bot.sendMessage(chatId, text, {
+        parse_mode: 'HTML',
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: '9️⃣ Grade 9', callback_data: 'quick_grade_9' },
+              { text: '🔟 Grade 10', callback_data: 'quick_grade_10' },
+            ],
+            [
+              { text: '1️⃣1️⃣ Grade 11 Natural', callback_data: 'quick_grade_11_natural' },
+              { text: '1️⃣1️⃣ Grade 11 Social', callback_data: 'quick_grade_11_social' },
+            ],
+            [
+              { text: '1️⃣2️⃣ Grade 12 Natural', callback_data: 'quick_grade_12_natural' },
+              { text: '1️⃣2️⃣ Grade 12 Social', callback_data: 'quick_grade_12_social' },
+            ],
+            [
+              { text: '🎓 Freshman', callback_data: 'quick_freshman' },
+              { text: '📖 Remedial', callback_data: 'quick_remedial' },
+            ],
+            [{ text: '🏠 Main Menu', callback_data: 'main_menu' }],
+          ],
+        },
+      });
+    } else if (data.startsWith('quick_')) {
+      // Handle quick grade selection
+      const { handleQuickGradeSelection } = await import('./simplifiedBrowseHandler.js');
+      const gradeKey = data.replace('quick_', '');
+      await handleQuickGradeSelection(bot, chatId, gradeKey);
     } else if (data === 'open_website') {
       // Handle website preview - send screenshot image
       await handleWebsitePreview(bot, chatId);
