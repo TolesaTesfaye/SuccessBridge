@@ -18,7 +18,6 @@ import {
   Flame,
   CheckCircle2,
   ChevronRight,
-  BarChart3,
   Lightbulb,
   Rocket,
   School,
@@ -690,103 +689,6 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
                   </p>
                 </div>
               ))}
-            </div>
-          </div>
-          <div className="rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/50 p-4 md:p-5 lg:p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-center gap-2 mb-4 md:mb-5">
-              <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                <BarChart3 className="w-4 h-4 md:w-5 md:h-5 text-white" />
-              </div>
-              <div>
-                <h3 className="text-sm md:text-base font-bold text-slate-900 dark:text-white">
-                  Semester Progress
-                </h3>
-                <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400">
-                  Your academic momentum
-                </p>
-              </div>
-            </div>
-            <div className="space-y-4">
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
-                    Courses Completed
-                  </span>
-                  <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                    4 / 6
-                  </span>
-                </div>
-                <div className="h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-full transition-all duration-1000"
-                    style={{ width: "67%" }}
-                  >
-                    <div className="h-full w-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
-                    Study Hours
-                  </span>
-                  <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
-                    18.5 / 25 hrs
-                  </span>
-                </div>
-                <div className="h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full transition-all duration-1000"
-                    style={{ width: "74%" }}
-                  >
-                    <div className="h-full w-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
-                    Assignment Avg.
-                  </span>
-                  <span className="text-xs font-bold text-violet-600 dark:text-violet-400">
-                    88%
-                  </span>
-                </div>
-                <div className="h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-violet-400 to-purple-500 rounded-full transition-all duration-1000"
-                    style={{ width: "88%" }}
-                  >
-                    <div className="h-full w-full bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
-                <div className="text-center">
-                  <div className="text-lg md:text-xl font-black text-slate-900 dark:text-white">
-                    6
-                  </div>
-                  <div className="text-[9px] md:text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    Courses
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg md:text-xl font-black text-slate-900 dark:text-white">
-                    24
-                  </div>
-                  <div className="text-[9px] md:text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    Resources
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-lg md:text-xl font-black text-slate-900 dark:text-white">
-                    12
-                  </div>
-                  <div className="text-[9px] md:text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    Quizzes
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
