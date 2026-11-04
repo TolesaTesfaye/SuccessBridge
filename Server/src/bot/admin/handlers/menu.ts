@@ -39,15 +39,16 @@ Select management area:
             { text: '📁 Resources', callback_data: 'admin_resources_menu' },
           ],
           [
+            { text: '💳 Payments', callback_data: 'admin_payments' },
             { text: '📊 Statistics', callback_data: 'admin_stats' },
+          ],
+          [
             { text: '🔍 Search', callback_data: 'admin_search' },
-          ],
-          [
             { text: '⚙️ Settings', callback_data: 'admin_settings' },
-            { text: '🔄 Refresh', callback_data: 'admin_menu' },
           ],
           [
-            { text: '🔙 Exit Admin Mode', callback_data: 'main_menu' },
+            { text: '🔄 Refresh', callback_data: 'admin_menu' },
+            { text: '🔙 Exit', callback_data: 'main_menu' },
           ],
         ],
       },

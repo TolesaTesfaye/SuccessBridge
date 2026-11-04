@@ -156,11 +156,15 @@ export async function handleCallbackQuery(
     } else if (data === 'open_website') {
       // Handle website preview - send screenshot image
       await handleWebsitePreview(bot, chatId);
-    } else if (data === 'payment_info' || data === 'subscribe_now') {
-      // Handle payment information request
+    } else if (data === 'unlock_resources' || data === 'payment_info' || data === 'subscribe_now') {
+      // Handle unlock all resources / payment
+      const { handleBotPayment } = await import('./newBotPaymentHandler.js');
       const userMsg = { chat: { id: chatId }, from: query.from };
-      const { handlePayment } = await import('./paymentHandler.js');
-      await handlePayment(bot, userMsg);
+      await handleBotPayment(bot, userMsg);
+    } else if (data === 'my_payments') {
+      // Show student payment history
+      const { handleMyPayments } = await import('./myPaymentsHandler.js');
+      await handleMyPayments(bot, chatId, query.from.id.toString());
     } else if (data === 'ready_to_pay') {
       // User ready to send payment screenshot - import new handler
       const { handleReadyToPay: newReadyToPay } = await import('./newBotPaymentHandler.js');

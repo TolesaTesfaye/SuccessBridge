@@ -55,18 +55,19 @@ export async function handleStart(bot: any, msg: any): Promise<void> {
               { text: '📚 Browse Subjects & Materials', callback_data: 'browse_courses' },
             ],
             [
-              { text: '🌐 Open Website Preview', callback_data: 'open_website' },
+              { text: '💳 Unlock All Resources', callback_data: 'unlock_resources' },
             ],
             [
               { text: '🔍 Search Materials', callback_data: 'search_prompt' },
               { text: '📖 My Subjects', callback_data: 'mycourses' },
             ],
             [
-              { text: '💳 Subscription & Payment', callback_data: 'payment_info' },
+              { text: '💰 My Payments', callback_data: 'my_payments' },
+              { text: '👤 My Profile', callback_data: 'view_profile' },
             ],
             [
-              { text: '👤 Student Profile', callback_data: 'view_profile' },
-              { text: '❓ How to Use & FAQ', callback_data: 'faq_home' },
+              { text: '🌐 Website Preview', callback_data: 'open_website' },
+              { text: '❓ Help & FAQ', callback_data: 'faq_home' },
             ],
           ],
         },

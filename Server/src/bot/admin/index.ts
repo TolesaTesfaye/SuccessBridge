@@ -20,6 +20,12 @@ import {
 } from './handlers/resources.js';
 import { showSettingsMenu, toggleSetting } from './handlers/settings.js';
 import { showAdminSearchMenu, handleAdminFilterSearch } from './handlers/search.js';
+import {
+  showPaymentMenu,
+  listPayments,
+  viewPaymentDetails,
+  showPaymentStats,
+} from './handlers/payments.js';
 import { requireAdmin } from './middleware/auth.js';
 
 /**
@@ -111,6 +117,65 @@ export async function handleAdminCallback(
     if (data.startsWith('admin_search_filter_')) {
       const filter = data.replace('admin_search_filter_', '');
       return await handleAdminFilterSearch(bot, chatId, telegramUserId, filter);
+    }
+
+    // Payment Management
+    if (data === 'admin_payments') {
+      return await showPaymentMenu(bot, chatId, telegramUserId);
+    }
+
+    if (data === 'admin_payments_pending') {
+      return await listPayments(bot, chatId, telegramUserId, 'pending', 1);
+    }
+
+    if (data === 'admin_payments_approved') {
+      return await listPayments(bot, chatId, telegramUserId, 'approved', 1);
+    }
+
+    if (data === 'admin_payments_rejected') {
+      return await listPayments(bot, chatId, telegramUserId, 'rejected', 1);
+    }
+
+    if (data.startsWith('admin_payments_pending_')) {
+      const page = parseInt(data.replace('admin_payments_pending_', ''));
+      return await listPayments(bot, chatId, telegramUserId, 'pending', page);
+    }
+
+    if (data.startsWith('admin_payments_approved_')) {
+      const page = parseInt(data.replace('admin_payments_approved_', ''));
+      return await listPayments(bot, chatId, telegramUserId, 'approved', page);
+    }
+
+    if (data.startsWith('admin_payments_rejected_')) {
+      const page = parseInt(data.replace('admin_payments_rejected_', ''));
+      return await listPayments(bot, chatId, telegramUserId, 'rejected', page);
+    }
+
+    if (data.startsWith('admin_payment_view_')) {
+      const paymentId = data.replace('admin_payment_view_', '');
+      return await viewPaymentDetails(bot, chatId, telegramUserId, paymentId);
+    }
+
+    if (data === 'admin_payment_stats') {
+      return await showPaymentStats(bot, chatId, telegramUserId);
+    }
+
+    if (data.startsWith('admin_payment_approve_')) {
+      const paymentId = data.replace('admin_payment_approve_', '');
+      // Import from newBotPaymentHandler
+      const { handleApprovePayment } = await import('../handlers/newBotPaymentHandler.js');
+      const query = { id: 'admin_approve', from: { id: telegramUserId }, message: { chat: { id: chatId }, message_id: 0 } };
+      await handleApprovePayment(bot, query, paymentId);
+      return;
+    }
+
+    if (data.startsWith('admin_payment_reject_')) {
+      const paymentId = data.replace('admin_payment_reject_', '');
+      // Import from newBotPaymentHandler
+      const { handleRejectPayment } = await import('../handlers/newBotPaymentHandler.js');
+      const query = { id: 'admin_reject', from: { id: telegramUserId }, message: { chat: { id: chatId }, message_id: 0 } };
+      await handleRejectPayment(bot, query, paymentId);
+      return;
     }
 
     // No-op (for disabled buttons)
