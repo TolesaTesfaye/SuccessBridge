@@ -18,7 +18,7 @@ services:
       - key: PORT
         value: 10000
       - key: FRONTEND_URL
-        value: https://successbridge.pages.dev # Cloudflare Pages URL
+        value: https://success-bridge-ten.vercel.app # Vercel production frontend
       - key: DATABASE_URL
         sync: false # Set in Render Dashboard
       - key: JWT_SECRET

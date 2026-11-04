@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://successbridge.pages.dev/sitemap.xml
+Sitemap: https://success-bridge-ten.vercel.app/sitemap.xml
 
 # Contact
 # For security concerns, please contact: tolesatesfaye273@gmail.com
