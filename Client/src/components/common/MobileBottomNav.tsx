@@ -76,7 +76,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
       {/* Subtle glow effect on top border */}
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-slate-500/20 to-transparent" />
       
-      <div className="flex items-center justify-around px-1 py-1 pb-safe max-w-md mx-auto">
+      <div className="flex items-center justify-around px-1 py-0.5 pb-safe max-w-md mx-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon
           const isActive = activeTab === tab.id
@@ -86,7 +86,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`relative flex flex-col items-center justify-center flex-1 py-1 px-0.5 rounded-lg transition-all duration-300 ease-out group ${
+              className={`relative flex flex-col items-center justify-center flex-1 py-0.5 px-0.5 rounded-lg transition-all duration-300 ease-out group ${
                 isActive
                   ? 'scale-105'
                   : 'active:scale-95 hover:bg-slate-800/20'
@@ -99,7 +99,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
               
               {/* Icon container - smaller size */}
               <div
-                className={`relative flex items-center justify-center w-8 h-8 rounded-lg mb-0.5 transition-all duration-300 transform ${colors.bg} ${
+                className={`relative flex items-center justify-center w-7 h-7 rounded-lg mb-0.5 transition-all duration-300 transform ${colors.bg} ${
                   isActive
                     ? `${colors.shadow} scale-105`
                     : 'group-active:scale-90'
@@ -132,8 +132,6 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         })}
       </div>
       
-      {/* Minimal safe area padding */}
-      <div className="h-0.5 bg-slate-950" />
     </nav>
   )
 }
