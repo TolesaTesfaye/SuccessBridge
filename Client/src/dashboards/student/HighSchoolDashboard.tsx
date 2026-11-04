@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { Footer } from "@components/common/Footer";
-import { AIChatIcon } from "@components/common/AIChatIcon";
 import { MobileBottomNav } from "@components/common/MobileBottomNav";
 import { resourceService } from "@services/resourceService";
 import { useAuthStore } from "@store/authStore";
@@ -215,8 +214,6 @@ export const HighSchoolDashboard: React.FC = () => {
           <Footer />
         </>
       )}
-      {(activeTab === "learning" || activeTab === "hub") && <AIChatIcon />}
-      
       {/* Mobile Bottom Navigation */}
       <MobileBottomNav activeTab={activeTab} onTabChange={setActiveTab} />
     </DashboardLayout>
