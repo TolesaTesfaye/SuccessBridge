@@ -181,7 +181,7 @@ export async function getUserDownloadHistory(
   limit: number = 20
 ): Promise<DownloadRecord[]> {
   try {
-    const [results] = await sequelize.query(
+    const results: any = await sequelize.query(
       `SELECT 
         id, 
         user_id as "userId",
@@ -308,7 +308,7 @@ export async function grantPremiumAccess(userId: string): Promise<void> {
  */
 export async function getMostDownloadedResources(limit: number = 10): Promise<any[]> {
   try {
-    const [results] = await sequelize.query(
+    const results: any = await sequelize.query(
       `SELECT 
         resource_name as "resourceName",
         resource_type as "resourceType",
