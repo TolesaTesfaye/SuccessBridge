@@ -32,19 +32,46 @@ class TelegramBotService {
     const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
     
     if (isProduction) {
-      console.log('🌐 Production mode detected - using webhook mode');
-      // In production, use webhook mode (no polling)
-      this.bot = new TelegramBot(config.telegram.botToken, { polling: false });
+      console.log('🌐 Production mode detected - using polling mode (webhooks not configured)');
+      // Use polling even in production since webhooks aren't set up
+      this.bot = new TelegramBot(config.telegram.botToken, { 
+        polling: true,
+        request: {
+          agentOptions: {
+            keepAlive: true,
+            family: 4 // Force IPv4
+          }
+        }
+      });
     } else {
       console.log('🖥️  Development mode - using polling mode');
       // In development, use polling
-      const botOptions: any = { polling: true };
+      const botOptions: any = { 
+        polling: true,
+        request: {
+          agentOptions: {
+            keepAlive: true,
+            family: 4 // Force IPv4
+          }
+        }
+      };
       const proxyUrl = process.env.HTTPS_PROXY || process.env.HTTP_PROXY;
       if (proxyUrl) {
-        botOptions.request = { proxy: proxyUrl };
+        botOptions.request.proxy = proxyUrl;
       }
       this.bot = new TelegramBot(config.telegram.botToken, botOptions);
     }
+    
+    // Add polling error handler
+    this.bot.on('polling_error', (error: any) => {
+      console.error('❌ Polling error:', error.code, error.message);
+      // Don't crash on polling errors
+    });
+    
+    // Add webhook error handler
+    this.bot.on('webhook_error', (error: any) => {
+      console.error('❌ Webhook error:', error);
+    });
     
     console.log('🔧 Bot instance created, setting up handlers...');
     this.setupHandlers();
