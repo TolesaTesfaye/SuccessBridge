@@ -304,6 +304,16 @@ app.get("/health", async (req, res) => {
 // Error handling
 app.use(errorHandler);
 
+// Bind the port before external services initialize so cloud platforms can
+// detect the web service even when database or optional service connections are slow.
+const server = app.listen(PORT, () => {
+  logger.server(`Server listening on port ${PORT}`);
+  if (process.env.NODE_ENV === "development") {
+    logger.info(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
+  }
+  logger.info(`🔍 Health check: http://localhost:${PORT}/health`);
+});
+
 // Database connection and server start
 const startServer = async () => {
   let dbSyncOk: boolean | undefined;
@@ -425,66 +435,46 @@ const startServer = async () => {
       logger.warn("Telegram Bot initialization failed:", botError);
     }
 
-    // Start the server regardless of database status
-    app.listen(PORT, () => {
-      logger.server(`Server running on port ${PORT}`);
-      if (process.env.NODE_ENV === "development") {
-        logger.info(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
-      }
-      logger.info(`🔍 Health check: http://localhost:${PORT}/health`);
+    if (connectionSuccess && dbSyncOk !== false) {
+      logger.success(
+        dbSyncOk
+          ? "SuccessBridge server started successfully with database!"
+          : "SuccessBridge server started (database connected; sync had warnings)",
+      );
 
-      if (connectionSuccess && dbSyncOk !== false) {
-        logger.success(
-          dbSyncOk
-            ? "SuccessBridge server started successfully with database!"
-            : "SuccessBridge server started (database connected; sync had warnings)",
-        );
-
-        // Start periodic cleanup of expired pending users (every hour)
-        setInterval(
-          async () => {
-            try {
-              const result = await PendingUser.destroy({
-                where: {
-                  verificationExpires: {
-                    [Op.lt]: new Date(),
-                  },
+      // Start periodic cleanup of expired pending users (every hour)
+      setInterval(
+        async () => {
+          try {
+            const result = await PendingUser.destroy({
+              where: {
+                verificationExpires: {
+                  [Op.lt]: new Date(),
                 },
-              });
-              if (result > 0) {
-                logger.info(`🧹 Cleaned up ${result} expired pending user(s)`);
-              }
-            } catch (error) {
-              logger.error("Error cleaning up pending users:", error);
+              },
+            });
+            if (result > 0) {
+              logger.info(`🧹 Cleaned up ${result} expired pending user(s)`);
             }
-          },
-          60 * 60 * 1000,
-        ); // Run every hour
-      } else {
-        logger.warn(
-          "SuccessBridge server started in limited mode (no database)",
-        );
-        logger.info(
-          "Fix database connection and restart for full functionality",
-        );
-      }
-    });
+          } catch (error) {
+            logger.error("Error cleaning up pending users:", error);
+          }
+        },
+        60 * 60 * 1000,
+      ); // Run every hour
+    } else {
+      logger.warn(
+        "SuccessBridge server started in limited mode (no database)",
+      );
+      logger.info(
+        "Fix database connection and restart for full functionality",
+      );
+    }
   } catch (error) {
     logger.error("Failed to start server:", error);
-
-    // Try to start server without database as last resort
-    try {
-      logger.warn("Attempting to start server without database...");
-      app.listen(PORT, () => {
-        logger.server(`Server running on port ${PORT} (NO DATABASE)`);
-        logger.warn(
-          "Fix database connection and restart for full functionality",
-        );
-      });
-    } catch (finalError) {
-      logger.error("Complete server startup failure:", finalError);
-      process.exit(1);
-    }
+    logger.warn(
+      "Server is listening but startup initialization failed; database-backed features may be unavailable",
+    );
   }
 };
 
@@ -500,6 +490,9 @@ process.on("SIGTERM", async () => {
       // Ignore if bot was not initialized
     }
     await sequelize.close();
+    await new Promise<void>((resolve, reject) => {
+      server.close((error) => (error ? reject(error) : resolve()));
+    });
     logger.info("Database connection closed");
     process.exit(0);
   } catch (error) {
@@ -517,6 +510,9 @@ process.on("SIGINT", async () => {
       // Ignore if bot was not initialized
     }
     await sequelize.close();
+    await new Promise<void>((resolve, reject) => {
+      server.close((error) => (error ? reject(error) : resolve()));
+    });
     logger.info("Database connection closed");
     process.exit(0);
   } catch (error) {
