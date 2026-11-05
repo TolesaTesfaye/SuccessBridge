@@ -337,12 +337,15 @@ export async function getMostDownloadedResources(limit: number = 10): Promise<an
  */
 export async function getConversionRate(): Promise<number> {
   try {
-    const [results]: any = await sequelize.query(
+    const results: any = await sequelize.query(
       `SELECT 
         COUNT(CASE WHEN has_premium = true THEN 1 END) as premium,
         COUNT(*) as total
        FROM users
-       WHERE role = 'student'`
+       WHERE role = 'student'`,
+      {
+        type: QueryTypes.SELECT,
+      }
     );
 
     const { premium, total } = results[0];
