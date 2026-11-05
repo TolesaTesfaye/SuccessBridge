@@ -15,7 +15,6 @@ import { handleAdminCallback } from '../admin/index.js';
 import { validateCallbackData } from '../middleware/validation.middleware.js';
 import { logger } from '../middleware/logger.middleware.js';
 import { escapeHtml, formatDivider, getMainKeyboard, formatRoleBadge, getWebUrl } from '../utils/ui.js';
-import { handleReadyToPay, handleApprovePayment, handleRejectPayment } from './botPaymentHandler.js';
 import { 
   handleProfileSetup, 
   handleHighSchoolSetup, 
@@ -165,7 +164,7 @@ export async function handleCallbackQuery(
       await handleWebsitePreview(bot, chatId);
     } else if (data === 'unlock_resources' || data === 'payment_info' || data === 'subscribe_now') {
       // Handle unlock all resources / payment
-      const { handleBotPayment } = await import('./newBotPaymentHandler.js');
+      const { handleBotPayment } = await import('./payment.handler.js');
       const userMsg = { chat: { id: chatId }, from: query.from };
       await handleBotPayment(bot, userMsg);
     } else if (data === 'my_payments') {
@@ -173,19 +172,19 @@ export async function handleCallbackQuery(
       const { handleMyPayments } = await import('./myPaymentsHandler.js');
       await handleMyPayments(bot, chatId, query.from.id.toString());
     } else if (data === 'ready_to_pay') {
-      // User ready to send payment screenshot - import new handler
-      const { handleReadyToPay: newReadyToPay } = await import('./newBotPaymentHandler.js');
-      await newReadyToPay(bot, chatId, query.from.id.toString());
+      // User ready to send payment screenshot
+      const { handleReadyToPay } = await import('./payment.handler.js');
+      await handleReadyToPay(bot, chatId, query.from.id.toString());
     } else if (data.startsWith('approve_payment_')) {
-      // Admin approving payment - import new handler
+      // Admin approving payment
       const paymentId = data.replace('approve_payment_', '');
-      const { handleApprovePayment: newApproveHandler } = await import('./newBotPaymentHandler.js');
-      await newApproveHandler(bot, query, paymentId);
+      const { handleApprovePayment } = await import('./payment.handler.js');
+      await handleApprovePayment(bot, query, paymentId);
     } else if (data.startsWith('reject_payment_')) {
-      // Admin rejecting payment - import new handler
+      // Admin rejecting payment
       const paymentId = data.replace('reject_payment_', '');
-      const { handleRejectPayment: newRejectHandler } = await import('./newBotPaymentHandler.js');
-      await newRejectHandler(bot, query, paymentId);
+      const { handleRejectPayment } = await import('./payment.handler.js');
+      await handleRejectPayment(bot, query, paymentId);
     } else if (data === 'main_menu') {
       const user = await getUserByTelegramId(query.from.id.toString());
       const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';

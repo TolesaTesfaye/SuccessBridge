@@ -162,8 +162,7 @@ export async function handleAdminCallback(
 
     if (data.startsWith('admin_payment_approve_')) {
       const paymentId = data.replace('admin_payment_approve_', '');
-      // Import from newBotPaymentHandler
-      const { handleApprovePayment } = await import('../handlers/newBotPaymentHandler.js');
+      const { handleApprovePayment } = await import('../handlers/payment.handler.js');
       const query = { id: 'admin_approve', from: { id: telegramUserId }, message: { chat: { id: chatId }, message_id: 0 } };
       await handleApprovePayment(bot, query, paymentId);
       return;
@@ -171,8 +170,7 @@ export async function handleAdminCallback(
 
     if (data.startsWith('admin_payment_reject_')) {
       const paymentId = data.replace('admin_payment_reject_', '');
-      // Import from newBotPaymentHandler
-      const { handleRejectPayment } = await import('../handlers/newBotPaymentHandler.js');
+      const { handleRejectPayment } = await import('../handlers/payment.handler.js');
       const query = { id: 'admin_reject', from: { id: telegramUserId }, message: { chat: { id: chatId }, message_id: 0 } };
       await handleRejectPayment(bot, query, paymentId);
       return;

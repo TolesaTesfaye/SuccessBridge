@@ -7,14 +7,7 @@ import { hasActiveAccess, hasPendingPayment, grantCategoryAccess } from '../../s
 import { getPackageForCategory } from '../../services/packageService.js';
 import { isAuthorizedAdmin, getAllAdminTelegramIds, getAdminByTelegramId } from '../utils/adminAuth.js';
 import sequelize from '../../config/database.js';
-
-// Store user payment state (waiting for screenshot)
-const paymentState = new Map<string, {
-  userId: string;
-  telegramId: string;
-  step: 'waiting_for_screenshot' | 'completed';
-  timestamp: number;
-}>();
+import { paymentState } from '../state/paymentState.js';
 
 /**
  * Handle /botpayment command - show payment instructions
@@ -187,12 +180,10 @@ export async function handleReadyToPay(bot: any, chatId: number, telegramUserId:
     }
 
     // Set user state to waiting for screenshot
-    paymentState.set(telegramUserId, {
-      userId: user.id,
-      telegramId: telegramUserId,
-      step: 'waiting_for_screenshot',
-      timestamp: Date.now(),
-    });
+    await paymentState.startPaymentFlow(
+      telegramUserId,
+      user.id
+    );
 
     await bot.sendMessage(
       chatId,
@@ -220,7 +211,7 @@ export async function handlePaymentScreenshot(bot: any, msg: any): Promise<void>
 
   try {
     // Check if user is in payment state
-    const state = paymentState.get(telegramUserId);
+    const state = await paymentState.getState(telegramUserId);
     
     if (!state || state.step !== 'waiting_for_screenshot') {
       // Not waiting for screenshot, ignore
@@ -323,7 +314,7 @@ export async function handlePaymentScreenshot(bot: any, msg: any): Promise<void>
     );
 
     // Clear payment state
-    paymentState.delete(telegramUserId);
+    await paymentState.completePaymentFlow(telegramUserId);
 
     // Notify all admins
     await notifyAdminsOfNewPayment(bot, user, payment, studentCategory, fileId);

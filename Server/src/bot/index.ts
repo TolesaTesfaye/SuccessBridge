@@ -6,12 +6,11 @@ import { handleSmartBrowse } from './handlers/simplifiedBrowseHandler.js';
 import { handleMyCourses } from './handlers/myCoursesHandler.js';
 import { handleProfile } from './handlers/profileHandler.js';
 import { handleProfileSetup } from './handlers/profileSetupHandler.js';
-import { handleCallbackQuery } from './handlers/callbackHandler.js';
+import { handleCallbackQuery } from './handlers/callbacks/index.js';
 import { handleMessage } from './handlers/messageHandler.js';
 import { handleResourcesCommand } from './handlers/resourcesHandler.js';
 import { handleSearchPrompt } from './handlers/searchHandler.js';
-import { handlePayment } from './handlers/paymentHandler.js';
-import { handleBotPayment, handlePaymentScreenshot } from './handlers/newBotPaymentHandler.js';
+import { handleBotPayment, handlePaymentScreenshot } from './handlers/payment.handler.js';
 import { handleAdminCommand } from './admin/index.js';
 import { handleError, withErrorHandling } from './handlers/errors/index.js';
 
