@@ -23,6 +23,7 @@ import { seedSuperAdmin } from "./config/seedAdmin.js";
 import { seedSettings } from "./config/seedSettings.js";
 import { seedEducationData } from "./config/seedEducationData.js";
 import { ensureUserTelegramColumns } from "./scripts/migrateTelegramColumns.js";
+import { autoMigrate } from "./config/autoMigrate.js";
 import { setupSwagger } from "./config/swagger.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { auditMiddleware } from "./middleware/auditLogger.js";
@@ -353,6 +354,13 @@ const startServer = async () => {
           await ensureUserTelegramColumns();
         } catch (colErr) {
           logger.error("Failed to ensure Telegram columns on users table:", colErr);
+        }
+
+        // Auto-migrate freemium columns if needed
+        try {
+          await autoMigrate();
+        } catch (migrateErr) {
+          logger.error("Failed to run auto-migration:", migrateErr);
         }
 
         await seedSuperAdmin();
