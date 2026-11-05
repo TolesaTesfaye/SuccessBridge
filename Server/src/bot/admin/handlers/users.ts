@@ -284,7 +284,7 @@ export async function viewUser(
       include: [
         {
           model: SubjectAccess,
-          as: 'subjectAccesses',
+          as: 'subjectAccess',
           include: [{ model: Subject, as: 'subject', attributes: ['name', 'code'] }],
         },
       ],
@@ -297,8 +297,8 @@ export async function viewUser(
 
     const formatDate = (date: Date) => new Date(date).toLocaleDateString();
 
-    const subjectsList = user.subjectAccesses && user.subjectAccesses.length > 0
-      ? user.subjectAccesses
+    const subjectsList = user.subjectAccess && user.subjectAccess.length > 0
+      ? user.subjectAccess
           .map((access: any) => `  • ${access.subject?.name || 'Unknown'} (${access.subject?.code || 'N/A'})`)
           .join('\n')
       : '  None';
@@ -316,7 +316,7 @@ export async function viewUser(
 • Email Verified: ${user.isEmailVerified ? '✅ Yes' : '❌ No'}
 • Joined: ${formatDate(user.createdAt)}
 
-📚 *Subject Access:* (${user.subjectAccesses?.length || 0})
+📚 *Subject Access:* (${user.subjectAccess?.length || 0})
 ${subjectsList}
     `.trim();
 
