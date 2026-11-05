@@ -113,12 +113,12 @@ class TelegramBotService {
 
     this.bot.onText(/\/payment/, async (msg: any) => {
       console.log('📨 Received /payment from:', msg.from?.username);
-      await wrapHandler(handlePayment, '/payment')(this.bot, msg);
+      await wrapHandler(handleBotPayment, '/payment')(this.bot, msg);
     });
 
     this.bot.onText(/\/subscribe/, async (msg: any) => {
       console.log('📨 Received /subscribe from:', msg.from?.username);
-      await wrapHandler(handlePayment, '/subscribe')(this.bot, msg);
+      await wrapHandler(handleBotPayment, '/subscribe')(this.bot, msg);
     });
 
     this.bot.onText(/\/botpayment/, async (msg: any) => {
