@@ -215,16 +215,19 @@ User.init(
       type: DataTypes.INTEGER,
       defaultValue: 0,
       allowNull: false,
+      field: 'free_downloads_used',
     },
     freeDownloadsLimit: {
       type: DataTypes.INTEGER,
       defaultValue: 15,
       allowNull: false,
+      field: 'free_downloads_limit',
     },
     hasPremium: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
       allowNull: false,
+      field: 'has_premium',
     },
   } as any,
   {

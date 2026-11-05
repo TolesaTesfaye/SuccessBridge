@@ -6,51 +6,29 @@
 import sequelize from './database.js';
 
 export async function autoMigrate() {
-  console.log('\n🔄 Checking for required database migrations...\n');
+  console.log('\n🔄 Running freemium database migration...\n');
 
   try {
-    // Check if columns exist
-    const [results]: any = await sequelize.query(`
-      SELECT column_name 
-      FROM information_schema.columns 
-      WHERE table_name = 'users' 
-      AND column_name IN ('free_downloads_used', 'free_downloads_limit', 'has_premium')
+    console.log('⚡ Adding freemium columns to users table...\n');
+
+    // Add columns if they don't exist (use IF NOT EXISTS to be safe)
+    await sequelize.query(`
+      ALTER TABLE users 
+      ADD COLUMN IF NOT EXISTS free_downloads_used INTEGER DEFAULT 0 NOT NULL
     `);
+    console.log('✅ Added/verified free_downloads_used column');
 
-    const existingColumns = results.map((r: any) => r.column_name);
-    const needsMigration = existingColumns.length < 3;
+    await sequelize.query(`
+      ALTER TABLE users 
+      ADD COLUMN IF NOT EXISTS free_downloads_limit INTEGER DEFAULT 15 NOT NULL
+    `);
+    console.log('✅ Added/verified free_downloads_limit column');
 
-    if (!needsMigration) {
-      console.log('✅ All freemium columns exist - no migration needed\n');
-      return;
-    }
-
-    console.log('⚡ Running freemium migration...\n');
-
-    // Add columns if they don't exist
-    if (!existingColumns.includes('free_downloads_used')) {
-      await sequelize.query(`
-        ALTER TABLE users 
-        ADD COLUMN IF NOT EXISTS free_downloads_used INTEGER DEFAULT 0 NOT NULL
-      `);
-      console.log('✅ Added free_downloads_used column');
-    }
-
-    if (!existingColumns.includes('free_downloads_limit')) {
-      await sequelize.query(`
-        ALTER TABLE users 
-        ADD COLUMN IF NOT EXISTS free_downloads_limit INTEGER DEFAULT 15 NOT NULL
-      `);
-      console.log('✅ Added free_downloads_limit column');
-    }
-
-    if (!existingColumns.includes('has_premium')) {
-      await sequelize.query(`
-        ALTER TABLE users 
-        ADD COLUMN IF NOT EXISTS has_premium BOOLEAN DEFAULT false NOT NULL
-      `);
-      console.log('✅ Added has_premium column');
-    }
+    await sequelize.query(`
+      ALTER TABLE users 
+      ADD COLUMN IF NOT EXISTS has_premium BOOLEAN DEFAULT false NOT NULL
+    `);
+    console.log('✅ Added/verified has_premium column');
 
     // Create download_history table
     await sequelize.query(`
