@@ -38,6 +38,9 @@ class User extends Model<IUser> implements IUser {
   public passwordResetToken?: string
   public passwordResetExpires?: Date
   public telegramDownloadCount?: number
+  public freeDownloadsUsed?: number
+  public freeDownloadsLimit?: number
+  public hasPremium?: boolean
   public readonly createdAt!: Date
   public readonly updatedAt!: Date
 }

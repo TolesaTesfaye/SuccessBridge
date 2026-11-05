@@ -4,6 +4,7 @@
  */
 
 import sequelize from '../config/database.js';
+import { QueryTypes } from 'sequelize';
 import User from '../models/User.js';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -197,7 +198,7 @@ export async function getUserDownloadHistory(
        LIMIT :limit`,
       {
         replacements: { userId, limit },
-        type: sequelize.QueryTypes.SELECT,
+        type: QueryTypes.SELECT,
       }
     );
 
@@ -320,7 +321,7 @@ export async function getMostDownloadedResources(limit: number = 10): Promise<an
        LIMIT :limit`,
       {
         replacements: { limit },
-        type: sequelize.QueryTypes.SELECT,
+        type: QueryTypes.SELECT,
       }
     );
 
