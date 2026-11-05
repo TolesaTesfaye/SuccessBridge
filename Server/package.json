@@ -16,6 +16,7 @@
     "make-admin": "tsx src/scripts/makeAdmin.ts",
     "migrate:telegram-columns": "tsx src/scripts/migrateTelegramColumns.ts",
     "migrate:category-access": "tsx src/scripts/runMigration.ts",
+    "migrate:download-tracking": "tsx src/scripts/runDownloadTrackingMigration.ts",
     "test:payment-system": "tsx src/scripts/testPaymentSystem.ts",
     "test:admin-auth": "tsx src/scripts/testAdminAuth.ts"
   },

@@ -34,6 +34,10 @@ export interface IUser {
   passwordResetToken?: string;
   passwordResetExpires?: Date;
   telegramDownloadCount?: number;
+  // Freemium model fields
+  freeDownloadsUsed?: number;
+  freeDownloadsLimit?: number;
+  hasPremium?: boolean;
   isActive?: boolean;
   createdAt: Date;
   updatedAt: Date;

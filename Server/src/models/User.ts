@@ -207,6 +207,22 @@ User.init(
       defaultValue: 0,
       allowNull: false,
     },
+    // Freemium model fields
+    freeDownloadsUsed: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: false,
+    },
+    freeDownloadsLimit: {
+      type: DataTypes.INTEGER,
+      defaultValue: 15,
+      allowNull: false,
+    },
+    hasPremium: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+    },
   } as any,
   {
     sequelize,
