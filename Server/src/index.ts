@@ -280,7 +280,16 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/resource-types", resourceTypesRoutes);
 app.use("/api/telegram", telegramRoutes);
 
-// Health check
+// Fast liveness check for cloud platform health probes.
+app.get("/health/live", (req, res) => {
+  res.json({
+    status: "OK",
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || "development",
+  });
+});
+
+// Readiness check including database connectivity.
 app.get("/health", async (req, res) => {
   try {
     // Test database connection
