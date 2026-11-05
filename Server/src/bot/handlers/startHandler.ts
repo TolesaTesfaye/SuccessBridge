@@ -1,5 +1,32 @@
 import { getUserByTelegramId, createTelegramUser } from '../services/userService.js';
+import { deriveStudentCategory } from '../../services/studentCategoryService.js';
+import { hasActiveAccess, hasPendingPayment } from '../../services/accessControlService.js';
 import { escapeHtml, formatDivider, formatRoleBadge, getMainKeyboard, getWebUrl } from '../utils/ui.js';
+
+/**
+ * Get smart payment button text based on user state
+ */
+async function getPaymentButtonText(user: any): Promise<string> {
+  if (!user) return '💳 Unlock All Resources';
+  
+  const category = deriveStudentCategory(user);
+  
+  if (!category) {
+    return '✏️ Complete Profile First';
+  }
+  
+  const hasAccess = await hasActiveAccess(user.id, category);
+  if (hasAccess) {
+    return '✅ Access Active - Browse Now';
+  }
+  
+  const pending = await hasPendingPayment(user.id, category);
+  if (pending) {
+    return '⏳ Payment Pending Review';
+  }
+  
+  return '💳 Unlock All Resources';
+}
 
 export async function handleStart(bot: any, msg: any): Promise<void> {
   const chatId = msg.chat.id;
@@ -43,7 +70,11 @@ export async function handleStart(bot: any, msg: any): Promise<void> {
       reply_markup: getMainKeyboard(isAdmin),
     });
 
-    // Send quick action inline menu with clear guidance
+    // Get smart button text
+    const paymentButtonText = await getPaymentButtonText(user);
+    const profileStatus = deriveStudentCategory(user) ? '✅ Complete' : '⚠️ Incomplete';
+
+    // Send quick action inline menu with smart labels
     await bot.sendMessage(
       chatId,
       '⚡ <b>Student Quick Actions:</b>',
@@ -55,7 +86,7 @@ export async function handleStart(bot: any, msg: any): Promise<void> {
               { text: '📚 Browse Subjects & Materials', callback_data: 'browse_courses' },
             ],
             [
-              { text: '💳 Unlock All Resources', callback_data: 'unlock_resources' },
+              { text: paymentButtonText, callback_data: 'unlock_resources' },
             ],
             [
               { text: '🔍 Search Materials', callback_data: 'search_prompt' },
@@ -63,7 +94,7 @@ export async function handleStart(bot: any, msg: any): Promise<void> {
             ],
             [
               { text: '💰 My Payments', callback_data: 'my_payments' },
-              { text: '👤 My Profile', callback_data: 'view_profile' },
+              { text: `👤 Profile ${profileStatus}`, callback_data: 'view_profile' },
             ],
             [
               { text: '🌐 Website Preview', callback_data: 'open_website' },

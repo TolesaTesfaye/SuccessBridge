@@ -40,6 +40,9 @@ export async function handleCallbackQuery(bot: any, query: any): Promise<void> {
       data === 'subscribe_now' ||
       data === 'my_payments' ||
       data === 'ready_to_pay' ||
+      data === 'payment_faq' ||
+      data === 'payment_instructions' ||
+      data === 'confirm_payment_proceed' ||
       data.startsWith('approve_payment_') ||
       data.startsWith('reject_payment_')
     ) {

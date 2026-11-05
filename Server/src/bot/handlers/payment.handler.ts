@@ -285,28 +285,39 @@ export async function handlePaymentScreenshot(bot: any, msg: any): Promise<void>
 
     console.log(`📝 Created payment record: ${payment.id} for user ${user.id} - Category: ${studentCategory}`);
 
-    // Send confirmation to user
+    // Send confirmation to user with improved structure
     const categoryDisplay = getStudentCategoryDisplayName(studentCategory);
     await bot.sendMessage(
       chatId,
-      `✅ <b>Payment Proof Submitted!</b>\n\n` +
-      `📤 Your payment has been submitted for administrator review.\n\n` +
+      `✅ <b>PAYMENT RECEIVED!</b>\n\n` +
+      `${formatDivider()}\n` +
+      `Your payment screenshot has been successfully submitted and is now being reviewed.\n\n` +
       `📋 <b>Payment Details:</b>\n` +
-      `👤 Student: ${user.name}\n` +
-      `${getStudentCategoryEmoji(studentCategory)} Category: ${categoryDisplay}\n` +
-      `💰 Amount: ${price} ${currency}\n` +
-      `🔖 Reference: <code>${transactionRef}</code>\n\n` +
-      `⏱️ <b>Status:</b> Pending Administrator Approval\n\n` +
-      `🔔 <b>You will be notified here once approved!</b>\n` +
-      `⏰ Approval usually takes 10-30 minutes (max 24 hours)\n\n` +
+      `• Category: ${categoryDisplay}\n` +
+      `• Amount: ${price} ${currency}\n` +
+      `• Reference: <code>${transactionRef}</code>\n` +
+      `• Status: ⏳ Pending Admin Approval\n\n` +
+      `⏰ <b>What Happens Next?</b>\n` +
+      `━━━━━━━━━━━━━━━━━━━━\n` +
+      `1️⃣ <b>Admin Review</b> (10-30 minutes)\n` +
+      `   Our team verifies your payment\n\n` +
+      `2️⃣ <b>Instant Notification</b>\n` +
+      `   You'll receive a message here\n\n` +
+      `3️⃣ <b>Immediate Access</b>\n` +
+      `   Start downloading materials right away!\n\n` +
+      `${formatDivider()}\n` +
+      `💡 <b>Average approval time:</b> 10-30 minutes\n` +
+      `⏰ <b>Maximum wait time:</b> 24 hours\n\n` +
+      `🔔 <b>You will receive a notification when approved!</b>\n\n` +
       `${formatDivider()}\n` +
       `🗣️ <b>Afaan Oromoo:</b>\n` +
-      `<i>Screen shoot kee argameera! Admin daqiiqa muraasa keessatti approve siif godha.</i>`,
+      `<i>Screen shoot kee argameera! Admin daqiiqa 10-30 keessatti ilaala. Yeroo approve siif godhan, ergaa siif ergama.</i>`,
       {
         parse_mode: 'HTML',
         reply_markup: {
           inline_keyboard: [
-            [{ text: '💳 My Payments', callback_data: 'my_payments' }],
+            [{ text: '💳 View Payment Status', callback_data: 'my_payments' }],
+            [{ text: '📞 Contact Support', url: 'https://t.me/Tol_man27' }],
             [{ text: '🏠 Main Menu', callback_data: 'main_menu' }],
           ],
         },
