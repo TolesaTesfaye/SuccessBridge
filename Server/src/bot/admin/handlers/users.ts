@@ -3,8 +3,193 @@ import { requireAdmin } from '../middleware/auth.js';
 import { Op } from 'sequelize';
 import { validateUUID, validateNumericId, validateRole } from '../../middleware/validation.middleware.js';
 import { logger } from '../../middleware/logger.middleware.js';
+import { stateManager, isCancelCommand } from '../../state/stateManager.js';
 
 const USERS_PER_PAGE = 10;
+
+const USER_ROLES = ['student', 'admin', 'super_admin'] as const;
+
+function userManagementKeyboard(userId?: string): any[][] {
+  return userId
+    ? [
+        [
+          { text: '✏️ Edit Name/Email', callback_data: `admin_user_edit_${userId}` },
+          { text: '🗑️ Delete User', callback_data: `admin_user_delete_${userId}` },
+        ],
+        [
+          { text: '✏️ Change Role', callback_data: `admin_user_role_${userId}` },
+          { text: '🔙 Back to List', callback_data: 'admin_users_page_1' },
+        ],
+      ]
+    : [
+        [
+          { text: '➕ Create User', callback_data: 'admin_user_create' },
+          { text: '🔍 Search User', callback_data: 'admin_user_search' },
+        ],
+        [{ text: '🔙 Back', callback_data: 'admin_menu' }],
+      ];
+}
+
+export async function showUserManagementMenu(
+  bot: any,
+  chatId: number,
+  telegramUserId: string,
+): Promise<void> {
+  await requireAdmin(bot, chatId, telegramUserId);
+  await bot.sendMessage(
+    chatId,
+    '👥 <b>User Management</b>\n\nChoose an operation:',
+    { parse_mode: 'HTML', reply_markup: { inline_keyboard: userManagementKeyboard() } },
+  );
+}
+
+export async function startUserSearch(
+  bot: any,
+  chatId: number,
+  telegramUserId: string,
+): Promise<void> {
+  await requireAdmin(bot, chatId, telegramUserId);
+  stateManager.startFlow(telegramUserId, 'user_search');
+  await bot.sendMessage(
+    chatId,
+    '🔍 Send a name, email, username, or Telegram ID to search.\n\nSend /cancel to stop.',
+  );
+}
+
+export async function startUserCreate(
+  bot: any,
+  chatId: number,
+  telegramUserId: string,
+): Promise<void> {
+  await requireAdmin(bot, chatId, telegramUserId);
+  stateManager.startFlow(telegramUserId, 'user_create');
+  await bot.sendMessage(
+    chatId,
+    '➕ <b>Create User</b>\n\nSend details in this format:\n<code>Name | email@example.com | telegram_id (optional)</code>\n\nSend /cancel to stop.',
+    { parse_mode: 'HTML' },
+  );
+}
+
+export async function handleUserManagementText(
+  bot: any,
+  msg: any,
+  flowType: 'user_search' | 'user_create' | 'user_update',
+): Promise<void> {
+  const chatId = msg.chat.id;
+  const telegramUserId = msg.from.id.toString();
+  const text = msg.text?.trim();
+  if (!text) return;
+
+  await requireAdmin(bot, chatId, telegramUserId);
+  if (isCancelCommand(text)) {
+    stateManager.cancelFlow(telegramUserId, flowType);
+    await bot.sendMessage(chatId, '✅ Operation cancelled.', {
+      reply_markup: { inline_keyboard: [[{ text: '👥 User Management', callback_data: 'admin_users_menu' }]] },
+    });
+    return;
+  }
+
+  try {
+    if (flowType === 'user_search') {
+      const term = `%${text}%`;
+      const users = await User.findAll({
+        where: {
+          [Op.or]: [
+            { name: { [Op.iLike]: term } },
+            { email: { [Op.iLike]: term } },
+            { username: { [Op.iLike]: term } },
+            { telegramId: { [Op.iLike]: term } },
+          ],
+        },
+        order: [['createdAt', 'DESC']],
+        limit: 20,
+      });
+      stateManager.completeFlow(telegramUserId, flowType);
+      if (users.length === 0) {
+        await bot.sendMessage(chatId, '📋 No matching users found.', {
+          reply_markup: { inline_keyboard: [[{ text: '🔍 Search Again', callback_data: 'admin_user_search' }]] },
+        });
+        return;
+      }
+      const keyboard = users.map(user => [{
+        text: `${user.name} — ${user.role}`,
+        callback_data: `admin_user_view_${user.id}`,
+      }]);
+      keyboard.push([{ text: '👥 User Management', callback_data: 'admin_users_menu' }]);
+      await bot.sendMessage(chatId, `🔍 <b>Search results</b> (${users.length})`, {
+        parse_mode: 'HTML',
+        reply_markup: { inline_keyboard: keyboard },
+      });
+      return;
+    }
+
+    if (flowType === 'user_create') {
+      const [name, email, telegramId = ''] = text.split('|').map(value => value.trim());
+      if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        await bot.sendMessage(chatId, '❌ Invalid format. Use: Name | valid@email.com | telegram_id (optional)');
+        return;
+      }
+      const existing = await User.findOne({
+        where: {
+          [Op.or]: [{ email }, ...(telegramId ? [{ telegramId }] : [])],
+        },
+      });
+      if (existing) {
+        await bot.sendMessage(chatId, '❌ A user with that email or Telegram ID already exists.');
+        return;
+      }
+      const user = await User.create({
+        name,
+        email,
+        telegramId: telegramId || undefined,
+        role: 'student',
+        isEmailVerified: true,
+        isApproved: true,
+        approvalStatus: 'approved',
+      } as any);
+      stateManager.completeFlow(telegramUserId, flowType);
+      logger.logAdminAction('create_user', telegramUserId, user.id);
+      await bot.sendMessage(chatId, `✅ <b>User created</b>\n\n${user.name}\n${user.email}`, {
+        parse_mode: 'HTML',
+        reply_markup: { inline_keyboard: [[{ text: '👤 View User', callback_data: `admin_user_view_${user.id}` }]] },
+      });
+      return;
+    }
+
+    const state = stateManager.getState(telegramUserId, 'user_update');
+    const userId = state?.data.userId;
+    if (!userId) {
+      stateManager.cancelFlow(telegramUserId, 'user_update');
+      await bot.sendMessage(chatId, '❌ Edit session expired. Please open the user again.');
+      return;
+    }
+    const user = await User.findByPk(userId);
+    if (!user) {
+      stateManager.completeFlow(telegramUserId, 'user_update');
+      await bot.sendMessage(chatId, '❌ User not found.');
+      return;
+    }
+    const [name, email] = text.split('|').map(value => value.trim());
+    if (!name || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      await bot.sendMessage(chatId, '❌ Invalid format. Use: Name | valid@email.com');
+      return;
+    }
+    const duplicate = await User.findOne({ where: { email, id: { [Op.ne]: userId } } });
+    if (duplicate) {
+      await bot.sendMessage(chatId, '❌ That email is already used by another user.');
+      return;
+    }
+    await user.update({ name, email });
+    stateManager.completeFlow(telegramUserId, 'user_update');
+    logger.logAdminAction('update_user', telegramUserId, user.id);
+    await bot.sendMessage(chatId, '✅ User details updated.', {
+      reply_markup: { inline_keyboard: [[{ text: '👤 View User', callback_data: `admin_user_view_${user.id}` }]] },
+    });
+  } catch (error) {
+    console.error(`Error handling ${flowType}:`, error);
+    await bot.sendMessage(chatId, '❌ Operation failed. Please try again.');
+  }
+}
 
 /**
  * List users with pagination
@@ -61,10 +246,7 @@ export async function listUsers(
     }
     keyboard.push(navButtons);
 
-    keyboard.push([
-      { text: '🔍 Search User', callback_data: 'admin_user_search' },
-      { text: '🔙 Back', callback_data: 'admin_menu' },
-    ]);
+    keyboard.push(...userManagementKeyboard());
 
     await bot.sendMessage(
       chatId,
@@ -144,10 +326,10 @@ ${subjectsList}
         inline_keyboard: [
           [
             { text: '✏️ Change Role', callback_data: `admin_user_role_${userId}` },
-            { text: '🔓 Grant Access', callback_data: `admin_user_grant_${userId}` },
+            { text: '✏️ Edit Details', callback_data: `admin_user_edit_${userId}` },
           ],
           [
-            { text: '📧 Send Message', callback_data: `admin_user_message_${userId}` },
+            { text: '🗑️ Delete User', callback_data: `admin_user_delete_${userId}` },
             { text: '🔙 Back to List', callback_data: 'admin_users_page_1' },
           ],
           [
@@ -234,6 +416,14 @@ export async function setUserRole(
     }
 
     const oldRole = user.role;
+    if (!USER_ROLES.includes(newRole as typeof USER_ROLES[number])) {
+      await bot.sendMessage(chatId, '❌ Invalid role.');
+      return;
+    }
+    if (user.id === admin.id && newRole !== user.role) {
+      await bot.sendMessage(chatId, '⛔ You cannot change your own role.');
+      return;
+    }
     user.role = newRole as any;
     await user.save();
 
@@ -256,10 +446,7 @@ export async function setUserRole(
   }
 }
 
-/**
- * Toggle user active status
- */
-export async function toggleUserActive(
+export async function startUserUpdate(
   bot: any,
   chatId: number,
   telegramUserId: string,
@@ -267,29 +454,70 @@ export async function toggleUserActive(
 ) {
   const admin = await requireAdmin(bot, chatId, telegramUserId);
   if (!admin) return;
-
-  try {
-    const user = await User.findByPk(userId);
-    
-    if (!user) {
-      await bot.sendMessage(chatId, '❌ User not found.');
-      return;
-    }
-
-    user.isActive = !user.isActive;
-    await user.save();
-
-    await bot.sendMessage(
-      chatId,
-      `✅ User ${user.isActive ? 'activated' : 'deactivated'}\n\nUser: ${user.name}\nStatus: ${user.isActive ? 'Active' : 'Inactive'}`,
-      {
-        reply_markup: {
-          inline_keyboard: [[{ text: '👤 View User', callback_data: `admin_user_view_${userId}` }]],
-        },
-      }
-    );
-  } catch (error) {
-    console.error('Error toggling user status:', error);
-    await bot.sendMessage(chatId, '❌ Error updating status. Please try again.');
+  const user = await User.findByPk(userId);
+  if (!user) {
+    await bot.sendMessage(chatId, '❌ User not found.');
+    return;
   }
+  stateManager.startFlow(telegramUserId, 'user_update', { userId });
+  await bot.sendMessage(chatId, `✏️ Edit <b>${user.name}</b>\n\nSend: <code>Name | email@example.com</code>\n\nSend /cancel to stop.`, {
+    parse_mode: 'HTML',
+  });
+}
+
+export async function deleteUser(
+  bot: any,
+  chatId: number,
+  telegramUserId: string,
+  userId: string,
+): Promise<void> {
+  const admin = await requireAdmin(bot, chatId, telegramUserId);
+  const user = await User.findByPk(userId);
+  if (!user) {
+    await bot.sendMessage(chatId, '❌ User not found.');
+    return;
+  }
+  if (user.id === admin.id) {
+    await bot.sendMessage(chatId, '⛔ You cannot delete your own account.');
+    return;
+  }
+  if (user.role === 'super_admin' && admin.role !== 'super_admin') {
+    await bot.sendMessage(chatId, '⛔ Only a super admin can delete another super admin.');
+    return;
+  }
+  await bot.sendMessage(chatId, `⚠️ <b>Delete ${user.name}?</b>\n\nThis permanently removes the user and related records.`, {
+    parse_mode: 'HTML',
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: '✅ Confirm Delete', callback_data: `admin_user_delete_confirm_${userId}` },
+          { text: '❌ Cancel', callback_data: `admin_user_view_${userId}` },
+        ],
+      ],
+    },
+  });
+}
+
+export async function confirmDeleteUser(
+  bot: any,
+  chatId: number,
+  telegramUserId: string,
+  userId: string,
+): Promise<void> {
+  const admin = await requireAdmin(bot, chatId, telegramUserId);
+  const user = await User.findByPk(userId);
+  if (!user) {
+    await bot.sendMessage(chatId, '❌ User not found.');
+    return;
+  }
+  if (user.id === admin.id || (user.role === 'super_admin' && admin.role !== 'super_admin')) {
+    await bot.sendMessage(chatId, '⛔ You are not allowed to delete this user.');
+    return;
+  }
+  await user.destroy();
+  logger.logAdminAction('delete_user', telegramUserId, userId);
+  await bot.sendMessage(chatId, `✅ User <b>${user.name}</b> deleted.`, {
+    parse_mode: 'HTML',
+    reply_markup: { inline_keyboard: [[{ text: '👥 User Management', callback_data: 'admin_users_menu' }]] },
+  });
 }

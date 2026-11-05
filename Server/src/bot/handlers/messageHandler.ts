@@ -7,6 +7,7 @@ import { handleAdminCommand } from '../admin/index.js';
 import { stateManager } from '../state/stateManager.js';
 import { handleFileUpload, handleTitleInput } from '../flows/resourceUpload.flow.js';
 import { logger } from '../middleware/logger.middleware.js';
+import { handleUserManagementText } from '../admin/handlers/users.js';
 
 export async function handleMessage(bot: any, msg: any): Promise<void> {
   const chatId = msg.chat.id;
@@ -20,6 +21,11 @@ export async function handleMessage(bot: any, msg: any): Promise<void> {
     // Handle flow-specific messages
     for (const flow of activeFlows) {
       switch (flow.flowType) {
+        case 'user_search':
+        case 'user_create':
+        case 'user_update':
+          await handleUserManagementText(bot, msg, flow.flowType);
+          return;
         case 'resource_upload':
           // Handle file upload or title input
           if (msg.document || msg.photo) {

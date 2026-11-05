@@ -14,6 +14,8 @@ export type FlowType =
   | 'subject_creation'
   | 'broadcast_message'
   | 'user_search'
+  | 'user_create'
+  | 'user_update'
   | 'resource_search';
 
 /**

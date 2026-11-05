@@ -9,7 +9,12 @@ import {
   viewUser, 
   changeUserRole, 
   setUserRole,
-  toggleUserActive 
+  showUserManagementMenu,
+  startUserSearch,
+  startUserCreate,
+  startUserUpdate,
+  deleteUser,
+  confirmDeleteUser,
 } from './handlers/users.js';
 import {
   showResourceMenu,
@@ -44,6 +49,33 @@ export async function handleAdminCallback(
     }
 
     // User management
+    if (data === 'admin_users_menu') {
+      return await showUserManagementMenu(bot, chatId, telegramUserId);
+    }
+
+    if (data === 'admin_user_search') {
+      return await startUserSearch(bot, chatId, telegramUserId);
+    }
+
+    if (data === 'admin_user_create') {
+      return await startUserCreate(bot, chatId, telegramUserId);
+    }
+
+    if (data.startsWith('admin_user_edit_')) {
+      const userId = data.replace('admin_user_edit_', '');
+      return await startUserUpdate(bot, chatId, telegramUserId, userId);
+    }
+
+    if (data.startsWith('admin_user_delete_confirm_')) {
+      const userId = data.replace('admin_user_delete_confirm_', '');
+      return await confirmDeleteUser(bot, chatId, telegramUserId, userId);
+    }
+
+    if (data.startsWith('admin_user_delete_')) {
+      const userId = data.replace('admin_user_delete_', '');
+      return await deleteUser(bot, chatId, telegramUserId, userId);
+    }
+
     if (data.startsWith('admin_users_page_')) {
       const page = parseInt(data.replace('admin_users_page_', ''));
       return await listUsers(bot, chatId, telegramUserId, page);
@@ -64,12 +96,6 @@ export async function handleAdminCallback(
       const userId = parts[0];
       const role = parts[1];
       return await setUserRole(bot, chatId, telegramUserId, userId, role);
-    }
-
-    if (data.startsWith('admin_user_toggle_')) {
-      // Removed - no isActive column
-      await bot.sendMessage(chatId, '⚠️ Feature not available (no isActive column in database).');
-      return;
     }
 
     // Resource management
