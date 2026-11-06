@@ -4,6 +4,7 @@ import { Op } from 'sequelize';
 import { validateUUID, validateNumericId, validateRole } from '../../middleware/validation.middleware.js';
 import { logger } from '../../middleware/logger.middleware.js';
 import { stateManager, isCancelCommand } from '../../state/stateManager.js';
+import { escapeMarkdown } from '../../utils/ui.js';
 
 const USERS_PER_PAGE = 10;
 
@@ -320,18 +321,24 @@ export async function viewUser(
 
     const subjectsList = subjectAccesses && subjectAccesses.length > 0
       ? subjectAccesses
-          .map((access: any) => `  • ${access.subject?.name || 'Unknown'} (${access.subject?.code || 'N/A'})`)
+          .map((access: any) => `  • ${escapeMarkdown(access.subject?.name || 'Unknown')} (${escapeMarkdown(access.subject?.code || 'N/A')})`)
           .join('\n')
       : '  None';
+
+    const userName = escapeMarkdown(user.name || 'N/A');
+    const userEmail = escapeMarkdown(user.email || 'N/A');
+    const userRole = escapeMarkdown(user.role || 'student');
+    const userUsername = escapeMarkdown(user.username || 'N/A');
+    const userTelegramId = user.telegramId || 'N/A';
 
     const message = `
 👤 *User Details*
 
-*Name:* ${user.name || 'N/A'}
-*Email:* ${user.email || 'N/A'}
-*Role:* ${user.role || 'student'}
-*Telegram:* @${user.username || 'N/A'}
-*Telegram ID:* \`${user.telegramId || 'N/A'}\`
+*Name:* ${userName}
+*Email:* ${userEmail}
+*Role:* ${userRole}
+*Telegram:* @${userUsername}
+*Telegram ID:* \`${userTelegramId}\`
 
 📊 *Status:*
 • Email Verified: ${user.isEmailVerified ? '✅ Yes' : '❌ No'}
@@ -367,10 +374,12 @@ ${subjectsList}
       stack: error?.stack,
       userId: validUserId,
     });
+    
+    // Use plain text for error message to avoid Markdown parsing issues
     await bot.sendMessage(
       chatId, 
-      `❌ Error loading user details. Please try again.\n\n<i>Error: ${error?.message || 'Unknown error'}</i>`,
-      { parse_mode: 'HTML' }
+      '❌ Error loading user details. Please try again.\n\nIf the problem persists, contact support.',
+      { parse_mode: undefined }
     );
   }
 }
@@ -395,9 +404,12 @@ export async function changeUserRole(
       return;
     }
 
+    const userName = escapeMarkdown(user.name);
+    const userRole = escapeMarkdown(user.role);
+
     await bot.sendMessage(
       chatId,
-      `👤 Change Role for: ${user.name}\n\nCurrent role: *${user.role}*\n\nSelect new role:`,
+      `👤 Change Role for: ${userName}\n\nCurrent role: *${userRole}*\n\nSelect new role:`,
       {
         parse_mode: 'Markdown',
         reply_markup: {
@@ -458,9 +470,13 @@ export async function setUserRole(
     user.role = newRole as any;
     await user.save();
 
+    const userName = escapeMarkdown(user.name);
+    const oldRoleEscaped = escapeMarkdown(oldRole);
+    const newRoleEscaped = escapeMarkdown(newRole);
+
     await bot.sendMessage(
       chatId,
-      `✅ *Role Updated*\n\nUser: ${user.name}\nOld Role: ${oldRole}\nNew Role: ${newRole}`,
+      `✅ *Role Updated*\n\nUser: ${userName}\nOld Role: ${oldRoleEscaped}\nNew Role: ${newRoleEscaped}`,
       {
         parse_mode: 'Markdown',
         reply_markup: {
@@ -491,7 +507,8 @@ export async function startUserUpdate(
     return;
   }
   stateManager.startFlow(telegramUserId, 'user_update', { userId });
-  await bot.sendMessage(chatId, `✏️ Edit <b>${user.name}</b>\n\nSend: <code>Name | email@example.com</code>\n\nSend /cancel to stop.`, {
+  const userName = escapeMarkdown(user.name);
+  await bot.sendMessage(chatId, `✏️ Edit <b>${userName}</b>\n\nSend: <code>Name | email@example.com</code>\n\nSend /cancel to stop.`, {
     parse_mode: 'HTML',
   });
 }
@@ -516,7 +533,8 @@ export async function deleteUser(
     await bot.sendMessage(chatId, '⛔ Only a super admin can delete another super admin.');
     return;
   }
-  await bot.sendMessage(chatId, `⚠️ <b>Delete ${user.name}?</b>\n\nThis permanently removes the user and related records.`, {
+  const userName = escapeMarkdown(user.name);
+  await bot.sendMessage(chatId, `⚠️ <b>Delete ${userName}?</b>\n\nThis permanently removes the user and related records.`, {
     parse_mode: 'HTML',
     reply_markup: {
       inline_keyboard: [
@@ -545,9 +563,10 @@ export async function confirmDeleteUser(
     await bot.sendMessage(chatId, '⛔ You are not allowed to delete this user.');
     return;
   }
+  const userName = escapeMarkdown(user.name);
   await user.destroy();
   logger.logAdminAction('delete_user', telegramUserId, userId);
-  await bot.sendMessage(chatId, `✅ User <b>${user.name}</b> deleted.`, {
+  await bot.sendMessage(chatId, `✅ User <b>${userName}</b> deleted.`, {
     parse_mode: 'HTML',
     reply_markup: { inline_keyboard: [[{ text: '👥 User Management', callback_data: 'admin_users_menu' }]] },
   });

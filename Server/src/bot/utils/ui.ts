@@ -11,6 +11,34 @@ export function escapeHtml(text?: string | null): string {
     .replace(/>/g, '&gt;');
 }
 
+/**
+ * Escape special characters for Telegram Markdown
+ * Prevents parsing errors when user data contains special characters
+ */
+export function escapeMarkdown(text?: string | null): string {
+  if (!text) return '';
+  return String(text)
+    .replace(/[_*[\]()~`>#+=|{}.!-]/g, '\\$&');
+}
+
+/**
+ * Escape special characters for Telegram MarkdownV2
+ * MarkdownV2 requires escaping more characters
+ */
+export function escapeMarkdownV2(text?: string | null): string {
+  if (!text) return '';
+  return String(text)
+    .replace(/[_*[\]()~`>#+=|{}.!\\-]/g, '\\$&');
+}
+
+/**
+ * Safely format user name for display in Telegram messages
+ * Handles null/undefined and escapes special characters
+ */
+export function formatUserName(name?: string | null, fallback: string = 'Unknown User'): string {
+  return name ? String(name).trim() : fallback;
+}
+
 export function formatDivider(): string {
   return '━━━━━━━━━━━━━━━━━━━━';
 }
