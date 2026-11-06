@@ -228,12 +228,15 @@ export async function listUsers(
       return;
     }
 
-    const keyboard: any[][] = users.map(user => [
-      {
-        text: `${user.name} (@${user.username || 'no username'}) - ${user.role}`,
-        callback_data: `admin_user_view_${user.id}`,
-      },
-    ]);
+    const keyboard: any[][] = users.map(user => {
+      console.log('Creating button for user:', { id: user.id, name: user.name, idType: typeof user.id });
+      return [
+        {
+          text: `${user.name} (@${user.username || 'no username'}) - ${user.role}`,
+          callback_data: `admin_user_view_${user.id}`,
+        },
+      ];
+    });
 
     // Pagination
     const navButtons = [];
@@ -274,31 +277,49 @@ export async function viewUser(
   const admin = await requireAdmin(bot, chatId, telegramUserId);
 
   // Validate user ID (UUID format)
-  const validUserId = validateUUID(userId, 'User ID');
+  let validUserId: string;
+  try {
+    validUserId = validateUUID(userId, 'User ID');
+  } catch (validationError) {
+    console.error('Invalid user ID format:', userId, validationError);
+    await bot.sendMessage(chatId, '❌ Invalid user ID format.');
+    return;
+  }
 
   // Log admin action
   logger.logAdminAction('view_user', telegramUserId, validUserId);
 
   try {
-    const user: any = await User.findByPk(validUserId, {
-      include: [
-        {
-          model: SubjectAccess,
-          as: 'subjectAccess',
-          include: [{ model: Subject, as: 'subject', attributes: ['name', 'code'] }],
-        },
-      ],
-    });
+    // First try to fetch user without associations to isolate the issue
+    const user: any = await User.findByPk(validUserId);
 
     if (!user) {
+      console.error('User not found with ID:', validUserId);
       await bot.sendMessage(chatId, '❌ User not found.');
       return;
     }
 
+    // Try to fetch subject access separately with error handling
+    let subjectAccesses: any[] = [];
+    try {
+      subjectAccesses = await SubjectAccess.findAll({
+        where: { userId: validUserId },
+        include: [{ 
+          model: Subject, 
+          as: 'subject', 
+          attributes: ['name', 'code'],
+          required: false // Use LEFT JOIN instead of INNER JOIN
+        }],
+      });
+    } catch (subjectError) {
+      console.error('Error fetching subject access:', subjectError);
+      // Continue without subject access data
+    }
+
     const formatDate = (date: Date) => new Date(date).toLocaleDateString();
 
-    const subjectsList = user.subjectAccess && user.subjectAccess.length > 0
-      ? user.subjectAccess
+    const subjectsList = subjectAccesses && subjectAccesses.length > 0
+      ? subjectAccesses
           .map((access: any) => `  • ${access.subject?.name || 'Unknown'} (${access.subject?.code || 'N/A'})`)
           .join('\n')
       : '  None';
@@ -306,9 +327,9 @@ export async function viewUser(
     const message = `
 👤 *User Details*
 
-*Name:* ${user.name}
-*Email:* ${user.email}
-*Role:* ${user.role}
+*Name:* ${user.name || 'N/A'}
+*Email:* ${user.email || 'N/A'}
+*Role:* ${user.role || 'student'}
 *Telegram:* @${user.username || 'N/A'}
 *Telegram ID:* \`${user.telegramId || 'N/A'}\`
 
@@ -316,7 +337,7 @@ export async function viewUser(
 • Email Verified: ${user.isEmailVerified ? '✅ Yes' : '❌ No'}
 • Joined: ${formatDate(user.createdAt)}
 
-📚 *Subject Access:* (${user.subjectAccess?.length || 0})
+📚 *Subject Access:* (${subjectAccesses?.length || 0})
 ${subjectsList}
     `.trim();
 
@@ -338,9 +359,19 @@ ${subjectsList}
         ],
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error viewing user:', error);
-    await bot.sendMessage(chatId, '❌ Error loading user details. Please try again.');
+    console.error('Error details:', {
+      message: error?.message,
+      name: error?.name,
+      stack: error?.stack,
+      userId: validUserId,
+    });
+    await bot.sendMessage(
+      chatId, 
+      `❌ Error loading user details. Please try again.\n\n<i>Error: ${error?.message || 'Unknown error'}</i>`,
+      { parse_mode: 'HTML' }
+    );
   }
 }
 
