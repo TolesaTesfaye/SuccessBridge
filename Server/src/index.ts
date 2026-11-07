@@ -427,9 +427,10 @@ const startServer = async () => {
         
         // Set up webhook in production
         const isProduction = process.env.NODE_ENV === "production" || process.env.RENDER === "true";
-        if (isProduction && process.env.WEBHOOK_URL) {
+        const webhookUrl = process.env.WEBHOOK_URL || process.env.RENDER_EXTERNAL_URL;
+        if (isProduction && webhookUrl) {
           try {
-            await botService.setupWebhook(process.env.WEBHOOK_URL);
+            await botService.setupWebhook(webhookUrl);
             logger.info("✅ Telegram webhook configured for production");
           } catch (webhookError) {
             logger.warn("Failed to set up webhook, bot may not receive messages:", webhookError);

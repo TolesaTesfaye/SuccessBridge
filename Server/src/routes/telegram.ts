@@ -12,9 +12,10 @@ router.post('/webhook', async (req, res) => {
       return res.status(400).json({ error: 'No update provided' });
     }
 
-    // Process the update through the bot
+    // Acknowledge Telegram immediately. Handler work (database calls and
+    // outbound messages) must not delay Telegram's webhook retry window.
     const botService = TelegramBotService.getInstance();
-    await botService.processUpdate(update);
+    void botService.processUpdate(update);
 
     res.status(200).json({ ok: true });
   } catch (error) {

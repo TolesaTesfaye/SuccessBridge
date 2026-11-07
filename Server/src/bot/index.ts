@@ -28,12 +28,17 @@ class TelegramBotService {
 
     console.log('🔧 Creating bot instance with v0.64.0...');
     
-    // Check if we're on production/Render (use webhook) or local (use polling)
+    // Use webhook mode only when a public webhook URL is configured. Starting
+    // polling and then switching to a webhook causes Telegram update conflicts.
     const isProduction = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
+    const webhookUrl = process.env.WEBHOOK_URL || process.env.RENDER_EXTERNAL_URL;
+    const useWebhook = isProduction && Boolean(webhookUrl);
     
-    if (isProduction) {
-      console.log('🌐 Production mode detected - using polling mode (webhooks not configured)');
-      // Use polling even in production since webhooks aren't set up
+    if (useWebhook) {
+      console.log('🌐 Production webhook mode enabled');
+      this.bot = new TelegramBot(config.telegram.botToken);
+    } else if (isProduction) {
+      console.log('🌐 Production mode detected - using polling mode (WEBHOOK_URL not configured)');
       this.bot = new TelegramBot(config.telegram.botToken, { 
         polling: true,
         request: {
