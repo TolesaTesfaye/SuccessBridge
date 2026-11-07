@@ -13,11 +13,16 @@ type Stream = "natural" | "social";
 
 interface HighSchoolStudentViewProps {
   grade: Grade;
+  activeTab: "home" | "learning" | "hub";
+  onActiveTabChange: (tab: "home" | "learning" | "hub") => void;
 }
 
-export const HighSchoolStudentView: React.FC<HighSchoolStudentViewProps> = ({ grade }) => {
+export const HighSchoolStudentView: React.FC<HighSchoolStudentViewProps> = ({
+  grade,
+  activeTab,
+  onActiveTabChange,
+}) => {
   const { user } = useAuthStore();
-  const [activeTab, setActiveTab] = useState<"home" | "learning" | "hub">("home");
   const [selectedStream, setSelectedStream] = useState<Stream | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [selectedResourceType, setSelectedResourceType] = useState<string | null>(null);
@@ -116,7 +121,7 @@ export const HighSchoolStudentView: React.FC<HighSchoolStudentViewProps> = ({ gr
   return (
     <div className="h-full flex flex-col bg-gray-50 dark:bg-slate-900">
       {/* Header Navigation */}
-      <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 py-3">
+      <div className="hidden md:block bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 py-3">
         <div className="flex items-center w-full gap-2">
           {[
             { id: "home", label: "Home", icon: Home },
@@ -125,7 +130,7 @@ export const HighSchoolStudentView: React.FC<HighSchoolStudentViewProps> = ({ gr
           ].map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => onActiveTabChange(tab.id as "home" | "learning" | "hub")}
               className={`flex-1 px-2 py-2 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 rounded-xl ${
                 activeTab === tab.id
                   ? "bg-blue-600 text-white shadow-lg shadow-blue-500/25"
@@ -149,7 +154,7 @@ export const HighSchoolStudentView: React.FC<HighSchoolStudentViewProps> = ({ gr
               selectedStream={selectedStream}
               homeLoading={homeLoading}
               homeResources={homeResources}
-              setActiveTab={setActiveTab}
+              setActiveTab={onActiveTabChange}
             />
           </>
         ) : activeTab === "learning" ? (
@@ -159,7 +164,7 @@ export const HighSchoolStudentView: React.FC<HighSchoolStudentViewProps> = ({ gr
             subjects={subjects}
             learningSubject={learningSubject}
             setLearningSubject={setLearningSubject}
-            setActiveTab={setActiveTab}
+            setActiveTab={onActiveTabChange}
           />
         ) : (
           <>

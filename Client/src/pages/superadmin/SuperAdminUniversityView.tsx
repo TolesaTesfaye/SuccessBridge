@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
-import { GraduationCap } from "lucide-react";
 import { SuperAdminTopTabNav } from "@dashboards/superadmin/components/SuperAdminTopTabNav";
 import { StudentViewWrapper } from "@dashboards/superadmin/components/StudentViewWrapper";
 
@@ -11,14 +10,12 @@ const UNIVERSITY_TABS = [
   {
     id: "freshman",
     label: "Freshman",
-    shortLabel: "Fr",
-    icon: GraduationCap,
+    shortLabel: "Freshman",
   },
   {
     id: "remedial",
     label: "Remedial",
-    shortLabel: "Rm",
-    icon: GraduationCap,
+    shortLabel: "Remedial",
   },
 ] as const;
 
@@ -28,6 +25,9 @@ const isUniversityLevel = (tab: string): tab is UniversityLevel =>
 export const SuperAdminUniversityView: React.FC = () => {
   const location = useLocation();
   const [activeLevel, setActiveLevel] = useState<UniversityLevel>("freshman");
+  const [activeStudentTab, setActiveStudentTab] = useState<
+    "home" | "learning" | "hub"
+  >("home");
 
   useEffect(() => {
     const tab = location.state?.activeTab;
@@ -41,6 +41,8 @@ export const SuperAdminUniversityView: React.FC = () => {
       title="University View"
       subtitle="Preview student experience by university level"
       disableTopPadding={true}
+      mobileNavActiveTab={activeStudentTab}
+      onMobileNavTabChange={setActiveStudentTab}
     >
       <div className="space-y-0 pb-8">
         <SuperAdminTopTabNav
@@ -52,7 +54,12 @@ export const SuperAdminUniversityView: React.FC = () => {
           fill={true}
         />
         <div className="animate-fadeIn pt-4 md:pt-6 px-2 md:px-0">
-          <StudentViewWrapper type="university" level={activeLevel} />
+          <StudentViewWrapper
+            type="university"
+            level={activeLevel}
+            activeTab={activeStudentTab}
+            onActiveTabChange={setActiveStudentTab}
+          />
         </div>
       </div>
     </DashboardLayout>

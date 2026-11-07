@@ -1,29 +1,18 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import {
-  Shield,
-  FileText,
-  AlertCircle,
-  Users,
-  Zap,
-  Lock,
-  AlertTriangle,
-  Network,
-  ShieldCheck,
-} from "lucide-react";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { DashboardTopTabNav } from "@components/dashboards/DashboardTopTabNav";
 
 const SECURITY_TABS = [
-  { id: "overview", label: "Overview", icon: Shield, path: "/superadmin/security" },
-  { id: "audit-logs", label: "Audit Logs", icon: FileText, path: "/superadmin/security/audit-logs" },
-  { id: "failed-logins", label: "Failed Logins", icon: AlertCircle, path: "/superadmin/security/failed-logins" },
-  { id: "sessions", label: "Sessions", icon: Users, path: "/superadmin/security/sessions" },
-  { id: "rate-limits", label: "Rate Limits", icon: Zap, path: "/superadmin/security/rate-limits" },
-  { id: "uploads", label: "File Uploads", icon: Lock, path: "/superadmin/security/uploads" },
-  { id: "alerts", label: "Alerts", icon: AlertTriangle, path: "/superadmin/security/alerts" },
-  { id: "csrf", label: "CSRF", icon: Network, path: "/superadmin/security/csrf" },
-  { id: "headers", label: "Headers", icon: ShieldCheck, path: "/superadmin/security/headers" },
+  { id: "overview", label: "Overview", path: "/superadmin/security" },
+  { id: "audit-logs", label: "Audit Logs", path: "/superadmin/security/audit-logs" },
+  { id: "failed-logins", label: "Failed Logins", path: "/superadmin/security/failed-logins" },
+  { id: "sessions", label: "Sessions", path: "/superadmin/security/sessions" },
+  { id: "rate-limits", label: "Rate Limits", path: "/superadmin/security/rate-limits" },
+  { id: "uploads", label: "File Uploads", path: "/superadmin/security/uploads" },
+  { id: "alerts", label: "Alerts", path: "/superadmin/security/alerts" },
+  { id: "csrf", label: "CSRF", path: "/superadmin/security/csrf" },
+  { id: "headers", label: "Headers", path: "/superadmin/security/headers" },
 ];
 
 const getActiveTab = (path: string) => {
@@ -58,22 +47,10 @@ export const SecurityTabLayout: React.FC<SecurityTabLayoutProps> = ({
     <DashboardLayout title={title} subtitle={subtitle} disableTopPadding={true}>
       <div className="space-y-6">
         <DashboardTopTabNav
-          tabs={SECURITY_TABS.map(({ id, label, icon }) => ({
+          tabs={SECURITY_TABS.map(({ id, label }) => ({
             id,
             label,
-            icon,
-            shortLabel:
-              id === "audit-logs"
-                ? "Audit"
-                : id === "failed-logins"
-                  ? "Logins"
-                  : id === "rate-limits"
-                    ? "Limits"
-                    : id === "uploads"
-                      ? "Uploads"
-                      : id === "alerts"
-                        ? "Alerts"
-                        : undefined,
+            shortLabel: label,
           }))}
           activeTab={activeTab}
           onTabChange={(id) => {

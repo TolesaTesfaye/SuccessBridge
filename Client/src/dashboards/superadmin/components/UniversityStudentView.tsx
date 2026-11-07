@@ -20,15 +20,16 @@ interface UniversityWithResources {
 
 interface UniversityStudentViewProps {
   level: StudentCategory;
+  activeTab: "home" | "learning" | "hub";
+  onActiveTabChange: (tab: "home" | "learning" | "hub") => void;
 }
 
 export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({
   level,
+  activeTab,
+  onActiveTabChange,
 }) => {
   const { user } = useAuthStore();
-  const [activeTab, setActiveTab] = useState<"home" | "learning" | "hub">(
-    "home",
-  );
   const [selectedDepartment, setSelectedDepartment] = useState<string>("");
   const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [selectedResourceType, setSelectedResourceType] = useState<string>("");
@@ -186,13 +187,13 @@ export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({
   }, [level]);
 
   const handleLearningCenterClick = () => {
-    setActiveTab("learning");
+    onActiveTabChange("learning");
   };
 
   return (
     <div className="h-full flex flex-col bg-gray-50 dark:bg-slate-900">
       {/* Header Navigation */}
-      <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 py-3">
+      <div className="hidden md:block bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 px-4 py-3">
         <div className="flex items-center w-full gap-2">
           {[
             { id: "home", label: "Home", icon: Home },
@@ -205,7 +206,7 @@ export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({
                 if (tab.id === "learning") {
                   handleLearningCenterClick();
                 } else {
-                  setActiveTab(tab.id as any);
+                  onActiveTabChange(tab.id as "home" | "learning" | "hub");
                 }
               }}
               className={`flex-1 px-2 py-2 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 rounded-xl ${
@@ -230,7 +231,7 @@ export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({
               activeCategory={level}
               homeLoading={homeLoading}
               homeResources={homeResources}
-              setActiveTab={setActiveTab}
+              setActiveTab={onActiveTabChange}
               handleLearningCenterClick={handleLearningCenterClick}
             />
           </>
@@ -239,7 +240,7 @@ export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({
             subjects={subjects}
             learningSubject={learningSubject}
             setLearningSubject={setLearningSubject}
-            setActiveTab={setActiveTab}
+            setActiveTab={onActiveTabChange}
             category={level}
           />
         ) : (

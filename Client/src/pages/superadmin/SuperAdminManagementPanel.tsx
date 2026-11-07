@@ -2,18 +2,6 @@ import React, { useState } from "react";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { DashboardTopTabNav } from "@components/dashboards/DashboardTopTabNav";
 import { useToast } from "@components/common/Toast";
-import {
-  LayoutDashboard,
-  Users,
-  FileText,
-  Megaphone,
-  Settings,
-  ShieldCheck,
-  BarChart3,
-  Activity,
-  Server,
-  type LucideIcon,
-} from "lucide-react";
 import { OverviewTab } from "./management/OverviewTab";
 import { UsersTab } from "./management/UsersTab";
 import { ContentTab } from "./management/ContentTab";
@@ -35,16 +23,16 @@ type TabType =
   | "reports"
   | "system";
 
-const TABS: { id: TabType; label: string; icon: LucideIcon }[] = [
-  { id: "overview", label: "Overview", icon: LayoutDashboard },
-  { id: "users", label: "Users", icon: Users },
-  { id: "content", label: "Content", icon: FileText },
-  { id: "announcements", label: "Announcements", icon: Megaphone },
-  { id: "permissions", label: "Permissions", icon: ShieldCheck },
-  { id: "settings", label: "Settings", icon: Settings },
-  { id: "audit", label: "Audit Logs", icon: Activity },
-  { id: "reports", label: "Reports", icon: BarChart3 },
-  { id: "system", label: "System", icon: Server },
+const TABS: { id: TabType; label: string }[] = [
+  { id: "overview", label: "Overview" },
+  { id: "users", label: "Users" },
+  { id: "content", label: "Content" },
+  { id: "announcements", label: "Announcements" },
+  { id: "permissions", label: "Permissions" },
+  { id: "settings", label: "Settings" },
+  { id: "audit", label: "Audit Logs" },
+  { id: "reports", label: "Reports" },
+  { id: "system", label: "System" },
 ];
 
 export const SuperAdminManagementPanel: React.FC = () => {
@@ -59,10 +47,9 @@ export const SuperAdminManagementPanel: React.FC = () => {
     >
       <div className="space-y-6">
         <DashboardTopTabNav
-          tabs={TABS.map(({ id, label, icon }) => ({ id, label, icon }))}
+          tabs={TABS.map(({ id, label }) => ({ id, label, shortLabel: label }))}
           activeTab={activeTab}
           onTabChange={(id) => setActiveTab(id as TabType)}
-          fill={true}
         />
 
         <div className="animate-fadeIn">

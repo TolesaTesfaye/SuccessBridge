@@ -22,14 +22,6 @@ import { AdminDashboardSubjects } from "./AdminDashboardSubjects";
 import { AdminDashboardDepartments } from "./AdminDashboardDepartments";
 import {
   AlertTriangle,
-  BarChart3,
-  GraduationCap,
-  Upload,
-  Users,
-  School,
-  BookOpen,
-  Code2,
-  Building2,
 } from "lucide-react";
 type TabKey =
   | "overview"
@@ -168,15 +160,15 @@ export const AdminDashboardContent: React.FC = () => {
 
   const dashboardTabs = useMemo(
     () => [
-      { id: "overview" as TabKey, label: "Overview", icon: BarChart3 },
-      { id: "students" as TabKey, label: "Students", icon: Users },
-      { id: "universities" as TabKey, label: "Universities", icon: School },
-      { id: "departments" as TabKey, label: "Departments", icon: Building2 },
-      { id: "subjects" as TabKey, label: "Subjects", icon: Code2 },
-      { id: "resources" as TabKey, label: "Resources", icon: BookOpen },
-      { id: "quizzes" as TabKey, label: "Quizzes", icon: GraduationCap },
-      { id: "upload" as TabKey, label: "Upload", icon: Upload },
-      { id: "reports" as TabKey, label: "Analytics", icon: BarChart3 },
+      { id: "overview" as TabKey, label: "Overview" },
+      { id: "students" as TabKey, label: "Students" },
+      { id: "universities" as TabKey, label: "Universities" },
+      { id: "departments" as TabKey, label: "Departments" },
+      { id: "subjects" as TabKey, label: "Subjects" },
+      { id: "resources" as TabKey, label: "Resources" },
+      { id: "quizzes" as TabKey, label: "Quizzes" },
+      { id: "upload" as TabKey, label: "Upload" },
+      { id: "reports" as TabKey, label: "Analytics" },
     ],
     [],
   );
@@ -235,16 +227,10 @@ export const AdminDashboardContent: React.FC = () => {
   return (
     <div className="space-y-0 pb-8 w-full">
       <DashboardTopTabNav
-        tabs={dashboardTabs.map(({ id, label, icon }) => ({
+        tabs={dashboardTabs.map(({ id, label }) => ({
           id,
           label: label.trim(),
-          icon,
-          shortLabel:
-            id === "universities" ? "Unis" :
-            id === "departments" ? "Depts" :
-            id === "subjects" ? "Subj" :
-            id === "resources" ? "Res" :
-            undefined,
+          shortLabel: label.trim(),
         }))}
         activeTab={activeTab}
         onTabChange={(id) => setActiveTab(id as TabKey)}

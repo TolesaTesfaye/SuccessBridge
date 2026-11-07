@@ -19,16 +19,6 @@ import { StudentAICompanion } from "@pages/student/StudentAICompanion";
 import { AdminDashboardPayments } from "@dashboards/admin/AdminDashboardPayments";
 import { useNavigate } from "react-router-dom";
 import {
-  LayoutDashboard,
-  BookOpen,
-  BarChart3,
-  Megaphone,
-  Sparkles,
-  Upload,
-  CreditCard,
-  FileQuestion,
-} from "lucide-react";
-import {
   SuperAdminTopTabNav,
   type SuperAdminTabItem,
 } from "./components/SuperAdminTopTabNav";
@@ -45,19 +35,14 @@ const HIGH_SCHOOL_GRADES = [
 const UNIVERSITY_LEVELS = ["freshman", "remedial"] as const;
 
 const PLATFORM_TABS: SuperAdminTabItem[] = [
-  { id: "overview", label: "Overview", shortLabel: "Home", icon: LayoutDashboard },
-  { id: "resources", label: "Resources", shortLabel: "Res", icon: BookOpen },
-  { id: "analytics", label: "Analytics", shortLabel: "Stats", icon: BarChart3 },
-  { id: "promotion", label: "Promotion", shortLabel: "Promo", icon: Megaphone },
-  {
-    id: "ai-companion",
-    label: "AI Companion",
-    shortLabel: "AI",
-    icon: Sparkles,
-  },
-  { id: "upload", label: "Upload", shortLabel: "Add", icon: Upload },
-  { id: "payments", label: "Payments", shortLabel: "Pay", icon: CreditCard },
-  { id: "addquiz", label: "Add Quiz", shortLabel: "Quiz", icon: FileQuestion },
+  { id: "overview", label: "Overview", shortLabel: "Overview" },
+  { id: "resources", label: "Resources", shortLabel: "Resources" },
+  { id: "analytics", label: "Analytics", shortLabel: "Analytics" },
+  { id: "promotion", label: "Promotion", shortLabel: "Promotion" },
+  { id: "ai-companion", label: "AI Companion", shortLabel: "AI Companion" },
+  { id: "upload", label: "Upload", shortLabel: "Upload" },
+  { id: "payments", label: "Payments", shortLabel: "Payments" },
+  { id: "addquiz", label: "Add Quiz", shortLabel: "Add Quiz" },
 ];
 
 export const SuperAdminDashboard: React.FC = () => {

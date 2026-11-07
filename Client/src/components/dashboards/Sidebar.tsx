@@ -15,7 +15,12 @@ import {
   GraduationCap,
   FileText,
   Layers,
+  LogOut,
+  Moon,
+  Sun,
 } from "lucide-react";
+import NotificationBell from "@components/notifications/NotificationBell";
+import { useThemeStore } from "@store/themeStore";
 
 interface SidebarProps {
   onClose?: () => void;
@@ -28,7 +33,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
+  const { isDark, toggleTheme } = useThemeStore();
 
 
   const shouldShowQuizzes = true;
@@ -38,7 +44,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
     ...(shouldShowQuizzes ? [{ label: "My Quizzes", path: "/student/quizzes", icon: <PenTool className="w-5 h-5" />, emoji: "✏️" }] : []),
     { label: "Progress", path: "/student/progress", icon: <BarChart3 className="w-5 h-5" />, emoji: "📈" },
     { label: "Payments", path: "/student/payments", icon: <CreditCard className="w-5 h-5" />, emoji: "💳" },
-    { label: "Profile", path: "/student/profile", icon: <User className="w-5 h-5" />, emoji: "👤" },
     { label: "Promotions", path: "/student/promotions", icon: <Megaphone className="w-5 h-5" />, emoji: "📢" },
   ];
 
@@ -47,7 +52,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { label: "Reports", path: "/admin/reports", icon: FileText, desc: "Data & exports" },
     { label: "Promotion", path: "/admin/promotion", icon: Megaphone, desc: "Student promotions" },
     { label: "Settings", path: "/admin/settings", icon: Settings, desc: "Configure platform" },
-    { label: "Profile", path: "/admin/profile", icon: User, desc: "Your account" },
   ];
 
   const superAdminNavItems = [
@@ -58,7 +62,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { label: "Admin View", path: "/superadmin/admin-view", icon: <LayoutDashboard className="w-5 h-5" />, emoji: "📊", section: "dashboard" },
     { label: "Security", path: "/superadmin/security", icon: <ShieldCheck className="w-5 h-5" />, emoji: "🔒", section: "dashboard" },
     { label: "Management", path: "/superadmin/management", icon: <Settings className="w-5 h-5" />, emoji: "⚙️", section: "dashboard" },
-    { label: "Profile", path: "/superadmin/profile", icon: <User className="w-5 h-5" />, emoji: "👤", section: "dashboard" },
   ];
 
   const isSuperAdmin = user?.role === "super_admin";
@@ -69,6 +72,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
     else { navigate(path); }
     if (onClose) onClose();
   };
+
+  const profilePath =
+    user?.role === "super_admin"
+      ? "/superadmin/profile"
+      : user?.role === "admin"
+        ? "/admin/profile"
+        : "/student/profile";
+
+  const profileActions = [
+    {
+      label: "Notifications",
+      icon: <NotificationBell />,
+      onClick: () => undefined,
+    },
+    {
+      label: isDark ? "Light Mode" : "Dark Mode",
+      icon: isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />,
+      onClick: toggleTheme,
+    },
+    {
+      label: "My Profile",
+      icon: <User className="w-5 h-5" />,
+      onClick: () => handleNav(profilePath),
+    },
+    {
+      label: "Logout",
+      icon: <LogOut className="w-5 h-5" />,
+      onClick: () => {
+        logout();
+        navigate("/login");
+        onClose?.();
+      },
+    },
+  ];
 
   return (
     <div className="flex flex-col h-full bg-[#0B1121] transition-all duration-300 overflow-hidden w-full">
@@ -170,6 +207,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
       </nav>
 
+      <div className="border-t border-slate-700/40 p-2">
+        {profileActions.map((action) => (
+          <button
+            key={action.label}
+            onClick={action.onClick}
+            title={collapsed ? action.label : undefined}
+            className={`group relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-slate-400 transition-colors hover:bg-white/[0.05] hover:text-white ${
+              collapsed ? "justify-center px-0" : ""
+            } ${action.label === "Logout" ? "hover:text-rose-300" : ""}`}
+          >
+            <span className="flex h-5 w-5 shrink-0 items-center justify-center">
+              {action.icon}
+            </span>
+            {!collapsed && (
+              <span className="text-xs font-semibold tracking-tight">
+                {action.label}
+              </span>
+            )}
+            {collapsed && (
+              <span className="pointer-events-none absolute left-full z-50 ml-3 invisible whitespace-nowrap rounded-lg border border-white/5 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white opacity-0 shadow-lg transition-all group-hover:visible group-hover:opacity-100">
+                {action.label}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
 
     </div>
   );

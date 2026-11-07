@@ -191,18 +191,9 @@ export const SecurityDashboard: React.FC = () => {
     >
       <div className="space-y-6">
         <DashboardTopTabNav
-          tabs={tabs.map(({ id, label, icon }) => ({
+          tabs={tabs.map(({ id, label }) => ({
             id,
             label,
-            icon,
-            shortLabel:
-              id === "audit-logs"
-                ? "Audit"
-                : id === "failed-logins"
-                  ? "Logins"
-                  : id === "rate-limits"
-                    ? "Limits"
-                    : undefined,
           }))}
           activeTab={activeTab}
           onTabChange={(id) => {

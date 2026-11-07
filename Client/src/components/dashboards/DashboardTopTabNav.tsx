@@ -70,9 +70,10 @@ export const DashboardTopTabNav: React.FC<DashboardTopTabNavProps> = ({
               key={tab.id}
               type="button"
               onClick={() => handleClick(tab.id)}
-              className={`group relative inline-flex h-11 md:h-12 ${fill ? "flex-1" : "shrink-0"} items-center gap-1.5 md:gap-2 whitespace-nowrap border-b-2 px-3 md:px-4 text-left text-xs md:text-sm font-semibold leading-none transition-all duration-300 ${
+              aria-current={isActive ? "page" : undefined}
+              className={`group relative inline-flex h-11 md:h-12 ${fill ? "min-w-0 flex-1 justify-center text-center" : "shrink-0"} items-center gap-1.5 md:gap-2 whitespace-nowrap border-b-2 px-3 md:px-4 text-left text-xs md:text-sm font-semibold leading-none transition-all duration-300 ${
                 isActive
-                  ? `${accentClass.active} -mb-0.5`
+                  ? `${accentClass.active} -mb-0.5 bg-gray-50 shadow-sm dark:bg-slate-800/80`
                   : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               }`}
             >

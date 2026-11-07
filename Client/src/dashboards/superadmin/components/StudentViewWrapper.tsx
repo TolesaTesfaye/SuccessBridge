@@ -10,12 +10,16 @@ interface StudentViewWrapperProps {
   type: "highschool" | "university";
   grade?: HighSchoolGrade;
   level?: UniversityLevel;
+  activeTab: "home" | "learning" | "hub";
+  onActiveTabChange: (tab: "home" | "learning" | "hub") => void;
 }
 
 export const StudentViewWrapper: React.FC<StudentViewWrapperProps> = ({
   type,
   grade,
   level,
+  activeTab,
+  onActiveTabChange,
 }) => {
   const { user: originalUser, setUser } = useAuthStore();
   const [viewUser, setViewUser] = React.useState<any>(null);
@@ -69,11 +73,23 @@ export const StudentViewWrapper: React.FC<StudentViewWrapperProps> = ({
   // Render the student view content (without DashboardLayout wrapper)
   // This will be displayed inside the superadmin layout
   if (type === "highschool" && grade) {
-    return <HighSchoolStudentView grade={grade} />;
+    return (
+      <HighSchoolStudentView
+        grade={grade}
+        activeTab={activeTab}
+        onActiveTabChange={onActiveTabChange}
+      />
+    );
   }
 
   if (type === "university" && level) {
-    return <UniversityStudentView level={level} />;
+    return (
+      <UniversityStudentView
+        level={level}
+        activeTab={activeTab}
+        onActiveTabChange={onActiveTabChange}
+      />
+    );
   }
 
   return null;
