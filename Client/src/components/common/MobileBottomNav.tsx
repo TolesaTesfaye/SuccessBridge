@@ -132,6 +132,8 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
               className={`relative flex flex-col items-center justify-center flex-1 py-0.5 px-0.5 rounded-lg transition-all duration-300 ease-out group ${
+                tab.id === 'learning' ? 'ml-1' : ''
+              } ${
                 isActive
                   ? 'scale-105'
                   : 'active:scale-95 hover:bg-slate-800/20'

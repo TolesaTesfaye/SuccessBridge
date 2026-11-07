@@ -112,12 +112,14 @@ export const UniversityLearningCenter: React.FC<
   const renderChapterContent = () => {
     // Wrap content with payment guard
     const content = subjectConfig && selectedChapter ? (
-      <SubjectChapterRenderer
-        subject={learningSubject}
-        chapterId={selectedChapter}
-        selectedSubtopic={selectedSubtopic}
-        onNavigateChapter={handleChapterClick}
-      />
+      <div className="px-3 md:px-0">
+        <SubjectChapterRenderer
+          subject={learningSubject}
+          chapterId={selectedChapter}
+          selectedSubtopic={selectedSubtopic}
+          onNavigateChapter={handleChapterClick}
+        />
+      </div>
     ) : (
       <div className="max-w-4xl mx-auto pl-2 pr-0 md:px-6 py-4 md:py-8">
         <h1 className="text-lg md:text-4xl font-bold text-slate-900 dark:text-white mb-3 md:mb-8">
