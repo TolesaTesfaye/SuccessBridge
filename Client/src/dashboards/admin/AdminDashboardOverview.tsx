@@ -1,11 +1,17 @@
 import React, { useMemo } from "react";
 import {
-  GraduationCap,
-  School,
-  ArrowRight,
-  Users,
-  Target,
+  ArrowUpRight,
+  BarChart3,
   BookOpen,
+  Building2,
+  CheckCircle2,
+  ChevronRight,
+  GraduationCap,
+  Layers3,
+  LibraryBig,
+  Sparkles,
+  Target,
+  Users,
 } from "lucide-react";
 
 type DashboardState = {
@@ -24,172 +30,218 @@ type AdminDashboardOverviewProps = {
   onNavigateToTab: (tab: string) => void;
 };
 
-const statCards = [
-  {
-    label: "Active Students",
-    key: "studentCount" as const,
-    icon: Users,
-    color: "blue",
-    format: (v: number) => v.toLocaleString(),
-  },
-  {
-    label: "Active Quizzes",
-    key: "quizzes" as const,
-    icon: Target,
-    color: "emerald",
-    format: (v: number) => v.toLocaleString(),
-  },
-  {
-    label: "Academic Nodes",
-    key: "nodes" as const,
-    icon: School,
-    color: "amber",
-    format: (v: number) => v.toLocaleString(),
-  },
-];
+const formatNumber = (value: number) => value.toLocaleString();
 
 export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
   state,
   onNavigateToTab,
 }) => {
-  const overviewStats = useMemo(() => ({
-    studentCount: state.studentCount,
-    quizzes: state.quizzes.length,
-    nodes: state.universities.length + state.departments.length + state.subjects.length,
-  }), [state]);
+  const metrics = useMemo(
+    () => ({
+      students: state.studentCount,
+      universities: state.universities.length,
+      subjects: state.subjects.length,
+      quizzes: state.quizzes.length,
+      departments: state.departments.length,
+    }),
+    [state],
+  );
 
-  const managementFeatures = [
+  const resourceCount =
+    state.resourceStats?.total ??
+    state.resourceStats?.totalResources ??
+    state.resourceStats?.count ??
+    0;
+  const snapshotMax = Math.max(
+    metrics.universities,
+    metrics.departments,
+    metrics.subjects,
+    resourceCount,
+    1,
+  );
+
+  const actionCards = [
     {
-      title: "Academic Registry",
-      description: "Manage universities, departments, and subjects.",
-      icon: School,
-      items: ["Universities", "Departments", "Subjects"],
+      eyebrow: "Academic structure",
+      title: "Universities & subjects",
+      description: "Keep the academic catalogue organized and ready for students.",
+      icon: Building2,
+      accent: "from-blue-500 to-cyan-400",
       action: () => onNavigateToTab("universities"),
+      actionLabel: "Manage catalogue",
     },
     {
-      title: "Content Repository",
-      description: "Upload, organize, and manage learning resources.",
-      icon: BookOpen,
-      items: ["Resource Library", "Resource Uploads", "Media Management"],
+      eyebrow: "Learning content",
+      title: "Resource library",
+      description: "Publish, organize, and maintain the materials learners use every day.",
+      icon: LibraryBig,
+      accent: "from-violet-500 to-fuchsia-400",
       action: () => onNavigateToTab("resources"),
+      actionLabel: "Open library",
     },
     {
-      title: "Assessment Center",
-      description: "Create quizzes and analyze student performance.",
-      icon: GraduationCap,
-      items: ["Quiz Deployment", "Result Analytics", "Question Banks"],
+      eyebrow: "Assessment",
+      title: "Quiz workspace",
+      description: "Build assessments and keep progress measurement moving forward.",
+      icon: Target,
+      accent: "from-amber-400 to-orange-500",
       action: () => onNavigateToTab("quizzes"),
+      actionLabel: "Open workspace",
     },
-  ];
-
-  const quickActions = [
-    { label: "Universities", tab: "universities", value: state.universities.length },
-    { label: "Departments", tab: "departments", value: state.departments.length },
-    { label: "Subjects", tab: "subjects", value: state.subjects.length },
-    { label: "Students", tab: "students", value: state.studentCount },
   ];
 
   if (state.loading && state.subjects.length === 0) {
     return (
-      <div className="space-y-6 animate-pulse">
-        <div className="h-32 md:h-40 rounded-xl bg-slate-100 dark:bg-slate-800" />
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-28 rounded-xl bg-slate-100 dark:bg-slate-800" />
+      <div className="space-y-5 animate-pulse">
+        <div className="h-56 rounded-[28px] bg-slate-200 dark:bg-slate-800" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {[1, 2, 3, 4].map((item) => (
+            <div key={item} className="h-32 rounded-2xl bg-slate-200 dark:bg-slate-800" />
           ))}
         </div>
+        <div className="h-72 rounded-[28px] bg-slate-200 dark:bg-slate-800" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-4 md:space-y-6">
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
-        {statCards.map((stat) => {
-          const Icon = stat.icon;
-          const value = overviewStats[stat.key];
-          return (
-            <div
-              key={stat.key}
-              className="bg-white dark:bg-slate-800/80 rounded-xl border border-gray-200 dark:border-slate-700/50 shadow-sm p-4"
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <div className="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                  <Icon className="w-4 h-4 md:w-5 md:h-5" />
-                </div>
-              </div>
-              <p className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-                {stat.format(value)}
-              </p>
-              <p className="text-[11px] md:text-xs font-medium text-slate-500 dark:text-slate-400 mt-0.5">
-                {stat.label}
-              </p>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Quick Actions + Management Features */}
-      <div className="grid lg:grid-cols-3 gap-4 md:gap-6">
-        {/* Management Features */}
-        {managementFeatures.map((feature) => {
-          const Icon = feature.icon;
-          return (
-            <div
-              key={feature.title}
-              className="bg-white dark:bg-slate-800/80 rounded-xl border border-gray-200 dark:border-slate-700/50 shadow-sm"
-            >
-              <div className="flex items-center gap-2 p-4 border-b border-gray-100 dark:border-slate-700/30">
-                <div className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
-                  <Icon className="w-4 h-4" />
-                </div>
-                <h4 className="font-bold text-gray-900 dark:text-white text-sm">
-                  {feature.title}
-                </h4>
-              </div>
-              <div className="p-4">
-                <p className="text-xs text-gray-500 dark:text-slate-400 mb-4 leading-relaxed">
-                  {feature.description}
-                </p>
-                <ul className="space-y-2 mb-4">
-                {feature.items.map((item, i) => (
-                  <li
-                    key={i}
-                    className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300"
-                  >
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <button
-                onClick={feature.action}
-                className="w-full py-2 px-3 text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-500/20 active:scale-95 transition-all flex items-center justify-center gap-1.5"
-              >
-                Open
-                <ArrowRight className="w-3 h-3" />
-              </button>
-            </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Quick Stats Bar */}
-      <div className="flex flex-wrap items-center gap-2 pt-1">
-        {quickActions.map((action) => (
+    <div className="space-y-5 pb-4">
+      <section className="relative isolate overflow-hidden rounded-[28px] bg-[#101a33] px-5 py-7 text-white shadow-2xl shadow-slate-900/10 md:px-8 md:py-9">
+        <div className="absolute -right-20 -top-28 -z-10 h-72 w-72 rounded-full bg-blue-500/25 blur-3xl" />
+        <div className="absolute -bottom-32 left-1/3 -z-10 h-72 w-72 rounded-full bg-violet-500/20 blur-3xl" />
+        <div className="absolute right-8 top-8 hidden h-28 w-28 rounded-full border border-white/10 md:block" />
+        <div className="relative max-w-2xl">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.08] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-blue-200">
+            <Sparkles className="h-3.5 w-3.5" />
+            Admin command center
+          </div>
+          <h1 className="text-2xl font-semibold tracking-tight md:text-4xl">
+            Everything important,<br className="hidden md:block" /> in one clear view.
+          </h1>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-slate-300 md:text-base">
+            Monitor your learning platform, manage academic content, and move your team forward from a single workspace.
+          </p>
+        </div>
+        <div className="relative mt-7 flex flex-wrap items-center gap-3">
           <button
-            key={action.tab}
-            onClick={() => onNavigateToTab(action.tab)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 transition-all"
+            onClick={() => onNavigateToTab("students")}
+            className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-xs font-bold text-slate-900 transition-transform hover:-translate-y-0.5 active:scale-95"
           >
-            <span className="font-bold text-slate-900 dark:text-white">{action.value}</span>
-            {action.label}
-            <ArrowRight className="w-3 h-3 ml-0.5" />
+            View students
+            <ArrowUpRight className="h-4 w-4" />
           </button>
-        ))}
-      </div>
+          <div className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.07] px-4 py-2.5 text-xs font-semibold text-slate-200">
+            <CheckCircle2 className="h-4 w-4 text-emerald-300" />
+            Platform overview
+          </div>
+        </div>
+      </section>
+
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <MetricCard label="Active students" value={metrics.students} icon={Users} tone="blue" />
+        <MetricCard label="Universities" value={metrics.universities} icon={Building2} tone="violet" />
+        <MetricCard label="Subjects" value={metrics.subjects} icon={Layers3} tone="amber" />
+        <MetricCard label="Active quizzes" value={metrics.quizzes} icon={Target} tone="emerald" />
+      </section>
+
+      <section className="grid gap-5 xl:grid-cols-[1.4fr_0.8fr]">
+        <div className="rounded-[26px] border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700/60 dark:bg-slate-800/60 md:p-6">
+          <div className="mb-5 flex items-start justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-600 dark:text-blue-400">Workspace</p>
+              <h2 className="mt-1 text-xl font-semibold tracking-tight text-slate-900 dark:text-white">Manage the platform</h2>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">Your most important admin tools, arranged by job.</p>
+            </div>
+            <BarChart3 className="hidden h-6 w-6 text-slate-300 md:block dark:text-slate-600" />
+          </div>
+          <div className="grid gap-3 md:grid-cols-3">
+            {actionCards.map((card) => {
+              const Icon = card.icon;
+              return (
+                <button
+                  key={card.title}
+                  onClick={card.action}
+                  className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-4 text-left transition-all hover:-translate-y-1 hover:border-slate-300 hover:bg-white hover:shadow-lg dark:border-slate-700 dark:bg-slate-900/50 dark:hover:border-slate-600 dark:hover:bg-slate-900"
+                >
+                  <div className={`mb-5 flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br ${card.accent} text-white shadow-lg`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">{card.eyebrow}</p>
+                  <h3 className="mt-1 text-sm font-bold text-slate-900 dark:text-white">{card.title}</h3>
+                  <p className="mt-2 min-h-10 text-xs leading-5 text-slate-500 dark:text-slate-400">{card.description}</p>
+                  <span className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-blue-600 dark:text-blue-400">
+                    {card.actionLabel}
+                    <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="rounded-[26px] bg-slate-900 p-5 text-white shadow-xl shadow-slate-900/10 md:p-6 dark:bg-[#101a33]">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Platform snapshot</p>
+              <h2 className="mt-1 text-xl font-semibold tracking-tight">Content health</h2>
+            </div>
+            <BookOpen className="h-5 w-5 text-blue-300" />
+          </div>
+          <div className="mt-6 space-y-5">
+            <SnapshotRow label="Universities" value={metrics.universities} total={snapshotMax} color="bg-blue-400" />
+            <SnapshotRow label="Departments" value={metrics.departments} total={snapshotMax} color="bg-violet-400" />
+            <SnapshotRow label="Subjects" value={metrics.subjects} total={snapshotMax} color="bg-amber-400" />
+            <SnapshotRow label="Learning resources" value={resourceCount} total={snapshotMax} color="bg-emerald-400" />
+          </div>
+          <div className="mt-7 flex items-center gap-2 border-t border-white/10 pt-4 text-xs text-slate-400">
+            <GraduationCap className="h-4 w-4 text-blue-300" />
+            Keep the catalogue growing for your learners.
+          </div>
+        </div>
+      </section>
+
+      {state.error && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-200">
+          {state.error}
+        </div>
+      )}
     </div>
   );
 };
+
+type MetricCardProps = {
+  label: string;
+  value: number;
+  icon: React.ElementType;
+  tone: "blue" | "violet" | "amber" | "emerald";
+};
+
+const metricTone: Record<MetricCardProps["tone"], string> = {
+  blue: "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-300",
+  violet: "bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-300",
+  amber: "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-300",
+  emerald: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300",
+};
+
+const MetricCard: React.FC<MetricCardProps> = ({ label, value, icon: Icon, tone }) => (
+  <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700/60 dark:bg-slate-800/60 md:p-5">
+    <div className={`mb-5 flex h-9 w-9 items-center justify-center rounded-xl ${metricTone[tone]}`}>
+      <Icon className="h-4.5 w-4.5" />
+    </div>
+    <p className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-white md:text-3xl">{formatNumber(value)}</p>
+    <p className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">{label}</p>
+    <div className="absolute -bottom-7 -right-7 h-20 w-20 rounded-full border-[12px] border-slate-100/70 dark:border-slate-700/30" />
+  </div>
+);
+
+const SnapshotRow: React.FC<{ label: string; value: number; total: number; color: string }> = ({ label, value, total, color }) => (
+  <div>
+    <div className="mb-2 flex items-center justify-between text-xs">
+      <span className="font-medium text-slate-300">{label}</span>
+      <span className="font-bold text-white">{formatNumber(value)}</span>
+    </div>
+    <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+      <div className={`h-full rounded-full ${color}`} style={{ width: `${Math.min((value / total) * 100, 100)}%` }} />
+    </div>
+  </div>
+);

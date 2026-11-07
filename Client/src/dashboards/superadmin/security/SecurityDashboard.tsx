@@ -196,6 +196,7 @@ export const SecurityDashboard: React.FC = () => {
             label,
           }))}
           activeTab={activeTab}
+          fill
           onTabChange={(id) => {
             const tab = tabs.find((t) => t.id === id);
             if (tab) navigate(tab.path);

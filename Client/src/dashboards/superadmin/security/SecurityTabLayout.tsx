@@ -53,6 +53,7 @@ export const SecurityTabLayout: React.FC<SecurityTabLayoutProps> = ({
             shortLabel: label,
           }))}
           activeTab={activeTab}
+          fill
           onTabChange={(id) => {
             const tab = SECURITY_TABS.find((t) => t.id === id);
             if (tab) navigate(tab.path);

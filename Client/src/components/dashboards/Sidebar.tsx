@@ -107,6 +107,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
   ];
 
+  const visibleProfileActions =
+    user?.role === "student"
+      ? profileActions
+      : profileActions.filter((action) => action.label === "Logout");
+
   return (
     <div className="flex flex-col h-full bg-[#0B1121] transition-all duration-300 overflow-hidden w-full">
       {onClose && (
@@ -207,32 +212,34 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
       </nav>
 
-      <div className="border-t border-slate-700/40 p-2">
-        {profileActions.map((action) => (
-          <button
-            key={action.label}
-            onClick={action.onClick}
-            title={collapsed ? action.label : undefined}
-            className={`group relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-slate-400 transition-colors hover:bg-white/[0.05] hover:text-white ${
-              collapsed ? "justify-center px-0" : ""
-            } ${action.label === "Logout" ? "hover:text-rose-300" : ""}`}
-          >
-            <span className="flex h-5 w-5 shrink-0 items-center justify-center">
-              {action.icon}
-            </span>
-            {!collapsed && (
-              <span className="text-xs font-semibold tracking-tight">
-                {action.label}
+      {onClose && (
+        <div className="border-t border-slate-700/40 p-2">
+          {visibleProfileActions.map((action) => (
+            <button
+              key={action.label}
+              onClick={action.onClick}
+              title={collapsed ? action.label : undefined}
+              className={`group relative flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-slate-400 transition-colors hover:bg-white/[0.05] hover:text-white ${
+                collapsed ? "justify-center px-0" : ""
+              } ${action.label === "Logout" ? "hover:text-rose-300" : ""}`}
+            >
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center">
+                {action.icon}
               </span>
-            )}
-            {collapsed && (
-              <span className="pointer-events-none absolute left-full z-50 ml-3 invisible whitespace-nowrap rounded-lg border border-white/5 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white opacity-0 shadow-lg transition-all group-hover:visible group-hover:opacity-100">
-                {action.label}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
+              {!collapsed && (
+                <span className="text-xs font-semibold tracking-tight">
+                  {action.label}
+                </span>
+              )}
+              {collapsed && (
+                <span className="pointer-events-none absolute left-full z-50 ml-3 invisible whitespace-nowrap rounded-lg border border-white/5 bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white opacity-0 shadow-lg transition-all group-hover:visible group-hover:opacity-100">
+                  {action.label}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
 
     </div>
   );

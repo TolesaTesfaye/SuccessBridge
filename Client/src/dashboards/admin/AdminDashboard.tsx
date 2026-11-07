@@ -163,7 +163,6 @@ export const AdminDashboardContent: React.FC = () => {
       { id: "overview" as TabKey, label: "Overview" },
       { id: "students" as TabKey, label: "Students" },
       { id: "universities" as TabKey, label: "Universities" },
-      { id: "departments" as TabKey, label: "Departments" },
       { id: "subjects" as TabKey, label: "Subjects" },
       { id: "resources" as TabKey, label: "Resources" },
       { id: "quizzes" as TabKey, label: "Quizzes" },
@@ -234,6 +233,7 @@ export const AdminDashboardContent: React.FC = () => {
         }))}
         activeTab={activeTab}
         onTabChange={(id) => setActiveTab(id as TabKey)}
+        fill
       />
 
       <div

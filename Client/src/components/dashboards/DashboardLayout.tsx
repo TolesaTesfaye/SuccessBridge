@@ -34,6 +34,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 }) => {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
+  const showMobileBottomNav =
+    user?.role === "student" ||
+    user?.role === "admin" ||
+    user?.role === "super_admin";
+  const mobileNavVariant = user?.role === "student" ? "student" : "admin";
+  const mobileProfilePath =
+    user?.role === "super_admin" ? "/superadmin/profile" : "/admin/profile";
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const { isDark, toggleTheme } = useThemeStore();
@@ -165,7 +172,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
         <main
           className={
-            `flex-1 w-full m-0 p-0 bg-[#f1f1f1] dark:bg-slate-900 min-h-0 min-w-0 pb-16 md:pb-0 ` +
+            `flex-1 w-full m-0 p-0 bg-[#f1f1f1] dark:bg-slate-900 min-h-0 min-w-0 ${showMobileBottomNav ? "pb-16 md:pb-0" : ""} ` +
             (noPadding ? "overflow-hidden" : "overflow-y-auto custom-scrollbar")
           }
         >
@@ -189,10 +196,14 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           )}
         </main>
       </div>
-      <MobileBottomNav
-        activeTab={mobileNavActiveTab}
-        onTabChange={handleMobileNavTabChange}
-      />
+      {showMobileBottomNav && (
+        <MobileBottomNav
+          activeTab={mobileNavActiveTab}
+          onTabChange={handleMobileNavTabChange}
+          variant={mobileNavVariant}
+          onProfileClick={() => navigate(mobileProfilePath)}
+        />
+      )}
     </div>
   );
 };

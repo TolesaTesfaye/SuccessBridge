@@ -58,7 +58,7 @@ export const DashboardTopTabNav: React.FC<DashboardTopTabNavProps> = ({
     <div
       className={`sticky top-0 z-40 bg-white dark:bg-slate-900 border-b-2 border-gray-200 dark:border-slate-700 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${stickyClassName} ${className}`}
     >
-      <div className={`flex ${fill ? "w-full" : "w-max min-w-full flex-nowrap"} items-end gap-0`}>
+      <div className={`flex ${fill ? "w-max min-w-full md:w-full" : "w-max min-w-full flex-nowrap"} items-end gap-0`}>
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           const Icon = tab.icon;
@@ -71,7 +71,7 @@ export const DashboardTopTabNav: React.FC<DashboardTopTabNavProps> = ({
               type="button"
               onClick={() => handleClick(tab.id)}
               aria-current={isActive ? "page" : undefined}
-              className={`group relative inline-flex h-11 md:h-12 ${fill ? "min-w-0 flex-1 justify-center text-center" : "shrink-0"} items-center gap-1.5 md:gap-2 whitespace-nowrap border-b-2 px-3 md:px-4 text-left text-xs md:text-sm font-semibold leading-none transition-all duration-300 ${
+              className={`group relative inline-flex h-11 md:h-12 ${fill ? "shrink-0 min-w-[88px] md:min-w-0 md:shrink md:flex-1 md:basis-0 md:justify-center text-center overflow-hidden" : "shrink-0"} items-center gap-1.5 md:gap-2 whitespace-nowrap border-b-2 px-2 md:px-4 text-left text-xs md:text-sm font-semibold leading-none transition-all duration-300 ${
                 isActive
                   ? `${accentClass.active} -mb-0.5 bg-gray-50 shadow-sm dark:bg-slate-800/80`
                   : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
@@ -87,7 +87,7 @@ export const DashboardTopTabNav: React.FC<DashboardTopTabNavProps> = ({
                   strokeWidth={2.2}
                 />
               )}
-              <span className="flex min-w-0 flex-col">
+              <span className="flex min-w-0 max-w-full flex-col overflow-hidden">
                 <span className="leading-none tracking-[0.08em] uppercase hidden sm:inline">
                   {displayLabel}
                 </span>

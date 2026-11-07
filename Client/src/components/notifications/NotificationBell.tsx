@@ -3,7 +3,13 @@ import { createPortal } from 'react-dom'
 import { useNotifications } from '../../hooks/useNotifications'
 import NotificationDropdown from './NotificationDropdown'
 
-const NotificationBell: React.FC = () => {
+interface NotificationBellProps {
+  dropdownPlacement?: 'below' | 'top'
+}
+
+const NotificationBell: React.FC<NotificationBellProps> = ({
+  dropdownPlacement = 'below',
+}) => {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -17,7 +23,7 @@ const NotificationBell: React.FC = () => {
       const rect = buttonRef.current.getBoundingClientRect()
       const isMobile = window.innerWidth < 640 // sm breakpoint
       
-      let topPos = rect.bottom + 8 // 8px gap below button
+      let topPos = dropdownPlacement === 'top' ? 8 : rect.bottom + 8 // Keep mobile alerts inside the viewport
       let rightPos = window.innerWidth - rect.right
       let dropdownWidth = 384 // md: w-96 default
       
@@ -35,7 +41,7 @@ const NotificationBell: React.FC = () => {
         width: dropdownWidth,
       })
     }
-  }, [isOpen])
+  }, [isOpen, dropdownPlacement])
 
   // Close dropdown when clicking outside
   useEffect(() => {

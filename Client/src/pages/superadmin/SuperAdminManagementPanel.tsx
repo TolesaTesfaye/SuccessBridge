@@ -50,6 +50,7 @@ export const SuperAdminManagementPanel: React.FC = () => {
           tabs={TABS.map(({ id, label }) => ({ id, label, shortLabel: label }))}
           activeTab={activeTab}
           onTabChange={(id) => setActiveTab(id as TabType)}
+          fill
         />
 
         <div className="animate-fadeIn">
