@@ -52,10 +52,54 @@ export async function handleStart(bot: any, msg: any): Promise<void> {
       : msg.from?.first_name || username;
     const roleBadge = formatRoleBadge(user?.role);
     const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+    
+    // Check if profile is complete
+    const category = deriveStudentCategory(user);
+    const isProfileComplete = category !== null;
 
+    if (!isProfileComplete) {
+      // Profile is INCOMPLETE - Show ONLY profile setup, NO quick actions
+      const welcomeBanner = `🎓 <b>SUCCESSBRIDGE LEARNING HUB</b>\n` +
+        `${formatDivider()}\n` +
+        `👋 Welcome, <b>${escapeHtml(displayName)}</b>!\n` +
+        `<i>Your all-in-one portal for high school and university academic excellence.</i>\n\n` +
+        `⚠️ <b>Profile Setup Required</b>\n\n` +
+        `Before you can access materials and make payments, you need to complete your student profile.\n\n` +
+        `📝 <b>What we need to know:</b>\n` +
+        `• Are you a High School or University student?\n` +
+        `• Your Grade (9-12) or Level (Freshman/Remedial)\n\n` +
+        `This helps us:\n` +
+        `✅ Show you the right study materials\n` +
+        `✅ Calculate correct payment amounts\n` +
+        `✅ Provide personalized learning resources\n\n` +
+        `${formatDivider()}\n` +
+        `👤 <b>Student ID:</b> <code>${escapeHtml(telegramUserId)}</code> • ${roleBadge}\n\n` +
+        `👇 <b>Click below to complete your profile in 2 simple steps:</b>`;
+
+      await bot.sendMessage(chatId, welcomeBanner, {
+        parse_mode: 'HTML',
+        reply_markup: {
+          // NO keyboard buttons when profile is incomplete
+          remove_keyboard: true,
+          inline_keyboard: [
+            [
+              { text: '✏️ Complete Profile Now', callback_data: 'setup_profile' },
+            ],
+            [
+              { text: '❓ Why is this required?', callback_data: 'faq_home' },
+            ],
+          ],
+        },
+      });
+      
+      // DO NOT send quick actions menu - return immediately
+      return;
+    }
+
+    // Profile is COMPLETE - Show normal welcome with all options
     const welcomeBanner = `🎓 <b>SUCCESSBRIDGE LEARNING HUB</b>\n` +
       `${formatDivider()}\n` +
-      `👋 Welcome, <b>${escapeHtml(displayName)}</b>!\n` +
+      `👋 Welcome back, <b>${escapeHtml(displayName)}</b>!\n` +
       `<i>Your all-in-one portal for high school and university academic excellence.</i>\n\n` +
       `🚀 <b>How to Get Started in 3 Easy Steps:</b>\n` +
       `1️⃣ <b>Browse Materials:</b> Select your Grade (9-12) or University program (Freshman / Remedial).\n` +
@@ -72,7 +116,7 @@ export async function handleStart(bot: any, msg: any): Promise<void> {
 
     // Get smart button text
     const paymentButtonText = await getPaymentButtonText(user);
-    const profileStatus = deriveStudentCategory(user) ? '✅ Complete' : '⚠️ Incomplete';
+    const profileStatus = '✅ Complete';
 
     // Send quick action inline menu with smart labels
     await bot.sendMessage(

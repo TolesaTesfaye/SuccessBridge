@@ -10,6 +10,7 @@ import { handleCommonCallbacks } from './common.callbacks.js';
 import { handleAdminCallbacks } from './admin.callbacks.js';
 import { validateCallbackData } from '../../middleware/validation.middleware.js';
 import { logger } from '../../middleware/logger.middleware.js';
+import { isProfileComplete, isCallbackAllowed, sendProfileEnforcementMessageForCallback } from '../../middleware/profileEnforcement.middleware.js';
 
 /**
  * Main callback query handler with routing logic
@@ -30,6 +31,19 @@ export async function handleCallbackQuery(bot: any, query: any): Promise<void> {
   try {
     // Answer callback query to remove loading state
     await bot.answerCallbackQuery(query.id).catch(() => {});
+
+    // Check profile completion BEFORE processing any callback (except allowed ones)
+    if (!isCallbackAllowed(data)) {
+      const profileComplete = await isProfileComplete(userId || '');
+      if (!profileComplete) {
+        await bot.answerCallbackQuery(query.id, {
+          text: '⚠️ Please complete your profile first',
+          show_alert: true
+        });
+        await sendProfileEnforcementMessageForCallback(bot, query);
+        return;
+      }
+    }
 
     // Route to appropriate handler based on data prefix/type
     

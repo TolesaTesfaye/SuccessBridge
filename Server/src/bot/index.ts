@@ -13,6 +13,7 @@ import { handleSearchPrompt } from './handlers/searchHandler.js';
 import { handleBotPayment, handlePaymentScreenshot } from './handlers/payment.handler.js';
 import { handleAdminCommand } from './admin/index.js';
 import { handleError, withErrorHandling } from './handlers/errors/index.js';
+import { wrapCommandWithProfileCheck } from './middleware/profileEnforcement.middleware.js';
 
 const require = createRequire(import.meta.url);
 const TelegramBot = require('node-telegram-bot-api');
@@ -103,7 +104,9 @@ class TelegramBotService {
       }));
     };
 
-    // Command handlers with error handling
+    // Command handlers with error handling AND profile enforcement
+    // Note: /start, /setupprofile, and /getid are allowed without profile completion
+    
     this.bot.onText(/\/start/, async (msg: any) => {
       console.log('📨 Received /start from:', msg.from?.username);
       await wrapHandler(handleStart, '/start')(this.bot, msg);
@@ -111,60 +114,62 @@ class TelegramBotService {
     
     this.bot.onText(/\/help/, async (msg: any) => {
       console.log('📨 Received /help from:', msg.from?.username);
-      await wrapHandler(handleHelp, '/help')(this.bot, msg);
+      await wrapHandler(wrapCommandWithProfileCheck(handleHelp), '/help')(this.bot, msg);
     });
     
     this.bot.onText(/\/browse/, async (msg: any) => {
       console.log('📨 Received /browse from:', msg.from?.username);
-      await wrapHandler(async (bot: any, m: any) => {
+      await wrapHandler(wrapCommandWithProfileCheck(async (bot: any, m: any) => {
         await handleSmartBrowse(bot, m, m.from?.id?.toString());
-      }, '/browse')(this.bot, msg);
+      }), '/browse')(this.bot, msg);
     });
     
     this.bot.onText(/\/mycourses/, async (msg: any) => {
       console.log('📨 Received /mycourses from:', msg.from?.username);
-      await wrapHandler(handleMyCourses, '/mycourses')(this.bot, msg);
+      await wrapHandler(wrapCommandWithProfileCheck(handleMyCourses), '/mycourses')(this.bot, msg);
     });
     
     this.bot.onText(/\/profile/, async (msg: any) => {
       console.log('📨 Received /profile from:', msg.from?.username);
-      await wrapHandler(handleProfile, '/profile')(this.bot, msg);
+      await wrapHandler(wrapCommandWithProfileCheck(handleProfile), '/profile')(this.bot, msg);
     });
     
     this.bot.onText(/\/resources/, async (msg: any) => {
       console.log('📨 Received /resources from:', msg.from?.username);
-      await wrapHandler(handleResourcesCommand, '/resources')(this.bot, msg);
+      await wrapHandler(wrapCommandWithProfileCheck(handleResourcesCommand), '/resources')(this.bot, msg);
     });
 
     this.bot.onText(/\/search/, async (msg: any) => {
       console.log('📨 Received /search from:', msg.from?.username);
-      await wrapHandler(async (bot: any, m: any) => {
+      await wrapHandler(wrapCommandWithProfileCheck(async (bot: any, m: any) => {
         await handleSearchPrompt(bot, m.chat.id);
-      }, '/search')(this.bot, msg);
+      }), '/search')(this.bot, msg);
     });
 
     this.bot.onText(/\/payment/, async (msg: any) => {
       console.log('📨 Received /payment from:', msg.from?.username);
-      await wrapHandler(handleBotPayment, '/payment')(this.bot, msg);
+      await wrapHandler(wrapCommandWithProfileCheck(handleBotPayment), '/payment')(this.bot, msg);
     });
 
     this.bot.onText(/\/subscribe/, async (msg: any) => {
       console.log('📨 Received /subscribe from:', msg.from?.username);
-      await wrapHandler(handleBotPayment, '/subscribe')(this.bot, msg);
+      await wrapHandler(wrapCommandWithProfileCheck(handleBotPayment), '/subscribe')(this.bot, msg);
     });
 
     this.bot.onText(/\/botpayment/, async (msg: any) => {
       console.log('📨 Received /botpayment from:', msg.from?.username);
-      await wrapHandler(handleBotPayment, '/botpayment')(this.bot, msg);
+      await wrapHandler(wrapCommandWithProfileCheck(handleBotPayment), '/botpayment')(this.bot, msg);
     });
 
     this.bot.onText(/\/admin/, async (msg: any) => {
       console.log('📨 Received /admin from:', msg.from?.username);
+      // Admin commands skip profile check
       await wrapHandler(handleAdminCommand, '/admin')(this.bot, msg);
     });
 
     this.bot.onText(/\/setupprofile/, async (msg: any) => {
       console.log('📨 Received /setupprofile from:', msg.from?.username);
+      // Profile setup is always allowed
       await wrapHandler(handleProfileSetup, '/setupprofile')(this.bot, msg);
     });
 

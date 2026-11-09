@@ -8,6 +8,7 @@ import { stateManager } from '../state/stateManager.js';
 import { handleFileUpload, handleTitleInput } from '../flows/resourceUpload.flow.js';
 import { logger } from '../middleware/logger.middleware.js';
 import { handleUserManagementText } from '../admin/handlers/users.js';
+import { isProfileComplete, sendProfileEnforcementMessage } from '../middleware/profileEnforcement.middleware.js';
 
 export async function handleMessage(bot: any, msg: any): Promise<void> {
   const chatId = msg.chat.id;
@@ -48,6 +49,15 @@ export async function handleMessage(bot: any, msg: any): Promise<void> {
 
   // No active flow - handle normal messages
   if (!text) return;
+
+  // Check profile completion for non-admin actions (except admin panel access)
+  if (text !== '⚡ Admin Panel' && !text.startsWith('/cancel')) {
+    const profileComplete = await isProfileComplete(userId);
+    if (!profileComplete) {
+      await sendProfileEnforcementMessage(bot, chatId, 'command');
+      return;
+    }
+  }
 
   // Handle menu button clicks
   if (text === '📚 Browse Materials' || text === '📚 Browse Subjects' || text === '📚 Browse Courses') {
