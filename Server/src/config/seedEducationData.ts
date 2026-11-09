@@ -84,15 +84,8 @@ const SUBJECTS: SubjectSeed[] = [
   { name: 'Chemistry', code: 'CHEMREM', gradeName: 'Remedial' },
   { name: 'Geography', code: 'GEOGREM', gradeName: 'Remedial' },
   { name: 'History', code: 'HISTREM', gradeName: 'Remedial' },
-  // Freshman
-  { name: 'Psychology', code: 'PSYCHFR', gradeName: 'Freshman' },
-  { name: 'Logic', code: 'LOGICFR', gradeName: 'Freshman' },
-  { name: 'Physics', code: 'PHYSFR', gradeName: 'Freshman' },
-  { name: 'Math (Natural Science)', code: 'MATHNFR', gradeName: 'Freshman' },
-  { name: 'Math (Social Science)', code: 'MATHSFR', gradeName: 'Freshman' },
-  { name: 'Geography', code: 'GEOGFR', gradeName: 'Freshman' },
-  { name: 'History', code: 'HISTFR', gradeName: 'Freshman' },
-  { name: 'English', code: 'ENGFR', gradeName: 'Freshman' },
+  // Freshman - Detailed names only (removed short legacy names)
+  // These subjects were removed: PSYCHFR, LOGICFR, PHYSFR, MATHNFR, MATHSFR, GEOGFR, HISTFR, ENGFR
 ]
 
 const UNIVERSITIES = [

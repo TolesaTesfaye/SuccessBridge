@@ -16,6 +16,8 @@
     "cleanup:duplicates": "tsx src/scripts/removeDuplicateSubjects.ts",
     "cleanup:legacy-freshman": "tsx src/scripts/cleanupLegacyFreshmanSubjects.ts",
     "cleanup:merge-freshman": "tsx src/scripts/mergeFreshmanStreams.ts",
+    "list:freshman": "tsx src/scripts/listFreshmanSubjects.ts",
+    "migrate:resources": "tsx src/scripts/migrateResourceSubjects.ts",
     "make-admin": "tsx src/scripts/makeAdmin.ts",
     "migrate:telegram-columns": "tsx src/scripts/migrateTelegramColumns.ts",
     "migrate:category-access": "tsx src/scripts/runMigration.ts",

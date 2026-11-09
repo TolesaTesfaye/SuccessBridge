@@ -1,13 +1,25 @@
 /**
  * Cleanup Legacy Freshman Subjects
  * 
- * Removes old Freshman subjects (PSYCHFR, LOGICFR, etc.) that have been
- * replaced by the proper stream-based subjects (FRN and FRS codes)
+ * Removes old/short-named Freshman subjects and keeps the detailed ones
  */
 
 import Subject from '../models/Subject.js';
 import { Op } from 'sequelize';
 
+// Short names to REMOVE (keep the detailed versions)
+const SUBJECTS_TO_REMOVE = [
+  'Psychology',              // Keep: General Psychology
+  'Logic',                   // Keep: Logic and Critical Thinking
+  'Physics',                 // Keep: General Physics
+  'Geography',               // Keep: Geography of Ethiopia and the Horn
+  'History',                 // Keep: History of Ethiopia and the Horn
+  'Math (Natural Science)',  // Keep: Mathematics for Natural Sciences
+  'Math (Social Science)',   // Keep: Mathematics for Social Sciences
+  'English',                 // Keep: Communicative English Language Skills I & II
+];
+
+// Also remove by codes
 const LEGACY_CODES = [
   'PSYCHFR',
   'LOGICFR',
@@ -21,39 +33,41 @@ const LEGACY_CODES = [
 
 async function cleanupLegacyFreshmanSubjects() {
   try {
-    console.log('🔍 Checking for legacy Freshman subjects...\n');
+    console.log('🔍 Checking for short-named Freshman subjects...\n');
 
-    // Find legacy subjects
+    // Find subjects by name OR code
     const legacySubjects = await Subject.findAll({
       where: {
-        code: {
-          [Op.in]: LEGACY_CODES
-        }
+        [Op.or]: [
+          { name: { [Op.in]: SUBJECTS_TO_REMOVE } },
+          { code: { [Op.in]: LEGACY_CODES } }
+        ]
       }
     });
 
-    console.log(`📊 Found ${legacySubjects.length} legacy subjects:\n`);
+    console.log(`📊 Found ${legacySubjects.length} short-named subjects:\n`);
     
     for (const subject of legacySubjects) {
       console.log(`   ❌ ${subject.name} (${subject.code})`);
     }
 
     if (legacySubjects.length === 0) {
-      console.log('✅ No legacy subjects found!\n');
+      console.log('✅ No short-named subjects found!\n');
       process.exit(0);
     }
 
-    console.log(`\n🗑️  Removing ${legacySubjects.length} legacy subjects...\n`);
+    console.log(`\n🗑️  Removing ${legacySubjects.length} short-named subjects...\n`);
 
     const deleted = await Subject.destroy({
       where: {
-        code: {
-          [Op.in]: LEGACY_CODES
-        }
+        [Op.or]: [
+          { name: { [Op.in]: SUBJECTS_TO_REMOVE } },
+          { code: { [Op.in]: LEGACY_CODES } }
+        ]
       }
     });
 
-    console.log(`✅ Successfully removed ${deleted} legacy Freshman subjects!\n`);
+    console.log(`✅ Successfully removed ${deleted} short-named Freshman subjects!\n`);
     
     // Count remaining Freshman subjects
     const remainingCount = await Subject.count({
@@ -67,9 +81,12 @@ async function cleanupLegacyFreshmanSubjects() {
       }
     });
 
-    console.log(`📊 Remaining Freshman subjects: ${remainingCount}`);
-    console.log(`   • Natural Science stream (FRN): ~17 subjects`);
-    console.log(`   • Social Science stream (FRS): ~15 subjects\n`);
+    console.log(`📊 Remaining Freshman subjects with detailed names: ${remainingCount}\n`);
+    console.log(`✅ Kept subjects like:`);
+    console.log(`   • General Psychology (not just "Psychology")`);
+    console.log(`   • Geography of Ethiopia and the Horn (not just "Geography")`);
+    console.log(`   • Logic and Critical Thinking (not just "Logic")`);
+    console.log(`   • Mathematics for Natural/Social Sciences (not just "Math")\n`);
 
     process.exit(0);
   } catch (error) {

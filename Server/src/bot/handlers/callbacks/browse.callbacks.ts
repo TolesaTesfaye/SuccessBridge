@@ -89,10 +89,11 @@ export async function handleBrowseCallbacks(bot: any, query: any, data: string):
     return;
   }
 
-  // Course/Subject details
+  // Course/Subject details - Go directly to resources
   if (data.startsWith('course_')) {
     const subjectId = data.replace('course_', '');
-    await handleCourseDetails(bot, chatId, subjectId, userId);
+    // Skip the subject details page, show resources directly
+    await handleViewResources(bot, chatId, subjectId, userId);
     return;
   }
 
