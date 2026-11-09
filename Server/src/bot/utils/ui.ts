@@ -92,9 +92,9 @@ export function getWebUrl(path: string = ''): string {
 
 export function getMainKeyboard(isAdmin: boolean = false) {
   const rows: any[][] = [
-    [{ text: '📚 Browse Materials' }, { text: '🔍 Search Materials' }],
-    [{ text: '📖 My Subjects' }, { text: '🌐 Read on Website' }],
-    [{ text: '👤 Student ID' }, { text: '❓ Guide & Help' }],
+    [{ text: '🔍 Search Materials' }, { text: '📖 My Subjects' }],
+    [{ text: '🌐 Read on Website' }, { text: '👤 Student ID' }],
+    [{ text: '❓ Guide & Help' }],
   ];
 
   if (isAdmin) {

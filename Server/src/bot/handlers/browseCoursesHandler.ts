@@ -57,8 +57,8 @@ export async function handleLevelSelection(bot: any, chatId: number, level: stri
           reply_markup: {
             inline_keyboard: [
               [
-                { text: '9️⃣ Grade 9', callback_data: 'grade_Grade 9' },
-                { text: '🔟 Grade 10', callback_data: 'grade_Grade 10' },
+                { text: '📚 Grade 9', callback_data: 'grade_Grade 9' },
+                { text: '📖 Grade 10', callback_data: 'grade_Grade 10' },
               ],
               [
                 { text: '1️⃣1️⃣ Grade 11', callback_data: 'grade_Grade 11' },

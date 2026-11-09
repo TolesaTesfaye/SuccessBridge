@@ -10,7 +10,10 @@ import {
   handleStreamSelection 
 } from '../browseCoursesHandler.js';
 import { handleViewResources, handleDownloadResource, handleFilterResources } from '../resourcesHandler.js';
-import { formatDivider } from '../../utils/ui.js';
+import { formatDivider, escapeHtml, getResourceIcon } from '../../utils/ui.js';
+import Subject from '../../../models/Subject.js';
+import Grade from '../../../models/Grade.js';
+import Stream from '../../../models/Stream.js';
 
 export async function handleBrowseCallbacks(bot: any, query: any, data: string): Promise<void> {
   const chatId = query.message.chat.id;
@@ -34,16 +37,16 @@ export async function handleBrowseCallbacks(bot: any, query: any, data: string):
       reply_markup: {
         inline_keyboard: [
           [
-            { text: '9️⃣ Grade 9', callback_data: 'quick_grade_9' },
-            { text: '🔟 Grade 10', callback_data: 'quick_grade_10' },
+            { text: '📚 Grade 9', callback_data: 'quick_grade_9' },
+            { text: '📖 Grade 10', callback_data: 'quick_grade_10' },
           ],
           [
-            { text: '1️⃣1️⃣ Grade 11 Natural', callback_data: 'quick_grade_11_natural' },
-            { text: '1️⃣1️⃣ Grade 11 Social', callback_data: 'quick_grade_11_social' },
+            { text: '📝 Grade 11 Natural', callback_data: 'quick_grade_11_natural' },
+            { text: '📘 Grade 11 Social', callback_data: 'quick_grade_11_social' },
           ],
           [
-            { text: '1️⃣2️⃣ Grade 12 Natural', callback_data: 'quick_grade_12_natural' },
-            { text: '1️⃣2️⃣ Grade 12 Social', callback_data: 'quick_grade_12_social' },
+            { text: '🎓 Grade 12 Natural', callback_data: 'quick_grade_12_natural' },
+            { text: '📙 Grade 12 Social', callback_data: 'quick_grade_12_social' },
           ],
           [
             { text: '🎓 Freshman', callback_data: 'quick_freshman' },
@@ -86,6 +89,13 @@ export async function handleBrowseCallbacks(bot: any, query: any, data: string):
     return;
   }
 
+  // Course/Subject details
+  if (data.startsWith('course_')) {
+    const subjectId = data.replace('course_', '');
+    await handleCourseDetails(bot, chatId, subjectId, userId);
+    return;
+  }
+
   // View resources
   if (data.startsWith('resources_')) {
     const subjectId = data.replace('resources_', '');
@@ -107,5 +117,77 @@ export async function handleBrowseCallbacks(bot: any, query: any, data: string):
     const type = parts[1];
     await handleFilterResources(bot, chatId, subjectId, type, userId);
     return;
+  }
+}
+
+
+/**
+ * Handle course/subject details
+ */
+async function handleCourseDetails(
+  bot: any,
+  chatId: number,
+  subjectId: string,
+  userId: string
+): Promise<void> {
+  try {
+    const subject = await Subject.findByPk(subjectId, {
+      include: [
+        {
+          model: Grade,
+          as: 'grade',
+          attributes: ['name']
+        },
+        {
+          model: Stream,
+          as: 'stream',
+          attributes: ['name', 'code']
+        }
+      ]
+    });
+
+    if (!subject) {
+      await bot.sendMessage(chatId, '❌ <i>Subject not found.</i>', { parse_mode: 'HTML' });
+      return;
+    }
+
+    const levelInfo = (subject as any).grade?.name || 'All levels';
+    const streamInfo = (subject as any).stream?.name || '';
+    
+    let backData = 'browse_courses';
+    if ((subject as any).grade?.name && (subject as any).stream?.name) {
+      const streamType = (subject as any).stream.name.toLowerCase().includes('natural') ? 'natural' : 'social';
+      backData = `stream_${(subject as any).grade.name}|${streamType}`;
+    } else if ((subject as any).grade?.name) {
+      backData = `grade_${(subject as any).grade.name}`;
+    }
+
+    const message = `📚 <b>${escapeHtml(subject.name)}</b>\n` +
+      `${formatDivider()}\n` +
+      `🔖 <b>Subject Code:</b> <code>${escapeHtml(subject.code || 'N/A')}</code>\n` +
+      `📊 <b>Level:</b> ${escapeHtml(levelInfo)}${streamInfo ? ` • ${escapeHtml(streamInfo)}` : ''}\n\n` +
+      `💡 <b>Academic Materials Available:</b>\n` +
+      `• Complete lecture presentation slides\n` +
+      `• Chapter summaries & handout notes\n` +
+      `• Past national exams with answer keys\n` +
+      `• Textbooks and module chapters\n` +
+      `${formatDivider()}`;
+
+    await bot.sendMessage(chatId, message, {
+      parse_mode: 'HTML',
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '📂 Explore Study Materials', callback_data: `resources_${subjectId}` }],
+          [{ text: '🌐 Website Preview', callback_data: 'open_website' }],
+          [
+            { text: '🔙 Back to Subjects', callback_data: backData },
+            { text: '🏠 Main Menu', callback_data: 'main_menu' },
+          ],
+        ],
+      },
+    });
+  } catch (error) {
+    console.error('Error in handleCourseDetails:', error);
+    await bot.sendMessage(chatId, '❌ <i>An error occurred. Please try again.</i>', { parse_mode: 'HTML' });
   }
 }

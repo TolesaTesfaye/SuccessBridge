@@ -72,6 +72,7 @@ export async function handleCallbackQuery(bot: any, query: any): Promise<void> {
       data.startsWith('level_') ||
       data.startsWith('grade_') ||
       data.startsWith('stream_') ||
+      data.startsWith('course_') ||
       data.startsWith('resources_') ||
       data.startsWith('download_') ||
       data.startsWith('filter_')

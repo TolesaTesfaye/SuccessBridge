@@ -127,9 +127,6 @@ export async function handleStart(bot: any, msg: any): Promise<void> {
         reply_markup: {
           inline_keyboard: [
             [
-              { text: '📚 Browse Subjects & Materials', callback_data: 'browse_courses' },
-            ],
-            [
               { text: paymentButtonText, callback_data: 'unlock_resources' },
             ],
             [

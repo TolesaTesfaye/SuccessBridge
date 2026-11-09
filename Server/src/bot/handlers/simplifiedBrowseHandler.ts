@@ -206,16 +206,16 @@ async function showQuickGradeSelector(bot: any, chatId: number): Promise<void> {
       inline_keyboard: [
         // High School
         [
-          { text: '9️⃣ Grade 9', callback_data: 'quick_grade_9' },
-          { text: '🔟 Grade 10', callback_data: 'quick_grade_10' },
+          { text: '📚 Grade 9', callback_data: 'quick_grade_9' },
+          { text: '📖 Grade 10', callback_data: 'quick_grade_10' },
         ],
         [
-          { text: '1️⃣1️⃣ Grade 11 Natural', callback_data: 'quick_grade_11_natural' },
-          { text: '1️⃣1️⃣ Grade 11 Social', callback_data: 'quick_grade_11_social' },
+          { text: '📝 Grade 11 Natural', callback_data: 'quick_grade_11_natural' },
+          { text: '📘 Grade 11 Social', callback_data: 'quick_grade_11_social' },
         ],
         [
-          { text: '1️⃣2️⃣ Grade 12 Natural', callback_data: 'quick_grade_12_natural' },
-          { text: '1️⃣2️⃣ Grade 12 Social', callback_data: 'quick_grade_12_social' },
+          { text: '🎓 Grade 12 Natural', callback_data: 'quick_grade_12_natural' },
+          { text: '📙 Grade 12 Social', callback_data: 'quick_grade_12_social' },
         ],
         // University
         [
