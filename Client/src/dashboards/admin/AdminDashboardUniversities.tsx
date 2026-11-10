@@ -8,7 +8,6 @@ import {
   MapPin,
   Mail,
   Plus,
-  Trash2,
   Edit,
   Sparkles,
   Building2,
@@ -71,17 +70,6 @@ export const AdminDashboardUniversities: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this university?"))
-      return;
-    try {
-      await universityService.deleteUniversity(id);
-      loadUniversities();
-    } catch (err: any) {
-      alert(err?.message || "Failed to delete university.");
-    }
-  };
-
   const filteredUniversities = useMemo(() => {
     return universities.filter(
       (u) =>
@@ -131,68 +119,6 @@ export const AdminDashboardUniversities: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden border border-slate-200 bg-[#0f172a] px-8 py-10 text-white shadow-2xl dark:border-white/5 -mx-4 md:-mx-6">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.2),transparent_40%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.15),transparent_35%)]" />
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-10">
-          <div className="space-y-6 max-w-2xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] font-black uppercase tracking-[0.3em] text-sky-300 backdrop-blur-md">
-              <Sparkles className="h-4 w-4" />
-              Institutional Hub
-            </div>
-            <h2 className="text-4xl font-black tracking-tight leading-tight sm:text-5xl">
-              Global University Network Management.
-            </h2>
-            <p className="text-lg font-medium text-slate-300/80 leading-relaxed">
-              Orchestrate your academic ecosystem. Manage partner universities,
-              track geographical distribution, and maintain institutional
-              integrity across the platform.
-            </p>
-            <div className="flex flex-wrap gap-4 pt-2">
-              <Button
-                variant="primary"
-                onClick={() => setShowAddForm(!showAddForm)}
-                className="bg-sky-500 hover:bg-sky-400 border-none shadow-[0_10px_20px_rgba(14,165,233,0.3)] h-12 px-8 rounded-2xl"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Add Institution
-              </Button>
-              <div className="relative flex-1 min-w-[240px]">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Search universities by name or city..."
-                  className="w-full h-12 pl-12 pr-4 rounded-2xl bg-white/5 border border-white/10 text-white focus:border-sky-500 focus:ring-0 backdrop-blur-sm transition-all"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4 shrink-0 lg:w-96">
-            {stats.map((stat, idx) => (
-              <div
-                key={idx}
-                className="p-5 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-md hover:bg-white/10 transition-all group"
-              >
-                <div
-                  className={`p-3 rounded-2xl bg-${stat.color}-500/20 text-${stat.color}-400 mb-4 inline-flex group-hover:scale-110 transition-transform`}
-                >
-                  <stat.icon className="w-5 h-5" />
-                </div>
-                <div className="text-3xl font-black tracking-tighter mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-[10px] font-black uppercase tracking-widest text-slate-500">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {showAddForm && (
         <Card className="border-none shadow-2xl bg-white dark:bg-[#1a1b23] animate-in zoom-in-95 duration-300">
           <CardHeader className="border-b border-slate-100 dark:border-white/5 p-6">
@@ -286,12 +212,6 @@ export const AdminDashboardUniversities: React.FC = () => {
                 <div className="absolute top-4 right-4 flex gap-2">
                   <button className="p-2 rounded-lg bg-white/10 backdrop-blur-md text-white hover:bg-white/20 transition-all">
                     <Edit className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(uni.id)}
-                    className="p-2 rounded-lg bg-white/10 backdrop-blur-md text-rose-400 hover:bg-rose-500/20 transition-all"
-                  >
-                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>

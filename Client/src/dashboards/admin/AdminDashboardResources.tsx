@@ -1,29 +1,15 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardBody, CardHeader } from "@components/common/Card";
 import { Button } from "@components/common/Button";
 import { Pagination } from "@components/common/Pagination";
 import { Loading } from "@components/common/Loading";
 import { resourceService } from "@services/resourceService";
 import type { Resource } from "@types";
-import {
-  BookOpen,
-  Brain,
-  FileText,
-  Filter,
-  LibraryBig,
-  Sparkles,
-  Upload,
-  Calendar,
-} from "lucide-react";
+import { FileText } from "lucide-react";
 import {
   DashboardHeroSkeleton,
   DashboardListSkeleton,
 } from "@components/dashboards/DashboardSkeleton";
-
-type ResourceTabProps = {
-  onUpload: () => void;
-  onNavigateToTab: (tab: string) => void;
-};
 
 const parseResources = (response: any): Resource[] => {
   const data =
@@ -38,20 +24,12 @@ const formatDate = (value: string | Date) =>
     year: "numeric",
   });
 
-export const AdminDashboardResources: React.FC<ResourceTabProps> = ({
-  onUpload,
-  onNavigateToTab,
-}) => {
+export const AdminDashboardResources: React.FC = () => {
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [filter, setFilter] = useState({
-    educationLevel: "all",
-    type: "all",
-  });
-
   const loadResources = async () => {
     try {
       setLoading(true);
@@ -59,14 +37,6 @@ export const AdminDashboardResources: React.FC<ResourceTabProps> = ({
       const response = await resourceService.getResources({
         page: currentPage,
         limit: 8,
-        ...(filter.educationLevel !== "all"
-          ? {
-              educationLevel: filter.educationLevel as
-                | "high_school"
-                | "university",
-            }
-          : {}),
-        ...(filter.type !== "all" ? { type: filter.type as any } : {}),
       });
       const payload = response?.data;
       const list =
@@ -89,47 +59,7 @@ export const AdminDashboardResources: React.FC<ResourceTabProps> = ({
 
   useEffect(() => {
     void loadResources();
-  }, [currentPage, filter.educationLevel, filter.type]);
-
-  const stats = useMemo(() => {
-    const total = resources.length;
-    const university = resources.filter(
-      (resource) => resource.educationLevel === "university",
-    ).length;
-    const highSchool = resources.filter(
-      (resource) => resource.educationLevel === "high_school",
-    ).length;
-    const quizzes = resources.filter(
-      (resource) => resource.type === "quiz",
-    ).length;
-
-    return [
-      {
-        label: "Visible Resources",
-        value: total,
-        icon: FileText,
-        accent: "from-sky-500 to-cyan-500",
-      },
-      {
-        label: "University Assets",
-        value: university,
-        icon: LibraryBig,
-        accent: "from-violet-500 to-fuchsia-500",
-      },
-      {
-        label: "High School Assets",
-        value: highSchool,
-        icon: BookOpen,
-        accent: "from-amber-500 to-orange-500",
-      },
-      {
-        label: "Quiz Materials",
-        value: quizzes,
-        icon: Brain,
-        accent: "from-emerald-500 to-teal-500",
-      },
-    ];
-  }, [resources]);
+  }, [currentPage]);
 
   if (loading && resources.length === 0) {
     return (
@@ -142,157 +72,7 @@ export const AdminDashboardResources: React.FC<ResourceTabProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="relative overflow-hidden border border-slate-200 bg-[#0f172a] px-6 py-7 text-white shadow-[0_24px_80px_-40px_rgba(15,23,42,0.7)] dark:border-white/10 sm:px-8 -mx-4 md:-mx-6">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.25),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.22),transparent_28%),linear-gradient(135deg,rgba(15,23,42,0.98),rgba(30,41,59,0.9))]" />
-        <div className="relative z-10 grid gap-6 lg:grid-cols-[1.3fr_0.7fr] lg:items-end">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-sky-100 backdrop-blur">
-              <Sparkles className="h-4 w-4 text-sky-300" />
-              Resource Command Center
-            </div>
-            <div className="max-w-2xl space-y-3">
-              <h2 className="text-3xl font-black tracking-tight sm:text-4xl">
-                Admin resource library built for fast publishing, review, and
-                discovery.
-              </h2>
-              <p className="max-w-xl text-sm leading-6 text-slate-300 sm:text-base">
-                Browse uploaded learning assets, inspect what is live in the
-                database, and jump straight into uploads or the dedicated
-                resources page when you need the full manager.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button
-                variant="primary"
-                onClick={onUpload}
-                className="shadow-lg shadow-sky-500/20"
-              >
-                <span className="inline-flex items-center gap-2">
-                  <Upload className="h-4 w-4" />
-                  Upload Resource
-                </span>
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => onNavigateToTab("reports")}
-                className="border-white/15 bg-white/5 text-white hover:bg-white/10"
-              >
-                View Analytics
-              </Button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            {stats.map((item) => (
-              <div
-                key={item.label}
-                className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur"
-              >
-                <div
-                  className={`inline-flex rounded-xl bg-gradient-to-br ${item.accent} p-2 text-white shadow-lg`}
-                >
-                  <item.icon className="h-4 w-4" />
-                </div>
-                <div className="mt-3 text-2xl font-black text-white">
-                  {item.value}
-                </div>
-                <p className="mt-1 text-xs font-medium text-slate-300">
-                  {item.label}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
       <div className="grid gap-6">
-        <Card className="border-slate-200/80 shadow-sm dark:border-white/10">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Filter className="h-5 w-5 text-slate-500" />
-              <span>Quick Filters</span>
-            </div>
-          </CardHeader>
-          <CardBody>
-            <div className="space-y-4">
-              <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
-                  Education Level
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { label: "All", value: "all" },
-                    { label: "High School", value: "high_school" },
-                    { label: "University", value: "university" },
-                  ].map((option) => (
-                    <button
-                      key={option.value}
-                      className={`rounded-xl border px-3 py-2 text-sm font-semibold transition-all ${
-                        filter.educationLevel === option.value
-                          ? "border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-400 dark:bg-blue-500/10 dark:text-blue-200"
-                          : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900 dark:border-white/10 dark:bg-white/5 dark:text-slate-300"
-                      }`}
-                      onClick={() => {
-                        setCurrentPage(1);
-                        setFilter((prev) => ({
-                          ...prev,
-                          educationLevel: option.value,
-                        }));
-                      }}
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
-                  <span className="hidden sm:inline">Resource Type</span>
-                  <span className="sm:hidden">R.type</span>
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { label: "All Types", value: "all" },
-                    { label: "Textbooks", value: "textbook" },
-                    { label: "Quizzes", value: "quiz" },
-                    { label: "Past Exams", value: "past_exam" },
-                  ].map((option) => (
-                    <button
-                      key={option.value}
-                      className={`rounded-xl border px-3 py-2 text-sm font-semibold transition-all ${
-                        filter.type === option.value
-                          ? "border-sky-500 bg-sky-50 text-sky-700 dark:border-sky-400 dark:bg-sky-500/10 dark:text-sky-200"
-                          : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900 dark:border-white/10 dark:bg-white/5 dark:text-slate-300"
-                      }`}
-                      onClick={() => {
-                        setCurrentPage(1);
-                        setFilter((prev) => ({ ...prev, type: option.value }));
-                      }}
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
-                <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white">
-                  <Calendar className="h-4 w-4 text-slate-500" />
-                  Live data from the API
-                </div>
-                <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                  The grid updates from the database-backed resources endpoint
-                  and can be refreshed by changing filters or opening the
-                  dedicated resources page.
-                </p>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-
         <Card className="border-slate-200/80 shadow-sm dark:border-white/10">
           <CardHeader>
             <div className="flex items-center gap-2">

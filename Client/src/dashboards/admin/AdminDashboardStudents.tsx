@@ -137,174 +137,23 @@ export const AdminDashboardStudents: React.FC<StudentTabProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden border border-slate-200 bg-[#0f172a] px-6 py-7 text-white shadow-[0_24px_80px_-40px_rgba(15,23,42,0.7)] dark:border-white/10 sm:px-8 -mx-4 md:-mx-6">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.25),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.22),transparent_28%),linear-gradient(135deg,rgba(15,23,42,0.98),rgba(30,41,59,0.9))]" />
-        <div className="relative z-10 grid gap-6 lg:grid-cols-[1.3fr_0.7fr] lg:items-end">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-sky-100 backdrop-blur">
-              <Sparkles className="h-4 w-4 text-sky-300" />
-              Student Command Center
-            </div>
-            <div className="max-w-2xl space-y-3">
-              <h2 className="text-3xl font-black tracking-tight sm:text-4xl">
-                Manage learners across the platform with complete visibility and
-                control.
-              </h2>
-              <p className="max-w-xl text-sm leading-6 text-slate-300 sm:text-base">
-                View all registered students, monitor verification status,
-                segment by education level, and track engagement metrics in one
-                centralized dashboard for seamless student lifecycle management.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button
-                variant="primary"
-                onClick={() => onNavigateToTab("resources")}
-                className="shadow-lg shadow-sky-500/20"
-              >
-                <span className="inline-flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  View All Students
-                </span>
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => onNavigateToTab("reports")}
-                className="border-white/15 bg-white/5 text-white hover:bg-white/10"
-              >
-                See Reports
-              </Button>
-            </div>
+      {/* Students Table */}
+      <Card className="border-slate-200/80 shadow-sm dark:border-white/10">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Users className="h-5 w-5 text-slate-500" />
+            <span>Student Registry</span>
+            <span className="ml-auto text-sm text-slate-500">
+              Showing {filteredStudents.length} of {students.length}
+            </span>
           </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            {stats.map((item) => (
-              <div
-                key={item.label}
-                className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur"
-              >
-                <div
-                  className={`inline-flex rounded-xl bg-gradient-to-br ${item.accent} p-2 text-white shadow-lg`}
-                >
-                  <item.icon className="h-4 w-4" />
-                </div>
-                <div className="mt-3 text-2xl font-black text-white">
-                  {item.value}
-                </div>
-                <p className="mt-1 text-xs font-medium text-slate-300">
-                  {item.label}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Filters & Table Section */}
-      <div className="grid gap-6">
-        {/* Filters Card */}
-        <Card className="border-slate-200/80 shadow-sm dark:border-white/10">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Filter className="h-5 w-5 text-slate-500" />
-              <span>Quick Filters</span>
-            </div>
-          </CardHeader>
-          <CardBody>
-            <div className="space-y-4">
-              <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
-                  Student Type
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { label: "All", value: "all" },
-                    { label: "High School", value: "high_school" },
-                    { label: "University", value: "university" },
-                  ].map((option) => (
-                    <button
-                      key={option.value}
-                      className={`rounded-xl border px-3 py-2 text-sm font-semibold transition-all ${
-                        filter.studentType === option.value
-                          ? "border-blue-500 bg-blue-50 text-blue-700 dark:border-blue-400 dark:bg-blue-500/10 dark:text-blue-200"
-                          : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900 dark:border-white/10 dark:bg-white/5 dark:text-slate-300"
-                      }`}
-                      onClick={() => {
-                        setFilter((prev) => ({
-                          ...prev,
-                          studentType: option.value,
-                        }));
-                      }}
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-slate-500">
-                  Email Verification
-                </label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { label: "All", value: "all" },
-                    { label: "Verified", value: "verified" },
-                    { label: "Unverified", value: "unverified" },
-                  ].map((option) => (
-                    <button
-                      key={option.value}
-                      className={`rounded-xl border px-3 py-2 text-sm font-semibold transition-all ${
-                        filter.verificationStatus === option.value
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-700 dark:border-emerald-400 dark:bg-emerald-500/10 dark:text-emerald-200"
-                          : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900 dark:border-white/10 dark:bg-white/5 dark:text-slate-300"
-                      }`}
-                      onClick={() => {
-                        setFilter((prev) => ({
-                          ...prev,
-                          verificationStatus: option.value,
-                        }));
-                      }}
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-4 dark:border-white/10 dark:bg-white/5">
-                <div className="flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white">
-                  <Users className="h-4 w-4 text-slate-500" />
-                  Live data from the database
-                </div>
-                <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                  All student records are fetched directly from the database
-                  with real-time updates as new learners register.
-                </p>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-
-        {/* Students Table */}
-        <Card className="border-slate-200/80 shadow-sm dark:border-white/10">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-slate-500" />
-              <span>Student Registry</span>
-              <span className="ml-auto text-sm text-slate-500">
-                Showing {filteredStudents.length} of {students.length}
-              </span>
-            </div>
-          </CardHeader>
-          <CardBody>
-            {loading ? (
-              <Loading message="Loading student registry..." />
-            ) : (
-              <><div className="md:hidden space-y-3">
+        </CardHeader>
+        <CardBody>
+          {loading ? (
+            <Loading message="Loading student registry..." />
+          ) : (
+            <>
+              <div className="md:hidden space-y-3">
                 {filteredStudents.map((student) => (
                   <div key={student.id} className="bg-white dark:bg-slate-800/80 rounded-xl border border-slate-200 dark:border-slate-700 p-4 space-y-3">
                     <div className="flex items-start justify-between gap-2">
@@ -424,10 +273,6 @@ export const AdminDashboardStudents: React.FC<StudentTabProps> = ({
                   </div>
                 )}
               </div>
-              </>
-            )}
-          </CardBody>
-        </Card>
 
         {/* Pagination */}
         {totalPages > 1 && (
@@ -439,7 +284,10 @@ export const AdminDashboardStudents: React.FC<StudentTabProps> = ({
             />
           </div>
         )}
-      </div>
+            </>
+          )}
+        </CardBody>
+      </Card>
     </div>
   );
 };

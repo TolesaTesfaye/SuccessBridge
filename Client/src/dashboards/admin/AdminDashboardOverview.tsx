@@ -103,42 +103,52 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
 
   return (
     <div className="space-y-5 pb-4">
-      <section className="relative isolate overflow-hidden rounded-[28px] bg-[#101a33] px-5 py-7 text-white shadow-2xl shadow-slate-900/10 md:px-8 md:py-9">
-        <div className="absolute -right-20 -top-28 -z-10 h-72 w-72 rounded-full bg-blue-500/25 blur-3xl" />
-        <div className="absolute -bottom-32 left-1/3 -z-10 h-72 w-72 rounded-full bg-violet-500/20 blur-3xl" />
-        <div className="absolute right-8 top-8 hidden h-28 w-28 rounded-full border border-white/10 md:block" />
-        <div className="relative max-w-2xl">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.08] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-blue-200">
-            <Sparkles className="h-3.5 w-3.5" />
-            Admin command center
-          </div>
-          <h1 className="text-2xl font-semibold tracking-tight md:text-4xl">
-            Everything important,<br className="hidden md:block" /> in one clear view.
-          </h1>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-slate-300 md:text-base">
-            Monitor your learning platform, manage academic content, and move your team forward from a single workspace.
-          </p>
-        </div>
-        <div className="relative mt-7 flex flex-wrap items-center gap-3">
-          <button
-            onClick={() => onNavigateToTab("students")}
-            className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-xs font-bold text-slate-900 transition-transform hover:-translate-y-0.5 active:scale-95"
-          >
-            View students
-            <ArrowUpRight className="h-4 w-4" />
-          </button>
-          <div className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.07] px-4 py-2.5 text-xs font-semibold text-slate-200">
-            <CheckCircle2 className="h-4 w-4 text-emerald-300" />
-            Platform overview
-          </div>
-        </div>
-      </section>
 
-      <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <MetricCard label="Active students" value={metrics.students} icon={Users} tone="blue" />
-        <MetricCard label="Universities" value={metrics.universities} icon={Building2} tone="violet" />
-        <MetricCard label="Subjects" value={metrics.subjects} icon={Layers3} tone="amber" />
-        <MetricCard label="Active quizzes" value={metrics.quizzes} icon={Target} tone="emerald" />
+      {/* Enhanced State Cards Grid - Similar to SuperAdmin */}
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-3 text-white shadow-lg hover:shadow-xl transition-shadow border border-slate-700/50">
+          <div className="flex items-start justify-between mb-2">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+              <Users size={18} />
+            </div>
+          </div>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Total Users</p>
+          <p className="text-2xl font-bold mb-0.5">{formatNumber(metrics.students)}</p>
+          <p className="text-xs text-slate-400">All platform users</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-3 text-white shadow-lg hover:shadow-xl transition-shadow border border-slate-700/50">
+          <div className="flex items-start justify-between mb-2">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+              <GraduationCap size={18} />
+            </div>
+          </div>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Active Students</p>
+          <p className="text-2xl font-bold mb-0.5">{formatNumber(metrics.universities)}</p>
+          <p className="text-xs text-slate-400">Enrolled students</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-3 text-white shadow-lg hover:shadow-xl transition-shadow border border-slate-700/50">
+          <div className="flex items-start justify-between mb-2">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center">
+              <BookOpen size={18} />
+            </div>
+          </div>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Total Resources</p>
+          <p className="text-2xl font-bold mb-0.5">{formatNumber(resourceCount)}</p>
+          <p className="text-xs text-slate-400">Learning materials</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-3 text-white shadow-lg hover:shadow-xl transition-shadow border border-slate-700/50">
+          <div className="flex items-start justify-between mb-2">
+            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center">
+              <Target size={18} />
+            </div>
+          </div>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Active Quizzes</p>
+          <p className="text-2xl font-bold mb-0.5">{formatNumber(metrics.quizzes)}</p>
+          <p className="text-xs text-slate-400">Assessment tools</p>
+        </div>
       </section>
 
       <section className="grid gap-5 xl:grid-cols-[1.4fr_0.8fr]">

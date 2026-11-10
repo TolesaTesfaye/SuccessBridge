@@ -71,19 +71,24 @@ export const UniversitiesTab: React.FC = () => {
       </Card>
 
       {/* Universities Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
         {filteredUniversities.map((university) => {
           const stats = getUniversityStats()
           const location = getUniversityLocation(university)
           
           return (
             <Card key={university} className="hover:shadow-lg transition-all duration-300 cursor-pointer group">
-              <CardBody>
-                <div className="space-y-4">
+              <CardBody className="p-6">
+                <div className="space-y-3">
                   {/* University Header */}
                   <div className="flex items-start gap-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg">
-                      {university.charAt(0)}
+                    <div className="relative w-9 h-9">
+                      <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold shadow-md">
+                        {university.charAt(0)}
+                      </div>
+                      <span className="absolute -right-1 -bottom-1 bg-green-500 text-white text-[10px] font-bold rounded-full border-2 border-white dark:border-slate-900 shadow-sm">
+                        {stats.students}
+                      </span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-bold text-slate-900 dark:text-white text-sm leading-tight group-hover:text-blue-600 transition-colors">
@@ -96,21 +101,21 @@ export const UniversitiesTab: React.FC = () => {
                   </div>
 
                   {/* Stats Grid */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3 text-center">
-                      <div className="text-lg font-bold text-slate-900 dark:text-white">{stats.students.toLocaleString()}</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-2 text-center">
+                      <div className="text-base font-bold text-slate-900 dark:text-white">{stats.students.toLocaleString()}</div>
                       <div className="text-xs text-slate-500 dark:text-slate-400">Students</div>
                     </div>
-                    <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3 text-center">
-                      <div className="text-lg font-bold text-slate-900 dark:text-white">{stats.resources}</div>
+                    <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-2 text-center">
+                      <div className="text-base font-bold text-slate-900 dark:text-white">{stats.resources}</div>
                       <div className="text-xs text-slate-500 dark:text-slate-400">Resources</div>
                     </div>
-                    <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3 text-center">
-                      <div className="text-lg font-bold text-slate-900 dark:text-white">{stats.admins}</div>
+                    <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-2 text-center">
+                      <div className="text-base font-bold text-slate-900 dark:text-white">{stats.admins}</div>
                       <div className="text-xs text-slate-500 dark:text-slate-400">Admins</div>
                     </div>
-                    <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3 text-center">
-                      <div className="text-lg font-bold text-slate-900 dark:text-white">{stats.departments}</div>
+                    <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-2 text-center">
+                      <div className="text-base font-bold text-slate-900 dark:text-white">{stats.departments}</div>
                       <div className="text-xs text-slate-500 dark:text-slate-400">Departments</div>
                     </div>
                   </div>

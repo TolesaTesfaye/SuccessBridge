@@ -4,6 +4,7 @@ import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { Card, CardBody, CardHeader } from "@components/common/Card";
 import { Button } from "@components/common/Button";
 import { Modal } from "@components/common/Modal";
+import { useToast } from "@components/common/Toast";
 import { userService } from "@services/userService";
 import { resourceService } from "@services/resourceService";
 import {
@@ -17,6 +18,7 @@ import { SuperAdminAnalytics } from "@pages/superadmin/SuperAdminAnalytics";
 import { PromotionPage } from "@pages/PromotionPage";
 import { StudentAICompanion } from "@pages/student/StudentAICompanion";
 import { AdminDashboardPayments } from "@dashboards/admin/AdminDashboardPayments";
+import { UniversitiesTab } from "@pages/superadmin/management/UniversitiesTab";
 import { useNavigate } from "react-router-dom";
 import {
   SuperAdminTopTabNav,
@@ -53,11 +55,13 @@ const PLATFORM_TABS: SuperAdminTabItem[] = [
   { id: "upload", label: "Upload", shortLabel: "Upload", icon: Upload },
   { id: "payments", label: "Payments", shortLabel: "Payments", icon: CreditCard },
   { id: "addquiz", label: "Add Quiz", shortLabel: "Add Quiz", icon: FilePlus },
+  { id: "universities", label: "Universities", shortLabel: "Universities", icon: Layers },
 ];
 
 export const SuperAdminDashboard: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedStudent, setSelectedStudent] = useState<any>(null);
   const [selectedAdmin, setSelectedAdmin] = useState<any>(null);
@@ -217,6 +221,7 @@ export const SuperAdminDashboard: React.FC = () => {
           {activeTab === "payments" && <AdminDashboardPayments />}
           {activeTab === "hierarchy" && <EducationHierarchy />}
           {activeTab === "addquiz" && <SuperAdminAddQuiz />}
+          {activeTab === "universities" && <UniversitiesTab toast={toast} />}
         </div>
 
         {/* Upload Modal */}

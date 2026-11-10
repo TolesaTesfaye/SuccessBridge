@@ -11,6 +11,7 @@ import { SettingsTab } from "./management/SettingsTab";
 import { AuditTab } from "./management/AuditTab";
 import { ReportsTab } from "./management/ReportsTab";
 import { SystemTab } from "./management/SystemTab";
+import { UniversitiesTab } from "./management/UniversitiesTab";
 
 type TabType =
   | "overview"
@@ -21,7 +22,8 @@ type TabType =
   | "settings"
   | "audit"
   | "reports"
-  | "system";
+  | "system"
+  | "universities";
 
 const TABS: { id: TabType; label: string }[] = [
   { id: "overview", label: "Overview" },
@@ -33,6 +35,7 @@ const TABS: { id: TabType; label: string }[] = [
   { id: "audit", label: "Audit Logs" },
   { id: "reports", label: "Reports" },
   { id: "system", label: "System" },
+  { id: "universities", label: "Universities" },
 ];
 
 export const SuperAdminManagementPanel: React.FC = () => {
@@ -63,6 +66,7 @@ export const SuperAdminManagementPanel: React.FC = () => {
           {activeTab === "audit" && <AuditTab toast={toast} />}
           {activeTab === "reports" && <ReportsTab toast={toast} />}
           {activeTab === "system" && <SystemTab />}
+          {activeTab === "universities" && <UniversitiesTab toast={toast} />}
         </div>
       </div>
     </DashboardLayout>

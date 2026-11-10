@@ -259,12 +259,7 @@ export const AdminDashboardContent: React.FC = () => {
           <AdminDashboardSubjects onNavigateToTab={handleNavigateToTab} />
         )}
 
-        {activeTab === "resources" && (
-          <AdminDashboardResources
-            onUpload={() => setActiveTab("upload")}
-            onNavigateToTab={handleNavigateToTab}
-          />
-        )}
+        {activeTab === "resources" && <AdminDashboardResources />}
 
         {activeTab === "quizzes" && (
           <AdminDashboardQuizzes onNavigateToTab={handleNavigateToTab} />
