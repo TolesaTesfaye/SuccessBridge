@@ -5,7 +5,6 @@ import {
   UploadFormData,
 } from "@components/resources/ResourceUploadForm";
 import { subjectService } from "@services/subjectService";
-import { departmentService } from "@services/departmentService";
 import { universityService } from "@services/universityService";
 import { resourceService } from "@services/resourceService";
 import { quizService } from "@services/quizService";
@@ -19,7 +18,6 @@ import { AdminDashboardUpload } from "./AdminDashboardUpload";
 import { AdminDashboardPromotion } from "./AdminDashboardPromotion";
 import { AdminDashboardResources } from "./AdminDashboardResources";
 import { AdminDashboardSubjects } from "./AdminDashboardSubjects";
-import { AdminDashboardDepartments } from "./AdminDashboardDepartments";
 import {
   AlertTriangle,
 } from "lucide-react";
@@ -32,14 +30,12 @@ type TabKey =
   | "reports"
   | "promotion"
   | "resources"
-  | "subjects"
-  | "departments";
+  | "subjects";
 
 type DashboardState = {
   loading: boolean;
   error: string | null;
   subjects: any[];
-  departments: any[];
   universities: any[];
   quizzes: any[];
   resourceStats: any | null;
@@ -50,7 +46,6 @@ const initialState: DashboardState = {
   loading: true,
   error: null,
   subjects: [],
-  departments: [],
   universities: [],
   quizzes: [],
   resourceStats: null,
@@ -62,7 +57,6 @@ const parseArrayData = (value: any): any[] => {
   if (Array.isArray(value?.data)) return value.data;
   if (Array.isArray(value?.data?.data)) return value.data.data;
   if (Array.isArray(value?.subjects)) return value.subjects;
-  if (Array.isArray(value?.departments)) return value.departments;
   if (Array.isArray(value?.universities)) return value.universities;
   return [];
 };
@@ -93,7 +87,6 @@ export const AdminDashboardContent: React.FC = () => {
 
     const results = await Promise.allSettled([
       subjectService.getSubjects(),
-      departmentService.getAll(),
       universityService.getUniversities(),
       quizService.getAll({ limit: 200 }),
       resourceService.getResourceStats(),
@@ -102,7 +95,6 @@ export const AdminDashboardContent: React.FC = () => {
 
     const [
       subjectsRes,
-      departmentsRes,
       universitiesRes,
       quizzesRes,
       resourceStatsRes,
@@ -112,10 +104,6 @@ export const AdminDashboardContent: React.FC = () => {
     const subjects =
       subjectsRes.status === "fulfilled"
         ? parseArrayData(subjectsRes.value)
-        : [];
-    const departments =
-      departmentsRes.status === "fulfilled"
-        ? parseArrayData(departmentsRes.value)
         : [];
     const universities =
       universitiesRes.status === "fulfilled"
@@ -132,7 +120,6 @@ export const AdminDashboardContent: React.FC = () => {
 
     const hardFailures = [
       subjectsRes,
-      departmentsRes,
       universitiesRes,
       quizzesRes,
       resourceStatsRes,
@@ -146,7 +133,6 @@ export const AdminDashboardContent: React.FC = () => {
           ? "Some dashboard sources are unavailable right now."
           : null,
       subjects,
-      departments,
       universities,
       quizzes,
       resourceStats,
@@ -210,7 +196,6 @@ export const AdminDashboardContent: React.FC = () => {
       if (data.grade) formData.append("grade", data.grade);
       if (data.stream) formData.append("stream", data.stream);
       if (data.universityId) formData.append("universityId", data.universityId);
-      if (data.departmentId) formData.append("departmentId", data.departmentId);
       if (data.category) formData.append("category", data.category);
       await resourceService.uploadResource(formData);
       await fetchDashboardData();
@@ -269,8 +254,6 @@ export const AdminDashboardContent: React.FC = () => {
         )}
 
         {activeTab === "universities" && <AdminDashboardUniversities />}
-
-        {activeTab === "departments" && <AdminDashboardDepartments />}
 
         {activeTab === "subjects" && (
           <AdminDashboardSubjects onNavigateToTab={handleNavigateToTab} />

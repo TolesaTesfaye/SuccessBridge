@@ -5,14 +5,12 @@ import { Loading } from '@components/common/Loading'
 import { userService } from '@services/userService'
 import { resourceService } from '@services/resourceService'
 import { universityService } from '@services/universityService'
-import { departmentService } from '@services/departmentService'
 
 interface AnalyticsData {
   totalUsers: number
   totalStudents: number
   totalAdmins: number
   totalUniversities: number
-  totalDepartments: number
   totalResources: number
   resourcesByType: { type: string; count: number }[]
   resourcesByLevel: { level: string; count: number }[]
@@ -34,7 +32,6 @@ export const SuperAdminAnalytics: React.FC<SuperAdminAnalyticsProps> = ({
     totalStudents: 0,
     totalAdmins: 0,
     totalUniversities: 0,
-    totalDepartments: 0,
     totalResources: 0,
     resourcesByType: [],
     resourcesByLevel: [],
@@ -52,17 +49,15 @@ export const SuperAdminAnalytics: React.FC<SuperAdminAnalyticsProps> = ({
       setLoading(true)
 
       // Fetch all data in parallel
-      const [usersRes, resourcesRes, universitiesRes, departmentsRes] = await Promise.all([
+      const [usersRes, resourcesRes, universitiesRes] = await Promise.all([
         userService.getAllUsers(1, 10000),
         resourceService.getResources({ limit: 10000 } as any),
         universityService.getUniversities(),
-        departmentService.getAll()
       ])
 
       const users = usersRes.data || []
       const resources = resourcesRes.data?.data || []
       const universities = Array.isArray(universitiesRes) ? universitiesRes : (universitiesRes.data || [])
-      const departments = Array.isArray(departmentsRes) ? departmentsRes : ((departmentsRes as any).data || [])
 
       // Calculate user statistics
       const totalStudents = users.filter((u: any) => u.role === 'student').length
@@ -105,7 +100,6 @@ export const SuperAdminAnalytics: React.FC<SuperAdminAnalyticsProps> = ({
         totalStudents,
         totalAdmins,
         totalUniversities: universities.length,
-        totalDepartments: departments.length,
         totalResources: resources.length,
         resourcesByType,
         resourcesByLevel,
@@ -185,7 +179,6 @@ export const SuperAdminAnalytics: React.FC<SuperAdminAnalyticsProps> = ({
                 <div>
                   <p className="text-sm text-gray-500 dark:text-slate-400 font-semibold">Universities</p>
                   <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{analytics.totalUniversities}</p>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">{analytics.totalDepartments} departments</p>
                 </div>
                 <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center text-2xl">
                   🏫
@@ -354,9 +347,9 @@ export const SuperAdminAnalytics: React.FC<SuperAdminAnalyticsProps> = ({
                 </p>
               </div>
               <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
-                <p className="text-sm text-gray-600 dark:text-slate-400 font-semibold mb-2">Average Departments per University</p>
+                <p className="text-sm text-gray-600 dark:text-slate-400 font-semibold mb-2">Resources per University</p>
                 <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">
-                  {analytics.totalUniversities > 0 ? Math.round(analytics.totalDepartments / analytics.totalUniversities) : 0}
+                  {analytics.totalUniversities > 0 ? Math.round(analytics.totalResources / analytics.totalUniversities) : 0}
                 </p>
               </div>
             </div>

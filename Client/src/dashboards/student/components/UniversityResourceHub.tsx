@@ -1,7 +1,7 @@
 import React from "react";
 import { Search, X, RefreshCw } from "lucide-react";
 import { ResourceCard } from "@components/resources/ResourceCard";
-import { DEPARTMENTS, UNIVERSITIES } from "@utils/constants";
+import { UNIVERSITIES } from "@utils/constants";
 
 interface UniversityResourceHubProps {
   selectedUniversity: string;
@@ -10,8 +10,6 @@ interface UniversityResourceHubProps {
   selectedStream: string;
   setSelectedStream: (value: "" | "natural" | "social") => void;
   isIntroductory: boolean;
-  selectedDepartment: string;
-  setSelectedDepartment: (value: string) => void;
   selectedResourceType: string;
   setSelectedResourceType: (value: string) => void;
   resourceTypes: string[];
@@ -31,8 +29,6 @@ export const UniversityResourceHub: React.FC<UniversityResourceHubProps> = ({
   selectedStream,
   setSelectedStream,
   isIntroductory,
-  selectedDepartment,
-  setSelectedDepartment,
   selectedResourceType,
   setSelectedResourceType,
   resourceTypes,
@@ -62,7 +58,6 @@ export const UniversityResourceHub: React.FC<UniversityResourceHubProps> = ({
   const activeFiltersCount = [
     selectedUniversity,
     selectedStream,
-    selectedDepartment,
     selectedResourceType,
     selectedSubject,
   ].filter(Boolean).length;
@@ -199,25 +194,6 @@ export const UniversityResourceHub: React.FC<UniversityResourceHubProps> = ({
                 </select>
               </div>
 
-              {/* Department Filter */}
-              <div>
-                <label className="block text-xs font-medium text-slate-400 dark:text-slate-500 mb-2">
-                  Department
-                </label>
-                <select
-                  value={selectedDepartment}
-                  onChange={(e) => setSelectedDepartment(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-slate-800/50 dark:bg-slate-800/80 border border-slate-700 dark:border-slate-600 rounded-lg text-white dark:text-slate-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                >
-                  <option value="">All Departments</option>
-                  {Object.keys(DEPARTMENTS).map((dept) => (
-                    <option key={dept} value={dept}>
-                      {dept.replace(/_/g, " ")}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
               {/* Subject Filter */}
               <div>
                 <label className="block text-xs font-medium text-slate-400 dark:text-slate-500 mb-2">
@@ -242,14 +218,12 @@ export const UniversityResourceHub: React.FC<UniversityResourceHubProps> = ({
           {/* Clear Filters Button */}
           {(selectedUniversity ||
             selectedStream ||
-            selectedDepartment ||
             selectedResourceType ||
             selectedSubject) && (
             <button
               onClick={() => {
                 setSelectedUniversity("");
                 setSelectedStream("");
-                setSelectedDepartment("");
                 setSelectedResourceType("");
                 setSelectedSubject("");
               }}

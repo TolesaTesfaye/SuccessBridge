@@ -4,7 +4,6 @@ import { Button } from "@components/common/Button";
 import { Pagination } from "@components/common/Pagination";
 import { Loading } from "@components/common/Loading";
 import { subjectService } from "@services/subjectService";
-import { departmentService } from "@services/departmentService";
 import type { Subject } from "@services/subjectService";
 import { BookOpen, Code2, Sparkles } from "lucide-react";
 import {
@@ -27,14 +26,10 @@ export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
   onNavigateToTab,
 }) => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
-  const [departments, setDepartments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [filter, setFilter] = useState({
-    department: "all",
-  });
 
   const loadData = async () => {
     try {
@@ -49,13 +44,6 @@ export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
 
       setSubjects(subjectsList);
       setTotalPages(Math.max(1, Math.ceil(subjectsList.length / 8)));
-
-      // Load departments for filter
-      const deptsResponse = await departmentService.getAll();
-      const deptsList = Array.isArray(deptsResponse)
-        ? deptsResponse
-        : (deptsResponse as any)?.data || [];
-      setDepartments(deptsList);
     } catch (err: any) {
       setSubjects([]);
       setError(err?.message || "Failed to load subjects.");
@@ -69,26 +57,14 @@ export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
   }, []);
 
   const filteredSubjects = useMemo(() => {
-    let result = subjects;
-
-    if (filter.department !== "all") {
-      result = result.filter(
-        (subject) => subject.departmentId === filter.department,
-      );
-    }
-
     // Simple pagination
     const start = (currentPage - 1) * 8;
-    return result.slice(start, start + 8);
-  }, [subjects, filter, currentPage]);
+    return subjects.slice(start, start + 8);
+  }, [subjects, currentPage]);
 
   const stats = useMemo(() => {
     const total = subjects.length;
-    const withDepartment = subjects.filter((s) => s.departmentId).length;
     const withGrade = subjects.filter((s) => s.gradeId).length;
-    const uniqueDepartments = new Set(
-      subjects.map((s) => s.departmentId).filter(Boolean),
-    ).size;
 
     return [
       {
@@ -98,33 +74,13 @@ export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
         accent: "from-sky-500 to-cyan-500",
       },
       {
-        label: "With Department",
-        value: withDepartment,
-        icon: Code2,
-        accent: "from-violet-500 to-fuchsia-500",
-      },
-      {
         label: "With Grade",
         value: withGrade,
         icon: BookOpen,
         accent: "from-amber-500 to-orange-500",
       },
-      {
-        label: "Departments",
-        value: uniqueDepartments,
-        icon: Code2,
-        accent: "from-emerald-500 to-teal-500",
-      },
     ];
   }, [subjects]);
-
-  const departmentMap = useMemo(() => {
-    const map: Record<string, string> = {};
-    departments.forEach((dept) => {
-      map[dept.id] = dept.name;
-    });
-    return map;
-  }, [departments]);
 
   if (loading && subjects.length === 0) {
     return (
@@ -158,16 +114,6 @@ export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Button
-                variant="primary"
-                onClick={() => onNavigateToTab("departments")}
-                className="shadow-lg shadow-sky-500/20"
-              >
-                <span className="inline-flex items-center gap-2">
-                  <BookOpen className="h-4 w-4" />
-                  View Departments
-                </span>
-              </Button>
               <Button
                 variant="secondary"
                 onClick={() => onNavigateToTab("reports")}
@@ -224,7 +170,6 @@ export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
                     <tr>
                       <th className="py-3 pr-4">Subject Name</th>
                       <th className="py-3 pr-4">Code</th>
-                      <th className="py-3 pr-4">Department</th>
                       <th className="py-3 pr-4">Grade</th>
                       <th className="py-3 pr-4">Created</th>
                     </tr>
@@ -243,12 +188,6 @@ export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
                         <td className="py-4 pr-4">
                           <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600 dark:bg-white/5 dark:text-slate-300">
                             {subject.code}
-                          </span>
-                        </td>
-                        <td className="py-4 pr-4 text-slate-600 dark:text-slate-300">
-                          <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold dark:bg-white/5">
-                            {departmentMap[subject.departmentId || ""] ||
-                              "No Department"}
                           </span>
                         </td>
                         <td className="py-4 pr-4 text-slate-600 dark:text-slate-300">

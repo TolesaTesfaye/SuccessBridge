@@ -72,7 +72,6 @@ import { quizService, Quiz } from "@services/quizService";
 import { AIService } from "@services/aiService";
 import {
   UNIVERSITIES,
-  DEPARTMENTS,
   UNIVERSITY_CATEGORIES,
 } from "@utils/constants";
 import type { Subject } from "@types";
@@ -313,10 +312,8 @@ export function SuperAdminAddQuiz() {
       }
       return filtered;
     } else {
+      // For university, return all subjects without department filtering
       let filtered = subjectsList.filter((s) => !s.gradeId);
-      if (departmentId) {
-        filtered = filtered.filter((s) => s.departmentId === departmentId);
-      }
       return filtered;
     }
   };
@@ -324,7 +321,7 @@ export function SuperAdminAddQuiz() {
   // Reset subjectId if selected targets change
   useEffect(() => {
     setSubjectId("");
-  }, [educationLevel, grade, stream, departmentId]);
+  }, [educationLevel, grade, stream]);
 
   // Draft question state
   const [qType, setQType] = useState<QType>("mcq");
@@ -1135,23 +1132,7 @@ function QuizDetails(props: {
               </Select>
             </FloatingField>
 
-            <FloatingField label="Department Group (Optional)">
-                <Select
-                  value={props.departmentId}
-                  onValueChange={props.setDepartmentId}
-                >
-                  <SelectTrigger className="h-11">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.keys(DEPARTMENTS).map((d) => (
-                      <SelectItem key={d} value={d}>
-                        {d}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </FloatingField>
+
           </>
         )}
 

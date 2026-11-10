@@ -5,7 +5,7 @@ const API_BASE = "/admin/admin";
 // ==================== INTERFACES ====================
 
 export interface DashboardStats {
-  users: { total: number; active: number; growth: any[] };
+  users: { total: number; active: number; telegram: number; growth: any[] };
   resources: { total: number };
   quizzes: { total: number };
   announcements: { total: number; active: number };

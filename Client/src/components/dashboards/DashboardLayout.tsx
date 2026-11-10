@@ -43,6 +43,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     user?.role === "super_admin" ? "/superadmin/profile" : "/admin/profile";
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
+  const [sidebarWidth, setSidebarWidth] = useState(() => {
+    const saved = localStorage.getItem('superadmin-sidebar-width');
+    return saved ? parseInt(saved, 10) : 192; // Default 192px (w-48)
+  });
+  const [isResizing, setIsResizing] = useState(false);
   const { isDark, toggleTheme } = useThemeStore();
 
   useEffect(() => {
@@ -54,6 +59,50 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         handleMobileMenuOpen,
       );
   }, []);
+
+  // Handle sidebar resize
+  useEffect(() => {
+    if (!isResizing) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const minWidth = 64; // w-16 collapsed
+      const maxWidth = 600; // Allow stretching over main content
+      const newWidth = Math.min(Math.max(e.clientX, minWidth), maxWidth);
+      
+      setSidebarWidth(newWidth);
+      
+      // Auto-collapse/expand based on width
+      if (newWidth < 100) {
+        setIsSidebarCollapsed(true);
+      } else {
+        setIsSidebarCollapsed(false);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+      localStorage.setItem('superadmin-sidebar-width', sidebarWidth.toString());
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing, sidebarWidth]);
+
+  // Update cursor style when resizing
+  useEffect(() => {
+    if (isResizing) {
+      document.body.style.cursor = 'ew-resize';
+      document.body.style.userSelect = 'none';
+    } else {
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    }
+  }, [isResizing]);
 
   const handleLogout = () => {
     logout();
@@ -151,9 +200,23 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       {/* 2. Container for Sidebar and Main Content - No Gap */}
       <div className="flex flex-1 overflow-hidden m-0 p-0 gap-0 relative">
         <aside
-          className={`hidden lg:block flex-shrink-0 z-30 transition-all duration-300 ${isSidebarCollapsed ? "w-16" : "w-48"} bg-[#0B1121] overflow-hidden m-0 p-0`}
+          style={{ width: isSidebarCollapsed ? '64px' : `${sidebarWidth}px` }}
+          className={`hidden lg:block flex-shrink-0 z-30 transition-all duration-300 ${
+            isResizing ? '' : 'transition-all'
+          } bg-[#0B1121] overflow-hidden m-0 p-0 relative group`}
         >
           <Sidebar collapsed={isSidebarCollapsed} />
+          
+          {/* Resize Handle */}
+          {!isSidebarCollapsed && (
+            <div
+              onMouseDown={() => setIsResizing(true)}
+              className="absolute top-0 right-0 w-1 h-full cursor-ew-resize bg-transparent hover:bg-blue-500/50 transition-colors group-hover:bg-blue-500/20 z-40"
+              title="Drag to resize sidebar"
+            >
+              <div className="absolute top-1/2 -translate-y-1/2 right-0 w-1 h-20 bg-blue-500/50 rounded-l-full opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
+          )}
         </aside>
 
         <div

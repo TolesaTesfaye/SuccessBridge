@@ -9,9 +9,8 @@ export interface User {
   highSchoolStream?: string;
   universityLevel?: "remedial" | "freshman";
   university?: string;
-  department?: string;
   universityId?: string;
-  departmentId?: string;
+  telegramId?: string;
   isEmailVerified?: boolean;
   createdAt: string | Date;
 }
@@ -43,18 +42,10 @@ export interface University {
   createdAt: Date;
 }
 
-export interface Department {
-  id: string;
-  name: string;
-  universityId: string;
-  createdAt: Date;
-}
-
 export interface Subject {
   id: string;
   name: string;
   code: string;
-  departmentId?: string;
   gradeId?: string;
   streamId?: string;
 }
@@ -96,7 +87,6 @@ export interface Resource {
   stream?: string;
   subjectId: string;
   universityId?: string;
-  departmentId?: string;
   tags: string[];
   uploadedBy: string;
   createdAt: string | Date;
@@ -112,7 +102,6 @@ export interface Quiz {
   grade?: string;
   stream?: string;
   university?: string;
-  department?: string;
   subjectId: string;
   questions: Question[];
   timeLimit: number;
@@ -148,8 +137,6 @@ export interface UniversityFilter {
   educationLevel?: "university";
   university?: string;
   universityId?: string;
-  department?: string;
-  departmentId?: string;
   category?: string; // 'remedial', 'freshman'
   grade?: string; // Backend stores category in grade field
   stream?: string;
@@ -194,7 +181,6 @@ export interface Payment {
   grade?: string;
   stream?: string;
   universityId?: string;
-  departmentId?: string;
   createdAt: Date;
   updatedAt: Date;
   user?: {

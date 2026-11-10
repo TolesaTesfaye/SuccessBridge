@@ -3,10 +3,9 @@ import { AppError } from '../middleware/errorHandler.js'
 
 export class SubjectService {
   static async getSubjects(filters: any) {
-    const { gradeId, departmentId, streamId } = filters
+    const { gradeId, streamId } = filters
     const where: any = {}
     if (gradeId) where.gradeId = gradeId
-    if (departmentId) where.departmentId = departmentId
     if (streamId) where.streamId = streamId
     return await Subject.findAll({ where, order: [['name', 'ASC']] })
   }

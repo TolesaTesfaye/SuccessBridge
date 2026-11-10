@@ -3,7 +3,6 @@ import { gradeService, type Grade } from '@services/gradeService'
 import { streamService, type Stream } from '@services/streamService'
 import { subjectService } from '@services/subjectService'
 import { universityService } from '@services/universityService'
-import { departmentService } from '@services/departmentService'
 import { resourceTypeService, type ResourceType } from '@services/resourceTypeService'
 import { Button } from '@components/common/Button'
 import { Modal } from '@components/common/Modal'
@@ -23,14 +22,12 @@ export const EducationHierarchy: React.FC = () => {
   const [streams, setStreams] = useState<Stream[]>([])
   const [subjects, setSubjects] = useState<any[]>([])
   const [universities, setUniversities] = useState<any[]>([])
-  const [departments, setDepartments] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
 
   const [selectedGrade, setSelectedGrade] = useState<string | null>(null)
   const [selectedStream, setSelectedStream] = useState<string | null>(null)
   const [selectedUniversity, setSelectedUniversity] = useState<string | null>(null)
-  const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null)
 
   const [showAddGrade, setShowAddGrade] = useState(false)
   const [showEditGrade, setShowEditGrade] = useState(false)
@@ -39,7 +36,6 @@ export const EducationHierarchy: React.FC = () => {
   const [showAddSubject, setShowAddSubject] = useState(false)
   const [showEditSubject, setShowEditSubject] = useState(false)
   const [showAddUniversity, setShowAddUniversity] = useState(false)
-  const [showAddDepartment, setShowAddDepartment] = useState(false)
   const [resourceTypes, setResourceTypes] = useState<ResourceType[]>([])
   const [showAddResourceType, setShowAddResourceType] = useState(false)
   const [showEditResourceType, setShowEditResourceType] = useState(false)
@@ -67,7 +63,7 @@ export const EducationHierarchy: React.FC = () => {
     }
   }, [])
 
-  const fetchSubjects = useCallback(async (params: { gradeId?: string; streamId?: string; departmentId?: string }) => {
+  const fetchSubjects = useCallback(async (params: { gradeId?: string; streamId?: string }) => {
     try {
       const data = await subjectService.getSubjectsByFilter(params)
       setSubjects(data)
@@ -83,17 +79,6 @@ export const EducationHierarchy: React.FC = () => {
       else if (res && 'data' in res) setUniversities(res.data || [])
     } catch (err) {
       console.error('Failed to fetch universities:', err)
-    }
-  }, [])
-
-  const fetchDepartments = useCallback(async (universityId: string) => {
-    try {
-      const res = await departmentService.getByUniversity(universityId)
-      if (Array.isArray(res)) setDepartments(res)
-      else if (res && 'data' in (res as any)) setDepartments((res as any).data || [])
-      else setDepartments([])
-    } catch (err) {
-      console.error('Failed to fetch departments:', err)
     }
   }, [])
 
@@ -113,17 +98,16 @@ export const EducationHierarchy: React.FC = () => {
     setSelectedGrade(null)
     setSelectedStream(null)
     setSelectedUniversity(null)
-    setSelectedDepartment(null)
     setStreams([])
     setSubjects([])
     if (educationLevel === 'university') fetchUniversities()
-    else { setUniversities([]); setDepartments([]) }
+    else { setUniversities([]) }
     fetchGrades().finally(() => setLoading(false))
   }, [educationLevel, fetchGrades, fetchUniversities])
 
   useEffect(() => {
     if (selectedGrade) {
-      setSubjects([]); setStreams([]); setDepartments([])
+      setSubjects([]); setStreams([])
       fetchStreams(selectedGrade)
       fetchSubjects({ gradeId: selectedGrade })
     }
@@ -132,14 +116,6 @@ export const EducationHierarchy: React.FC = () => {
   useEffect(() => {
     if (selectedStream && selectedGrade) fetchSubjects({ gradeId: selectedGrade, streamId: selectedStream })
   }, [selectedStream, selectedGrade, fetchSubjects])
-
-  useEffect(() => {
-    if (selectedUniversity) fetchDepartments(selectedUniversity)
-  }, [selectedUniversity, fetchDepartments])
-
-  useEffect(() => {
-    if (selectedDepartment) fetchSubjects({ departmentId: selectedDepartment })
-  }, [selectedDepartment, fetchSubjects])
 
   useEffect(() => {
     setResourceTypes([])
@@ -153,7 +129,6 @@ export const EducationHierarchy: React.FC = () => {
   const currentGrade = grades.find(g => g.id === selectedGrade)
   const currentStream = streams.find(s => s.id === selectedStream)
   const currentUniversity = universities.find((u: any) => u.id === selectedUniversity)
-  const currentDepartment = departments.find((d: any) => d.id === selectedDepartment)
 
   const filteredGrades = useMemo(() => {
     if (!searchQuery) return grades
@@ -212,13 +187,11 @@ export const EducationHierarchy: React.FC = () => {
       const data: any = { name: formData.name, code: formData.code }
       if (formData.gradeId) data.gradeId = formData.gradeId
       if (formData.streamId) data.streamId = formData.streamId
-      if (formData.departmentId) data.departmentId = formData.departmentId
       await subjectService.createSubject(data)
       setShowAddSubject(false); setFormData({})
       if (selectedGrade) {
         const filter: any = { gradeId: selectedGrade }
         if (selectedStream) filter.streamId = selectedStream
-        if (selectedDepartment) filter.departmentId = selectedDepartment
         await fetchSubjects(filter)
       }
     } catch { alert('Failed to add subject') }
@@ -264,8 +237,7 @@ export const EducationHierarchy: React.FC = () => {
       grade: 'This will also delete all streams and subjects under this grade. Resources and student data will be unlinked (not deleted).',
       stream: 'This will also delete all subjects under this stream. Student data referencing this stream will be unlinked.',
       subject: 'Resources and quizzes linked to this subject will be unlinked (not deleted). Student progress and payment data will be preserved.',
-      university: 'This will also delete all departments under this university. Resources and student data will be unlinked.',
-      department: 'This will also delete all subjects under this department. Resources and student data will be unlinked.',
+      university: 'This will delete all data linked to this university. Resources and student data will be unlinked.',
     }
     return m[showDeleteConfirm.type] || ''
   }
@@ -300,7 +272,7 @@ export const EducationHierarchy: React.FC = () => {
 
   const openEditGrade = (grade: any) => { setEditingItem(grade); setFormData({ name: grade.name, level: String(grade.level) }); setShowEditGrade(true) }
   const openEditStream = (stream: any) => { setEditingItem(stream); setFormData({ name: stream.name, code: stream.code }); setShowEditStream(true) }
-  const openAddSubject = () => { setFormData({ gradeId: selectedGrade || '', streamId: selectedStream || '', departmentId: selectedDepartment || '' }); setShowAddSubject(true) }
+  const openAddSubject = () => { setFormData({ gradeId: selectedGrade || '', streamId: selectedStream || '' }); setShowAddSubject(true) }
   const openEditSubject = (subject: any) => { setEditingItem(subject); setFormData({ name: subject.name, code: subject.code }); setShowEditSubject(true) }
 
   const sidebarItem = (label: string, active: boolean, icon: React.ReactNode, badge?: string | number, onClick?: () => void) => (
@@ -381,15 +353,14 @@ export const EducationHierarchy: React.FC = () => {
       {/* Breadcrumb */}
       {currentGrade && (
         <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 flex-wrap px-1">
-          <button onClick={() => { setSelectedGrade(null); setSelectedStream(null); setSelectedUniversity(null); setSelectedDepartment(null) }}
+          <button onClick={() => { setSelectedGrade(null); setSelectedStream(null); setSelectedUniversity(null) }}
             className="font-semibold text-slate-600 dark:text-slate-300 hover:text-purple-600 transition-colors flex items-center gap-1.5">
             <Layers size={14} /> {educationLevel === 'high_school' ? 'Grades' : 'Categories'}
           </button>
           <ChevronRight size={12} className="text-slate-300 dark:text-slate-600" />
           <span className="font-medium text-purple-700 dark:text-purple-300">{currentGrade.name}</span>
           {currentStream && (<><ChevronRight size={12} className="text-slate-300 dark:text-slate-600" /><button onClick={() => setSelectedStream(null)} className="text-purple-600 dark:text-purple-400 hover:underline font-medium">{currentStream.name}</button></>)}
-          {educationLevel === 'university' && currentUniversity && !currentStream && (<><ChevronRight size={12} className="text-slate-300 dark:text-slate-600" /><button onClick={() => { setSelectedUniversity(null); setSelectedDepartment(null) }} className="text-purple-600 dark:text-purple-400 hover:underline font-medium">{currentUniversity.name}</button></>)}
-          {currentDepartment && (<><ChevronRight size={12} className="text-slate-300 dark:text-slate-600" /><span className="font-medium text-purple-700 dark:text-purple-300">{currentDepartment.name}</span></>)}
+          {educationLevel === 'university' && currentUniversity && !currentStream && (<><ChevronRight size={12} className="text-slate-300 dark:text-slate-600" /><button onClick={() => { setSelectedUniversity(null) }} className="text-purple-600 dark:text-purple-400 hover:underline font-medium">{currentUniversity.name}</button></>)}
         </div>
       )}
 
@@ -432,7 +403,7 @@ export const EducationHierarchy: React.FC = () => {
                   <div key={grade.id}>
                     <button onClick={() => {
                       if (selectedGrade === grade.id) { setSelectedGrade(null); setSelectedStream(null) }
-                      else { setSelectedGrade(grade.id); setSelectedStream(null); setSelectedUniversity(null); setSelectedDepartment(null) }
+                      else { setSelectedGrade(grade.id); setSelectedStream(null); setSelectedUniversity(null) }
                     }}
                       className={`w-full flex items-center gap-3 px-4 py-3 text-left text-sm transition-all duration-200 group ${
                         selectedGrade === grade.id
@@ -499,11 +470,11 @@ export const EducationHierarchy: React.FC = () => {
                         )}
 
                         {/* Subjects directly under grade (no stream) */}
-                        {subjects.filter(s => !s.streamId && !s.departmentId).length > 0 && (
+                        {subjects.filter(s => !s.streamId).length > 0 && (
                           <div>
                             {sectionHeader(<BookMarked size={12} />, 'Subjects', openAddSubject)}
                             <div className="px-10 py-1">
-                              {subjects.filter(s => !s.streamId && !s.departmentId).map(subject => (
+                              {subjects.filter(s => !s.streamId).map(subject => (
                                 <div key={subject.id} className="flex items-center justify-between py-1.5 group/sub">
                                   <span className="text-[12px] text-slate-700 dark:text-slate-300 font-medium">{subject.name}</span>
                                   <div className="flex gap-0.5 opacity-0 group-hover/sub:opacity-100 transition-opacity">
@@ -539,8 +510,6 @@ export const EducationHierarchy: React.FC = () => {
                     <div key={uni.id}>
                       <button onClick={() => {
                         setSelectedUniversity(selectedUniversity === uni.id ? null : uni.id)
-                        if (selectedUniversity !== uni.id) fetchDepartments(uni.id)
-                        else setDepartments([])
                       }}
                         className={`w-full flex items-center gap-3 px-4 py-3 text-left text-sm transition-all duration-200 group ${
                           selectedUniversity === uni.id
@@ -562,39 +531,6 @@ export const EducationHierarchy: React.FC = () => {
 
                       {selectedUniversity === uni.id && (
                         <div className="bg-slate-50/50 dark:bg-slate-800/20 border-t border-slate-100 dark:border-white/5">
-                          <div className="pl-10 pr-4 py-2">
-                            {sectionHeader(<Building2 size={11} />, 'Departments', () => { setFormData({ universityId: uni.id }); setShowAddDepartment(true) })}
-                            {departments.length === 0
-                              ? <p className="py-2 text-[11px] text-slate-400 italic">No departments yet</p>
-                              : departments.map((dept: any) => (
-                                  <div key={dept.id}>
-                                    <button onClick={() => setSelectedDepartment(selectedDepartment === dept.id ? null : dept.id)}
-                                      className={`w-full flex items-center gap-2 py-1.5 text-left text-xs transition-all group ${
-                                        selectedDepartment === dept.id ? 'text-purple-700 dark:text-purple-300 font-semibold' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
-                                      }`}
-                                    >
-                                      {selectedDepartment === dept.id ? <ChevronDown size={11} className="text-purple-500" /> : <ChevronRight size={11} />}
-                                      {dept.name}
-                                    </button>
-                                    {selectedDepartment === dept.id && (
-                                      <div className="pl-4 py-1">
-                                        {sectionHeader(<BookMarked size={10} />, 'Subjects', openAddSubject)}
-                                        {subjects.filter(s => s.departmentId === dept.id).length === 0
-                                          ? <p className="py-1 text-[11px] text-slate-400 italic">No subjects yet</p>
-                                          : subjects.filter(s => s.departmentId === dept.id).map((subject: any) => (
-                                              <div key={subject.id} className="flex items-center justify-between py-1 group/sub">
-                                                <span className="text-[11px] text-slate-700 dark:text-slate-300 font-medium">{subject.name}</span>
-                                                <div className="flex gap-0.5 opacity-0 group-hover/sub:opacity-100">
-                                                  <button onClick={() => openEditSubject(subject)} className="p-0.5 text-slate-400 hover:text-amber-600"><Edit3 size={9} /></button>
-                                                  <button onClick={() => setShowDeleteConfirm({ type: 'subject', id: subject.id, name: subject.name })} className="p-0.5 text-slate-400 hover:text-red-600"><Trash2 size={9} /></button>
-                                                </div>
-                                              </div>
-                                            ))}
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-                          </div>
                         </div>
                       )}
                     </div>
@@ -880,32 +816,6 @@ export const EducationHierarchy: React.FC = () => {
           <div className="flex gap-2 pt-2">
             <Button variant="primary" fullWidth type="submit">Create</Button>
             <Button variant="secondary" fullWidth type="button" onClick={() => setShowAddUniversity(false)}>Cancel</Button>
-          </div>
-        </form>
-      </Modal>
-
-      <Modal isOpen={showAddDepartment} onClose={() => setShowAddDepartment(false)} title="Add Department">
-        <form className="space-y-4" onSubmit={async (e) => {
-          e.preventDefault()
-          try {
-            await departmentService.create({ name: formData.name, universityId: formData.universityId || selectedUniversity } as any)
-            setShowAddDepartment(false); setFormData({})
-            if (selectedUniversity) await fetchDepartments(selectedUniversity)
-          } catch { alert('Failed to add department') }
-        }}>
-          <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Department Name</label>
-            <input type="text" className="w-full px-4 py-2.5 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
-              placeholder="e.g., Software Engineering" value={formData.name || ''} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Code</label>
-            <input type="text" className="w-full px-4 py-2.5 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent transition-all"
-              placeholder="e.g., SE" value={formData.code || ''} onChange={e => setFormData({ ...formData, code: e.target.value })} required />
-          </div>
-          <div className="flex gap-2 pt-2">
-            <Button variant="primary" fullWidth type="submit">Create</Button>
-            <Button variant="secondary" fullWidth type="button" onClick={() => setShowAddDepartment(false)}>Cancel</Button>
           </div>
         </form>
       </Modal>

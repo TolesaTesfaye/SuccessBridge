@@ -1,5 +1,0 @@
-{
-  "typescript.autoClosingTags": false,
-  "typescript.tsdk": "Server/node_modules/typescript/lib",
-  "typescript.enablePromptUseWorkspaceTsdk": true
-}

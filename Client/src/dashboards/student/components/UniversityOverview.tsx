@@ -5,9 +5,6 @@ import {
   BookMarked,
   Brain,
   CalendarClock,
-  Globe2,
-  GraduationCap,
-  Play,
   Sparkles,
   TrendingUp,
   Trophy,
@@ -256,10 +253,10 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
 
   // ── Stats data ───────────────────────────────────────────────────
   const overviewStats = [
-    { icon: GraduationCap, label: "Level", value: categoryInfo.label },
-    { icon: BookOpen, label: "Materials", value: homeResources.length },
-    { icon: Globe2, label: "Subjects", value: subjectCount },
-    { icon: Play, label: "Videos", value: videoCount },
+    { label: "Level", value: categoryInfo.label },
+    { label: "Materials", value: homeResources.length },
+    { label: "Subjects", value: subjectCount },
+    { label: "Videos", value: videoCount },
   ];
 
   // ── Achievements ─────────────────────────────────────────────────
@@ -424,10 +421,7 @@ export const UniversityOverview: React.FC<UniversityOverviewProps> = ({
                   key={i}
                   className="p-3 md:p-4 hover:bg-white/[0.14] transition-colors group"
                 >
-                  <div className="flex items-start justify-between mb-2">
-                    <span className="w-5 h-5 md:w-6 md:h-6 text-violet-200 group-hover:scale-110 transition-transform">
-                      <stat.icon className="w-full h-full" />
-                    </span>
+                  <div className="flex items-start justify-between mb-3">
                     <span className="text-[10px] md:text-xs font-bold text-violet-200/60 uppercase tracking-wider">
                       {stat.label}
                     </span>

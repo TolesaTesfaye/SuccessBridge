@@ -17,9 +17,7 @@ export interface IUser {
   highSchoolStream?: "natural" | "social";
   universityLevel?: "remedial" | "freshman";
   university?: string;
-  department?: string;
   universityId?: string;
-  departmentId?: string;
   gradeId?: string;
   streamId?: string;
   documents?: string[];
@@ -70,18 +68,10 @@ export interface IUniversity {
   createdAt: Date;
 }
 
-export interface IDepartment {
-  id: string;
-  name: string;
-  universityId: string;
-  createdAt: Date;
-}
-
 export interface ISubject {
   id: string;
   name: string;
   code: string;
-  departmentId?: string;
   gradeId?: string;
   streamId?: string;
 }
@@ -146,7 +136,6 @@ export interface IResource {
   stream?: string;
   subjectId: string;
   universityId?: string;
-  departmentId?: string;
   tags: string[];
   uploadedBy: string;
   createdAt: Date;
@@ -215,5 +204,4 @@ export interface IRegisterRequest {
   highSchoolStream?: "natural" | "social";
   universityLevel?: "remedial" | "freshman";
   university?: string;
-  department?: string;
 }

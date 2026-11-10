@@ -7,7 +7,6 @@ import { gradeService, Grade } from "@services/gradeService";
 import { streamService, Stream } from "@services/streamService";
 import { subjectService, Subject } from "@services/subjectService";
 import { universityService } from "@services/universityService";
-import { departmentService, Department } from "@services/departmentService";
 import { resourceTypeService } from "@services/resourceTypeService";
 
 // Import preview assets
@@ -120,7 +119,6 @@ export interface UploadFormData {
   grade?: string;
   stream?: string;
   universityId?: string;
-  departmentId?: string;
   category?: string;
   type: string;
   subject: string;
@@ -150,7 +148,6 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
     grade: initialData?.grade || "",
     stream: initialData?.stream || "",
     universityId: initialData?.universityId || "",
-    departmentId: initialData?.departmentId || "",
     category: initialData?.category || "",
     type: initialData?.type || "",
     subject: initialData?.subject || "",
@@ -163,7 +160,6 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
   const [streams, setStreams] = useState<Stream[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [universities, setUniversities] = useState<UniversityData[]>([]);
-  const [departments, setDepartments] = useState<Department[]>([]);
   const [resourceTypes, setResourceTypes] = useState<ResourceTypeData[]>([]);
 
   useEffect(() => {
@@ -193,7 +189,6 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
       grade: "",
       stream: "",
       category: "",
-      departmentId: "",
       subject: "",
     }));
   }, [formData.educationLevel]);
@@ -218,31 +213,12 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
   }, [formData.educationLevel, formData.grade]);
 
   useEffect(() => {
-    if (formData.educationLevel === "university" && formData.universityId) {
-      const fetchDepartments = async () => {
-        try {
-          const data = await departmentService.getByUniversity(formData.universityId!);
-          setDepartments(Array.isArray(data) ? data : []);
-        } catch {
-          setDepartments([]);
-        }
-      };
-      fetchDepartments();
-      setFormData((prev) => ({ ...prev, departmentId: "", subject: "" }));
-    } else {
-      setDepartments([]);
-    }
-  }, [formData.educationLevel, formData.universityId]);
-
-  useEffect(() => {
     const filters: Record<string, string> = {};
     if (formData.educationLevel === "high_school") {
       if (formData.grade) filters.gradeId = formData.grade;
       if (formData.stream) filters.streamId = formData.stream;
     } else {
-      if (formData.departmentId) {
-        filters.departmentId = formData.departmentId;
-      } else if (formData.grade) {
+      if (formData.grade) {
         filters.gradeId = formData.grade;
         if (formData.stream) filters.streamId = formData.stream;
       }
@@ -262,7 +238,7 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
     } else {
       setSubjects([]);
     }
-  }, [formData.educationLevel, formData.grade, formData.stream, formData.departmentId]);
+  }, [formData.educationLevel, formData.grade, formData.stream]);
 
   // Fetch resource types when grade changes
   useEffect(() => {
@@ -291,7 +267,6 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
         stream: "",
         category: "",
         universityId: "",
-        departmentId: "",
         subject: "",
       }));
     } else if (name === "grade") {
@@ -303,16 +278,15 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
           grade: value,
           category,
           stream: "",
-          departmentId: "",
           subject: "",
         }));
       } else {
         setFormData((prev) => ({ ...prev, grade: value, stream: "", subject: "" }));
       }
-    } else if (name === "stream" || name === "departmentId") {
+    } else if (name === "stream") {
       setFormData((prev) => ({ ...prev, [name]: value, subject: "" }));
     } else if (name === "universityId") {
-      setFormData((prev) => ({ ...prev, universityId: value, departmentId: "", subject: "" }));
+      setFormData((prev) => ({ ...prev, universityId: value, subject: "" }));
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
@@ -352,7 +326,6 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
         setError("Please select a student category");
         return;
       }
-      // Department is now optional for all university students
     }
 
     const resolvedType = resourceTypes.find((r) => r.id === formData.type)?.name || formData.type;
@@ -413,10 +386,6 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
       const selectedGrade = grades.find((g) => g.id === formData.grade);
       info += ` - ${selectedGrade?.name || formData.category}`;
     }
-    if (formData.departmentId) {
-      const selectedDept = departments.find((d) => d.id === formData.departmentId);
-      info += ` - ${selectedDept?.name || formData.departmentId}`;
-    }
     return info;
   };
 
@@ -428,8 +397,6 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
     if (selectedGrade.level <= 10) return false;
     return true;
   })();
-
-  const showDepartmentDropdown = formData.grade && formData.category;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -554,18 +521,6 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
                   />
                   {formData.grade && formData.category && (
                     <>
-                      {showDepartmentDropdown && (
-                        <FormSelect
-                          label="Department *"
-                          name="departmentId"
-                          value={formData.departmentId || ""}
-                          onChange={handleChange}
-                          options={[
-                            { value: "", label: "Select Department" },
-                            ...departments.map((d) => ({ value: d.id, label: d.name })),
-                          ]}
-                        />
-                      )}
                       <FormSelect
                         label="Stream"
                         name="stream"

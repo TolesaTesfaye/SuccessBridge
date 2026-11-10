@@ -2,7 +2,6 @@ import Grade from '../models/Grade.js'
 import Stream from '../models/Stream.js'
 import Subject from '../models/Subject.js'
 import University from '../models/University.js'
-import Department from '../models/Department.js'
 import { logger } from '../utils/logger.js'
 
 const GRADES = [
@@ -105,17 +104,6 @@ const UNIVERSITIES = [
   "Wollo University", "Wondo Genet College of Forestry",
 ]
 
-const DEPARTMENTS_BY_CATEGORY: Record<string, string[]> = {
-  Health: ["Medicine", "Nursing", "Pharmacy", "Public Health", "Midwifery", "Medical Laboratory Science", "Anesthesia"],
-  Engineering: ["Civil Engineering", "Mechanical Engineering", "Electrical Engineering", "Software Engineering", "Computer Science", "Information Technology", "Chemical Engineering", "Industrial Engineering"],
-  Agriculture: ["Agricultural Economics", "Plant Science", "Animal Science", "Natural Resource Management", "Forestry", "Agricultural Engineering"],
-  Business: ["Accounting", "Management", "Marketing", "Economics", "Finance", "Business Administration"],
-  Social_Sciences: ["Law", "Political Science", "Sociology", "International Relations", "Psychology", "Social Work"],
-  Education: ["Education Planning & Management", "Curriculum Studies", "Educational Psychology", "Special Needs Education"],
-  Natural_Science: ["Mathematics", "Physics", "Chemistry", "Biology", "Statistics"],
-  Architecture: ["Architecture", "Urban & Regional Planning", "Construction Technology & Management"],
-}
-
 function generateCode(name: string, prefix: string): string {
   return name.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 8) + prefix
 }
@@ -197,30 +185,6 @@ export const seedEducationData = async (): Promise<void> => {
     }
     if (unisCreated > 0) logger.info(`Seeded ${unisCreated} universities`)
     else logger.info('Universities already seeded')
-
-    // Seed Departments
-    let deptsCreated = 0
-    const allUnis = await University.findAll()
-    // Assign departments to the first few universities
-    const targetUnis = allUnis.slice(0, Math.min(allUnis.length, 8))
-    if (targetUnis.length > 0) {
-      let deptIdx = 0
-      const allDeptNames = Object.values(DEPARTMENTS_BY_CATEGORY).flat()
-      for (const uni of targetUnis) {
-        const deptsForUni = allDeptNames.slice(deptIdx, deptIdx + 5)
-        deptIdx = (deptIdx + 5) % allDeptNames.length
-        for (const deptName of deptsForUni) {
-          const deptCode = generateCode(deptName, uni.id.slice(0, 4))
-          const existing = await Department.findOne({ where: { name: deptName, universityId: uni.id } })
-          if (!existing) {
-            await Department.create({ name: deptName, code: deptCode, universityId: uni.id })
-            deptsCreated++
-          }
-        }
-      }
-    }
-    if (deptsCreated > 0) logger.info(`Seeded ${deptsCreated} departments`)
-    else logger.info('Departments already seeded')
 
     logger.success('Education data seeding complete')
   } catch (error) {

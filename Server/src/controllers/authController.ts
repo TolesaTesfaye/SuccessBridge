@@ -247,7 +247,6 @@ export const addDemoAdminRequest = async (
       password: `DemoPassword-${Date.now()}`,
       role: "admin" as const,
       university: "Demo University",
-      department: "Demo Department",
     };
 
     const result = await AuthService.register(demoData);
@@ -354,13 +353,13 @@ export const submitAdminRequest = async (
   next: NextFunction,
 ) => {
   try {
-    const { email, password, name, university, department, stream } = req.body;
+    const { email, password, name, university, stream } = req.body;
 
     // Validate required fields
-    if (!email || !password || !name || !university || !department) {
+    if (!email || !password || !name || !university) {
       return res.status(400).json({
         success: false,
-        error: "Email, password, name, university, and department are required",
+        error: "Email, password, name, and university are required",
       });
     }
 
@@ -369,7 +368,6 @@ export const submitAdminRequest = async (
       password,
       name,
       university,
-      department,
       stream,
     });
 
@@ -459,7 +457,7 @@ export const oauthRegisterComplete = async (
     const { 
       email, name, password, googleId, provider,
       studentType, highSchoolGrade, highSchoolStream,
-      universityLevel, universityId, departmentId
+      universityLevel, universityId
     } = req.body;
 
     if (!email || !name || !password) {
@@ -494,7 +492,6 @@ export const oauthRegisterComplete = async (
       highSchoolStream: highSchoolStream || null,
       universityLevel: universityLevel || null,
       universityId: universityId || null,
-      departmentId: departmentId || null,
       // OAuth IDs
       ...(googleId && { googleId })
     } as any);
@@ -543,7 +540,6 @@ export const completeOAuthProfile = async (
       highSchoolStream,
       universityLevel,
       university,
-      department,
     } = req.body;
 
     if (!studentType || !["high_school", "university"].includes(studentType)) {
@@ -562,10 +558,10 @@ export const completeOAuthProfile = async (
         );
       }
     } else if (studentType === "university") {
-      if (!universityLevel || !university || !department) {
+      if (!universityLevel || !university) {
         throw new AppError(
           400,
-          "University level, university, and department are required for university students",
+          "University level and university are required for university students",
         );
       }
     }
@@ -576,7 +572,6 @@ export const completeOAuthProfile = async (
       highSchoolStream,
       universityLevel,
       university,
-      department,
     });
 
     res.json({

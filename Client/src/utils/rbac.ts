@@ -33,11 +33,6 @@ export const PERMISSIONS: Record<string, Permission> = {
   DELETE_ADMINS: { action: 'delete_admins', roles: ['super_admin'] },
   ASSIGN_ADMIN_UNIVERSITY: { action: 'assign_admin_university', roles: ['super_admin'] },
 
-  // Department management
-  MANAGE_DEPARTMENTS: { action: 'manage_departments', roles: ['admin', 'super_admin'] },
-  CREATE_DEPARTMENTS: { action: 'create_departments', roles: ['super_admin'] },
-  DELETE_DEPARTMENTS: { action: 'delete_departments', roles: ['super_admin'] },
-
   // University management
   MANAGE_UNIVERSITIES: { action: 'manage_universities', roles: ['super_admin'] },
   CREATE_UNIVERSITIES: { action: 'create_universities', roles: ['super_admin'] },

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { universityService } from '@services/universityService'
 import { userService } from '@services/userService'
-import { departmentService } from '@services/departmentService'
 import { LoadingOverlay } from '@components/common/Spinner'
 import { DashboardLayout } from '@components/dashboards/DashboardLayout'
 import { Button } from '@components/common/Button'

@@ -6,7 +6,7 @@
 export interface HierarchyNode {
   id: string
   name: string
-  level: 'education_level' | 'category' | 'university' | 'department' | 'grade' | 'stream' | 'subject'
+  level: 'education_level' | 'category' | 'university' | 'grade' | 'stream' | 'subject'
   children?: HierarchyNode[]
 }
 
@@ -76,21 +76,16 @@ export const HIGH_SCHOOL_HIERARCHY: HierarchyNode = {
  * University Hierarchy:
  * Education Level (University)
  *   ↓ University (Addis Ababa University, etc.)
- *     ↓ Department (Software Engineering, etc.)
- *       ↓ Subject (Data Structures, etc.)
- *         ↓ Resource (Textbook, Video, etc.)
+ *     ↓ Subject (Data Structures, etc.)
+ *       ↓ Resource (Textbook, Video, etc.)
  */
 export interface UniversityHierarchy extends HierarchyNode {
   universities: Array<{
     id: string
     name: string
-    departments: Array<{
+    subjects: Array<{
       id: string
       name: string
-      subjects: Array<{
-        id: string
-        name: string
-      }>
     }>
   }>
 }
@@ -157,7 +152,6 @@ export const buildHierarchyPath = (
     if (filters.subject) parts.push(filters.subject)
   } else {
     if (filters.university) parts.push(filters.university)
-    if (filters.department) parts.push(filters.department)
     if (filters.subject) parts.push(filters.subject)
   }
 
@@ -177,10 +171,8 @@ export const isValidHierarchyPath = (
     // If subject is selected, stream must be selected
     if (filters.subject && !filters.stream) return false
   } else {
-    // If department is selected, university must be selected
-    if (filters.department && !filters.university) return false
-    // If subject is selected, department must be selected
-    if (filters.subject && !filters.department) return false
+    // If subject is selected, university must be selected
+    if (filters.subject && !filters.university) return false
   }
 
   return true

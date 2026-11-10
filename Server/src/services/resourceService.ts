@@ -3,7 +3,6 @@ import sequelize from '../config/database.js'
 import Resource from '../models/Resource.js'
 import Subject from '../models/Subject.js'
 import University from '../models/University.js'
-import Department from '../models/Department.js'
 import Grade from '../models/Grade.js'
 import Stream from '../models/Stream.js'
 import { AppError } from '../middleware/errorHandler.js'
@@ -21,9 +20,7 @@ interface ResourceFilters {
   category?: string
   stream?: string
   universityId?: string
-  departmentId?: string
   university?: string
-  department?: string
 }
 
 export class ResourceService {
@@ -43,9 +40,7 @@ export class ResourceService {
       category,
       stream,
       universityId,
-      departmentId,
       university: universityName,
-      department: departmentName,
     } = filters
 
     const where: any = {}
@@ -75,15 +70,6 @@ export class ResourceService {
       }
     }
 
-    if (departmentId) {
-      where.departmentId = departmentId
-    } else if (departmentName) {
-      const dept = await Department.findOne({ where: { name: { [Op.iLike]: departmentName as string } } })
-      if (dept) {
-        where.departmentId = dept.id
-      }
-    }
-
     if (subjectId) {
       where.subjectId = subjectId
     } else if (subjectName) {
@@ -101,7 +87,6 @@ export class ResourceService {
       where,
       include: [
         { model: University, as: 'university', attributes: ['id', 'name', 'location'] },
-        { model: Department, as: 'department', attributes: ['id', 'name'] },
         { model: Subject, as: 'subject', attributes: ['id', 'name'] }
       ],
       offset,
@@ -220,7 +205,6 @@ export class ResourceService {
       stream,
       subject,
       universityId: universityName,
-      departmentId: departmentName,
       tags,
       fileUrl: providedFileUrl
     } = data
@@ -290,9 +274,8 @@ export class ResourceService {
 
     console.log('Final fileUrl to be saved:', fileUrl)
 
-    // Resolve University and Department
+    // Resolve University
     let finalUniversityId = null
-    let finalDepartmentId = null
 
     if (universityName) {
       if (uuidRegex.test(universityName)) {
@@ -300,15 +283,6 @@ export class ResourceService {
       } else {
         const uni = await University.findOne({ where: { name: universityName } })
         if (uni) finalUniversityId = uni.id
-      }
-    }
-
-    if (departmentName) {
-      if (uuidRegex.test(departmentName)) {
-        finalDepartmentId = departmentName
-      } else {
-        const dept = await Department.findOne({ where: { name: departmentName } })
-        if (dept) finalDepartmentId = dept.id
       }
     }
 
@@ -354,7 +328,6 @@ export class ResourceService {
       stream: baseStream ? baseStream.toLowerCase() : undefined,
       subjectId,
       universityId: finalUniversityId,
-      departmentId: finalDepartmentId,
       tags: typeof tags === 'string' ? tags.split(',').map((t: string) => t.trim()) : (tags || []),
       uploadedBy,
     } as any)

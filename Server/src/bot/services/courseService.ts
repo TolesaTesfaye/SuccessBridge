@@ -4,7 +4,6 @@ import SubjectAccess from '../../models/SubjectAccess.js';
 import StudentProgress from '../../models/StudentProgress.js';
 import Grade from '../../models/Grade.js';
 import Stream from '../../models/Stream.js';
-import Department from '../../models/Department.js';
 import University from '../../models/University.js';
 import { Op } from 'sequelize';
 
@@ -22,12 +21,6 @@ export async function getAllCourses(): Promise<any[]> {
         {
           model: Stream,
           as: 'stream',
-          attributes: ['name'],
-          required: false,
-        },
-        {
-          model: Department,
-          as: 'department',
           attributes: ['name'],
           required: false,
         },
@@ -56,12 +49,6 @@ export async function getCourseById(courseId: string): Promise<any> {
         {
           model: Stream,
           as: 'stream',
-          attributes: ['name'],
-          required: false,
-        },
-        {
-          model: Department,
-          as: 'department',
           attributes: ['name'],
           required: false,
         },

@@ -7,7 +7,7 @@ import { quizService, Quiz } from "@services/quizService";
 import { subjectService } from "@services/subjectService";
 import type { Subject } from "@types";
 import { Plus, Trash2, Save, X, ChevronDown, BookOpen, Clock, Target, Layers, Trophy, Hash, Pencil, ListChecks, AlignLeft, FileText, Settings2, CheckCircle2, Circle, GraduationCap, Search } from "lucide-react";
-import { UNIVERSITIES, DEPARTMENTS, UNIVERSITY_CATEGORIES } from "@utils/constants";
+import { UNIVERSITIES, UNIVERSITY_CATEGORIES } from "@utils/constants";
 import { useAuth } from "@hooks/useAuth";
 
 type QType = "mcq" | "short" | "essay";
@@ -63,7 +63,6 @@ export const AdminQuizCreator: React.FC<AdminQuizCreatorProps> = ({ onClose, onS
   const [grade, setGrade] = useState("grade_9");
   const [stream, setStream] = useState("");
   const [universityId, setUniversityId] = useState("");
-  const [departmentId, setDepartmentId] = useState("");
   const [category, setCategory] = useState("");
   const [subjectId, setSubjectId] = useState("");
   const [subjectsList, setSubjectsList] = useState<Subject[]>([]);
@@ -113,15 +112,11 @@ export const AdminQuizCreator: React.FC<AdminQuizCreatorProps> = ({ onClose, onS
       }
       return filtered;
     } else {
-      let filtered = subjectsList.filter((s) => !s.gradeId);
-      if (departmentId) {
-        filtered = filtered.filter((s) => s.departmentId === departmentId);
-      }
-      return filtered;
+      return subjectsList.filter((s) => !s.gradeId);
     }
   };
 
-  useEffect(() => { setSubjectId(""); }, [educationLevel, grade, stream, departmentId]);
+  useEffect(() => { setSubjectId(""); }, [educationLevel, grade, stream]);
 
   const totals = useMemo(() => {
     const total = questions.length;
@@ -184,7 +179,6 @@ export const AdminQuizCreator: React.FC<AdminQuizCreatorProps> = ({ onClose, onS
         grade: educationLevel === "high_school" ? grade : category || undefined,
         stream: educationLevel === "high_school" && ["grade_11", "grade_12"].includes(grade) ? stream : undefined,
         university: educationLevel === "university" ? universityId : undefined,
-        department: educationLevel === "university" && departmentId ? departmentId : undefined,
         subjectId, questions: formattedQuestions as any, timeLimit: timeLimit || 30, passingScore: passing || 60,
       });
       onSuccess();
@@ -216,7 +210,6 @@ export const AdminQuizCreator: React.FC<AdminQuizCreatorProps> = ({ onClose, onS
     } else {
       setUniversityId((quiz as any).university || "");
       setCategory(quiz.grade || "");
-      setDepartmentId((quiz as any).department || "");
     }
     setSubjectId(quiz.subjectId || "");
     setTimeLimit(quiz.timeLimit || 30);
@@ -398,14 +391,6 @@ export const AdminQuizCreator: React.FC<AdminQuizCreatorProps> = ({ onClose, onS
                         {Object.keys(UNIVERSITY_CATEGORIES).map((c) => (
                           <SelectItem key={c} value={c}>{(UNIVERSITY_CATEGORIES as any)[c].label}</SelectItem>
                         ))}
-                      </SelectContent>
-                    </Select>
-                  </FloatingField>
-                  <FloatingField label="Department Group (Optional)">
-                    <Select value={departmentId} onValueChange={setDepartmentId}>
-                      <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {Object.keys(DEPARTMENTS).map((d) => (<SelectItem key={d} value={d}>{d}</SelectItem>))}
                       </SelectContent>
                     </Select>
                   </FloatingField>

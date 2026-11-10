@@ -7,7 +7,6 @@ import QuizResult from "./QuizResult.js";
 import University from "./University.js";
 import Grade from "./Grade.js";
 import Stream from "./Stream.js";
-import Department from "./Department.js";
 import StudentProgress from "./StudentProgress.js";
 import ResourceAccess from "./ResourceAccess.js";
 import Payment from "./Payment.js";
@@ -25,11 +24,6 @@ export const setupAssociations = () => {
     as: "universityData",
     onDelete: "SET NULL",
   });
-  User.belongsTo(Department, {
-    foreignKey: "departmentId",
-    as: "departmentData",
-    onDelete: "SET NULL",
-  });
   User.belongsTo(Grade, { foreignKey: "gradeId", as: "grade", onDelete: "SET NULL" });
   User.belongsTo(Stream, { foreignKey: "streamId", as: "stream", onDelete: "SET NULL" });
   User.hasMany(Resource, { foreignKey: "uploadedBy", as: "uploadedResources" });
@@ -45,27 +39,8 @@ export const setupAssociations = () => {
   User.hasMany(Notification, { foreignKey: "userId", as: "notifications" });
 
   // University relationships
-  University.hasMany(Department, {
-    foreignKey: "universityId",
-    as: "departments",
-    onDelete: "CASCADE",
-  });
   University.hasMany(User, { foreignKey: "universityId", as: "users" });
   University.hasMany(Resource, { foreignKey: "universityId", as: "resources" });
-
-  // Department relationships
-  Department.belongsTo(University, {
-    foreignKey: "universityId",
-    as: "university",
-    onDelete: "CASCADE",
-  });
-  Department.hasMany(User, { foreignKey: "departmentId", as: "users" });
-  Department.hasMany(Subject, {
-    foreignKey: "departmentId",
-    as: "subjects",
-    onDelete: "CASCADE",
-  });
-  Department.hasMany(Resource, { foreignKey: "departmentId", as: "resources" });
 
   // Grade relationships
   Grade.hasMany(User, { foreignKey: "gradeId", as: "users" });
@@ -90,11 +65,6 @@ export const setupAssociations = () => {
   });
 
   // Subject relationships
-  Subject.belongsTo(Department, {
-    foreignKey: "departmentId",
-    as: "department",
-    onDelete: "CASCADE",
-  });
   Subject.belongsTo(Grade, { foreignKey: "gradeId", as: "grade", onDelete: "CASCADE" });
   Subject.belongsTo(Stream, { foreignKey: "streamId", as: "stream", onDelete: "CASCADE" });
   Subject.hasMany(Quiz, { foreignKey: "subjectId", as: "quizzes" });
@@ -120,11 +90,6 @@ export const setupAssociations = () => {
   Resource.belongsTo(University, {
     foreignKey: "universityId",
     as: "university",
-    onDelete: "SET NULL",
-  });
-  Resource.belongsTo(Department, {
-    foreignKey: "departmentId",
-    as: "department",
     onDelete: "SET NULL",
   });
   Resource.belongsTo(User, { foreignKey: "uploadedBy", as: "uploader" });
@@ -216,7 +181,6 @@ export {
   University,
   Grade,
   Stream,
-  Department,
   StudentProgress,
   ResourceAccess,
   Payment,

@@ -5,8 +5,6 @@ import { Footer } from "@components/common/Footer";
 import { resourceService } from "@services/resourceService";
 import { universityService } from "@services/universityService";
 import { useAuthStore } from "@store/authStore";
-import { BookOpen, Library, Home } from "lucide-react";
-
 import { UNIVERSITY_CATEGORIES } from "@utils/constants";
 
 // Modular Components
@@ -27,15 +25,11 @@ export const UniversityDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const userLevel = (user?.universityLevel as StudentCategory) || "freshman";
-  const userDept = user?.department || "";
 
   const [activeTab, setActiveTab] = useState<"home" | "learning" | "hub">(
     "home",
   );
   const activeCategory = userLevel;
-  const [selectedDepartment, setSelectedDepartment] = useState<string>(
-    userDept || "",
-  );
   const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [selectedResourceType, setSelectedResourceType] = useState<string>("");
   const [selectedStream, setSelectedStream] = useState<
@@ -120,11 +114,6 @@ export const UniversityDashboard: React.FC = () => {
         params.universityName = selectedUniversity;
       }
 
-      // Add department filter
-      if (!isIntroductory && selectedDepartment) {
-        params.department = selectedDepartment;
-      }
-
       // Add subject filter
       if (selectedSubject) {
         params.subject = selectedSubject;
@@ -196,7 +185,6 @@ export const UniversityDashboard: React.FC = () => {
   useEffect(() => {
     fetchResources();
   }, [
-    selectedDepartment,
     selectedSubject,
     selectedResourceType,
     selectedStream,
@@ -234,18 +222,16 @@ export const UniversityDashboard: React.FC = () => {
       headerNav={
         <div className="hidden md:flex items-center w-full md:w-auto md:mx-auto gap-0.5 md:gap-1">
           {[
-            { id: "home", label: "Home", shortLabel: "Home", icon: Home },
+            { id: "home", label: "Home", shortLabel: "Home" },
             {
               id: "learning",
               label: "Learning Center",
               shortLabel: "Learning",
-              icon: BookOpen,
             },
             {
               id: "hub",
               label: "Resource Hub",
               shortLabel: "Resource",
-              icon: Library,
             },
           ].map((tab) => (
             <button
@@ -257,13 +243,12 @@ export const UniversityDashboard: React.FC = () => {
                   setActiveTab(tab.id as any);
                 }
               }}
-              className={`flex-1 md:flex-none px-1 md:px-3 lg:px-5 py-1 md:py-2 text-[7px] md:text-[10px] lg:text-xs font-black uppercase tracking-wider md:tracking-widest transition-all flex items-center justify-center gap-1 md:gap-2 rounded-lg md:rounded-xl whitespace-nowrap ${
+              className={`flex-1 md:flex-none px-1 md:px-3 lg:px-5 py-1 md:py-2 text-[7px] md:text-[10px] lg:text-xs font-black uppercase tracking-wider md:tracking-widest transition-all flex items-center justify-center rounded-lg md:rounded-xl whitespace-nowrap ${
                 activeTab === tab.id
                   ? "bg-blue-600 text-white shadow-lg shadow-blue-500/25 scale-105"
                   : "text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
-              <tab.icon className="hidden md:inline-block w-3.5 h-3.5" />
               <span className="text-[7px] md:text-[10px] lg:text-xs font-black uppercase tracking-wider md:tracking-widest">
                 {tab.label}
               </span>
@@ -305,8 +290,6 @@ export const UniversityDashboard: React.FC = () => {
             selectedStream={selectedStream}
             setSelectedStream={setSelectedStream}
             isIntroductory={isIntroductory}
-            selectedDepartment={selectedDepartment}
-            setSelectedDepartment={setSelectedDepartment}
             selectedResourceType={selectedResourceType}
             setSelectedResourceType={setSelectedResourceType}
             resourceTypes={resourceTypes}

@@ -22,6 +22,16 @@ import {
   SuperAdminTopTabNav,
   type SuperAdminTabItem,
 } from "./components/SuperAdminTopTabNav";
+import {
+  LayoutDashboard,
+  Layers,
+  BarChart3,
+  Send,
+  Bot,
+  Upload,
+  CreditCard,
+  FilePlus,
+} from "lucide-react";
 
 // Import extracted components
 import { OverviewTab } from "./components";
@@ -35,14 +45,14 @@ const HIGH_SCHOOL_GRADES = [
 const UNIVERSITY_LEVELS = ["freshman", "remedial"] as const;
 
 const PLATFORM_TABS: SuperAdminTabItem[] = [
-  { id: "overview", label: "Overview", shortLabel: "Overview" },
-  { id: "resources", label: "Resources", shortLabel: "Resources" },
-  { id: "analytics", label: "Analytics", shortLabel: "Analytics" },
-  { id: "promotion", label: "Promotion", shortLabel: "Promotion" },
-  { id: "ai-companion", label: "AI Companion", shortLabel: "AI Companion" },
-  { id: "upload", label: "Upload", shortLabel: "Upload" },
-  { id: "payments", label: "Payments", shortLabel: "Payments" },
-  { id: "addquiz", label: "Add Quiz", shortLabel: "Add Quiz" },
+  { id: "overview", label: "Overview", shortLabel: "Overview", icon: LayoutDashboard },
+  { id: "resources", label: "Resources", shortLabel: "Resources", icon: Layers },
+  { id: "analytics", label: "Analytics", shortLabel: "Analytics", icon: BarChart3 },
+  { id: "promotion", label: "Promotion", shortLabel: "Promotion", icon: Send },
+  { id: "ai-companion", label: "AI Companion", shortLabel: "AI Companion", icon: Bot },
+  { id: "upload", label: "Upload", shortLabel: "Upload", icon: Upload },
+  { id: "payments", label: "Payments", shortLabel: "Payments", icon: CreditCard },
+  { id: "addquiz", label: "Add Quiz", shortLabel: "Add Quiz", icon: FilePlus },
 ];
 
 export const SuperAdminDashboard: React.FC = () => {
@@ -104,21 +114,23 @@ export const SuperAdminDashboard: React.FC = () => {
     const fetchStats = async () => {
       try {
         const [usersRes, resourcesRes] = await Promise.all([
-          userService.getAllUsers(),
-          resourceService.getResources({ limit: 1 }),
+          userService.getAllUsers(1, 10000),
+          resourceService.getResources({ limit: 10000 }),
         ]);
 
-        const users = Array.isArray(usersRes) ? usersRes : usersRes.data || [];
+        const users = usersRes.data || [];
         const activeStudents = users.filter(
           (u: any) => u.role === "student",
         ).length;
 
+        const resources = Array.isArray(resourcesRes)
+          ? resourcesRes
+          : resourcesRes.data?.data || resourcesRes.data || [];
+
         setStats({
-          totalUsers: users.length,
+          totalUsers: usersRes.total || users.length,
           activeStudents,
-          totalResources: Array.isArray(resourcesRes)
-            ? resourcesRes.length
-            : resourcesRes.data?.total || 0,
+          totalResources: resources.length,
           loading: false,
         });
       } catch (error) {
@@ -144,7 +156,6 @@ export const SuperAdminDashboard: React.FC = () => {
       if (data.grade) formData.append("grade", data.grade);
       if (data.stream) formData.append("stream", data.stream);
       if (data.universityId) formData.append("universityId", data.universityId);
-      if (data.departmentId) formData.append("departmentId", data.departmentId);
       if (data.category) formData.append("category", data.category);
 
       console.log(
@@ -178,11 +189,14 @@ export const SuperAdminDashboard: React.FC = () => {
           tabs={PLATFORM_TABS}
           activeTab={activeTab}
           onTabChange={setActiveTab}
+          accent="blue"
         />
 
         {/* Tab Content */}
         <div className="animate-fadeIn pt-4 md:pt-6 px-2 md:px-0">
-          {activeTab === "overview" && <OverviewTab stats={stats} />}
+          {activeTab === "overview" && (
+            <OverviewTab stats={stats} onNavigateTab={setActiveTab} />
+          )}
 
           {activeTab === "resources" && <SuperAdminResources embedded />}
           {activeTab === "analytics" && <SuperAdminAnalytics embedded />}
@@ -288,10 +302,10 @@ export const SuperAdminDashboard: React.FC = () => {
                         </div>
                         <div className="p-3 bg-white dark:bg-slate-800/20 rounded-xl border border-slate-100 dark:border-white/5">
                           <label className="text-xs font-semibold text-slate-400 block mb-1">
-                            Department
+                            University
                           </label>
                           <p className="text-slate-900 dark:text-white font-bold m-0">
-                            {(selectedAdmin || selectedStudent)?.department}
+                            {(selectedAdmin || selectedStudent)?.university}
                           </p>
                         </div>
                       </>

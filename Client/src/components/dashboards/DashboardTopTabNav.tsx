@@ -56,9 +56,9 @@ export const DashboardTopTabNav: React.FC<DashboardTopTabNavProps> = ({
 
   return (
     <div
-      className={`sticky top-0 z-40 bg-white dark:bg-slate-900 border-b-2 border-gray-200 dark:border-slate-700 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${stickyClassName} ${className}`}
+      className={`sticky top-0 z-40 bg-white dark:bg-slate-900 border-b-2 border-gray-200 dark:border-slate-700 overflow-x-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${stickyClassName} ${className}`}
     >
-      <div className={`flex ${fill ? "w-max min-w-full md:w-full" : "w-max min-w-full flex-nowrap"} items-end gap-0`}>
+      <div className={`flex ${fill ? "w-full" : "w-max"} items-end gap-0`}>
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           const Icon = tab.icon;

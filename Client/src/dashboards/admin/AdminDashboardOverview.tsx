@@ -18,7 +18,6 @@ type DashboardState = {
   loading: boolean;
   error: string | null;
   subjects: any[];
-  departments: any[];
   universities: any[];
   quizzes: any[];
   resourceStats: any | null;
@@ -39,10 +38,9 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
   const metrics = useMemo(
     () => ({
       students: state.studentCount,
-      universities: state.universities.length,
-      subjects: state.subjects.length,
-      quizzes: state.quizzes.length,
-      departments: state.departments.length,
+      universities: state.universities?.length || 0,
+      subjects: state.subjects?.length || 0,
+      quizzes: state.quizzes?.length || 0,
     }),
     [state],
   );
@@ -54,7 +52,6 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
     0;
   const snapshotMax = Math.max(
     metrics.universities,
-    metrics.departments,
     metrics.subjects,
     resourceCount,
     1,
@@ -189,7 +186,6 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
           </div>
           <div className="mt-6 space-y-5">
             <SnapshotRow label="Universities" value={metrics.universities} total={snapshotMax} color="bg-blue-400" />
-            <SnapshotRow label="Departments" value={metrics.departments} total={snapshotMax} color="bg-violet-400" />
             <SnapshotRow label="Subjects" value={metrics.subjects} total={snapshotMax} color="bg-amber-400" />
             <SnapshotRow label="Learning resources" value={resourceCount} total={snapshotMax} color="bg-emerald-400" />
           </div>

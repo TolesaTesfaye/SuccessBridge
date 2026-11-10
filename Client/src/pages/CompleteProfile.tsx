@@ -9,18 +9,11 @@ interface ProfileData {
   highSchoolStream: string
   universityLevel: string
   university: string
-  department: string
 }
 
 interface University {
   id: string
   name: string
-}
-
-interface Department {
-  id: string
-  name: string
-  universityId: string
 }
 
 export const CompleteProfile: React.FC = () => {
@@ -30,22 +23,19 @@ export const CompleteProfile: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [universities, setUniversities] = useState<University[]>([])
-  const [departments, setDepartments] = useState<Department[]>([])
-  const [filteredDepartments, setFilteredDepartments] = useState<Department[]>([])
   
   const [profileData, setProfileData] = useState<ProfileData>({
     studentType: '',
     highSchoolGrade: '',
     highSchoolStream: '',
     universityLevel: '',
-    university: '',
-    department: ''
+    university: ''
   })
 
   const totalSteps = profileData.studentType === 'high_school' ? 2 : 
                     profileData.studentType === 'university' ? 3 : 1
 
-  // Fetch universities and departments on mount
+  // Fetch universities on mount
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -55,31 +45,12 @@ export const CompleteProfile: React.FC = () => {
         if (univData.success) {
           setUniversities(univData.data)
         }
-
-        // Fetch all departments
-        const deptResponse = await fetch(`${import.meta.env.VITE_API_URL}/departments`)
-        const deptData = await deptResponse.json()
-        setDepartments(deptData)
       } catch (error) {
         console.error('Error fetching data:', error)
       }
     }
     fetchData()
   }, [])
-
-  // Filter departments when university changes
-  useEffect(() => {
-    if (profileData.university) {
-      const filtered = departments.filter(d => d.universityId === profileData.university)
-      setFilteredDepartments(filtered)
-      // Reset department if it's not in the filtered list
-      if (profileData.department && !filtered.find(d => d.id === profileData.department)) {
-        setProfileData(prev => ({ ...prev, department: '' }))
-      }
-    } else {
-      setFilteredDepartments([])
-    }
-  }, [profileData.university, departments])
 
   const handleNext = () => {
     if (currentStep < totalSteps) {
@@ -121,7 +92,6 @@ export const CompleteProfile: React.FC = () => {
             highSchoolStream: profileData.highSchoolStream || undefined,
             universityLevel: profileData.universityLevel || undefined,
             universityId: profileData.university || undefined,
-            departmentId: profileData.department || undefined,
           })
         })
 
@@ -196,7 +166,7 @@ export const CompleteProfile: React.FC = () => {
         if (profileData.studentType === 'high_school') {
           return profileData.highSchoolStream !== ''
         } else if (profileData.studentType === 'university') {
-          return profileData.university !== '' && profileData.department !== ''
+          return profileData.university !== ''
         }
         return false
       default: return false
@@ -390,7 +360,7 @@ export const CompleteProfile: React.FC = () => {
                   University Details
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300">
-                  Tell us about your university and department
+                  Tell us about your university
                 </p>
               </div>
               
@@ -409,32 +379,6 @@ export const CompleteProfile: React.FC = () => {
                       {universities.map((univ) => (
                         <option key={univ.id} value={univ.id} className="text-sm md:text-base py-2">
                           {univ.name}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 md:px-4 text-gray-500">
-                      <svg className="h-4 w-4 md:h-5 md:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Department
-                  </label>
-                  <div className="relative">
-                    <select
-                      className="w-full px-3 md:px-4 py-2.5 md:py-3 pr-10 md:pr-12 border border-gray-300 dark:border-gray-600 rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white disabled:opacity-50 appearance-none touch-manipulation min-h-[44px] md:min-h-[48px] text-sm md:text-base"
-                      value={profileData.department}
-                      onChange={(e) => updateProfileData('department', e.target.value)}
-                      disabled={!profileData.university}
-                    >
-                      <option value="" className="text-sm md:text-base">
-                        {profileData.university ? 'Select a department' : 'Select university first'}
-                      </option>
-                      {filteredDepartments.map((dept) => (
-                        <option key={dept.id} value={dept.id} className="text-sm md:text-base py-2">
-                          {dept.name}
                         </option>
                       ))}
                     </select>

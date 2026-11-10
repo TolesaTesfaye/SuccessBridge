@@ -76,6 +76,7 @@ export const getDashboardStats = async () => {
     const [
       totalUsers,
       activeUsers,
+      telegramUsers,
       totalResources,
       totalQuizzes,
       totalAnnouncements,
@@ -89,6 +90,15 @@ export const getDashboardStats = async () => {
         User,
         { where: { isApproved: true, role: "student" } },
         "users.active",
+      ),
+      safeCount(
+        User,
+        {
+          where: {
+            telegramId: { [Op.and]: [{ [Op.ne]: null }, { [Op.ne]: "" }] },
+          },
+        },
+        "users.telegram",
       ),
       safeCount(Resource, undefined, "resources"),
       safeCount(Quiz, undefined, "quizzes"),
@@ -112,6 +122,7 @@ export const getDashboardStats = async () => {
       users: {
         total: totalUsers,
         active: activeUsers,
+        telegram: telegramUsers,
         growth: userGrowth,
       },
       resources: {

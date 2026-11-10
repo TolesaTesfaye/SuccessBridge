@@ -45,7 +45,6 @@ const options = {
             highSchoolStream: { type: 'string' },
             universityLevel: { type: 'string' },
             university: { type: 'string' },
-            department: { type: 'string' },
             createdAt: { type: 'string', format: 'date-time' },
           },
         },
@@ -62,7 +61,6 @@ const options = {
             stream: { type: 'string' },
             subjectId: { type: 'string', format: 'uuid' },
             universityId: { type: 'string', format: 'uuid' },
-            departmentId: { type: 'string', format: 'uuid' },
             tags: { type: 'array', items: { type: 'string' } },
             uploadedBy: { type: 'string', format: 'uuid' },
             createdAt: { type: 'string', format: 'date-time' },
@@ -93,22 +91,12 @@ const options = {
             createdAt: { type: 'string', format: 'date-time' },
           },
         },
-        Department: {
-          type: 'object',
-          properties: {
-            id: { type: 'string', format: 'uuid' },
-            name: { type: 'string' },
-            universityId: { type: 'string', format: 'uuid' },
-            createdAt: { type: 'string', format: 'date-time' },
-          },
-        },
         Subject: {
           type: 'object',
           properties: {
             id: { type: 'string', format: 'uuid' },
             name: { type: 'string' },
             code: { type: 'string' },
-            departmentId: { type: 'string', format: 'uuid' },
             gradeId: { type: 'string', format: 'uuid' },
             streamId: { type: 'string', format: 'uuid' },
             createdAt: { type: 'string', format: 'date-time' },

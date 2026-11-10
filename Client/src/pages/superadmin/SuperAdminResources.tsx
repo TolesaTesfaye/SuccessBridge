@@ -14,7 +14,9 @@ type SuperAdminResourcesProps = {
 export const SuperAdminResources: React.FC<SuperAdminResourcesProps> = ({
   embedded = false,
 }) => {
-  const [filters, setFilters] = useState({})
+  const [educationLevel, setEducationLevel] = useState<'high_school' | 'university'>('high_school')
+  const [selectedGrade, setSelectedGrade] = useState<string | undefined>(undefined)
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined)
   const [resources, setResources] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
@@ -32,16 +34,29 @@ export const SuperAdminResources: React.FC<SuperAdminResourcesProps> = ({
 
   useEffect(() => {
     fetchResources()
-  }, [filters, currentPage])
+  }, [educationLevel, selectedGrade, selectedCategory, currentPage])
 
   const fetchResources = async () => {
     setLoading(true)
     try {
-      const response = await resourceService.getResources({
-        ...filters,
+      // Build filter object
+      const filterObject: any = {
+        educationLevel: educationLevel,
         page: currentPage,
         limit: 10
-      } as any)
+      }
+      
+      // Add grade filter for high school
+      if (educationLevel === 'high_school' && selectedGrade) {
+        filterObject.grade = selectedGrade
+      }
+      
+      // Add category/grade filter for university (backend stores category in grade field)
+      if (educationLevel === 'university' && selectedCategory) {
+        filterObject.grade = selectedCategory
+      }
+      
+      const response = await resourceService.getResources(filterObject)
       setResources(response.data?.data || [])
       setTotalPages(Math.ceil((response.data?.total || 0) / 10))
     } catch (error) {
@@ -106,8 +121,62 @@ export const SuperAdminResources: React.FC<SuperAdminResourcesProps> = ({
 
   const content = (
       <div className="space-y-6">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white m-0">All Resources</h2>
-        <ResourceFilter onFilter={setFilters} />
+        {/* Header with Education Level Toggle and Filter */}
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">All Resources</h2>
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setEducationLevel('high_school')
+                  setSelectedGrade(undefined)
+                  setSelectedCategory(undefined)
+                  setCurrentPage(1)
+                }}
+                className={`px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 ${
+                  educationLevel === 'high_school'
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/50'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
+                }`}
+              >
+                📚 High School
+              </button>
+              <button
+                onClick={() => {
+                  setEducationLevel('university')
+                  setSelectedGrade(undefined)
+                  setSelectedCategory(undefined)
+                  setCurrentPage(1)
+                }}
+                className={`px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 ${
+                  educationLevel === 'university'
+                    ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg shadow-orange-500/50'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
+                }`}
+              >
+                🎓 University
+              </button>
+            </div>
+          </div>
+
+          {/* Filter Section - Inline with Toggle Buttons */}
+          <ResourceFilter 
+            onFilterChange={(newFilters) => {
+              if (newFilters.grade !== undefined) {
+                setSelectedGrade(newFilters.grade || undefined)
+              }
+              if (newFilters.category !== undefined) {
+                setSelectedCategory(newFilters.category || undefined)
+              }
+              setCurrentPage(1)
+            }}
+            educationLevel={educationLevel === 'high_school' ? 'highSchool' : 'university'}
+            selectedGrade={selectedGrade}
+            selectedCategory={selectedCategory}
+          />
+        </div>
+
+        {/* Resources Table */}
         <ResourceList 
           resources={resources}
           loading={loading}

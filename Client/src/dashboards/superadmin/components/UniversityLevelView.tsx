@@ -4,7 +4,6 @@ import { resourceService } from "@services/resourceService";
 import { universityService } from "@services/universityService";
 import {
   UNIVERSITIES,
-  DEPARTMENTS,
   UNIVERSITY_CATEGORIES,
 } from "@utils/constants";
 import { ResourceCard } from "@components/resources/ResourceCard";
@@ -75,8 +74,8 @@ export const UniversityLevelView: React.FC<UniversityLevelViewProps> = ({
         "History",
       ];
     }
-    if (selectedDepartment && (DEPARTMENTS as any)[selectedDepartment]) {
-      return ["Common Course", ...(DEPARTMENTS as any)[selectedDepartment]];
+    if (selectedDepartment) {
+      return ["Common Course"];
     }
     return ["Common Course"];
   };
@@ -206,12 +205,7 @@ export const UniversityLevelView: React.FC<UniversityLevelViewProps> = ({
               onChange={(e) => setSelectedDepartment(e.target.value)}
               className="w-full px-3 py-2 border border-slate-200 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="">All Departments</option>
-              {Object.keys(DEPARTMENTS).map((dept) => (
-                <option key={dept} value={dept}>
-                  {dept.replace(/_/g, " ")}
-                </option>
-              ))}
+              <option value="">All Universities</option>
             </select>
           </div>
         )}
