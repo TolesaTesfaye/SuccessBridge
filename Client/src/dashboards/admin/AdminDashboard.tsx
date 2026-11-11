@@ -155,7 +155,6 @@ export const AdminDashboardContent: React.FC = () => {
       { id: "resources" as TabKey, label: "Resources" },
       { id: "quizzes" as TabKey, label: "Quizzes" },
       { id: "upload" as TabKey, label: "Upload" },
-      { id: "help" as TabKey, label: "Help" },
       { id: "reports" as TabKey, label: "Analytics" },
     ],
     [],

@@ -14,6 +14,7 @@ import {
   School,
   GraduationCap,
   FileText,
+  HelpCircle,
   Layers,
   LogOut,
   Moon,
@@ -52,6 +53,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { label: "Reports", path: "/admin/reports", icon: FileText, desc: "Data & exports" },
     { label: "Promotion", path: "/admin/promotion", icon: Megaphone, desc: "Student promotions" },
     { label: "Settings", path: "/admin/settings", icon: Settings, desc: "Configure platform" },
+    { label: "Help", path: "/admin/dashboard", icon: HelpCircle, desc: "Guides & support", tab: "help" },
   ];
 
   const superAdminNavItems = [
@@ -162,12 +164,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
         ) : isAdmin ? (
           <div className="space-y-1 pt-2">
             {adminNavItems.map(item => {
-              const isActive = location.pathname === item.path;
+              const itemTab = (item as any).tab;
+              const activeTab = (location.state as any)?.activeTab;
+              const isActive = itemTab
+                ? location.pathname === item.path && activeTab === itemTab
+                : location.pathname === item.path && !activeTab;
               const Icon = item.icon;
               return (
                 <button
-                  key={item.path}
-                  onClick={() => handleNav(item.path)}
+                  key={item.path + (itemTab || "")}
+                  onClick={() => handleNav(item.path, itemTab)}
                   title={collapsed ? item.label : undefined}
                   className={`group relative w-full flex items-center gap-3 rounded-xl py-2.5 px-3 transition-all duration-200 ${
                     isActive
