@@ -151,19 +151,24 @@ export const AdminDashboardStudents: React.FC<StudentTabProps> = ({
         {stats.map((item) => (
           <div
             key={item.label}
-            className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 shadow-sm backdrop-blur dark:border-white/10 dark:bg-slate-900/80"
+            className="group relative overflow-hidden rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl dark:border-white/10 dark:bg-slate-900/80"
           >
-            <div
-              className={`inline-flex rounded-xl bg-gradient-to-br ${item.accent} p-2 text-white shadow-lg`}
-            >
-              <item.icon className="h-4 w-4" />
+            <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-slate-50 dark:from-white/5 dark:to-transparent" />
+            <div className="relative flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                  {item.label}
+                </p>
+                <p className="mt-2 text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+                  {item.value}
+                </p>
+              </div>
+              <div
+                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${item.accent} text-white shadow-lg shadow-slate-900/10 transition-transform duration-300 group-hover:scale-110`}
+              >
+                <item.icon className="h-6 w-6" />
+              </div>
             </div>
-            <div className="mt-3 text-2xl font-black text-slate-900 dark:text-white">
-              {item.value}
-            </div>
-            <p className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">
-              {item.label}
-            </p>
           </div>
         ))}
       </div>
