@@ -146,7 +146,7 @@ export const AdminDashboardStudents: React.FC<StudentTabProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
         {stats.map((item) => (
           <div
             key={item.label}
@@ -158,7 +158,7 @@ export const AdminDashboardStudents: React.FC<StudentTabProps> = ({
                 <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
                   {item.label}
                 </p>
-                <p className="mt-2 text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+                <p className="mt-2 text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl">
                   {item.value}
                 </p>
               </div>
