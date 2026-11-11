@@ -43,6 +43,7 @@ export const AdminDashboardStudents: React.FC<StudentTabProps> = ({
     studentType: "all",
     verificationStatus: "all",
   });
+  const [searchQuery, setSearchQuery] = useState("");
 
   const loadStudents = async () => {
     try {
@@ -83,8 +84,17 @@ export const AdminDashboardStudents: React.FC<StudentTabProps> = ({
       );
     }
 
+    const query = searchQuery.trim().toLowerCase();
+    if (query) {
+      result = result.filter(
+        (student) =>
+          student.name?.toLowerCase().includes(query) ||
+          student.email?.toLowerCase().includes(query),
+      );
+    }
+
     return result;
-  }, [students, filter]);
+  }, [students, filter, searchQuery]);
 
   const stats = useMemo(() => {
     const total = students.length;
@@ -138,14 +148,23 @@ export const AdminDashboardStudents: React.FC<StudentTabProps> = ({
   return (
     <div className="space-y-6">
       {/* Students Table */}
-      <Card className="border-slate-200/80 shadow-sm dark:border-white/10">
+      <Card className="overflow-hidden rounded-2xl border-slate-200/80 bg-white/90 shadow-lg backdrop-blur dark:border-white/10 dark:bg-slate-900/80">
         <CardHeader>
-          <div className="flex items-center gap-2">
-            <Users className="h-5 w-5 text-slate-500" />
-            <span>Student Registry</span>
-            <span className="ml-auto text-sm text-slate-500">
-              Showing {filteredStudents.length} of {students.length}
-            </span>
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5 text-slate-500" />
+              <span>Student Registry</span>
+              <span className="text-sm text-slate-500">
+                Showing {filteredStudents.length} of {students.length}
+              </span>
+            </div>
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search students..."
+              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white md:w-64"
+            />
           </div>
         </CardHeader>
         <CardBody>
