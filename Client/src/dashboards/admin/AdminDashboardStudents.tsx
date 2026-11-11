@@ -148,26 +148,14 @@ export const AdminDashboardStudents: React.FC<StudentTabProps> = ({
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
         {stats.map((item) => (
-          <div
-            key={item.label}
-            className="group relative overflow-hidden rounded-2xl border border-slate-200/70 bg-white p-3 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl sm:p-5 dark:border-white/10 dark:bg-slate-900/80"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-white via-transparent to-slate-50 dark:from-white/5 dark:to-transparent" />
-            <div className="relative flex items-start justify-between gap-3">
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-                  {item.label}
-                </p>
-                <p className="mt-2 text-2xl font-black tracking-tight text-slate-900 dark:text-white sm:text-3xl">
-                  {item.value}
-                </p>
-              </div>
-              <div
-                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl sm:h-12 sm:w-12 sm:rounded-2xl bg-gradient-to-br ${item.accent} text-white shadow-lg shadow-slate-900/10 transition-transform duration-300 group-hover:scale-110`}
-              >
-                <item.icon className="h-4 w-4 sm:h-6 sm:w-6" />
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-3 text-white shadow-lg hover:shadow-xl transition-shadow border border-slate-700/50">
+            <div className="flex items-start justify-between mb-2">
+              <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${item.accent} flex items-center justify-center`}>
+                <item.icon size={18} />
               </div>
             </div>
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">{item.label}</p>
+            <p className="text-2xl font-bold mb-0.5">{item.value}</p>
           </div>
         ))}
       </div>
