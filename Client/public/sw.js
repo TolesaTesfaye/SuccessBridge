@@ -1,5 +1,5 @@
 // Service Worker for cache management
-const CACHE_VERSION = 'v2.1.0';
+const CACHE_VERSION = 'v2.2.0';
 const CACHE_NAME = 'successbridge-' + CACHE_VERSION;
 const urlsToCache = [
   '/',
