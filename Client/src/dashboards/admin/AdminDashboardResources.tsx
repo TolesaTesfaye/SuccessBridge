@@ -26,6 +26,7 @@ const formatDate = (value: string | Date) =>
 
 export const AdminDashboardResources: React.FC = () => {
   const [resources, setResources] = useState<Resource[]>([]);
+  const [resourceStats, setResourceStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -62,6 +63,18 @@ export const AdminDashboardResources: React.FC = () => {
     void loadResources();
   }, [currentPage]);
 
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const statsResponse = await resourceService.getResourceStats();
+        setResourceStats(statsResponse?.data ?? statsResponse);
+      } catch (err) {
+        console.error("Failed to load resource stats", err);
+      }
+    };
+    void loadStats();
+  }, []);
+
   const filteredResources = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
     if (!query) return resources;
@@ -74,14 +87,15 @@ export const AdminDashboardResources: React.FC = () => {
   }, [resources, searchQuery]);
 
   const stats = useMemo(() => {
-    const total = resources.length;
-    const highSchool = resources.filter(
+    const total = resourceStats?.total ?? resources.length;
+    const highSchool = resourceStats?.byEducationLevel?.high_school ?? resources.filter(
       (r) => r.educationLevel === "high_school",
     ).length;
-    const university = resources.filter(
+    const university = resourceStats?.byEducationLevel?.university ?? resources.filter(
       (r) => r.educationLevel === "university",
     ).length;
-    const uniqueTypes = new Set(resources.map((r) => r.type)).size;
+    const uniqueTypes =
+      resourceStats?.byType ? Object.keys(resourceStats.byType).length : new Set(resources.map((r) => r.type)).size;
 
     return [
       {
@@ -109,7 +123,7 @@ export const AdminDashboardResources: React.FC = () => {
         accent: "from-emerald-500 to-teal-500",
       },
     ];
-  }, [resources]);
+  }, [resources, resourceStats]);
 
   if (loading && resources.length === 0) {
     return (

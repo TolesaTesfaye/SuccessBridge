@@ -49,13 +49,8 @@ export const AdminDashboardStudents: React.FC<StudentTabProps> = ({
     try {
       setLoading(true);
       setError(null);
-      const response = await userService.getAllUsers(currentPage, 8, "student");
+      const response = await userService.getAllUsers(1, 1000, "student");
       setStudents(response.data || []);
-      setTotalPages(
-        response.total && response.limit
-          ? Math.max(1, Math.ceil(response.total / response.limit))
-          : 1,
-      );
     } catch (err: any) {
       setStudents([]);
       setError(err?.message || "Failed to load students.");
@@ -66,7 +61,7 @@ export const AdminDashboardStudents: React.FC<StudentTabProps> = ({
 
   useEffect(() => {
     void loadStudents();
-  }, [currentPage]);
+  }, []);
 
   const filteredStudents = useMemo(() => {
     let result = students;
@@ -95,6 +90,10 @@ export const AdminDashboardStudents: React.FC<StudentTabProps> = ({
 
     return result;
   }, [students, filter, searchQuery]);
+
+  useEffect(() => {
+    setTotalPages(Math.max(1, Math.ceil(filteredStudents.length / 8)));
+  }, [filteredStudents]);
 
   const stats = useMemo(() => {
     const total = students.length;
