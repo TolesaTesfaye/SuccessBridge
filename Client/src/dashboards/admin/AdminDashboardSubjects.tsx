@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Card, CardBody, CardHeader } from "@components/common/Card";
-import { Button } from "@components/common/Button";
 import { Pagination } from "@components/common/Pagination";
 import { Loading } from "@components/common/Loading";
 import { subjectService } from "@services/subjectService";
 import type { Subject } from "@services/subjectService";
-import { BookOpen, Code2, Sparkles } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import {
   DashboardHeroSkeleton,
   DashboardListSkeleton,
@@ -62,26 +61,6 @@ export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
     return subjects.slice(start, start + 8);
   }, [subjects, currentPage]);
 
-  const stats = useMemo(() => {
-    const total = subjects.length;
-    const withGrade = subjects.filter((s) => s.gradeId).length;
-
-    return [
-      {
-        label: "Total Subjects",
-        value: total,
-        icon: BookOpen,
-        accent: "from-sky-500 to-cyan-500",
-      },
-      {
-        label: "With Grade",
-        value: withGrade,
-        icon: BookOpen,
-        accent: "from-amber-500 to-orange-500",
-      },
-    ];
-  }, [subjects]);
-
   if (loading && subjects.length === 0) {
     return (
       <div className="space-y-6">
@@ -93,60 +72,6 @@ export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden border border-slate-200 bg-[#0f172a] px-6 py-7 text-white shadow-[0_24px_80px_-40px_rgba(15,23,42,0.7)] dark:border-white/10 sm:px-8 -mx-4 md:-mx-6">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(56,189,248,0.25),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(168,85,247,0.22),transparent_28%),linear-gradient(135deg,rgba(15,23,42,0.98),rgba(30,41,59,0.9))]" />
-        <div className="relative z-10 grid gap-6 lg:grid-cols-[1.3fr_0.7fr] lg:items-end">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-sky-100 backdrop-blur">
-              <Sparkles className="h-4 w-4 text-sky-300" />
-              Subject Command Center
-            </div>
-            <div className="max-w-2xl space-y-3">
-              <h2 className="text-3xl font-black tracking-tight sm:text-4xl">
-                Manage academic subjects across departments with centralized
-                control.
-              </h2>
-              <p className="max-w-xl text-sm leading-6 text-slate-300 sm:text-base">
-                Browse all subjects, organize by department, track subject-grade
-                associations, and maintain a complete academic curriculum
-                catalog in one powerful interface.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button
-                variant="secondary"
-                onClick={() => onNavigateToTab("reports")}
-                className="border-white/15 bg-white/5 text-white hover:bg-white/10"
-              >
-                See Analytics
-              </Button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            {stats.map((item) => (
-              <div
-                key={item.label}
-                className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur"
-              >
-                <div
-                  className={`inline-flex rounded-xl bg-gradient-to-br ${item.accent} p-2 text-white shadow-lg`}
-                >
-                  <item.icon className="h-4 w-4" />
-                </div>
-                <div className="mt-3 text-2xl font-black text-white">
-                  {item.value}
-                </div>
-                <p className="mt-1 text-xs font-medium text-slate-300">
-                  {item.label}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* Filters & Table Section */}
       <div className="grid gap-6">
         {/* Subjects Table */}
