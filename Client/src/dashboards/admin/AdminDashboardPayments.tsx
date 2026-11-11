@@ -165,146 +165,62 @@ export const AdminDashboardPayments: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
-        {/* Total Payments Card */}
-        <Card className="overflow-hidden relative group hover:shadow-xl transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-blue-400/5 to-transparent"></div>
-          <CardBody className="p-4 md:p-5 relative">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 md:hidden bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center text-white shadow-lg">
-                    <CreditCard className="w-4 h-4" />
-                  </div>
-                  <p className="text-xs md:text-sm text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wide">
-                    Total Payments
-                  </p>
-                </div>
-                <p className="text-3xl md:text-4xl font-extrabold bg-gradient-to-br from-blue-600 to-blue-800 dark:from-blue-400 dark:to-blue-600 bg-clip-text text-transparent">
-                  {stats.totalPayments}
-                </p>
-                <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
-                  All transactions
-                </p>
-              </div>
-              <div className="hidden md:flex w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <CreditCard className="w-7 h-7 text-white" />
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-
-        {/* Pending Card */}
-        <Card className="overflow-hidden relative group hover:shadow-xl transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 via-yellow-400/5 to-transparent"></div>
-          <CardBody className="p-4 md:p-5 relative">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 md:hidden bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg flex items-center justify-center text-white shadow-lg">
-                    <Clock className="w-4 h-4" />
-                  </div>
-                  <p className="text-xs md:text-sm text-yellow-600 dark:text-yellow-400 font-bold uppercase tracking-wide">
-                    Pending
-                  </p>
-                </div>
-                <p className="text-3xl md:text-4xl font-extrabold bg-gradient-to-br from-yellow-600 to-yellow-800 dark:from-yellow-400 dark:to-yellow-600 bg-clip-text text-transparent">
-                  {stats.pendingPayments}
-                </p>
-                <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
-                  Awaiting approval
-                </p>
-              </div>
-              <div className="hidden md:flex w-14 h-14 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <Clock className="w-7 h-7 text-white" />
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-3 xl:grid-cols-5">
+        {[
+          {
+            label: 'Total Payments',
+            value: stats.totalPayments,
+            description: 'All transactions',
+            icon: CreditCard,
+            accent: 'from-blue-500 to-blue-600',
+          },
+          {
+            label: 'Pending',
+            value: stats.pendingPayments,
+            description: 'Awaiting approval',
+            icon: Clock,
+            accent: 'from-amber-400 to-orange-500',
+          },
+          {
+            label: 'Approved',
+            value: stats.approvedPayments,
+            description: 'Successfully approved',
+            icon: CheckCircle,
+            accent: 'from-emerald-500 to-emerald-600',
+          },
+          {
+            label: 'Rejected',
+            value: stats.rejectedPayments,
+            description: 'Declined payments',
+            icon: XCircle,
+            accent: 'from-rose-500 to-rose-600',
+          },
+          {
+            label: 'Total Revenue',
+            value: formatCurrency(stats.totalRevenue),
+            description: 'Approved earnings',
+            icon: TrendingUp,
+            accent: 'from-purple-500 to-purple-600',
+          },
+        ].map((item) => (
+          <div
+            key={item.label}
+            className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-3 text-white shadow-lg hover:shadow-xl transition-shadow border border-slate-700/50"
+          >
+            <div className="flex items-start justify-between mb-2">
+              <div
+                className={`w-9 h-9 rounded-lg bg-gradient-to-br ${item.accent} flex items-center justify-center`}
+              >
+                <item.icon size={18} />
               </div>
             </div>
-          </CardBody>
-        </Card>
-
-        {/* Approved Card */}
-        <Card className="overflow-hidden relative group hover:shadow-xl transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-green-400/5 to-transparent"></div>
-          <CardBody className="p-4 md:p-5 relative">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 md:hidden bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center text-white shadow-lg">
-                    <CheckCircle className="w-4 h-4" />
-                  </div>
-                  <p className="text-xs md:text-sm text-green-600 dark:text-green-400 font-bold uppercase tracking-wide">
-                    Approved
-                  </p>
-                </div>
-                <p className="text-3xl md:text-4xl font-extrabold bg-gradient-to-br from-green-600 to-green-800 dark:from-green-400 dark:to-green-600 bg-clip-text text-transparent">
-                  {stats.approvedPayments}
-                </p>
-                <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
-                  Successfully approved
-                </p>
-              </div>
-              <div className="hidden md:flex w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <CheckCircle className="w-7 h-7 text-white" />
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-
-        {/* Rejected Card */}
-        <Card className="overflow-hidden relative group hover:shadow-xl transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 via-red-400/5 to-transparent"></div>
-          <CardBody className="p-4 md:p-5 relative">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 md:hidden bg-gradient-to-br from-red-500 to-red-600 rounded-lg flex items-center justify-center text-white shadow-lg">
-                    <XCircle className="w-4 h-4" />
-                  </div>
-                  <p className="text-xs md:text-sm text-red-600 dark:text-red-400 font-bold uppercase tracking-wide">
-                    Rejected
-                  </p>
-                </div>
-                <p className="text-3xl md:text-4xl font-extrabold bg-gradient-to-br from-red-600 to-red-800 dark:from-red-400 dark:to-red-600 bg-clip-text text-transparent">
-                  {stats.rejectedPayments}
-                </p>
-                <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
-                  Declined payments
-                </p>
-              </div>
-              <div className="hidden md:flex w-14 h-14 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <XCircle className="w-7 h-7 text-white" />
-              </div>
-            </div>
-          </CardBody>
-        </Card>
-
-        {/* Total Revenue Card */}
-        <Card className="overflow-hidden relative group hover:shadow-xl transition-all duration-300">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-purple-400/5 to-transparent"></div>
-          <CardBody className="p-4 md:p-5 relative">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 md:hidden bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center text-white shadow-lg">
-                    <TrendingUp className="w-4 h-4" />
-                  </div>
-                  <p className="text-xs md:text-sm text-purple-600 dark:text-purple-400 font-bold uppercase tracking-wide">
-                    Total Revenue
-                  </p>
-                </div>
-                <p className="text-2xl md:text-3xl font-extrabold bg-gradient-to-br from-purple-600 to-purple-800 dark:from-purple-400 dark:to-purple-600 bg-clip-text text-transparent">
-                  {formatCurrency(stats.totalRevenue)}
-                </p>
-                <p className="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
-                  Approved earnings
-                </p>
-              </div>
-              <div className="hidden md:flex w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <TrendingUp className="w-7 h-7 text-white" />
-              </div>
-            </div>
-          </CardBody>
-        </Card>
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+              {item.label}
+            </p>
+            <p className="text-2xl font-bold mb-0.5 break-words">{item.value}</p>
+            <p className="text-xs text-slate-400">{item.description}</p>
+          </div>
+        ))}
       </div>
 
       {/* Filters */}

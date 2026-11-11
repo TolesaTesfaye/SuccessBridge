@@ -5,6 +5,7 @@ import { Loading } from '@components/common/Loading'
 import { userService } from '@services/userService'
 import { resourceService } from '@services/resourceService'
 import { universityService } from '@services/universityService'
+import { Users, GraduationCap, BookOpen, Building2 } from 'lucide-react'
 
 interface AnalyticsData {
   totalUsers: number
@@ -127,65 +128,55 @@ export const SuperAdminAnalytics: React.FC<SuperAdminAnalyticsProps> = ({
   const content = (
       <div className="space-y-6">
         {/* Overview Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card>
-            <CardBody>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-slate-400 font-semibold">Total Users</p>
-                  <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{analytics.totalUsers}</p>
-                  <p className="text-xs text-green-600 dark:text-green-400 mt-1">+{analytics.recentUsers} this month</p>
-                </div>
-                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center text-2xl">
-                  👥
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-slate-400 font-semibold">Total Students</p>
-                  <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{analytics.totalStudents}</p>
-                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">Active learners</p>
-                </div>
-                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center text-2xl">
-                  🎓
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-slate-400 font-semibold">Total Resources</p>
-                  <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{analytics.totalResources}</p>
-                  <p className="text-xs text-green-600 dark:text-green-400 mt-1">+{analytics.recentResources} this month</p>
-                </div>
-                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center text-2xl">
-                  📚
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-
-          <Card>
-            <CardBody>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-slate-400 font-semibold">Universities</p>
-                  <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{analytics.totalUniversities}</p>
-                </div>
-                <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center text-2xl">
-                  🏫
+        <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-3 lg:grid-cols-4">
+          {[
+            {
+              label: 'Total Users',
+              value: analytics.totalUsers,
+              description: `+${analytics.recentUsers} this month`,
+              icon: Users,
+              accent: 'from-blue-500 to-blue-600',
+            },
+            {
+              label: 'Total Students',
+              value: analytics.totalStudents,
+              description: 'Active learners',
+              icon: GraduationCap,
+              accent: 'from-emerald-500 to-emerald-600',
+            },
+            {
+              label: 'Total Resources',
+              value: analytics.totalResources,
+              description: `+${analytics.recentResources} this month`,
+              icon: BookOpen,
+              accent: 'from-purple-500 to-purple-600',
+            },
+            {
+              label: 'Universities',
+              value: analytics.totalUniversities,
+              description: 'Partner institutions',
+              icon: Building2,
+              accent: 'from-amber-400 to-orange-500',
+            },
+          ].map((item) => (
+            <div
+              key={item.label}
+              className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-3 text-white shadow-lg hover:shadow-xl transition-shadow border border-slate-700/50"
+            >
+              <div className="flex items-start justify-between mb-2">
+                <div
+                  className={`w-9 h-9 rounded-lg bg-gradient-to-br ${item.accent} flex items-center justify-center`}
+                >
+                  <item.icon size={18} />
                 </div>
               </div>
-            </CardBody>
-          </Card>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
+                {item.label}
+              </p>
+              <p className="text-2xl font-bold mb-0.5">{item.value}</p>
+              <p className="text-xs text-slate-400">{item.description}</p>
+            </div>
+          ))}
         </div>
 
         {/* User Distribution */}

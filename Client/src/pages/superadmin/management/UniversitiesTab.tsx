@@ -143,20 +143,23 @@ export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
       {
         label: "Total Institutions",
         value: universities.length,
+        description: "Registered universities",
         icon: Building2,
-        color: "blue",
+        accent: "from-blue-500 to-blue-600",
       },
       {
         label: "Active Locations",
         value: new Set(universities.map((u) => u.location)).size,
+        description: "Cities covered",
         icon: MapPin,
-        color: "emerald",
+        accent: "from-emerald-500 to-emerald-600",
       },
       {
         label: "With Contact",
         value: universities.filter((u) => u.email).length,
+        description: "Have contact email",
         icon: Mail,
-        color: "violet",
+        accent: "from-purple-500 to-purple-600",
       },
     ],
     [universities]
@@ -169,21 +172,24 @@ export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
   return (
     <div className="space-y-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {stats.map((stat, idx) => (
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-3">
+        {stats.map((stat) => (
           <div
-            key={idx}
-            className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-4 text-white shadow-lg hover:shadow-xl transition-shadow border border-slate-700/50"
+            key={stat.label}
+            className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-3 text-white shadow-lg hover:shadow-xl transition-shadow border border-slate-700/50"
           >
-            <div className="flex items-start justify-between mb-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+            <div className="flex items-start justify-between mb-2">
+              <div
+                className={`w-9 h-9 rounded-lg bg-gradient-to-br ${stat.accent} flex items-center justify-center`}
+              >
                 <stat.icon size={18} />
               </div>
             </div>
             <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">
               {stat.label}
             </p>
-            <p className="text-2xl font-bold">{stat.value}</p>
+            <p className="text-2xl font-bold mb-0.5">{stat.value}</p>
+            <p className="text-xs text-slate-400">{stat.description}</p>
           </div>
         ))}
       </div>
