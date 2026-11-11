@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { DashboardTopTabNav } from "@components/dashboards/DashboardTopTabNav";
 import {
@@ -78,6 +79,13 @@ const parseError = (err: any): string => {
 
 export const AdminDashboardContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
+  const location = useLocation();
+  useEffect(() => {
+    const requestedTab = (location.state as { activeTab?: string } | null)?.activeTab;
+    if (requestedTab) {
+      setActiveTab(requestedTab as TabKey);
+    }
+  }, [location.state]);
   const [state, setState] = useState<DashboardState>(initialState);
   const [uploading, setUploading] = useState(false);
   const [uploadFormKey, setUploadFormKey] = useState(0);
