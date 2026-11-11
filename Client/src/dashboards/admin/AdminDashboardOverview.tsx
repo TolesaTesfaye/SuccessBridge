@@ -91,9 +91,9 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
     return (
       <div className="space-y-5 animate-pulse">
         <div className="h-56 rounded-[28px] bg-slate-200 dark:bg-slate-800" />
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 gap-2 lg:grid-cols-4 md:gap-3">
           {[1, 2, 3, 4].map((item) => (
-            <div key={item} className="h-32 rounded-2xl bg-slate-200 dark:bg-slate-800" />
+            <div key={item} className="h-24 rounded-2xl bg-slate-200 dark:bg-slate-800 sm:h-32" />
           ))}
         </div>
         <div className="h-72 rounded-[28px] bg-slate-200 dark:bg-slate-800" />
@@ -105,7 +105,7 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
     <div className="space-y-5 pb-4">
 
       {/* Enhanced State Cards Grid - Similar to SuperAdmin */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+      <section className="grid grid-cols-2 gap-2 lg:grid-cols-4 md:gap-3">
         <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-3 text-white shadow-lg hover:shadow-xl transition-shadow border border-slate-700/50">
           <div className="flex items-start justify-between mb-2">
             <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
