@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Card, CardBody, CardHeader } from "@components/common/Card";
 import { Button } from "@components/common/Button";
 import { Pagination } from "@components/common/Pagination";
@@ -30,6 +30,7 @@ export const AdminDashboardResources: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
   const loadResources = async () => {
     try {
       setLoading(true);
@@ -61,6 +62,17 @@ export const AdminDashboardResources: React.FC = () => {
     void loadResources();
   }, [currentPage]);
 
+  const filteredResources = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return resources;
+    return resources.filter(
+      (resource) =>
+        resource.title?.toLowerCase().includes(query) ||
+        resource.type?.toLowerCase().includes(query) ||
+        resource.educationLevel?.toLowerCase().includes(query),
+    );
+  }, [resources, searchQuery]);
+
   if (loading && resources.length === 0) {
     return (
       <div className="space-y-6">
@@ -73,11 +85,23 @@ export const AdminDashboardResources: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="grid gap-6">
-        <Card className="border-slate-200/80 shadow-sm dark:border-white/10">
+        <Card className="overflow-hidden rounded-2xl border-slate-200/80 bg-white/90 shadow-lg backdrop-blur dark:border-white/10 dark:bg-slate-900/80">
           <CardHeader>
-            <div className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-slate-500" />
-              <span>Resources</span>
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="flex items-center gap-2">
+                <FileText className="h-5 w-5 text-slate-500" />
+                <span>Resources</span>
+                <span className="text-sm text-slate-500">
+                  Showing {filteredResources.length} of {resources.length}
+                </span>
+              </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search resources..."
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white md:w-64"
+              />
             </div>
           </CardHeader>
           <CardBody>
@@ -96,7 +120,7 @@ export const AdminDashboardResources: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-white/10">
-                    {resources.map((resource) => (
+                    {filteredResources.map((resource) => (
                       <tr
                         key={resource.id}
                         className="transition-colors hover:bg-slate-50/80 dark:hover:bg-white/5"
@@ -133,7 +157,7 @@ export const AdminDashboardResources: React.FC = () => {
                     ))}
                   </tbody>
                 </table>
-                {resources.length === 0 && !loading && (
+                {filteredResources.length === 0 && !loading && (
                   <div className="rounded-2xl border border-dashed border-slate-200 p-8 text-center dark:border-white/10">
                     <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-2xl dark:bg-white/5">
                       📚

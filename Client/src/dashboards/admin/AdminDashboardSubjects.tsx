@@ -29,6 +29,7 @@ export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const loadData = async () => {
     try {
@@ -56,10 +57,27 @@ export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
   }, []);
 
   const filteredSubjects = useMemo(() => {
-    // Simple pagination
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return subjects;
+    return subjects.filter(
+      (subject) =>
+        subject.name?.toLowerCase().includes(query) ||
+        subject.code?.toLowerCase().includes(query),
+    );
+  }, [subjects, searchQuery]);
+
+  const paginatedSubjects = useMemo(() => {
     const start = (currentPage - 1) * 8;
-    return subjects.slice(start, start + 8);
-  }, [subjects, currentPage]);
+    return filteredSubjects.slice(start, start + 8);
+  }, [filteredSubjects, currentPage]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    setTotalPages(Math.max(1, Math.ceil(filteredSubjects.length / 8)));
+  }, [filteredSubjects]);
 
   if (loading && subjects.length === 0) {
     return (
@@ -75,14 +93,23 @@ export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
       {/* Filters & Table Section */}
       <div className="grid gap-6">
         {/* Subjects Table */}
-        <Card className="border-slate-200/80 shadow-sm dark:border-white/10">
+        <Card className="overflow-hidden rounded-2xl border-slate-200/80 bg-white/90 shadow-lg backdrop-blur dark:border-white/10 dark:bg-slate-900/80">
           <CardHeader>
-            <div className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-slate-500" />
-              <span>Subject Registry</span>
-              <span className="ml-auto text-sm text-slate-500">
-                Showing {filteredSubjects.length} of {subjects.length}
-              </span>
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="flex items-center gap-2">
+                <BookOpen className="h-5 w-5 text-slate-500" />
+                <span>Subject Registry</span>
+                <span className="text-sm text-slate-500">
+                  Showing {paginatedSubjects.length} of {filteredSubjects.length}
+                </span>
+              </div>
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search subjects..."
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 shadow-sm outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white md:w-64"
+              />
             </div>
           </CardHeader>
           <CardBody>
@@ -100,7 +127,7 @@ export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-white/10">
-                    {filteredSubjects.map((subject) => (
+                    {paginatedSubjects.map((subject) => (
                       <tr
                         key={subject.id}
                         className="transition-colors hover:bg-slate-50/80 dark:hover:bg-white/5"
@@ -129,7 +156,7 @@ export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
                     ))}
                   </tbody>
                 </table>
-                {filteredSubjects.length === 0 && !loading && (
+                {paginatedSubjects.length === 0 && !loading && (
                   <div className="rounded-2xl border border-dashed border-slate-200 p-8 text-center dark:border-white/10">
                     <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-2xl dark:bg-white/5">
                       📚
