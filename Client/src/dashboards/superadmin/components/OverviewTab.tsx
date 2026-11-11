@@ -193,7 +193,7 @@ function StatCard({
             {title}
           </h3>
           <p
-            className={`mt-1 text-3xl md:text-4xl font-extrabold bg-gradient-to-br ${colorMap.value} bg-clip-text text-transparent`}
+            className="mt-1 text-2xl font-extrabold text-slate-900 dark:text-white md:text-3xl"
           >
             {loading ? "..." : value}
           </p>
