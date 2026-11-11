@@ -18,6 +18,7 @@ import { AdminDashboardUpload } from "./AdminDashboardUpload";
 import { AdminDashboardPromotion } from "./AdminDashboardPromotion";
 import { AdminDashboardResources } from "./AdminDashboardResources";
 import { AdminDashboardSubjects } from "./AdminDashboardSubjects";
+import { AdminDashboardHelp } from "./AdminDashboardHelp";
 import {
   AlertTriangle,
 } from "lucide-react";
@@ -30,7 +31,8 @@ type TabKey =
   | "reports"
   | "promotion"
   | "resources"
-  | "subjects";
+  | "subjects"
+  | "help";
 
 type DashboardState = {
   loading: boolean;
@@ -153,6 +155,7 @@ export const AdminDashboardContent: React.FC = () => {
       { id: "resources" as TabKey, label: "Resources" },
       { id: "quizzes" as TabKey, label: "Quizzes" },
       { id: "upload" as TabKey, label: "Upload" },
+      { id: "help" as TabKey, label: "Help" },
       { id: "reports" as TabKey, label: "Analytics" },
     ],
     [],
@@ -166,6 +169,7 @@ export const AdminDashboardContent: React.FC = () => {
       "departments",
       "subjects",
       "resources",
+      "help",
       "quizzes",
       "upload",
       "reports",
@@ -260,6 +264,8 @@ export const AdminDashboardContent: React.FC = () => {
         )}
 
         {activeTab === "resources" && <AdminDashboardResources />}
+
+        {activeTab === "help" && <AdminDashboardHelp />}
 
         {activeTab === "quizzes" && (
           <AdminDashboardQuizzes onNavigateToTab={handleNavigateToTab} />
