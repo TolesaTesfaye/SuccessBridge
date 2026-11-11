@@ -17,4 +17,4 @@ interface SuperAdminTopTabNavProps {
 /** @deprecated Use DashboardTopTabNav — kept for existing superadmin view imports */
 export const SuperAdminTopTabNav: React.FC<SuperAdminTopTabNavProps> = (
   { fill = true, ...props },
-) => <DashboardTopTabNav fill={fill} {...props} />;
+) => <DashboardTopTabNav fill={fill} showIcons={false} {...props} />;

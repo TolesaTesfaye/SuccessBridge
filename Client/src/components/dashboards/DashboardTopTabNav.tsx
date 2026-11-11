@@ -19,6 +19,7 @@ interface DashboardTopTabNavProps {
   stickyClassName?: string;
   accent?: AccentColor;
   fill?: boolean;
+  showIcons?: boolean;
 }
 
 const accentStyles: Record<
@@ -46,6 +47,7 @@ export const DashboardTopTabNav: React.FC<DashboardTopTabNavProps> = ({
   stickyClassName = "-mx-2 md:-mx-6 px-2 md:px-6",
   accent = "purple",
   fill = false,
+  showIcons = true,
 }) => {
   const accentClass = accentStyles[accent];
 
@@ -77,7 +79,7 @@ export const DashboardTopTabNav: React.FC<DashboardTopTabNavProps> = ({
                   : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               }`}
             >
-              {Icon && (
+              {showIcons && Icon && (
                 <Icon
                   className={`h-4 w-4 shrink-0 transition-colors duration-300 ${
                     isActive
