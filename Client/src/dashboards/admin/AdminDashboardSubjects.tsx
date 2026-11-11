@@ -4,7 +4,7 @@ import { Pagination } from "@components/common/Pagination";
 import { Loading } from "@components/common/Loading";
 import { subjectService } from "@services/subjectService";
 import type { Subject } from "@services/subjectService";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Building2, GraduationCap, Layers } from "lucide-react";
 import {
   DashboardHeroSkeleton,
   DashboardListSkeleton,
@@ -79,6 +79,40 @@ export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
     setTotalPages(Math.max(1, Math.ceil(filteredSubjects.length / 8)));
   }, [filteredSubjects]);
 
+  const stats = useMemo(() => {
+    const total = subjects.length;
+    const withGrade = subjects.filter((s) => s.gradeId).length;
+    const withStream = subjects.filter((s) => s.streamId).length;
+    const withDepartment = subjects.filter((s) => s.departmentId).length;
+
+    return [
+      {
+        label: "Total Subjects",
+        value: total,
+        icon: BookOpen,
+        accent: "from-sky-500 to-cyan-500",
+      },
+      {
+        label: "With Grade",
+        value: withGrade,
+        icon: GraduationCap,
+        accent: "from-amber-500 to-orange-500",
+      },
+      {
+        label: "With Stream",
+        value: withStream,
+        icon: Layers,
+        accent: "from-violet-500 to-fuchsia-500",
+      },
+      {
+        label: "With Department",
+        value: withDepartment,
+        icon: Building2,
+        accent: "from-emerald-500 to-teal-500",
+      },
+    ];
+  }, [subjects]);
+
   if (loading && subjects.length === 0) {
     return (
       <div className="space-y-6">
@@ -90,6 +124,26 @@ export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
 
   return (
     <div className="space-y-6">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {stats.map((item) => (
+          <div
+            key={item.label}
+            className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 shadow-sm backdrop-blur dark:border-white/10 dark:bg-slate-900/80"
+          >
+            <div
+              className={`inline-flex rounded-xl bg-gradient-to-br ${item.accent} p-2 text-white shadow-lg`}
+            >
+              <item.icon className="h-4 w-4" />
+            </div>
+            <div className="mt-3 text-2xl font-black text-slate-900 dark:text-white">
+              {item.value}
+            </div>
+            <p className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">
+              {item.label}
+            </p>
+          </div>
+        ))}
+      </div>
       {/* Filters & Table Section */}
       <div className="grid gap-6">
         {/* Subjects Table */}

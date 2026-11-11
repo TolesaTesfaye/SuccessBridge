@@ -84,25 +84,25 @@ export const AdminDashboardUniversities: React.FC = () => {
         label: "Total Institutions",
         value: universities.length,
         icon: School,
-        color: "blue",
+        accent: "from-sky-500 to-cyan-500",
       },
       {
         label: "Active Locations",
         value: new Set(universities.map((u) => u.location)).size,
         icon: MapPin,
-        color: "emerald",
+        accent: "from-emerald-500 to-teal-500",
       },
       {
         label: "Partner Status",
         value: "Verified",
         icon: ShieldCheck,
-        color: "indigo",
+        accent: "from-indigo-500 to-violet-500",
       },
       {
         label: "Global Presence",
         value: "National",
         icon: Globe,
-        color: "violet",
+        accent: "from-fuchsia-500 to-pink-500",
       },
     ],
     [universities],
@@ -119,6 +119,26 @@ export const AdminDashboardUniversities: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-700">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {stats.map((item) => (
+          <div
+            key={item.label}
+            className="rounded-2xl border border-slate-200/80 bg-white/90 p-4 shadow-sm backdrop-blur dark:border-white/10 dark:bg-slate-900/80"
+          >
+            <div
+              className={`inline-flex rounded-xl bg-gradient-to-br ${item.accent} p-2 text-white shadow-lg`}
+            >
+              <item.icon className="h-4 w-4" />
+            </div>
+            <div className="mt-3 text-2xl font-black text-slate-900 dark:text-white">
+              {item.value}
+            </div>
+            <p className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">
+              {item.label}
+            </p>
+          </div>
+        ))}
+      </div>
       {showAddForm && (
         <Card className="border-none shadow-2xl bg-white dark:bg-[#1a1b23] animate-in zoom-in-95 duration-300">
           <CardHeader className="border-b border-slate-100 dark:border-white/5 p-6">
