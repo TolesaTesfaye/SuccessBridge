@@ -1,53 +1,34 @@
+# 👋 Hi, I'm Tolesa Tesfaye
 
-# Hi, I'm Tolinaaf Tesfaye 👋
+### 🎓 Software Engineering Student | 💻 Aspiring Software Developer
 
-### Software Engineering Student | Future Software Developer
+Welcome to my GitHub profile! I'm Tolesa Tesfaye, a 5th-year Software Engineering student passionate about software development, problem-solving, and building practical applications.
 
-Welcome to my GitHub profile!
-
-I'm a 5th-year Software Engineering student passionate about building software, solving problems, and learning new technologies.
-
-## 🚀 About Me
-
-- 🎓 Software Engineering Student
-- 💻 Interested in Software Development
-- 🌱 Currently learning OOP, Web Services, and Software Design
-- 🎯 Working to become a professional software developer
-- 🤝 Interested in collaborating on software projects
-
-## 🛠️ Technologies & Tools
-
-- **Languages:** Python, C#, Java, PHP
-- **Web:** HTML, CSS, JavaScript
-- **Database:** MySQL
-- **Tools:** Git, GitHub, Visual Studio, VS Code
-
-## 📂 My Projects
-
-Here are some of my projects:
-
-- Project 1 – Add your project description and link.
-- Project 2 – Add your project description and link.
-- Project 3 – Add your project description and link.
-
-## 📫 Connect With Me
-
-- GitHub: https://github.com/YOUR_USERNAME
-- Email: YOUR_EMAIL
+I enjoy learning new technologies and transforming ideas into useful software solutions.
 
 ---
 
+## 🚀 About Me
+
+- 🎓 5th-year Software Engineering student
+- 💻 Interested in Full-Stack Development
+- 🌱 Continuously learning new programming technologies
+- 🧠 Interested in Object-Oriented Programming and Software Engineering
+- 🎯 My goal is to become a professional software developer
+- 🤝 Open to collaboration and learning opportunities
+
+---
 
 ## 💻 Programming Languages
 
 <p align="left">
-  <img src="https://skillicons.dev/icons?i=python,java,cs,php,js,html,css" />
+  <img src="https://skillicons.dev/icons?i=python,java,cs,php,html,css,js" />
 </p>
 
-## 🧰 Frameworks & Libraries
+## 🧰 Frameworks & Technologies
 
 <p align="left">
-  <img src="https://skillicons.dev/icons?i=dotnet,bootstrap,react,nodejs" />
+  <img src="https://skillicons.dev/icons?i=dotnet,bootstrap" />
 </p>
 
 ## 🗄️ Databases
@@ -62,10 +43,58 @@ Here are some of my projects:
   <img src="https://skillicons.dev/icons?i=git,github,vscode,visualstudio,postman,figma" />
 </p>
 
-## 🖥️ Operating Systems
+---
 
-<p align="left">
-  <img src="https://skillicons.dev/icons?i=windows,linux,ubuntu" />
+## 🌐 My Projects
+
+Here are some projects I have worked on:
+
+### 1. Success Bridge
+A web-based project.
+
+🔗 [Visit Success Bridge](https://success-bridge-ten.vercel.app/)
+
+### 2. Gamataa Barattoota Adaa fi Bargaa
+
+A web project for students.
+
+🔗 [Visit Project](https://gamataa-barattoota-ada-aa-bargaa.vercel.app/)
+
+### 3. Personal Portfolio
+
+My personal portfolio website.
+
+🔗 [Visit My Portfolio](https://my-portfolio-lastport.vercel.app/)
+
+---
+
+## 📊 GitHub Statistics
+
+<p align="center">
+  <img src="https://github-readme-stats.vercel.app/api?username=TolesaTesfaye&show_icons=true&theme=tokyonight" height="165"/>
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=TolesaTesfaye&layout=compact&theme=tokyonight" height="165"/>
 </p>
 
-⭐ Thanks for visiting my profile!
+---
+
+## 📫 Connect With Me
+
+<p align="left">
+  <a href="https://github.com/TolesaTesfaye">
+    <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white"/>
+  </a>
+  <a href="mailto:tolesatesfaye273@gmail.com">
+    <img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white"/>
+  </a>
+</p>
+
+📧 **Email:** tolesatesfaye273@gmail.com
+
+📱 **Phone:** 0975863448
+
+---
+
+### ⭐ Thank You for Visiting My Profile!
+
+*"Great software is built through continuous learning, creativity, and problem-solving."*
+
