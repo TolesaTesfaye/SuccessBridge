@@ -215,39 +215,39 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 p-5 text-white shadow-xl shadow-slate-900/10 md:p-6 dark:from-[#101a33] dark:via-[#0d1730] dark:to-[#0a1226]">
-          <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-blue-500/15 blur-3xl" />
+        <div className="relative overflow-hidden rounded-[26px] border border-slate-200 bg-white p-5 text-slate-900 shadow-sm md:p-6 dark:border-white/5 dark:bg-gradient-to-br dark:from-[#101a33] dark:via-[#0d1730] dark:to-[#0a1226] dark:text-white dark:shadow-xl dark:shadow-slate-900/10">
+          <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-blue-500/10 blur-3xl dark:bg-blue-500/15" />
           <div className="pointer-events-none absolute -bottom-20 -left-16 h-44 w-44 rounded-full bg-emerald-500/10 blur-3xl" />
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent dark:via-blue-400/50" />
           <div className="relative">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Platform snapshot</p>
-                <h2 className="mt-1 text-xl font-semibold tracking-tight">Catalogue overview</h2>
-                <p className="mt-1 text-xs text-slate-400">Live totals across your academic content.</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-600 dark:text-slate-400">Platform snapshot</p>
+                <h2 className="mt-1 text-xl font-semibold tracking-tight text-slate-900 dark:text-white">Catalogue overview</h2>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Live totals across your academic content.</p>
               </div>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/10">
-                <BookOpen className="h-4 w-4 text-blue-300" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-blue-600 dark:border-white/10 dark:bg-white/10 dark:text-blue-300">
+                <BookOpen className="h-4 w-4" />
               </div>
             </div>
 
-            <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.06] p-4">
+            <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/[0.06]">
               <div className="flex items-end justify-between gap-3">
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Total catalogue items</p>
-                  <p className="mt-1 text-3xl font-bold leading-none">{formatNumber(totalItems)}</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total catalogue items</p>
+                  <p className="mt-1 text-3xl font-bold leading-none text-slate-900 dark:text-white">{formatNumber(totalItems)}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Learners reached</p>
-                  <p className="mt-1 text-lg font-bold leading-none text-blue-300">{formatNumber(metrics.students)}</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Learners reached</p>
+                  <p className="mt-1 text-lg font-bold leading-none text-blue-600 dark:text-blue-300">{formatNumber(metrics.students)}</p>
                 </div>
               </div>
-              <div className="mt-3 flex h-2 overflow-hidden rounded-full bg-white/10">
+              <div className="mt-3 flex h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
                 <div className="h-full bg-blue-400" style={{ width: `${share(metrics.universities)}%` }} />
                 <div className="h-full bg-amber-400" style={{ width: `${share(metrics.subjects)}%` }} />
                 <div className="h-full bg-emerald-400" style={{ width: `${share(resourceCount)}%` }} />
               </div>
-              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-slate-400">
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-slate-500 dark:text-slate-400">
                 <span className="flex items-center gap-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
                   Universities {share(metrics.universities)}%
@@ -290,16 +290,16 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
               />
             </div>
 
-            <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+            <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/[0.04]">
               <div className="mb-3 flex items-center justify-between">
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Resource mix</p>
-                <span className="text-[10px] font-medium text-slate-500">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">Resource mix</p>
+                <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500">
                   {resourceTypeBreakdown.length}{" "}
                   {resourceTypeBreakdown.length === 1 ? "type" : "types"}
                 </span>
               </div>
               {resourceTypeBreakdown.length === 0 ? (
-                <p className="text-xs text-slate-500">No resources uploaded yet.</p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">No resources uploaded yet.</p>
               ) : (
                 <div className="space-y-3">
                   {resourceTypeBreakdown.slice(0, 4).map((item, index) => {
@@ -317,15 +317,15 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
                     return (
                       <div key={item.label}>
                         <div className="mb-1 flex items-center justify-between text-[11px]">
-                          <span className="flex items-center gap-2 font-medium text-slate-300">
+                          <span className="flex items-center gap-2 font-medium text-slate-600 dark:text-slate-300">
                             <span className={`h-1.5 w-1.5 rounded-full ${color}`} />
                             {item.label}
                           </span>
-                          <span className="font-bold text-white">
+                          <span className="font-bold text-slate-900 dark:text-white">
                             {formatNumber(item.count)}
                           </span>
                         </div>
-                        <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+                        <div className="h-1.5 overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
                           <div
                             className={`h-full rounded-full ${color}`}
                             style={{ width: `${Math.max(percent, 3)}%` }}
@@ -339,18 +339,18 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
             </div>
 
             {educationLevelBreakdown.length > 0 && (
-              <div className="mt-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
-                <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+              <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/[0.04]">
+                <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
                   Education levels
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   {educationLevelBreakdown.slice(0, 6).map((item) => (
                     <span
                       key={item.label}
-                      className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.06] px-2 py-1 text-[11px] font-medium text-slate-300"
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-600 dark:border-white/10 dark:bg-white/[0.06] dark:text-slate-300"
                     >
                       {item.label}
-                      <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                      <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-white/10 dark:text-white">
                         {formatNumber(item.count)}
                       </span>
                     </span>
@@ -359,9 +359,9 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
               </div>
             )}
 
-            <div className="mt-5 flex items-center justify-between gap-2 border-t border-white/10 pt-4 text-[11px] text-slate-500">
+            <div className="mt-5 flex items-center justify-between gap-2 border-t border-slate-200 pt-4 text-[11px] text-slate-500 dark:border-white/10 dark:text-slate-500">
               <span className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
                 Synced with platform data
               </span>
               <span>{formatNumber(totalItems)} items tracked</span>
@@ -414,21 +414,21 @@ const SnapshotRow: React.FC<{
 }> = ({ label, value, percent, hint, icon: Icon, color }) => (
   <div>
     <div className="mb-1.5 flex items-center justify-between gap-3 text-xs">
-      <span className="flex items-center gap-2 font-medium text-slate-300">
+      <span className="flex items-center gap-2 font-medium text-slate-600 dark:text-slate-300">
         <Icon className="h-3.5 w-3.5 text-slate-400" />
         {label}
       </span>
       <span className="flex items-center gap-2">
-        <span className="font-bold text-white">{formatNumber(value)}</span>
-        <span className="w-8 text-right text-[10px] font-semibold text-slate-500">{percent}%</span>
+        <span className="font-bold text-slate-900 dark:text-white">{formatNumber(value)}</span>
+        <span className="w-8 text-right text-[10px] font-semibold text-slate-400 dark:text-slate-500">{percent}%</span>
       </span>
     </div>
-    <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+    <div className="h-1.5 overflow-hidden rounded-full bg-slate-200 dark:bg-white/10">
       <div
         className={`h-full rounded-full ${color}`}
         style={{ width: `${Math.max(percent, 2)}%` }}
       />
     </div>
-    <p className="mt-1.5 text-[11px] text-slate-500">{hint}</p>
+    <p className="mt-1.5 text-[11px] text-slate-500 dark:text-slate-500">{hint}</p>
   </div>
 );
