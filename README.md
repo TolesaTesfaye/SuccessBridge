@@ -1,70 +1,58 @@
 # 👋 Hi, I'm Tolesa Tesfaye
 
-### 🎓 Software Engineering Student | 💻 Aspiring Software Developer
+### 🎓 Software Engineering Student | Full-Stack Developer
 
-Welcome to my GitHub profile! I'm Tolesa Tesfaye, a 5th-year Software Engineering student passionate about software development, problem-solving, and building practical applications.
+Welcome to my GitHub profile!
 
-I enjoy learning new technologies and transforming ideas into useful software solutions.
-
----
+I'm a 5th-year Software Engineering student passionate about building modern applications, solving real-world problems, and continuously improving my software development skills.
 
 ## 🚀 About Me
 
 - 🎓 5th-year Software Engineering student
 - 💻 Interested in Full-Stack Development
-- 🌱 Continuously learning new programming technologies
-- 🧠 Interested in Object-Oriented Programming and Software Engineering
-- 🎯 My goal is to become a professional software developer
-- 🤝 Open to collaboration and learning opportunities
+- 🌱 Exploring modern software development technologies
+- 🧠 Passionate about Object-Oriented Programming and Software Engineering
+- 🎯 Focused on building practical and meaningful software solutions
+- 🤝 Open to collaboration and new opportunities
 
 ---
 
 ## 💻 Programming Languages
 
 <p align="left">
-  <img src="https://skillicons.dev/icons?i=python,java,cs,php,html,css,js" />
+  <img src="https://skillicons.dev/icons?i=python,cpp,js,php,java,cs,html,css" />
 </p>
 
-## 🧰 Frameworks & Technologies
+## ⚡ Frameworks & Technologies
 
 <p align="left">
-  <img src="https://skillicons.dev/icons?i=dotnet,bootstrap" />
+  <img src="https://skillicons.dev/icons?i=dotnet,nodejs,spring,react,tailwind" />
 </p>
 
-## 🗄️ Databases
+## 🛠️ Development Tools
 
 <p align="left">
-  <img src="https://skillicons.dev/icons?i=mysql,postgres,mongodb" />
-</p>
-
-## ⚙️ Development Tools
-
-<p align="left">
-  <img src="https://skillicons.dev/icons?i=git,github,vscode,visualstudio,postman,figma" />
+  <img src="https://skillicons.dev/icons?i=git,github,docker,postman,vscode,visualstudio" />
 </p>
 
 ---
 
-## 🌐 My Projects
-
-Here are some projects I have worked on:
+## 🌐 Featured Projects
 
 ### 1. Success Bridge
-A web-based project.
+A web-based application project.
 
-🔗 [Visit Success Bridge](https://success-bridge-ten.vercel.app/)
+🔗 [Live Demo](https://success-bridge-ten.vercel.app/)
 
 ### 2. Gamataa Barattoota Adaa fi Bargaa
+A web project focused on students.
 
-A web project for students.
-
-🔗 [Visit Project](https://gamataa-barattoota-ada-aa-bargaa.vercel.app/)
+🔗 [Live Demo](https://gamataa-barattoota-ada-aa-bargaa.vercel.app/)
 
 ### 3. Personal Portfolio
+My personal portfolio website showcasing my work and development journey.
 
-My personal portfolio website.
-
-🔗 [Visit My Portfolio](https://my-portfolio-lastport.vercel.app/)
+🔗 [Live Demo](https://my-portfolio-lastport.vercel.app/)
 
 ---
 
@@ -84,17 +72,18 @@ My personal portfolio website.
     <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white"/>
   </a>
   <a href="mailto:tolesatesfaye273@gmail.com">
-    <img src="https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white"/>
+    <img src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white"/>
   </a>
 </p>
 
-📧 **Email:** tolesatesfaye273@gmail.com
-
-📱 **Phone:** 0975863448
+- 📧 Email: tolesatesfaye273@gmail.com
+- 📱 Phone: 0975863448
+- 🌍 GitHub: [TolesaTesfaye](https://github.com/TolesaTesfaye)
 
 ---
 
-### ⭐ Thank You for Visiting My Profile!
-
-*"Great software is built through continuous learning, creativity, and problem-solving."*
-
+<p align="center">
+  <b>⭐ Thanks for visiting my profile!</b>
+  <br/>
+  "Keep Learning, Keep Building, Keep Growing."
+</p>
