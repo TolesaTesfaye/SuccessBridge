@@ -45,10 +45,14 @@ export const getResourceById = async (req: Request, res: Response, next: NextFun
 export const createResource = async (req: Request, res: Response, next: NextFunction) => {
   try {
     console.log('Create resource request body:', req.body)
-    console.log('Create resource file:', req.file)
-    
+    const files = (req.files || {}) as { [fieldname: string]: Express.Multer.File[] }
+    console.log('Create resource files:', {
+      file: files.file?.[0]?.originalname,
+      previewImage: files.previewImage?.[0]?.originalname,
+    })
+
     const createdBy = req.user!.userId
-    const resource = await ResourceService.createResource(req.body, req.file, createdBy)
+    const resource = await ResourceService.createResource(req.body, files, createdBy)
 
     res.status(201).json({ success: true, data: resource })
   } catch (error) {

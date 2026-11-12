@@ -191,9 +191,24 @@ export class ResourceService {
   /**
    * Create a new resource
    */
-  static async createResource(data: any, file: Express.Multer.File | undefined, uploadedBy: string) {
+  static async createResource(
+    data: any,
+    files: { [fieldname: string]: Express.Multer.File[] } | Express.Multer.File | undefined,
+    uploadedBy: string,
+  ) {
     console.log('Creating resource with data:', data)
-    console.log('File object:', JSON.stringify(file, null, 2))
+
+    // Support both the legacy single-file signature and the new fields object
+    const filesMap = (Array.isArray(files) ? undefined : files) as
+      | { [fieldname: string]: Express.Multer.File[] }
+      | undefined
+    const file = Array.isArray(files) ? files[0] : filesMap?.file?.[0]
+    const previewImage = filesMap?.previewImage?.[0]
+    console.log('File object:', file ? { name: file.originalname, size: file.size } : 'none')
+    console.log(
+      'Preview image:',
+      previewImage ? { name: previewImage.originalname, size: previewImage.size } : 'none',
+    )
     
     const {
       title,
@@ -274,6 +289,18 @@ export class ResourceService {
 
     console.log('Final fileUrl to be saved:', fileUrl)
 
+    // Optional custom preview image — falls back to the default preview on the client
+    let previewImageUrl: string | undefined
+    if (previewImage) {
+      try {
+        previewImageUrl = await uploadToB2(data, previewImage, 'previews')
+        console.log('Preview image uploaded to B2:', previewImageUrl)
+      } catch (error) {
+        // Don't fail the whole upload just because the optional preview failed
+        console.error('Preview image upload failed, using default preview:', error)
+      }
+    }
+
     // Resolve University
     let finalUniversityId = null
 
@@ -323,6 +350,7 @@ export class ResourceService {
       description,
       type: type.toLowerCase().replace(/\s+/g, '_'),
       fileUrl,
+      previewImageUrl,
       educationLevel: educationLevel.toLowerCase() === 'university' ? 'university' : 'high_school',
       grade: gradeNameToKey(gradeValue),
       stream: baseStream ? baseStream.toLowerCase() : undefined,

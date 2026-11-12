@@ -8,6 +8,7 @@ class Resource extends Model<IResource> implements IResource {
   public description!: string
   public type!: ResourceType
   public fileUrl!: string
+  public previewImageUrl?: string
   public educationLevel!: 'high_school' | 'university'
   public grade?: string
   public stream?: string
@@ -41,6 +42,11 @@ Resource.init(
     fileUrl: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    previewImageUrl: {
+      type: DataTypes.STRING(1024),
+      allowNull: true,
+      field: 'preview_image_url',
     },
     educationLevel: {
       type: DataTypes.STRING,

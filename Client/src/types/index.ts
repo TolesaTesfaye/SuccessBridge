@@ -82,6 +82,7 @@ export interface Resource {
   description: string;
   type: ResourceType;
   fileUrl: string;
+  previewImageUrl?: string;
   educationLevel: "high_school" | "university";
   grade?: string; // Can be high school grade or university category
   stream?: string;

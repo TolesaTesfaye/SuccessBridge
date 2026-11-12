@@ -157,6 +157,10 @@ router.get('/:id', getResourceById)
  *               file:
  *                 type: string
  *                 format: binary
+ *               previewImage:
+ *                 type: string
+ *                 format: binary
+ *                 description: Optional custom card preview image
  *     responses:
  *       201:
  *         description: Resource uploaded successfully
@@ -184,7 +188,16 @@ router.get('/:id', getResourceById)
  *               $ref: '#/components/schemas/Error'
  */
 // Create resource (admin only)
-router.post('/', authMiddleware, requireRole('admin', 'super_admin'), upload.single('file'), createResource)
+router.post(
+  '/',
+  authMiddleware,
+  requireRole('admin', 'super_admin'),
+  upload.fields([
+    { name: 'file', maxCount: 1 },
+    { name: 'previewImage', maxCount: 1 },
+  ]),
+  createResource,
+)
 
 // Update resource (admin only)
 router.put('/:id', authMiddleware, requireRole('admin', 'super_admin'), updateResource)

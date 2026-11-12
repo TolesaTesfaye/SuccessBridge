@@ -123,6 +123,7 @@ export interface UploadFormData {
   type: string;
   subject: string;
   file: File | null;
+  previewImage?: File | null;
   tags: string;
 }
 
@@ -152,9 +153,11 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
     type: initialData?.type || "",
     subject: initialData?.subject || "",
     file: initialData?.file || null,
+    previewImage: initialData?.previewImage || null,
     tags: initialData?.tags || "",
   });
   const [error, setError] = useState<string | null>(null);
+  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
 
   const [grades, setGrades] = useState<Grade[]>([]);
   const [streams, setStreams] = useState<Stream[]>([]);
@@ -327,6 +330,23 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
     setFormData((prev) => ({ ...prev, file }));
     setError(null);
   };
+
+  const handlePreviewImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const previewImage = e.target.files?.[0] || null;
+    setFormData((prev) => ({ ...prev, previewImage }));
+    setError(null);
+  };
+
+  // Create a local object URL so the admin can see the selected cover image
+  useEffect(() => {
+    if (!formData.previewImage) {
+      setPreviewImageUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(formData.previewImage);
+    setPreviewImageUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [formData.previewImage]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -606,29 +626,88 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
               />
             </div>
 
-            {formData.type && (
+            {(formData.type || previewImageUrl) && (
               <div className="mt-4 p-3 bg-white dark:bg-slate-800 rounded-xl border border-blue-200 dark:border-blue-900/50 shadow-sm space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                    🖼️ Selected Resource Type Preview
+                    🖼️ Card Preview Image
                   </span>
-                  <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/40 px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">
-                    {selectedTypeName.toUpperCase()}
+                  <span
+                    className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                      previewImageUrl
+                        ? "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/40 border-emerald-200 dark:border-emerald-800"
+                        : "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/40 border-blue-200 dark:border-blue-800"
+                    }`}
+                  >
+                    {previewImageUrl
+                      ? "CUSTOM IMAGE"
+                      : selectedTypeName
+                        ? `DEFAULT · ${selectedTypeName.toUpperCase()}`
+                        : "DEFAULT"}
                   </span>
                 </div>
                 <div className="rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 relative bg-slate-100 dark:bg-slate-900 group">
                   <img
-                    src={getPreviewImageForType(selectedTypeName, formData.title)}
-                    alt="Resource Type Preview"
+                    src={
+                      previewImageUrl ||
+                      getPreviewImageForType(selectedTypeName, formData.title)
+                    }
+                    alt="Resource preview"
                     className="w-full h-32 sm:h-36 md:h-40 object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/30 to-transparent flex flex-col justify-end p-3">
                     <span className="text-[9px] font-extrabold uppercase tracking-widest text-blue-400">
-                      Card Preview Image
+                      {previewImageUrl ? "Your uploaded image" : "Default image"}
                     </span>
                     <h4 className="text-white font-bold text-xs md:text-sm line-clamp-1">
                       {formData.title || "Resource Title Preview"}
                     </h4>
+                  </div>
+                </div>
+
+                <div className="pt-1">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                    Preview Image{" "}
+                    <span className="font-normal text-slate-400">(optional)</span>
+                  </label>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mb-2">
+                    Upload a custom cover image, or leave empty to use the default
+                    image for this resource type.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <label
+                      htmlFor="preview-image-upload"
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                    >
+                      {formData.previewImage ? "Change image" : "Choose image"}
+                      <input
+                        id="preview-image-upload"
+                        name="preview-image-upload"
+                        type="file"
+                        accept="image/png,image/jpeg,image/jpg,image/webp,image/gif"
+                        className="sr-only"
+                        onChange={handlePreviewImageChange}
+                      />
+                    </label>
+                    {formData.previewImage && (
+                      <>
+                        <span className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[180px]">
+                          {formData.previewImage.name}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              previewImage: null,
+                            }))
+                          }
+                          className="text-xs font-semibold text-red-600 dark:text-red-400 hover:underline"
+                        >
+                          Remove
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

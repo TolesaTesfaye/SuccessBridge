@@ -232,10 +232,14 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     return (
       <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 relative">
         <img
-          src={getPreviewImage(resource)}
+          src={resource.previewImageUrl || getPreviewImage(resource)}
           alt={resource.title}
           className="w-full h-24 sm:h-28 md:h-32 lg:h-36 object-cover"
           loading="lazy"
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = getPreviewImage(resource);
+          }}
         />
       </div>
     );

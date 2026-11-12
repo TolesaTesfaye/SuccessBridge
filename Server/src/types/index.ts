@@ -131,6 +131,7 @@ export interface IResource {
   description: string;
   type: ResourceType;
   fileUrl: string;
+  previewImageUrl?: string;
   educationLevel: "high_school" | "university";
   grade?: string;
   stream?: string;

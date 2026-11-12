@@ -30,6 +30,13 @@ export async function autoMigrate() {
     `);
     console.log('✅ Added/verified has_premium column');
 
+    // Optional admin-provided preview image for resources
+    await sequelize.query(`
+      ALTER TABLE resources
+      ADD COLUMN IF NOT EXISTS preview_image_url VARCHAR(1024)
+    `);
+    console.log('✅ Added/verified preview_image_url column');
+
     // Create download_history table
     await sequelize.query(`
       CREATE TABLE IF NOT EXISTS download_history (

@@ -74,7 +74,7 @@ export const b2Upload = multer({
   },
   fileFilter: (req, file, cb) => {
     // Allow PDFs, images, videos, documents
-    const allowedTypes = /pdf|jpg|jpeg|png|gif|mp4|mov|avi|doc|docx|ppt|pptx|xls|xlsx/;
+    const allowedTypes = /pdf|jpg|jpeg|png|gif|webp|bmp|mp4|mov|avi|doc|docx|ppt|pptx|xls|xlsx/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
 
