@@ -159,6 +159,7 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
   const [grades, setGrades] = useState<Grade[]>([]);
   const [streams, setStreams] = useState<Stream[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [subjectsLoading, setSubjectsLoading] = useState(false);
   const [universities, setUniversities] = useState<UniversityData[]>([]);
   const [resourceTypes, setResourceTypes] = useState<ResourceTypeData[]>([]);
   const [resourceTypesLoading, setResourceTypesLoading] = useState(false);
@@ -225,20 +226,30 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
       }
     }
 
-    const fetchSubjects = async () => {
-      try {
-        const data = await subjectService.getSubjectsByFilter(filters);
-        setSubjects(Array.isArray(data) ? data : []);
-      } catch {
-        setSubjects([]);
-      }
-    };
-
-    if (Object.keys(filters).length > 0) {
-      fetchSubjects();
-    } else {
+    if (Object.keys(filters).length === 0) {
       setSubjects([]);
+      setSubjectsLoading(false);
+      return;
     }
+
+    let cancelled = false;
+    setSubjectsLoading(true);
+
+    subjectService
+      .getSubjectsByFilter(filters)
+      .then((data) => {
+        if (!cancelled) setSubjects(Array.isArray(data) ? data : []);
+      })
+      .catch(() => {
+        if (!cancelled) setSubjects([]);
+      })
+      .finally(() => {
+        if (!cancelled) setSubjectsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [formData.educationLevel, formData.grade, formData.stream]);
 
   // Fetch resource types when grade/category changes
@@ -569,16 +580,28 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
                 name="subject"
                 value={formData.subject}
                 onChange={handleChange}
-                options={[
-                  { value: "", label: subjects.length === 0 && (formData.grade || formData.departmentId) ? "No subjects available" : "Select Subject" },
-                  ...subjects.map((s) => ({ value: s.id, label: s.name })),
-                ]}
+                disabled={!formData.grade || subjectsLoading || subjects.length === 0}
+                options={
+                  !formData.grade
+                    ? [{ value: "", label: "Select a grade / category first" }]
+                    : subjectsLoading
+                      ? [{ value: "", label: "Loading subjects..." }]
+                      : subjects.length === 0
+                        ? [{ value: "", label: "No subjects configured" }]
+                        : subjects.map((s) => ({ value: s.id, label: s.name }))
+                }
                 helperText={
-                  formData.category === "freshman"
-                    ? "Freshman subjects"
-                    : formData.category === "remedial"
-                      ? "Stream-based subjects"
-                      : ""
+                  !formData.grade
+                    ? "Choose a grade or student category to load its subjects."
+                    : subjectsLoading
+                      ? "Loading subjects..."
+                      : subjects.length === 0
+                        ? "No subjects configured for this selection. Add them in Education Hierarchy."
+                        : formData.category === "freshman"
+                          ? "Freshman subjects"
+                          : formData.category === "remedial"
+                            ? "Stream-based subjects"
+                            : undefined
                 }
               />
             </div>
