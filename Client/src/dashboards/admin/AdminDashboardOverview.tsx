@@ -27,6 +27,16 @@ type AdminDashboardOverviewProps = {
 
 const formatNumber = (value: number) => value.toLocaleString();
 
+const formatLabel = (value: string) => {
+  const cleaned = value
+    .replace(/[_-]+/g, " ")
+    .replace(/([a-zA-Z])(\d)/g, "$1 $2")
+    .trim();
+  if (!cleaned) return "Other";
+  if (cleaned.length <= 4) return cleaned.toUpperCase();
+  return cleaned.replace(/\b\w/g, (char) => char.toUpperCase());
+};
+
 export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
   state,
   onNavigateToTab,
@@ -55,39 +65,26 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
     metrics.universities > 0 ? metrics.subjects / metrics.universities : 0;
   const resourcesPerSubject =
     metrics.subjects > 0 ? resourceCount / metrics.subjects : 0;
-  const studentsPerUniversity =
-    metrics.universities > 0 ? metrics.students / metrics.universities : 0;
 
-  const insights = [
-    {
-      label: "Quizzes",
-      value: formatNumber(metrics.quizzes),
-      hint: "Assessments ready",
-      icon: Target,
-      accent: "from-purple-500 to-fuchsia-500",
-    },
-    {
-      label: "Subjects / uni",
-      value: subjectsPerUniversity.toFixed(1),
-      hint: "Catalogue depth",
-      icon: Layers3,
-      accent: "from-amber-400 to-orange-500",
-    },
-    {
-      label: "Resources / subject",
-      value: resourcesPerSubject.toFixed(1),
-      hint: "Content per subject",
-      icon: LibraryBig,
-      accent: "from-emerald-500 to-teal-500",
-    },
-    {
-      label: "Students / uni",
-      value: studentsPerUniversity.toFixed(1),
-      hint: "Learner reach",
-      icon: GraduationCap,
-      accent: "from-blue-500 to-cyan-500",
-    },
-  ];
+  const resourceTypeBreakdown = useMemo(() => {
+    const byType = state.resourceStats?.byType;
+    if (!byType || typeof byType !== "object") return [] as Array<{ label: string; count: number }>;
+    return Object.entries(byType as Record<string, unknown>)
+      .map(([type, count]) => ({ label: formatLabel(type), count: Number(count) || 0 }))
+      .filter((item) => item.count > 0)
+      .sort((a, b) => b.count - a.count);
+  }, [state.resourceStats]);
+
+  const educationLevelBreakdown = useMemo(() => {
+    const byLevel = state.resourceStats?.byEducationLevel;
+    if (!byLevel || typeof byLevel !== "object") return [] as Array<{ label: string; count: number }>;
+    return Object.entries(byLevel as Record<string, unknown>)
+      .map(([level, count]) => ({ label: formatLabel(level), count: Number(count) || 0 }))
+      .filter((item) => item.count > 0)
+      .sort((a, b) => b.count - a.count);
+  }, [state.resourceStats]);
+
+  const maxTypeCount = resourceTypeBreakdown[0]?.count || 1;
 
   const actionCards = [
     {
@@ -293,25 +290,74 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
               />
             </div>
 
-            <div className="mt-5 grid grid-cols-2 gap-2">
-              {insights.map((item) => (
-                <div
-                  key={item.label}
-                  className="group rounded-2xl border border-white/10 bg-white/[0.04] p-3 transition-colors hover:border-white/20 hover:bg-white/[0.08]"
-                >
-                  <div
-                    className={`mb-2 flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br ${item.accent} text-white shadow-sm`}
-                  >
-                    <item.icon size={14} />
-                  </div>
-                  <p className="text-lg font-bold leading-none">{item.value}</p>
-                  <p className="mt-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                    {item.label}
-                  </p>
-                  <p className="mt-0.5 text-[10px] text-slate-500">{item.hint}</p>
+            <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+              <div className="mb-3 flex items-center justify-between">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Resource mix</p>
+                <span className="text-[10px] font-medium text-slate-500">
+                  {resourceTypeBreakdown.length}{" "}
+                  {resourceTypeBreakdown.length === 1 ? "type" : "types"}
+                </span>
+              </div>
+              {resourceTypeBreakdown.length === 0 ? (
+                <p className="text-xs text-slate-500">No resources uploaded yet.</p>
+              ) : (
+                <div className="space-y-3">
+                  {resourceTypeBreakdown.slice(0, 4).map((item, index) => {
+                    const palette = [
+                      "bg-blue-400",
+                      "bg-amber-400",
+                      "bg-emerald-400",
+                      "bg-purple-400",
+                    ];
+                    const color = palette[index % palette.length];
+                    const percent =
+                      maxTypeCount > 0
+                        ? Math.round((item.count / maxTypeCount) * 100)
+                        : 0;
+                    return (
+                      <div key={item.label}>
+                        <div className="mb-1 flex items-center justify-between text-[11px]">
+                          <span className="flex items-center gap-2 font-medium text-slate-300">
+                            <span className={`h-1.5 w-1.5 rounded-full ${color}`} />
+                            {item.label}
+                          </span>
+                          <span className="font-bold text-white">
+                            {formatNumber(item.count)}
+                          </span>
+                        </div>
+                        <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+                          <div
+                            className={`h-full rounded-full ${color}`}
+                            style={{ width: `${Math.max(percent, 3)}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              ))}
+              )}
             </div>
+
+            {educationLevelBreakdown.length > 0 && (
+              <div className="mt-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4">
+                <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                  Education levels
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {educationLevelBreakdown.slice(0, 6).map((item) => (
+                    <span
+                      key={item.label}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.06] px-2 py-1 text-[11px] font-medium text-slate-300"
+                    >
+                      {item.label}
+                      <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                        {formatNumber(item.count)}
+                      </span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="mt-5 flex items-center justify-between gap-2 border-t border-white/10 pt-4 text-[11px] text-slate-500">
               <span className="flex items-center gap-2">
