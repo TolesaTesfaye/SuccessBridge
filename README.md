@@ -37,24 +37,35 @@ Here are some of my projects:
 
 ---
 
+
 ## 💻 Programming Languages
 
 <p align="left">
-  <a href="https://www.python.org/">
-    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" width="50" height="50"/>
-  </a>
-  <a href="https://www.java.com/">
-    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" width="50" height="50"/>
-  </a>
-  <a href="https://learn.microsoft.com/en-us/dotnet/csharp/">
-    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg" width="50" height="50"/>
-  </a>
-  <a href="https://www.php.net/">
-    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" width="50" height="50"/>
-  </a>
-  <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">
-    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="50" height="50"/>
-  </a>
+  <img src="https://skillicons.dev/icons?i=python,java,cs,php,js,html,css" />
+</p>
+
+## 🧰 Frameworks & Libraries
+
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=dotnet,bootstrap,react,nodejs" />
+</p>
+
+## 🗄️ Databases
+
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=mysql,postgres,mongodb" />
+</p>
+
+## ⚙️ Development Tools
+
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=git,github,vscode,visualstudio,postman,figma" />
+</p>
+
+## 🖥️ Operating Systems
+
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=windows,linux,ubuntu" />
 </p>
 
 ⭐ Thanks for visiting my profile!
