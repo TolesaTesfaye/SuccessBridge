@@ -161,6 +161,7 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [universities, setUniversities] = useState<UniversityData[]>([]);
   const [resourceTypes, setResourceTypes] = useState<ResourceTypeData[]>([]);
+  const [resourceTypesLoading, setResourceTypesLoading] = useState(false);
 
   useEffect(() => {
     const fetchUniversities = async () => {
@@ -240,18 +241,33 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
     }
   }, [formData.educationLevel, formData.grade, formData.stream]);
 
-  // Fetch resource types when grade changes
+  // Fetch resource types when grade/category changes
   useEffect(() => {
     setResourceTypes([]);
-    if (formData.grade) {
-      const controller = new AbortController();
-      resourceTypeService.getByGrade(formData.grade, controller.signal).then((data) => {
-        if (!controller.signal.aborted) setResourceTypes(Array.isArray(data) ? data : []);
-      }).catch(() => {
-        if (!controller.signal.aborted) setResourceTypes([]);
-      });
-      return () => controller.abort();
+
+    if (!formData.grade) {
+      setResourceTypesLoading(false);
+      return;
     }
+
+    const controller = new AbortController();
+    setResourceTypesLoading(true);
+
+    resourceTypeService
+      .getByGrade(formData.grade, controller.signal)
+      .then((data) => {
+        if (!controller.signal.aborted) {
+          setResourceTypes(Array.isArray(data) ? data : []);
+        }
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setResourceTypes([]);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setResourceTypesLoading(false);
+      });
+
+    return () => controller.abort();
   }, [formData.grade]);
 
   const handleChange = (
@@ -268,6 +284,7 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
         category: "",
         universityId: "",
         subject: "",
+        type: "",
       }));
     } else if (name === "grade") {
       if (formData.educationLevel === "university") {
@@ -279,9 +296,10 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
           category,
           stream: "",
           subject: "",
+          type: "",
         }));
       } else {
-        setFormData((prev) => ({ ...prev, grade: value, stream: "", subject: "" }));
+        setFormData((prev) => ({ ...prev, grade: value, stream: "", subject: "", type: "" }));
       }
     } else if (name === "stream") {
       setFormData((prev) => ({ ...prev, [name]: value, subject: "" }));
@@ -328,45 +346,21 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
       }
     }
 
-    const resolvedType = resourceTypes.find((r) => r.id === formData.type)?.name || formData.type;
+    const resolvedType = resourceTypes.find((r) => r.id === formData.type)?.name;
+    if (!resolvedType) {
+      setError("Please select a valid resource type");
+      return;
+    }
     onSubmit({ ...formData, type: resolvedType });
   };
 
-  const getResourceTypes = () => {
-    if (resourceTypes.length > 0) {
-      return resourceTypes.map((rt) => ({
-        value: rt.id,
-        label: rt.name,
-      }));
-    }
-    return [
-      { value: "module", label: "Module" },
-      { value: "past_exam", label: "Last Year Exam" },
-      { value: "video", label: "Video Tutorial" },
-      { value: "reference_book", label: "Reference Book" },
-      { value: "worksheet", label: "Worksheet" },
-      { value: "interactive_quiz", label: "Interactive Quiz" },
-      { value: "recommendation", label: "Recommendation" },
-    ];
-  };
+  const getResourceTypes = () =>
+    resourceTypes.map((rt) => ({
+      value: rt.id,
+      label: rt.name,
+    }));
 
-  const selectedTypeName =
-    resourceTypes.find((r) => r.id === formData.type)?.name ||
-    (formData.type === "module"
-      ? "Module"
-      : formData.type === "past_exam"
-      ? "Last Year Exam"
-      : formData.type === "video"
-      ? "Video Tutorial"
-      : formData.type === "reference_book"
-      ? "Reference Book"
-      : formData.type === "worksheet"
-      ? "Worksheet"
-      : formData.type === "interactive_quiz"
-      ? "Interactive Quiz"
-      : formData.type === "recommendation"
-      ? "Recommendation"
-      : formData.type);
+  const selectedTypeName = resourceTypes.find((r) => r.id === formData.type)?.name || "";
 
   const getTargetStudentInfo = () => {
     if (formData.educationLevel === "high_school") {
@@ -549,10 +543,25 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
                 name="type"
                 value={formData.type}
                 onChange={handleChange}
-                options={[
-                  { value: "", label: resourceTypes.length === 0 && formData.grade ? "No types available" : "Select Type" },
-                  ...getResourceTypes(),
-                ]}
+                disabled={!formData.grade || resourceTypesLoading || resourceTypes.length === 0}
+                options={
+                  !formData.grade
+                    ? [{ value: "", label: "Select a grade / category first" }]
+                    : resourceTypesLoading
+                      ? [{ value: "", label: "Loading resource types..." }]
+                      : resourceTypes.length === 0
+                        ? [{ value: "", label: "No types configured" }]
+                        : getResourceTypes()
+                }
+                helperText={
+                  !formData.grade
+                    ? "Choose a grade or student category to load its resource types."
+                    : resourceTypesLoading
+                      ? "Loading resource types..."
+                      : resourceTypes.length === 0
+                        ? "No resource types configured for this category. Add them in Education Hierarchy."
+                        : undefined
+                }
               />
 
               <FormSelect
