@@ -7,12 +7,39 @@ const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
   "http://localhost:5000/api";
 
+const API_HEALTH_URL = API_BASE_URL.replace(/\/api\/?$/, "/health/live");
+
+let warmUpStarted = false;
+
+/**
+ * Render's free tier spins the API down after inactivity, which can make the
+ * first request (including a CORS preflight) fail before the instance wakes.
+ * Ping it on load, on focus, and periodically while the app is open.
+ */
+export const warmUpApi = () => {
+  if (warmUpStarted || typeof window === "undefined") return;
+  if (API_BASE_URL.includes("localhost") || API_BASE_URL.includes("127.0.0.1")) return;
+
+  warmUpStarted = true;
+
+  const ping = () => {
+    fetch(API_HEALTH_URL, { method: "GET", cache: "no-store" }).catch(() => {});
+  };
+
+  ping();
+  window.setInterval(ping, 4 * 60 * 1000);
+  window.addEventListener("focus", ping);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) ping();
+  });
+};
+
 const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 30000, // Reduced from 60s for faster failure detection
+  timeout: 60000, // Allow time for Render free-tier cold starts
 });
 
 // Response caching with TTL

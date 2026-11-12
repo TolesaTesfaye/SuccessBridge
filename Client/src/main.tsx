@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './index.css'
 import { ToastProvider } from '@components/common/Toast'
+import { warmUpApi } from '@services/api'
 
 // Initialize theme before rendering
 const initializeTheme = () => {
@@ -78,6 +79,7 @@ const registerServiceWorker = async () => {
 
 initializeTheme()
 registerServiceWorker()
+warmUpApi()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

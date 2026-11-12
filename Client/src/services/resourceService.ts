@@ -17,6 +17,7 @@ export const resourceService = {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      timeout: 120000, // Uploads can take longer, especially after a cold start
     })
     return response.data
   },
