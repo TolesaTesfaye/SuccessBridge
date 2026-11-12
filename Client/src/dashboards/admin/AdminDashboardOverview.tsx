@@ -1,15 +1,12 @@
 import React, { useMemo } from "react";
 import {
-  ArrowUpRight,
   BarChart3,
   BookOpen,
   Building2,
-  CheckCircle2,
   ChevronRight,
   GraduationCap,
   Layers3,
   LibraryBig,
-  Sparkles,
   Target,
 } from "lucide-react";
 
@@ -51,31 +48,46 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
     0;
 
   const totalItems =
-    metrics.universities + metrics.subjects + resourceCount + metrics.quizzes;
+    metrics.universities + metrics.subjects + resourceCount;
   const share = (value: number) =>
     totalItems > 0 ? Math.round((value / totalItems) * 100) : 0;
   const subjectsPerUniversity =
     metrics.universities > 0 ? metrics.subjects / metrics.universities : 0;
   const resourcesPerSubject =
     metrics.subjects > 0 ? resourceCount / metrics.subjects : 0;
-  const health =
-    metrics.subjects === 0 || resourceCount === 0
-      ? {
-          label: "Needs content",
-          badge: "border-rose-400/20 bg-rose-500/15 text-rose-300",
-          message: "Add subjects and resources to build a complete catalogue.",
-        }
-      : resourcesPerSubject >= 1
-        ? {
-            label: "Healthy",
-            badge: "border-emerald-400/20 bg-emerald-500/15 text-emerald-300",
-            message: "Every subject has at least one learning resource.",
-          }
-        : {
-            label: "Growing",
-            badge: "border-amber-400/20 bg-amber-500/15 text-amber-300",
-            message: "Some subjects still need more learning resources.",
-          };
+  const studentsPerUniversity =
+    metrics.universities > 0 ? metrics.students / metrics.universities : 0;
+
+  const insights = [
+    {
+      label: "Quizzes",
+      value: formatNumber(metrics.quizzes),
+      hint: "Assessments ready",
+      icon: Target,
+      accent: "from-purple-500 to-fuchsia-500",
+    },
+    {
+      label: "Subjects / uni",
+      value: subjectsPerUniversity.toFixed(1),
+      hint: "Catalogue depth",
+      icon: Layers3,
+      accent: "from-amber-400 to-orange-500",
+    },
+    {
+      label: "Resources / subject",
+      value: resourcesPerSubject.toFixed(1),
+      hint: "Content per subject",
+      icon: LibraryBig,
+      accent: "from-emerald-500 to-teal-500",
+    },
+    {
+      label: "Students / uni",
+      value: studentsPerUniversity.toFixed(1),
+      hint: "Learner reach",
+      icon: GraduationCap,
+      accent: "from-blue-500 to-cyan-500",
+    },
+  ];
 
   const actionCards = [
     {
@@ -206,40 +218,37 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-[26px] bg-slate-900 p-5 text-white shadow-xl shadow-slate-900/10 md:p-6 dark:bg-[#101a33]">
-          <div className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full bg-blue-500/10 blur-2xl" />
+        <div className="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 p-5 text-white shadow-xl shadow-slate-900/10 md:p-6 dark:from-[#101a33] dark:via-[#0d1730] dark:to-[#0a1226]">
+          <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-blue-500/15 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 -left-16 h-44 w-44 rounded-full bg-emerald-500/10 blur-3xl" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent" />
           <div className="relative">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Platform snapshot</p>
-                <h2 className="mt-1 text-xl font-semibold tracking-tight">Content health</h2>
+                <h2 className="mt-1 text-xl font-semibold tracking-tight">Catalogue overview</h2>
+                <p className="mt-1 text-xs text-slate-400">Live totals across your academic content.</p>
               </div>
-              <div className="flex items-center gap-2">
-                <span className={`rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${health.badge}`}>
-                  {health.label}
-                </span>
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10">
-                  <BookOpen className="h-4 w-4 text-blue-300" />
-                </div>
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/10">
+                <BookOpen className="h-4 w-4 text-blue-300" />
               </div>
             </div>
 
-            <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.06] p-4">
               <div className="flex items-end justify-between gap-3">
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Total catalogue items</p>
                   <p className="mt-1 text-3xl font-bold leading-none">{formatNumber(totalItems)}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Avg per subject</p>
-                  <p className="mt-1 text-lg font-bold leading-none text-emerald-300">{resourcesPerSubject.toFixed(1)}</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Learners reached</p>
+                  <p className="mt-1 text-lg font-bold leading-none text-blue-300">{formatNumber(metrics.students)}</p>
                 </div>
               </div>
               <div className="mt-3 flex h-2 overflow-hidden rounded-full bg-white/10">
                 <div className="h-full bg-blue-400" style={{ width: `${share(metrics.universities)}%` }} />
                 <div className="h-full bg-amber-400" style={{ width: `${share(metrics.subjects)}%` }} />
                 <div className="h-full bg-emerald-400" style={{ width: `${share(resourceCount)}%` }} />
-                <div className="h-full bg-purple-400" style={{ width: `${share(metrics.quizzes)}%` }} />
               </div>
               <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-slate-400">
                 <span className="flex items-center gap-1">
@@ -253,10 +262,6 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
                 <span className="flex items-center gap-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                   Resources {share(resourceCount)}%
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-purple-400" />
-                  Quizzes {share(metrics.quizzes)}%
                 </span>
               </div>
             </div>
@@ -286,19 +291,34 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
                 hint={`${resourcesPerSubject.toFixed(1)} resources per subject`}
                 color="bg-emerald-400"
               />
-              <SnapshotRow
-                icon={Target}
-                label="Quizzes"
-                value={metrics.quizzes}
-                percent={share(metrics.quizzes)}
-                hint="Assessment tools available"
-                color="bg-purple-400"
-              />
             </div>
 
-            <div className="mt-5 flex items-center gap-2 border-t border-white/10 pt-4 text-xs text-slate-400">
-              <Sparkles className="h-4 w-4 shrink-0 text-blue-300" />
-              {health.message}
+            <div className="mt-5 grid grid-cols-2 gap-2">
+              {insights.map((item) => (
+                <div
+                  key={item.label}
+                  className="group rounded-2xl border border-white/10 bg-white/[0.04] p-3 transition-colors hover:border-white/20 hover:bg-white/[0.08]"
+                >
+                  <div
+                    className={`mb-2 flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br ${item.accent} text-white shadow-sm`}
+                  >
+                    <item.icon size={14} />
+                  </div>
+                  <p className="text-lg font-bold leading-none">{item.value}</p>
+                  <p className="mt-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    {item.label}
+                  </p>
+                  <p className="mt-0.5 text-[10px] text-slate-500">{item.hint}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-5 flex items-center justify-between gap-2 border-t border-white/10 pt-4 text-[11px] text-slate-500">
+              <span className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                Synced with platform data
+              </span>
+              <span>{formatNumber(totalItems)} items tracked</span>
             </div>
           </div>
         </div>
