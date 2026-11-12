@@ -11,7 +11,6 @@ import {
   LibraryBig,
   Sparkles,
   Target,
-  Users,
 } from "lucide-react";
 
 type DashboardState = {
@@ -50,12 +49,33 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
     state.resourceStats?.totalResources ??
     state.resourceStats?.count ??
     0;
-  const snapshotMax = Math.max(
-    metrics.universities,
-    metrics.subjects,
-    resourceCount,
-    1,
-  );
+
+  const totalItems =
+    metrics.universities + metrics.subjects + resourceCount + metrics.quizzes;
+  const share = (value: number) =>
+    totalItems > 0 ? Math.round((value / totalItems) * 100) : 0;
+  const subjectsPerUniversity =
+    metrics.universities > 0 ? metrics.subjects / metrics.universities : 0;
+  const resourcesPerSubject =
+    metrics.subjects > 0 ? resourceCount / metrics.subjects : 0;
+  const health =
+    metrics.subjects === 0 || resourceCount === 0
+      ? {
+          label: "Needs content",
+          badge: "border-rose-400/20 bg-rose-500/15 text-rose-300",
+          message: "Add subjects and resources to build a complete catalogue.",
+        }
+      : resourcesPerSubject >= 1
+        ? {
+            label: "Healthy",
+            badge: "border-emerald-400/20 bg-emerald-500/15 text-emerald-300",
+            message: "Every subject has at least one learning resource.",
+          }
+        : {
+            label: "Growing",
+            badge: "border-amber-400/20 bg-amber-500/15 text-amber-300",
+            message: "Some subjects still need more learning resources.",
+          };
 
   const actionCards = [
     {
@@ -109,23 +129,23 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
         <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-3 text-white shadow-lg hover:shadow-xl transition-shadow border border-slate-700/50">
           <div className="flex items-start justify-between mb-2">
             <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
-              <Users size={18} />
+              <GraduationCap size={18} />
             </div>
           </div>
-          <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Total Users</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Total Students</p>
           <p className="text-2xl font-bold mb-0.5">{formatNumber(metrics.students)}</p>
-          <p className="text-xs text-slate-400">All platform users</p>
+          <p className="text-xs text-slate-400">Enrolled learners</p>
         </div>
 
         <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-3 text-white shadow-lg hover:shadow-xl transition-shadow border border-slate-700/50">
           <div className="flex items-start justify-between mb-2">
             <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
-              <GraduationCap size={18} />
+              <Building2 size={18} />
             </div>
           </div>
-          <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Active Students</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Universities</p>
           <p className="text-2xl font-bold mb-0.5">{formatNumber(metrics.universities)}</p>
-          <p className="text-xs text-slate-400">Enrolled students</p>
+          <p className="text-xs text-slate-400">Partner institutions</p>
         </div>
 
         <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-3 text-white shadow-lg hover:shadow-xl transition-shadow border border-slate-700/50">
@@ -186,22 +206,100 @@ export const AdminDashboardOverview: React.FC<AdminDashboardOverviewProps> = ({
           </div>
         </div>
 
-        <div className="rounded-[26px] bg-slate-900 p-5 text-white shadow-xl shadow-slate-900/10 md:p-6 dark:bg-[#101a33]">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Platform snapshot</p>
-              <h2 className="mt-1 text-xl font-semibold tracking-tight">Content health</h2>
+        <div className="relative overflow-hidden rounded-[26px] bg-slate-900 p-5 text-white shadow-xl shadow-slate-900/10 md:p-6 dark:bg-[#101a33]">
+          <div className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full bg-blue-500/10 blur-2xl" />
+          <div className="relative">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Platform snapshot</p>
+                <h2 className="mt-1 text-xl font-semibold tracking-tight">Content health</h2>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className={`rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${health.badge}`}>
+                  {health.label}
+                </span>
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10">
+                  <BookOpen className="h-4 w-4 text-blue-300" />
+                </div>
+              </div>
             </div>
-            <BookOpen className="h-5 w-5 text-blue-300" />
-          </div>
-          <div className="mt-6 space-y-5">
-            <SnapshotRow label="Universities" value={metrics.universities} total={snapshotMax} color="bg-blue-400" />
-            <SnapshotRow label="Subjects" value={metrics.subjects} total={snapshotMax} color="bg-amber-400" />
-            <SnapshotRow label="Learning resources" value={resourceCount} total={snapshotMax} color="bg-emerald-400" />
-          </div>
-          <div className="mt-7 flex items-center gap-2 border-t border-white/10 pt-4 text-xs text-slate-400">
-            <GraduationCap className="h-4 w-4 text-blue-300" />
-            Keep the catalogue growing for your learners.
+
+            <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div className="flex items-end justify-between gap-3">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Total catalogue items</p>
+                  <p className="mt-1 text-3xl font-bold leading-none">{formatNumber(totalItems)}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Avg per subject</p>
+                  <p className="mt-1 text-lg font-bold leading-none text-emerald-300">{resourcesPerSubject.toFixed(1)}</p>
+                </div>
+              </div>
+              <div className="mt-3 flex h-2 overflow-hidden rounded-full bg-white/10">
+                <div className="h-full bg-blue-400" style={{ width: `${share(metrics.universities)}%` }} />
+                <div className="h-full bg-amber-400" style={{ width: `${share(metrics.subjects)}%` }} />
+                <div className="h-full bg-emerald-400" style={{ width: `${share(resourceCount)}%` }} />
+                <div className="h-full bg-purple-400" style={{ width: `${share(metrics.quizzes)}%` }} />
+              </div>
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-slate-400">
+                <span className="flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-400" />
+                  Universities {share(metrics.universities)}%
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                  Subjects {share(metrics.subjects)}%
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  Resources {share(resourceCount)}%
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-purple-400" />
+                  Quizzes {share(metrics.quizzes)}%
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-5 space-y-4">
+              <SnapshotRow
+                icon={Building2}
+                label="Universities"
+                value={metrics.universities}
+                percent={share(metrics.universities)}
+                hint={`${subjectsPerUniversity.toFixed(1)} subjects per university`}
+                color="bg-blue-400"
+              />
+              <SnapshotRow
+                icon={Layers3}
+                label="Subjects"
+                value={metrics.subjects}
+                percent={share(metrics.subjects)}
+                hint={`Across ${metrics.universities} universities`}
+                color="bg-amber-400"
+              />
+              <SnapshotRow
+                icon={LibraryBig}
+                label="Learning resources"
+                value={resourceCount}
+                percent={share(resourceCount)}
+                hint={`${resourcesPerSubject.toFixed(1)} resources per subject`}
+                color="bg-emerald-400"
+              />
+              <SnapshotRow
+                icon={Target}
+                label="Quizzes"
+                value={metrics.quizzes}
+                percent={share(metrics.quizzes)}
+                hint="Assessment tools available"
+                color="bg-purple-400"
+              />
+            </div>
+
+            <div className="mt-5 flex items-center gap-2 border-t border-white/10 pt-4 text-xs text-slate-400">
+              <Sparkles className="h-4 w-4 shrink-0 text-blue-300" />
+              {health.message}
+            </div>
           </div>
         </div>
       </section>
@@ -240,14 +338,31 @@ const MetricCard: React.FC<MetricCardProps> = ({ label, value, icon: Icon, tone 
   </div>
 );
 
-const SnapshotRow: React.FC<{ label: string; value: number; total: number; color: string }> = ({ label, value, total, color }) => (
+const SnapshotRow: React.FC<{
+  label: string;
+  value: number;
+  percent: number;
+  hint: string;
+  icon: React.ElementType;
+  color: string;
+}> = ({ label, value, percent, hint, icon: Icon, color }) => (
   <div>
-    <div className="mb-2 flex items-center justify-between text-xs">
-      <span className="font-medium text-slate-300">{label}</span>
-      <span className="font-bold text-white">{formatNumber(value)}</span>
+    <div className="mb-1.5 flex items-center justify-between gap-3 text-xs">
+      <span className="flex items-center gap-2 font-medium text-slate-300">
+        <Icon className="h-3.5 w-3.5 text-slate-400" />
+        {label}
+      </span>
+      <span className="flex items-center gap-2">
+        <span className="font-bold text-white">{formatNumber(value)}</span>
+        <span className="w-8 text-right text-[10px] font-semibold text-slate-500">{percent}%</span>
+      </span>
     </div>
     <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
-      <div className={`h-full rounded-full ${color}`} style={{ width: `${Math.min((value / total) * 100, 100)}%` }} />
+      <div
+        className={`h-full rounded-full ${color}`}
+        style={{ width: `${Math.max(percent, 2)}%` }}
+      />
     </div>
+    <p className="mt-1.5 text-[11px] text-slate-500">{hint}</p>
   </div>
 );
