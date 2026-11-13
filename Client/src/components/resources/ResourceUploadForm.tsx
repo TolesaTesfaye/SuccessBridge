@@ -431,17 +431,6 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
         </div>
       )}
 
-      {formData.educationLevel && (formData.grade || formData.universityId) && (
-        <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-          <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">
-            📚 This resource will be available to:
-          </h3>
-          <p className="text-sm text-blue-700 dark:text-blue-300 font-medium">
-            {getTargetStudentInfo()}
-          </p>
-        </div>
-      )}
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-6">
           <FormInput
@@ -462,16 +451,6 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
             placeholder="Enter resource description"
             rows={4}
             required
-          />
-
-          <FormInput
-            label="Tags"
-            type="text"
-            name="tags"
-            value={formData.tags}
-            onChange={handleChange}
-            placeholder="Enter tags separated by commas"
-            helperText="e.g., important, exam-prep, chapter-5"
           />
         </div>
 
@@ -674,21 +653,21 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
                     Upload a custom cover image, or leave empty to use the default
                     image for this resource type.
                   </p>
-                  <div className="flex flex-wrap items-center gap-2">
+                  <div className="relative flex flex-wrap items-center gap-2">
                     <label
                       htmlFor="preview-image-upload"
                       className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                     >
                       {formData.previewImage ? "Change image" : "Choose image"}
-                      <input
-                        id="preview-image-upload"
-                        name="preview-image-upload"
-                        type="file"
-                        accept="image/png,image/jpeg,image/jpg,image/webp,image/gif"
-                        className="sr-only"
-                        onChange={handlePreviewImageChange}
-                      />
                     </label>
+                    <input
+                      id="preview-image-upload"
+                      name="preview-image-upload"
+                      type="file"
+                      accept="image/png,image/jpeg,image/jpg,image/webp,image/gif"
+                      className="sr-only"
+                      onChange={handlePreviewImageChange}
+                    />
                     {formData.previewImage && (
                       <>
                         <span className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[180px]">
@@ -734,7 +713,7 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
                     strokeLinejoin="round"
                   />
                 </svg>
-                <div className="flex text-sm text-slate-600 dark:text-slate-400">
+                <div className="relative flex text-sm text-slate-600 dark:text-slate-400">
                   <label
                     htmlFor="file-upload"
                     className="relative cursor-pointer bg-transparent rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none"
@@ -742,15 +721,15 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
                     <span>
                       {formData.file ? "Change file" : "Upload a file"}
                     </span>
-                    <input
-                      id="file-upload"
-                      name="file-upload"
-                      type="file"
-                      className="sr-only"
-                      onChange={handleFileChange}
-                      accept=".pdf,.doc,.docx,.ppt,.pptx,.mp4,.avi,.mov,.jpg,.jpeg,.png,.gif,.webp"
-                    />
                   </label>
+                  <input
+                    id="file-upload"
+                    name="file-upload"
+                    type="file"
+                    className="sr-only"
+                    onChange={handleFileChange}
+                    accept=".pdf,.doc,.docx,.ppt,.pptx,.mp4,.avi,.mov,.jpg,.jpeg,.png,.gif,.webp"
+                  />
                   {!formData.file && <p className="pl-1">or drag and drop</p>}
                 </div>
                 <p className="text-xs text-slate-500">
