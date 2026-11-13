@@ -7,7 +7,9 @@ import { handleMyCourses } from '../myCoursesHandler.js';
 import { handleHelp, handleFaqCallback } from '../helpHandler.js';
 import { handleSearchPrompt, handleQuickSearch } from '../searchHandler.js';
 import { getUserByTelegramId } from '../../services/userService.js';
-import { escapeHtml, formatDivider, getMainKeyboard } from '../../utils/ui.js';
+import { getMainKeyboard } from '../../utils/ui.js';
+import { getPaymentButtonText } from '../startHandler.js';
+import { screen, bi, DIVIDER, actionGrid } from '../../utils/design.js';
 
 export async function handleCommonCallbacks(bot: any, query: any, data: string): Promise<void> {
   const chatId = query.message.chat.id;
@@ -51,31 +53,25 @@ export async function handleCommonCallbacks(bot: any, query: any, data: string):
   if (data === 'main_menu') {
     const user = await getUserByTelegramId(userId);
     const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+    const cta = await getPaymentButtonText(user);
 
-    const menuText = `🏠 <b>MAIN ACADEMIC DASHBOARD</b>\n` +
-      `${formatDivider()}\n` +
-      `Welcome back! Select an option from the menu buttons below, or use the quick actions:\n` +
-      `${formatDivider()}`;
+    const menuText = screen({
+      icon: '🏠',
+      title: 'Main Menu',
+      subtitle: bi('What would you like to do?', 'Maal goduu barbaadda?'),
+      body: `⚡ <b>QUICK ACTIONS</b>`,
+      tipText: 'Tip: you can also use the menu buttons at the bottom of the chat.',
+      tipOromoo: 'Buqqaalee gara jalaattiis fayyadhaa.',
+    });
 
     await bot.sendMessage(chatId, menuText, {
       parse_mode: 'HTML',
       reply_markup: getMainKeyboard(isAdmin),
     });
 
-    await bot.sendMessage(chatId, '⚡ <b>Quick Shortcuts:</b>', {
+    await bot.sendMessage(chatId, `${DIVIDER}\n👇 <b>Choose an action:</b>`, {
       parse_mode: 'HTML',
-      reply_markup: {
-        inline_keyboard: [
-          [
-            { text: '📚 Browse', callback_data: 'browse_courses' },
-            { text: '📖 My Courses', callback_data: 'mycourses' },
-          ],
-          [
-            { text: '🔍 Search', callback_data: 'search_prompt' },
-            { text: '👤 Profile', callback_data: 'view_profile' },
-          ],
-        ],
-      },
+      reply_markup: actionGrid({ ctaText: cta.text, ctaData: cta.data, isAdmin }),
     });
     return;
   }

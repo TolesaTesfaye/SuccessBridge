@@ -1,47 +1,43 @@
-import { formatDivider, getWebUrl } from '../utils/ui.js';
+import { screen, bi, navRow } from '../utils/design.js';
+import { getWebUrl } from '../utils/ui.js';
 
 export async function handleHelp(bot: any, msg: any): Promise<void> {
   const chatId = msg.chat.id;
 
-  const helpCard = `❓ <b>SUCCESSBRIDGE HELP & FAQ CENTER</b>\n` +
-    `${formatDivider()}\n` +
-    `Welcome to the student support desk! Here you can find answers to frequently asked questions and learn how to make the most of the learning bot.\n\n` +
-    `💡 <b>Quick Commands:</b>\n` +
-    `• /start — Open main learning dashboard\n` +
-    `• /browse — Explore all high school & university subjects\n` +
-    `• /mycourses — View your subjects\n` +
-    `• /profile — View your student credentials\n` +
-    `• /payment — View subscription & payment guide\n` +
-    `• /help — Open this Help Center\n\n` +
-    `👇 <b>Choose a topic for instant answers:</b>\n` +
-    `${formatDivider()}`;
+  const helpCard = screen({
+    icon: '❓',
+    title: 'Help Center • Gargaarsa',
+    subtitle: bi(
+      'Pick a topic below for a quick answer.',
+      'Mata-duree filadhu — deebii saffisaan argatta!',
+    ),
+    body:
+      `⌨️ <b>Fast Commands:</b>\n` +
+      `/start — 🏠 Main menu\n` +
+      `/browse — 📚 Explore subjects\n` +
+      `/mycourses — 📖 Your subjects\n` +
+      `/profile — 👤 Your student info\n` +
+      `/payment — 💳 Subscription guide`,
+  });
 
   const keyboard = [
     [
-      { text: '🌐 Why & How to Read on Website', callback_data: 'faq_web' },
+      { text: '🌐 Read on Website', callback_data: 'faq_web' },
+      { text: '📥 Downloads', callback_data: 'faq_download' },
     ],
     [
-      { text: '📥 How to Download Materials', callback_data: 'faq_download' },
+      { text: '🔍 Search Tips', callback_data: 'faq_search' },
+      { text: '💳 Payments', callback_data: 'faq_sub' },
     ],
     [
-      { text: '🔍 How to Search by Keyword', callback_data: 'faq_search' },
+      { text: '📞 Contact Support', callback_data: 'faq_support' },
     ],
-    [
-      { text: '💳 Payment & Subscription Guide', callback_data: 'faq_sub' },
-    ],
-    [
-      { text: '📞 Contact Support (Payment Help)', callback_data: 'faq_support' },
-    ],
-    [
-      { text: '🏠 Main Menu', callback_data: 'main_menu' },
-    ],
+    navRow('main_menu'),
   ];
 
   await bot.sendMessage(chatId, helpCard, {
     parse_mode: 'HTML',
-    reply_markup: {
-      inline_keyboard: keyboard,
-    },
+    reply_markup: { inline_keyboard: keyboard },
   });
 }
 
@@ -52,73 +48,70 @@ export async function handleFaqCallback(bot: any, chatId: number, messageId: num
   switch (data) {
     case 'faq_web':
       title = '🌐 Reading Online on the Web Platform';
-      content = `<b>Why study on the SuccessBridge website?</b>\n\n` +
-        `• 📖 <b>Interactive Full-Screen Reader:</b> Read slides, notes, and textbooks directly in your web browser with zoom, page-jumping, and clean reading layouts.\n\n` +
-        `• 📝 <b>Practice Quizzes:</b> Test your understanding with auto-graded chapter quizzes and instant answers.\n\n` +
-        `• 📊 <b>Progress Tracking:</b> See which subjects you have covered and stay on top of your studies.\n\n` +
-        `👉 <b>Launch the website now:</b>\n` +
-        `<a href="${getWebUrl()}">${getWebUrl()}</a>`;
+      content =
+        bi('Why study on the SuccessBridge website?', 'Maaliif website keneen dubbisuu barbaadda?') + '\n\n' +
+        `• 📖 <b>Interactive Full-Screen Reader</b> — slides, notes and textbooks with zoom & page-jumping.\n` +
+        `• 📝 <b>Practice Quizzes</b> — auto-graded chapter quizzes with instant answers.\n` +
+        `• 📊 <b>Progress Tracking</b> — see which subjects you have covered.\n\n` +
+        `👉 <b>Open now:</b> <a href="${getWebUrl()}">${getWebUrl()}</a>\n` +
+        `🇪🇹 <i>Website irratti dubbisuu jalqabi!</i>`;
       break;
 
     case 'faq_sub':
       title = '💳 Subscriptions & Payment Guide';
-      content = `<b>How to Subscribe & Get Full Access:</b>\n\n` +
-        `📋 <b>STEP 1: Choose Your Plan</b>\n` +
-        `Visit the website to see available subscription plans:\n` +
+      content =
+        bi('How to get full access in 4 simple steps:', 'Kuusa 4 qofaan yeroon hunda banaa!') + '\n\n' +
+        `📋 <b>STEP 1 — Choose a plan</b>\n` +
         `👉 <a href="${getWebUrl()}">${getWebUrl()}</a>\n\n` +
-        `📋 <b>STEP 2: Contact Payment Support</b>\n` +
-        `To complete your payment and activate access:\n` +
-        `📱 <b>Telegram:</b> @Tol_man27 or <a href="https://t.me/Tol_man27">t.me/Tol_man27</a>\n` +
-        `📧 <b>Email:</b> tolesatesfaye273@gmail.com\n\n` +
-        `📋 <b>STEP 3: Make Payment</b>\n` +
-        `Our support team will provide you with:\n` +
-        `• Available payment methods\n` +
-        `• Pricing for your selected plan\n` +
-        `• Payment instructions\n\n` +
-        `📋 <b>STEP 4: Instant Activation</b>\n` +
-        `Once payment is confirmed:\n` +
-        `✅ Full access unlocked on website\n` +
-        `✅ All materials available in Telegram bot\n` +
-        `✅ Download unlimited documents\n\n` +
-        `💡 <i>Questions? Contact @Tol_man27 anytime!</i>`;
+        `📋 <b>STEP 2 — Contact support</b>\n` +
+        `📱 Telegram: @Tol_man27 (<a href="https://t.me/Tol_man27">t.me/Tol_man27</a>)\n` +
+        `📧 Email: tolesatesfaye273@gmail.com\n\n` +
+        `📋 <b>STEP 3 — Pay</b>\n` +
+        bi('Our team gives you payment methods and the price for your level.',
+           'Karaa kaffalii fi baafata sadarkaa kee isinii kennina.') + '\n\n' +
+        `📋 <b>STEP 4 — Instant activation</b>\n` +
+        `✅ Full access on website + bot, unlimited downloads.\n\n` +
+        `💡 <i>Questions? Message @Tol_man27 anytime!</i>`;
       break;
 
     case 'faq_download':
       title = '📥 How to Download Materials';
-      content = `<b>How to get documents in Telegram:</b>\n\n` +
-        `1. Tap <b>📖 My Subjects</b> from the main menu or browse via <b>/browse</b>.\n\n` +
-        `2. Select your subject (e.g. <i>Grade 12 Mathematics</i>).\n\n` +
-        `3. Choose a category: <i>Lecture Slides</i>, <i>Notes</i>, <i>Exams</i>, or <i>Textbooks</i>.\n\n` +
-        `4. Tap any material to have the document delivered directly into your chat, or open the high-speed download link.`;
+      content =
+        bi('Get any document in 4 taps:', 'Kuusa 4 qofa qofa — yeroon kee dhufa!') + '\n\n' +
+        `1️⃣ Tap <b>📖 My Subjects</b> (or send /browse)\n` +
+        `2️⃣ Choose your subject — e.g. <i>Grade 12 Mathematics</i>\n` +
+        `3️⃣ Pick a category — <i>Slides, Notes, Exams, Textbooks</i>\n` +
+        `4️⃣ Tap the material → it arrives right here in the chat ✅\n\n` +
+        `🇪🇹 <i>Yeroon sun chat kee keessatti isiniif gaha!</i>`;
       break;
 
     case 'faq_search':
       title = '🔍 How to Search Materials';
-      content = `<b>Lightning-fast search:</b>\n\n` +
-        `• You don't even need a command! Just type any keyword into this chat, such as:\n` +
-        `  - <code>Biology</code>\n` +
-        `  - <code>Grade 12 Physics</code>\n` +
-        `  - <code>Calculus Mid Exam</code>\n\n` +
-        `• The bot will instantly search all subjects and uploaded materials and show you one-tap download buttons.`;
+      content =
+        bi('No command needed — just type!', 'Ajaja hin barbaachisu — barreessaa qofa!') + '\n\n' +
+        `Type any keyword in this chat, for example:\n` +
+        `• <code>Biology</code>\n` +
+        `• <code>Grade 12 Physics</code>\n` +
+        `• <code>Calculus Mid Exam</code>\n\n` +
+        bi('The bot instantly searches every subject and shows one-tap download buttons.',
+           'Boti saffisaan hunda barbaada — buqqaalee isiniif kenna.') + '\n\n' +
+        `💡 <i>You can also tap 🔍 Search Materials first if you prefer.</i>`;
       break;
 
     case 'faq_support':
       title = '📞 Contact Support & Payment Help';
-      content = `<b>Get Help From Our Team:</b>\n\n` +
-        `💳 <b>Payment & Subscription Support:</b>\n` +
-        `📱 Telegram: @Tol_man27\n` +
-        `🔗 Direct Link: <a href="https://t.me/Tol_man27">t.me/Tol_man27</a>\n` +
+      content =
+        bi('We usually reply within 24 hours.', 'Sa\'aatii 24 keessatti deebii isiniif kennina.') + '\n\n' +
+        `💳 <b>Payment & Subscription:</b>\n` +
+        `📱 Telegram: @Tol_man27 (<a href="https://t.me/Tol_man27">t.me/Tol_man27</a>)\n` +
         `📧 Email: tolesatesfaye273@gmail.com\n\n` +
-        `🆘 <b>What We Can Help With:</b>\n` +
-        `• Payment methods and pricing\n` +
-        `• Account verification and activation\n` +
-        `• Subscription plans and upgrades\n` +
-        `• Technical support and troubleshooting\n` +
-        `• Custom material requests\n` +
-        `• Access issues and account recovery\n\n` +
-        `⏱️ <b>Response Time:</b> Usually within 24 hours\n` +
-        `🌐 <b>Website:</b> <a href="${getWebUrl()}">${getWebUrl()}</a>\n\n` +
-        `💡 <i>For payment inquiries, always contact @Tol_man27 first!</i>`;
+        `🆘 <b>We can help with:</b>\n` +
+        `• Payment methods & pricing\n` +
+        `• Account activation & access issues\n` +
+        `• Plan upgrades & subscriptions\n` +
+        `• Technical problems\n` +
+        `• Custom material requests\n\n` +
+        `🌐 Website: <a href="${getWebUrl()}">${getWebUrl()}</a>`;
       break;
 
     default:
@@ -126,9 +119,8 @@ export async function handleFaqCallback(bot: any, chatId: number, messageId: num
   }
 
   const message = `❓ <b>${title}</b>\n` +
-    `${formatDivider()}\n` +
-    `${content}\n` +
-    `${formatDivider()}`;
+    `━━━━━━━━━━━━━━━━━━━━\n\n` +
+    `${content}`;
 
   try {
     await bot.editMessageText(message, {

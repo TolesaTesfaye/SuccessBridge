@@ -1,9 +1,12 @@
 import { getUserByTelegramId, updateUserProfile } from '../services/userService.js';
 import { deriveStudentCategory, getStudentCategoryDisplayName } from '../../services/studentCategoryService.js';
+import { screen, bi, navRow } from '../utils/design.js';
 
 /**
- * Handle profile setup command - /setupprofile
+ * Profile setup wizard.
+ * Step 1: pick school type. Step 2: pick grade / level.
  */
+
 export async function handleProfileSetup(bot: any, msg: any): Promise<void> {
   const chatId = msg.chat.id;
   const telegramUserId = msg.from.id.toString();
@@ -20,75 +23,103 @@ export async function handleProfileSetup(bot: any, msg: any): Promise<void> {
     const categoryName = getStudentCategoryDisplayName(category);
     await bot.sendMessage(
       chatId,
-      `✅ Your profile is already complete!\n\n` +
-      `📚 Student Category: ${categoryName}\n\n` +
-      `To update your profile, please visit:\n` +
-      `🌐 https://success-bridge-ten.vercel.app`,
+      screen({
+        icon: '✅',
+        title: 'Profile Already Complete',
+        subtitle: bi('You are all set — nothing else needed here.',
+                     'Kun xumura — waan dabalataan hin jiru!'),
+        body:
+          `🎓 <b>Category:</b> ${categoryName}\n\n` +
+          bi('To change your level, please update it on the website.',
+             'Sadarkaa jijjiiruu baafadhu website\'irratti.'),
+      }),
       {
+        parse_mode: 'HTML',
         reply_markup: {
           inline_keyboard: [
-            [{ text: '🏠 Main Menu', callback_data: 'main_menu' }]
-          ]
-        }
-      }
+            [{ text: '🌐 Open Website', url: 'https://success-bridge-ten.vercel.app' }],
+            navRow('main_menu'),
+          ],
+        },
+      },
     );
     return;
   }
 
-  // Start profile setup flow
+  // ── STEP 1 of 2 ──
   await bot.sendMessage(
     chatId,
-    `👤 <b>Complete Your Student Profile</b>\n\n` +
-    `To unlock resources and make payments, we need to know your student category.\n\n` +
-    `Please select your education level:`,
+    screen({
+      icon: '✏️',
+      title: 'Profile Setup — Step 1 of 2',
+      subtitle: bi(
+        'Where are you studying right now?',
+        'Amma eessa barattaa?',
+      ),
+      body:
+        `🏫 <b>High School</b> — Kutaa 9 to 12\n` +
+        `🎓 <b>University</b> — Freshman or Remedial`,
+      tipText: 'You can change this later on the website.',
+      tipOromoo: 'Booda website\'irratti jijjiiruu dandeessu.',
+    }),
     {
       parse_mode: 'HTML',
       reply_markup: {
         inline_keyboard: [
-          [{ text: '🏫 High School Student', callback_data: 'setup_highschool' }],
-          [{ text: '🎓 University Student', callback_data: 'setup_university' }],
-          [{ text: '❌ Cancel', callback_data: 'main_menu' }]
-        ]
-      }
-    }
+          [{ text: '🏫 High School  •  Mana Barumsaa', callback_data: 'setup_highschool' }],
+          [{ text: '🎓 University  •  Yunivarsitii', callback_data: 'setup_university' }],
+          [{ text: '❌ Cancel  •  Dhiisi', callback_data: 'main_menu' }],
+        ],
+      },
+    },
   );
 }
 
 /**
- * Handle high school setup
+ * Handle high school setup — STEP 2 of 2
  */
 export async function handleHighSchoolSetup(bot: any, query: any): Promise<void> {
   const chatId = query.message.chat.id;
-  
+
   await bot.editMessageText(
-    `🏫 <b>High School Profile Setup</b>\n\n` +
-    `Please select your grade:`,
+    screen({
+      icon: '🏫',
+      title: 'High School — Step 2 of 2',
+      subtitle: bi('Which grade are you in?', 'Kutaan kee kam?'),
+    }),
     {
       chat_id: chatId,
       message_id: query.message.message_id,
       parse_mode: 'HTML',
       reply_markup: {
         inline_keyboard: [
-          [{ text: '📚 Grade 9', callback_data: 'setup_grade_9' }],
-          [{ text: '📖 Grade 10', callback_data: 'setup_grade_10' }],
-          [{ text: '📝 Grade 11', callback_data: 'setup_grade_11' }],
-          [{ text: '🎓 Grade 12', callback_data: 'setup_grade_12' }],
-          [{ text: '⬅️ Back', callback_data: 'setup_profile' }]
-        ]
-      }
-    }
+          [
+            { text: '9️⃣ Grade 9', callback_data: 'setup_grade_9' },
+            { text: '🔟 Grade 10', callback_data: 'setup_grade_10' },
+          ],
+          [
+            { text: '1️⃣1️⃣ Grade 11', callback_data: 'setup_grade_11' },
+            { text: '1️⃣2️⃣ Grade 12', callback_data: 'setup_grade_12' },
+          ],
+          [{ text: '⬅️ Back  •  Gara Duubaa', callback_data: 'setup_profile' }],
+        ],
+      },
+    },
   );
 }
 
 /**
- * Handle university setup
+ * Handle university setup — STEP 2 of 2
  */
 export async function handleUniversitySetup(bot: any, query: any): Promise<void> {
   const chatId = query.message.chat.id;
-  
+
   await bot.editMessageText(
-    `🎓 <b>University Profile Setup</b>\n\n` +
-    `Please select your level:`,
+    screen({
+      icon: '🎓',
+      title: 'University — Step 2 of 2',
+      subtitle: bi('Which level are you in?', 'Sadarkaa kee kam?'),
+    }),
     {
       chat_id: chatId,
       message_id: query.message.message_id,
@@ -97,10 +128,65 @@ export async function handleUniversitySetup(bot: any, query: any): Promise<void>
         inline_keyboard: [
           [{ text: '🔰 Remedial', callback_data: 'setup_remedial' }],
           [{ text: '🎯 Freshman', callback_data: 'setup_freshman' }],
-          [{ text: '⬅️ Back', callback_data: 'setup_profile' }]
-        ]
-      }
-    }
+          [{ text: '⬅️ Back  •  Gara Duubaa', callback_data: 'setup_profile' }],
+        ],
+      },
+    },
+  );
+}
+
+/** Shared success screen after profile save. */
+async function sendProfileSuccess(bot: any, chatId: number, messageId: number, opts: {
+  categoryName: string;
+  levelLabel: string;
+  icon: string;
+}): Promise<void> {
+  await bot.editMessageText(
+    screen({
+      icon: '🎉',
+      title: 'Profile Complete!',
+      subtitle: bi('Welcome aboard — your dashboard is ready!',
+                   'Baga gammadde! Dashboard kee qopheeffeera!'),
+      body:
+        `${opts.icon} <b>Level:</b> ${opts.levelLabel}\n` +
+        `🎓 <b>Category:</b> ${opts.categoryName}\n\n` +
+        bi('Now pick what to do next:', 'Amma wanti itti aanu filadhu:'),
+    }),
+    {
+      chat_id: chatId,
+      message_id: messageId,
+      parse_mode: 'HTML',
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '📚 Browse My Subjects  •  Barnoota Ilaali', callback_data: 'browse_all_grades' }],
+          [{ text: '💳 Unlock All Resources  •  Kaffalii Godhi', callback_data: 'unlock_resources' }],
+          [{ text: '🏠 Main Menu  •  Man\'ee', callback_data: 'main_menu' }],
+        ],
+      },
+    },
+  );
+}
+
+/** Shared error screen. */
+async function sendProfileError(bot: any, chatId: number, messageId: number): Promise<void> {
+  await bot.editMessageText(
+    screen({
+      icon: '❌',
+      title: 'Something Went Wrong',
+      subtitle: bi('Your profile was not saved. Please try again.',
+                   'Odeeffannoon hin kayyadne. Maaloo irra deebi\'i!'),
+    }),
+    {
+      chat_id: chatId,
+      message_id: messageId,
+      parse_mode: 'HTML',
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '🔄 Try Again', callback_data: 'setup_profile' }],
+          [{ text: '🏠 Main Menu', callback_data: 'main_menu' }],
+        ],
+      },
+    },
   );
 }
 
@@ -121,7 +207,7 @@ export async function handleGradeSelection(bot: any, query: any, grade: string):
     };
 
     const highSchoolGrade = gradeMap[grade];
-    
+
     // Update user profile
     await updateUserProfile(telegramUserId, {
       studentType: 'high_school',
@@ -134,51 +220,17 @@ export async function handleGradeSelection(bot: any, query: any, grade: string):
 
     if (category) {
       const categoryName = getStudentCategoryDisplayName(category);
-      
-      await bot.editMessageText(
-        `✅ <b>Profile Updated Successfully!</b>\n\n` +
-        `📚 Student Category: ${categoryName}\n` +
-        `🏫 Education Level: High School\n` +
-        `📖 Grade: ${grade}\n\n` +
-        `You can now:\n` +
-        `• 💳 Make payments to unlock resources\n` +
-        `• 📚 Browse subjects in your grade\n` +
-        `• 📥 Download study materials\n\n` +
-        `Use /botpayment to unlock your resources!`,
-        {
-          chat_id: chatId,
-          message_id: query.message.message_id,
-          parse_mode: 'HTML',
-          reply_markup: {
-            inline_keyboard: [
-              [{ text: '💳 Unlock Resources', callback_data: 'unlock_resources' }],
-              [{ text: '📚 Browse Courses', callback_data: 'browse_all_grades' }],
-              [{ text: '🏠 Main Menu', callback_data: 'main_menu' }]
-            ]
-          }
-        }
-      );
+      await sendProfileSuccess(bot, chatId, query.message.message_id, {
+        categoryName,
+        levelLabel: `Grade ${grade}  •  Kutaa ${grade}`,
+        icon: '🏫',
+      });
     } else {
       throw new Error('Failed to derive category after update');
     }
   } catch (error) {
     console.error('Error updating profile:', error);
-    await bot.editMessageText(
-      `❌ <b>Profile Update Failed</b>\n\n` +
-      `There was an error updating your profile. Please try again or contact support.\n\n` +
-      `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      {
-        chat_id: chatId,
-        message_id: query.message.message_id,
-        parse_mode: 'HTML',
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: '🔄 Try Again', callback_data: 'setup_profile' }],
-            [{ text: '🏠 Main Menu', callback_data: 'main_menu' }]
-          ]
-        }
-      }
-    );
+    await sendProfileError(bot, chatId, query.message.message_id);
   }
 }
 
@@ -202,50 +254,16 @@ export async function handleUniversityLevelSelection(bot: any, query: any, level
 
     if (category) {
       const categoryName = getStudentCategoryDisplayName(category);
-      
-      await bot.editMessageText(
-        `✅ <b>Profile Updated Successfully!</b>\n\n` +
-        `📚 Student Category: ${categoryName}\n` +
-        `🎓 Education Level: University\n` +
-        `🎯 Level: ${level.charAt(0).toUpperCase() + level.slice(1)}\n\n` +
-        `You can now:\n` +
-        `• 💳 Make payments to unlock resources\n` +
-        `• 📚 Browse your subjects\n` +
-        `• 📥 Download study materials\n\n` +
-        `Use /botpayment to unlock your resources!`,
-        {
-          chat_id: chatId,
-          message_id: query.message.message_id,
-          parse_mode: 'HTML',
-          reply_markup: {
-            inline_keyboard: [
-              [{ text: '💳 Unlock Resources', callback_data: 'unlock_resources' }],
-              [{ text: '📚 Browse Courses', callback_data: 'browse_all_grades' }],
-              [{ text: '🏠 Main Menu', callback_data: 'main_menu' }]
-            ]
-          }
-        }
-      );
+      await sendProfileSuccess(bot, chatId, query.message.message_id, {
+        categoryName,
+        levelLabel: `${level.charAt(0).toUpperCase() + level.slice(1)}`,
+        icon: '🎓',
+      });
     } else {
       throw new Error('Failed to derive category after update');
     }
   } catch (error) {
     console.error('Error updating profile:', error);
-    await bot.editMessageText(
-      `❌ <b>Profile Update Failed</b>\n\n` +
-      `There was an error updating your profile. Please try again or contact support.\n\n` +
-      `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      {
-        chat_id: chatId,
-        message_id: query.message.message_id,
-        parse_mode: 'HTML',
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: '🔄 Try Again', callback_data: 'setup_profile' }],
-            [{ text: '🏠 Main Menu', callback_data: 'main_menu' }]
-          ]
-        }
-      }
-    );
+    await sendProfileError(bot, chatId, query.message.message_id);
   }
 }

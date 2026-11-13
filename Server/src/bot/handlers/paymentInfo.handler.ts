@@ -66,7 +66,6 @@ export async function showPaymentInformation(bot: any, chatId: number, telegramU
           reply_markup: {
             inline_keyboard: [
               [{ text: '📚 Browse My Resources', callback_data: 'browse_courses' }],
-              [{ text: '📖 My Library', callback_data: 'mycourses' }],
               [{ text: '🏠 Main Menu', callback_data: 'main_menu' }],
             ],
           },

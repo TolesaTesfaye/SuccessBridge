@@ -69,17 +69,11 @@ export function isCallbackAllowed(callbackData: string): boolean {
  * Send profile completion enforcement message
  */
 export async function sendProfileEnforcementMessage(bot: any, chatId: number, context: 'command' | 'callback' = 'command'): Promise<void> {
-  const message = context === 'callback'
-    ? `⚠️ <b>Profile Setup Required</b>\n\n` +
-      `Please complete your profile first to use this feature.\n\n` +
-      `Click the button below to set up your profile:`
-    : `⚠️ <b>Profile Setup Required</b>\n\n` +
-      `You must complete your student profile before using this feature.\n\n` +
-      `Your profile helps us:\n` +
-      `• 📚 Show you relevant study materials\n` +
-      `• 💳 Process your payments correctly\n` +
-      `• 🎯 Personalize your learning experience\n\n` +
-      `Click the button below to set up your profile:`;
+  const message =
+    `⚠️ <b>One quick step first</b>\n` +
+    `━━━━━━━━━━━━━━━━━━━━\n\n` +
+    `Complete your profile (2 taps) so we can show you the right materials and the right price.\n\n` +
+    `🇪🇹 <i>Odeeffannoo kee guuti — kuusa 2 qofa! Maaloo.</i>`;
 
   await bot.sendMessage(chatId, message, {
     parse_mode: 'HTML',
@@ -101,9 +95,10 @@ export async function sendProfileEnforcementMessageForCallback(bot: any, query: 
   try {
     // Try to edit the existing message
     await bot.editMessageText(
-      `⚠️ <b>Profile Setup Required</b>\n\n` +
-      `Please complete your profile first to use this feature.\n\n` +
-      `Click the button below to set up your profile:`,
+      `⚠️ <b>One quick step first</b>\n` +
+      `━━━━━━━━━━━━━━━━━━━━\n\n` +
+      `Complete your profile (2 taps) so we can show you the right materials and the right price.\n\n` +
+      `🇪🇹 <i>Odeeffannoo kee guuti — kuusa 2 qofa! Maaloo.</i>`,
       {
         chat_id: chatId,
         message_id: messageId,

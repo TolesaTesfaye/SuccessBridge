@@ -63,7 +63,6 @@ export async function handleBotPayment(bot: any, msg: any): Promise<void> {
           reply_markup: {
             inline_keyboard: [
               [{ text: '📚 Browse Resources', callback_data: 'browse_courses' }],
-              [{ text: '📖 My Library', callback_data: 'my_courses' }],
               [{ text: '🏠 Main Menu', callback_data: 'main_menu' }],
             ],
           },
@@ -537,7 +536,6 @@ export async function handleApprovePayment(bot: any, query: any, paymentId: stri
             reply_markup: {
               inline_keyboard: [
                 [{ text: '📚 Browse My Resources', callback_data: 'browse_courses' }],
-                [{ text: '📖 My Library', callback_data: 'my_courses' }],
                 [{ text: '🏠 Main Menu', callback_data: 'main_menu' }],
               ],
             },

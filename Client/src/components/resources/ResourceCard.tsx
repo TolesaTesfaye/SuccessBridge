@@ -228,17 +228,26 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
     return notePreview;
   };
 
+  // Card preview image: an uploaded preview image takes highest precedence.
+  // If none is uploaded, fall back to the default type/title-based preview image.
+  const defaultPreviewSrc = getPreviewImage(resource);
+  const previewSrc = resource.previewImageUrl || defaultPreviewSrc;
+
   const renderThumbnail = () => {
     return (
       <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 relative">
         <img
-          src={resource.previewImageUrl || getPreviewImage(resource)}
+          src={previewSrc}
           alt={resource.title}
           className="w-full h-24 sm:h-28 md:h-32 lg:h-36 object-cover"
           loading="lazy"
           onError={(e) => {
-            e.currentTarget.onerror = null;
-            e.currentTarget.src = getPreviewImage(resource);
+            // If the uploaded preview image fails to load, fall back to the default
+            // image instead of showing a broken image. Avoid re-triggering onError.
+            if (e.currentTarget.src !== defaultPreviewSrc) {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = defaultPreviewSrc;
+            }
           }}
         />
       </div>

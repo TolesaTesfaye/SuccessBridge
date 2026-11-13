@@ -87,15 +87,15 @@ export async function handleMessage(bot: any, msg: any): Promise<void> {
       // If photo fails, fall through to text card silently
     }
 
-    const webCard = `🌐 <b>SUCCESSBRIDGE DIGITAL LEARNING PLATFORM</b>\n` +
-      `━━━━━━━━━━━━━━━━━━━━\n` +
-      `Experience the best way to study with our modern web portal:\n\n` +
-      `✨ <b>What you can do on the website:</b>\n` +
-      `• 📖 <b>Interactive Reader:</b> Read textbooks, slides, and notes in full screen with zoom and bookmarking.\n` +
-      `• 📝 <b>Practice Quizzes:</b> Test your understanding with instant scores and feedback.\n` +
-      `• 📊 <b>Visual Diagrams:</b> Understand concepts through charts, graphs, and visual aids.\n` +
-      `• 📈 <b>Academic Progress:</b> Track completed lessons and university preparation.\n` +
-      `• 🎓 <b>Tailored Portals:</b> High school streams and university departments organized for you.\n\n` +
+    const webCard =
+      `🌐 <b>SUCCESSBRIDGE WEBSITE</b>\n` +
+      `━━━━━━━━━━━━━━━━━━━━\n\n` +
+      `🇪🇹 <i>Website keenya irratti akkaataa gaarii qopheessaa!</i>\n\n` +
+      `✨ <b>What you can do there:</b>\n` +
+      `• 📖 <b>Interactive Reader</b> — full-screen reading, zoom & bookmarks\n` +
+      `• 📝 <b>Practice Quizzes</b> — instant scores & feedback\n` +
+      `• 📊 <b>Visual Diagrams</b> — charts and graphs made simple\n` +
+      `• 📈 <b>Progress Tracking</b> — see what you have covered\n\n` +
       `━━━━━━━━━━━━━━━━━━━━\n` +
       `👇 <i>Tap below to launch the web platform:</i>`;
 

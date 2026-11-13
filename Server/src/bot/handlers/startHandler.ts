@@ -1,31 +1,50 @@
 import { getUserByTelegramId, createTelegramUser } from '../services/userService.js';
 import { deriveStudentCategory } from '../../services/studentCategoryService.js';
 import { hasActiveAccess, hasPendingPayment } from '../../services/accessControlService.js';
-import { escapeHtml, formatDivider, formatRoleBadge, getMainKeyboard, getWebUrl } from '../utils/ui.js';
-
+import { escapeHtml, formatDivider, formatRoleBadge, getMainKeyboard } from '../utils/ui.js';
+import { screen, bi, statusChip, DIVIDER, LBL, actionGrid } from '../utils/design.js';
 /**
  * Get smart payment button text based on user state
+ * (exported so the main-menu dashboard can reuse the same CTA logic)
  */
-async function getPaymentButtonText(user: any): Promise<string> {
-  if (!user) return '💳 Unlock All Resources';
-  
+export async function getPaymentButtonText(user: any): Promise<{ text: string; data: string }> {
+  if (!user) return { text: LBL.unlock, data: 'unlock_resources' };
+
   const category = deriveStudentCategory(user);
-  
+
   if (!category) {
-    return '✏️ Complete Profile First';
+    return { text: '✏️ Complete Profile First', data: 'setup_profile' };
   }
-  
+
   const hasAccess = await hasActiveAccess(user.id, category);
   if (hasAccess) {
-    return '✅ Access Active - Browse Now';
+    return { text: LBL.accessActive, data: 'browse_courses' };
   }
-  
+
   const pending = await hasPendingPayment(user.id, category);
   if (pending) {
-    return '⏳ Payment Pending Review';
+    return { text: LBL.paymentPending, data: 'my_payments' };
   }
-  
-  return '💳 Unlock All Resources';
+
+  return { text: LBL.unlock, data: 'unlock_resources' };
+}
+
+/** Friendly level name for the status chip. */
+function levelName(user: any): string | null {
+  if (!user) return null;
+  if (user.studentType === 'high_school' && user.highSchoolGrade) {
+    const map: Record<string, string> = {
+      grade_9: 'Grade 9',
+      grade_10: 'Grade 10',
+      grade_11: 'Grade 11',
+      grade_12: 'Grade 12',
+    };
+    return map[user.highSchoolGrade] || null;
+  }
+  if (user.studentType === 'university' && user.universityLevel) {
+    return user.universityLevel === 'freshman' ? 'Freshman' : 'Remedial';
+  }
+  return null;
 }
 
 export async function handleStart(bot: any, msg: any): Promise<void> {
@@ -52,99 +71,85 @@ export async function handleStart(bot: any, msg: any): Promise<void> {
       : msg.from?.first_name || username;
     const roleBadge = formatRoleBadge(user?.role);
     const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
-    
+
     // Check if profile is complete
     const category = deriveStudentCategory(user);
     const isProfileComplete = category !== null;
 
     if (!isProfileComplete) {
-      // Profile is INCOMPLETE - Show ONLY profile setup, NO quick actions
-      const welcomeBanner = `🎓 <b>SUCCESSBRIDGE LEARNING HUB</b>\n` +
-        `${formatDivider()}\n` +
-        `👋 Welcome, <b>${escapeHtml(displayName)}</b>!\n` +
-        `<i>Your all-in-one portal for high school and university academic excellence.</i>\n\n` +
-        `⚠️ <b>Profile Setup Required</b>\n\n` +
-        `Before you can access materials and make payments, you need to complete your student profile.\n\n` +
-        `📝 <b>What we need to know:</b>\n` +
-        `• Are you a High School or University student?\n` +
-        `• Your Grade (9-12) or Level (Freshman/Remedial)\n\n` +
-        `This helps us:\n` +
-        `✅ Show you the right study materials\n` +
-        `✅ Calculate correct payment amounts\n` +
-        `✅ Provide personalized learning resources\n\n` +
-        `${formatDivider()}\n` +
-        `👤 <b>Student ID:</b> <code>${escapeHtml(telegramUserId)}</code> • ${roleBadge}\n\n` +
-        `👇 <b>Click below to complete your profile in 2 simple steps:</b>`;
+      // ── FIRST-RUN ONBOARDING ─────────────────────────────────
+      const welcome = screen({
+        icon: '🎓',
+        title: 'SuccessBridge Learning Hub',
+        subtitle:
+          `👋 Welcome, <b>${escapeHtml(displayName)}</b>!\n` +
+          bi('Your all-in-one study portal — notes, slides and exams for school & university.',
+             'Portal barnootaa kee — yeroon, islaayidii fi qormaannoo!'),
+        body:
+          `⚠️ <b>One quick step before you start</b>\n` +
+          bi('Tell us your level — it takes just 2 taps. This is how we show you the right materials and the right price.',
+             'Sadarkaa kee nu himi — kuusa 2 qofa qofa.'),
+        tipText: 'Your ID is below if an admin ever asks for it.',
+      });
 
-      await bot.sendMessage(chatId, welcomeBanner, {
+      await bot.sendMessage(chatId, welcome, {
         parse_mode: 'HTML',
         reply_markup: {
           // NO keyboard buttons when profile is incomplete
           remove_keyboard: true,
           inline_keyboard: [
-            [
-              { text: '✏️ Complete Profile Now', callback_data: 'setup_profile' },
-            ],
-            [
-              { text: '❓ Why is this required?', callback_data: 'faq_home' },
-            ],
+            [{ text: '✏️ Set Up My Profile  •  Oodeeffannoo Guuti', callback_data: 'setup_profile' }],
+            [{ text: '❓ Why is this needed?', callback_data: 'faq_home' }],
           ],
         },
       });
-      
-      // DO NOT send quick actions menu - return immediately
+
+      // Small ID card so admins can verify users easily
+      await bot.sendMessage(
+        chatId,
+        `${DIVIDER}\n👤 <b>ID:</b> <code>${escapeHtml(telegramUserId)}</code> • ${roleBadge}`,
+        { parse_mode: 'HTML' },
+      );
       return;
     }
 
-    // Profile is COMPLETE - Show normal welcome with all options
-    const welcomeBanner = `🎓 <b>SUCCESSBRIDGE LEARNING HUB</b>\n` +
-      `${formatDivider()}\n` +
-      `👋 Welcome back, <b>${escapeHtml(displayName)}</b>!\n` +
-      `<i>Your all-in-one portal for high school and university academic excellence.</i>\n\n` +
-      `🚀 <b>How to Get Started in 3 Easy Steps:</b>\n` +
-      `1️⃣ <b>Browse Materials:</b> Select your Grade (9-12) or University program (Freshman / Remedial).\n` +
-      `2️⃣ <b>Download Docs:</b> Receive lecture slides, chapter modules, and past exams directly in this chat.\n` +
-      `3️⃣ <b>Read on Web:</b> Enjoy full-screen reading, bookmarks, and chapter practice quizzes on our website!\n\n` +
-      `💡 <i>Quick Tip: Type any topic (e.g. <code>Biology</code> or <code>Calculus</code>) anytime in this chat to search instantly!</i>\n` +
-      `${formatDivider()}\n` +
-      `👤 <b>Student ID:</b> <code>${escapeHtml(telegramUserId)}</code> • ${roleBadge}`;
+    // ── RETURNING USER DASHBOARD ────────────────────────────────
+    const level = levelName(user);
+    const cta = await getPaymentButtonText(user);
 
-    await bot.sendMessage(chatId, welcomeBanner, {
+    const statusLines: string[] = [];
+    if (level) statusLines.push(statusChip('🎓', level));
+    if (cta.text === LBL.accessActive) statusLines.push(statusChip('🔓', 'Access Active'));
+    else if (cta.text === LBL.paymentPending) statusLines.push(statusChip('⏳', 'Payment Review'));
+    else statusLines.push(statusChip('🔒', 'Not Unlocked'));
+
+    const dashboard = screen({
+      icon: '🎓',
+      title: 'SuccessBridge',
+      subtitle:
+        `👋 Welcome back, <b>${escapeHtml(displayName)}</b>!\n` +
+        bi('Ready to study? Pick an action below.', 'Barnoota jalqabi!'),
+      body:
+        statusLines.join('   •   ') + '\n' +
+        DIVIDER + '\n\n' +
+        `⚡ <b>QUICK ACTIONS</b>\n` +
+        bi('Everything you need is one tap away.',
+           'Wanti hunda kuusa tokkon jiraa!'),
+      tipText: 'Tip: just type any topic (e.g. "Biology") to search instantly.',
+      tipOromoo: 'Barreessaa qofa — fakkeenya "Biology" — boti si barbaada!',
+    });
+
+    // Dashboard + persistent reply keyboard
+    await bot.sendMessage(chatId, dashboard, {
       parse_mode: 'HTML',
       reply_markup: getMainKeyboard(isAdmin),
     });
 
-    // Get smart button text
-    const paymentButtonText = await getPaymentButtonText(user);
-    const profileStatus = '✅ Complete';
-
-    // Send quick action inline menu with smart labels
-    await bot.sendMessage(
-      chatId,
-      '⚡ <b>Student Quick Actions:</b>',
-      {
-        parse_mode: 'HTML',
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { text: paymentButtonText, callback_data: 'unlock_resources' },
-            ],
-            [
-              { text: '🔍 Search Materials', callback_data: 'search_prompt' },
-              { text: '📖 My Subjects', callback_data: 'mycourses' },
-            ],
-            [
-              { text: '💰 My Payments', callback_data: 'my_payments' },
-              { text: `👤 Profile ${profileStatus}`, callback_data: 'view_profile' },
-            ],
-            [
-              { text: '🌐 Website Preview', callback_data: 'open_website' },
-              { text: '❓ Help & FAQ', callback_data: 'faq_home' },
-            ],
-          ],
-        },
-      }
-    );
+    // One-tap action grid (CTA first)
+    await bot.sendMessage(chatId, '👇 <b>Choose an action:</b>', {
+      parse_mode: 'HTML',
+      reply_markup: actionGrid({ ctaText: cta.text, ctaData: cta.data, isAdmin }),
+    });
   } catch (error) {
     console.error('Error in /start handler:', error);
     await bot.sendMessage(
