@@ -6,24 +6,51 @@ import path from 'path';
 import { Request } from 'express';
 
 // Get B2 public URL for a file (for public buckets)
+// B2 friendly URL format: https://f{regionCode}.backblazeb2.com/file/{bucket}/{key}
+// The region code (e.g. "005" for us-east-005) comes from B2_REGION / B2_ENDPOINT.
+// NOTE: it is NOT derived from the bucket ID — that produced dead hosts like
+// ff833.backblazeb2.com which silently broke every stored public URL.
 export function getB2PublicUrl(key: string): string {
   const bucketName = B2_BUCKET;
-  
-  // For B2, check if we have a custom domain or use the default B2 format
-  // B2 public URL format: https://f{bucket_id}.backblazeb2.com/file/{bucket_name}/{key}
-  // OR use the S3-compatible endpoint
-  
-  if (B2_BUCKET_ID && B2_BUCKET_ID.length > 0) {
-    // Extract bucket ID prefix (e.g., "004" from bucket ID)
-    // B2 bucket IDs are like "4a48fe8875c6214879c10d10" - use full ID
-    const bucketIdPrefix = B2_BUCKET_ID.substring(0, 4);
-    return `https://f${bucketIdPrefix}.backblazeb2.com/file/${bucketName}/${key}`;
-  }
-  
-  // Fallback: use S3-compatible URL (may not work for public access without proper bucket settings)
-  console.warn('⚠️ B2_BUCKET_ID not set, using fallback URL format. This may not work for public access.');
+
+  const region = process.env.B2_REGION || '';
   const endpoint = process.env.B2_ENDPOINT || 's3.us-west-004.backblazeb2.com';
-  return `https://${endpoint}/${bucketName}/${key}`;
+  const regionMatch = (region || endpoint).match(/(\d{3})/);
+  const regionCode = regionMatch ? regionMatch[1] : '004';
+
+  return `https://f${regionCode}.backblazeb2.com/file/${bucketName}/${key}`;
+}
+
+/**
+ * Extract the object key from any B2 URL variant (friendly or S3-style).
+ * Returns '' when the URL is not a B2 URL or has no key.
+ */
+export function extractB2Key(url: string): string {
+  if (!url) return '';
+
+  // Friendly format: https://f005.backblazeb2.com/file/{bucket}/{key}
+  const friendly = url.split('/file/');
+  if (friendly.length > 1) {
+    const parts = friendly[1].split('/');
+    parts.shift(); // remove bucket name
+    return parts.join('/');
+  }
+
+  // S3-style: https://{bucket}.s3.{region}.backblazeb2.com/{key}
+  try {
+    const u = new URL(url);
+    if (u.hostname.endsWith('backblazeb2.com')) {
+      const parts = u.pathname.split('/').filter(Boolean);
+      if (parts.length > 1) {
+        parts.shift(); // bucket name in path
+        return parts.join('/');
+      }
+      return parts.join('/');
+    }
+  } catch {
+    // not a valid URL
+  }
+  return '';
 }
 
 // Get B2 signed URL for a file (for private buckets)

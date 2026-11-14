@@ -3,6 +3,15 @@ import path from 'path'
 import fs from 'fs'
 import { ResourceService } from '../services/resourceService.js'
 import { AppError } from '../middleware/errorHandler.js'
+import { extractB2Key, getB2SignedUrl } from '../middleware/b2Upload.js'
+
+/** Build a signed URL (1h) for any stored B2 URL. Returns null when not signable. */
+async function signedUrlForB2File(storedUrl: string): Promise<string | null> {
+  if (!storedUrl || !storedUrl.includes('backblazeb2.com')) return null
+  const key = extractB2Key(storedUrl)
+  if (!key) return null
+  return getB2SignedUrl(key, 3600, false)
+}
 
 export const getResources = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -74,13 +83,52 @@ export const createResource = async (req: Request, res: Response, next: NextFunc
 
 export const updateResource = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const resource = await ResourceService.updateResource(req.params.id, req.body)
+    const id = req.params.id
+    const existing = await ResourceService.getResourceById(id)
+    if (!existing) {
+      throw new AppError(404, 'Resource not found')
+    }
+
+    const files = (req.files || {}) as { [fieldname: string]: Express.Multer.File[] }
+    const body = req.body || {}
+
+    // Start from the text fields that are allowed to change.
+    // Multipart requests send everything as strings; JSON requests send typed values.
+    // Empty type/level means "keep the stored value" — type is set at upload time.
+    const updateData: Record<string, any> = {}
+    if (body.title) updateData.title = body.title
+    if (body.description !== undefined) updateData.description = body.description
+    if (body.type) updateData.type = String(body.type).toLowerCase().replace(/\s+/g, '_')
+    if (body.educationLevel) {
+      updateData.educationLevel = String(body.educationLevel).toLowerCase() === 'university' ? 'university' : 'high_school'
+    }
+
+    // Optional: replace the main file
+    const replacementFile = files.file?.[0]
+    if (replacementFile) {
+      const { uploadToB2 } = await import('../middleware/b2Upload.js')
+      updateData.fileUrl = await uploadToB2(req, replacementFile)
+      console.log('✅ Replacement file uploaded:', updateData.fileUrl)
+    }
+
+    // Optional: replace or remove the custom preview image
+    const newPreviewImage = files.previewImage?.[0]
+    if (newPreviewImage) {
+      const { uploadToB2 } = await import('../middleware/b2Upload.js')
+      updateData.previewImageUrl = await uploadToB2(req, newPreviewImage, 'previews')
+      console.log('✅ Preview image replaced:', updateData.previewImageUrl)
+    } else if (String(body.removePreviewImage) === 'true') {
+      updateData.previewImageUrl = null
+      console.log('🗑️ Custom preview image removed')
+    }
+
+    const resource = await ResourceService.updateResource(id, updateData)
     res.json({ success: true, data: resource })
   } catch (error) {
+    console.error('Update resource error:', error)
     if (error instanceof AppError) {
       return res.status(error.statusCode).json({ success: false, error: error.message })
     }
-    console.error('Update resource error:', error)
     next(error)
   }
 }
@@ -116,54 +164,56 @@ export const getResourcePreview = async (req: Request, res: Response, next: Next
       fileUrl: fileUrl
     })
 
-    // Check if it's a B2 URL
-    if (fileUrl.includes('backblazeb2.com')) {
-      // Extract the key from the URL
-      let key = '';
-      
-      const urlParts = fileUrl.split('/file/')
-      if (urlParts.length > 1) {
-        const fullPath = urlParts[1]
-        const pathParts = fullPath.split('/')
-        pathParts.shift() // Remove bucket name
-        key = pathParts.join('/')
-      } else {
-        const url = new URL(fileUrl);
-        const pathname = url.pathname;
-        const pathParts = pathname.split('/').filter(p => p);
-        if (pathParts.length > 1) {
-          pathParts.shift();
-          key = pathParts.join('/');
-        }
-      }
-      
-      if (key) {
-        console.log('🔐 Generating signed URL for preview, key:', key)
-        
-        // Import the signed URL function
-        const { getB2SignedUrl } = await import('../middleware/b2Upload.js')
-        
-        // Generate signed URL for preview (no force download, valid for 1 hour)
-        const signedUrl = await getB2SignedUrl(key, 3600, false)
-        
-        console.log('✅ Returning signed URL for preview')
-        return res.json({ success: true, url: signedUrl })
-      } else {
-        console.error('❌ Could not extract key from URL:', fileUrl)
-        throw new AppError(404, 'Invalid file URL format')
-      }
+    const signedUrl = await signedUrlForB2File(fileUrl)
+    if (signedUrl) {
+      console.log('✅ Returning signed URL for preview')
+      return res.json({ success: true, url: signedUrl })
     }
-    
+
     // If not B2, return original URL
     return res.json({ success: true, url: fileUrl })
-    
+
   } catch (error) {
     console.error('❌ Preview error:', error)
-    
+
     if (error instanceof AppError) {
       return res.status(error.statusCode).json({ success: false, error: error.message })
     }
-    
+
+    next(error)
+  }
+}
+
+/**
+ * Get a signed URL for the resource's custom preview image.
+ * Works with private buckets and with legacy URLs that were
+ * generated with the old (broken) host format.
+ */
+export const getResourcePreviewImage = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const resource = await ResourceService.getResourceById(req.params.id)
+    if (!resource) {
+      throw new AppError(404, 'Resource not found')
+    }
+
+    const previewImageUrl = (resource as any).previewImageUrl as string | undefined
+    if (!previewImageUrl) {
+      // No custom preview uploaded — client will use the default image
+      return res.json({ success: true, url: null })
+    }
+
+    const signedUrl = await signedUrlForB2File(previewImageUrl)
+    if (signedUrl) {
+      return res.json({ success: true, url: signedUrl })
+    }
+
+    // Non-B2 URL (e.g. external image) — return as-is
+    return res.json({ success: true, url: previewImageUrl })
+  } catch (error) {
+    console.error('❌ Preview image error:', error)
+    if (error instanceof AppError) {
+      return res.status(error.statusCode).json({ success: false, error: error.message })
+    }
     next(error)
   }
 }

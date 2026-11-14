@@ -10,6 +10,7 @@ import {
   deleteResource,
   downloadResource,
   getResourcePreview,
+  getResourcePreviewImage,
   debugResource,
 } from '../controllers/resourceController.js'
 
@@ -199,8 +200,17 @@ router.post(
   createResource,
 )
 
-// Update resource (admin only)
-router.put('/:id', authMiddleware, requireRole('admin', 'super_admin'), updateResource)
+// Update resource (admin only) — accepts optional replacement file and preview image
+router.put(
+  '/:id',
+  authMiddleware,
+  requireRole('admin', 'super_admin'),
+  upload.fields([
+    { name: 'file', maxCount: 1 },
+    { name: 'previewImage', maxCount: 1 },
+  ]),
+  updateResource
+)
 
 // Delete resource (admin only)
 router.delete('/:id', authMiddleware, requireRole('admin', 'super_admin'), deleteResource)
@@ -210,6 +220,9 @@ router.get('/:id/download', downloadResource)
 
 // Get preview URL (signed URL for private buckets)
 router.get('/:id/preview', getResourcePreview)
+
+// Get signed URL for the custom preview image (private bucket safe)
+router.get('/:id/preview-image', getResourcePreviewImage)
 
 // Debug resource (development only)
 if (process.env.NODE_ENV === 'development') {

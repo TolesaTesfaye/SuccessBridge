@@ -215,24 +215,6 @@ export const UniversityResourceHub: React.FC<UniversityResourceHubProps> = ({
             </div>
           )}
 
-          {/* Clear Filters Button */}
-          {(selectedUniversity ||
-            selectedStream ||
-            selectedResourceType ||
-            selectedSubject) && (
-            <button
-              onClick={() => {
-                setSelectedUniversity("");
-                setSelectedStream("");
-                setSelectedResourceType("");
-                setSelectedSubject("");
-              }}
-              className="w-full mt-3 px-3 py-2 text-xs font-semibold text-red-400 dark:text-red-400 bg-red-500/10 dark:bg-red-500/10 border border-red-500/20 dark:border-red-500/20 rounded-lg hover:bg-red-500/20 dark:hover:bg-red-500/20 transition-colors flex items-center justify-center gap-2"
-            >
-              <X className="w-3 h-3" />
-              Clear Filters
-            </button>
-          )}
         </div>
       </div>
 

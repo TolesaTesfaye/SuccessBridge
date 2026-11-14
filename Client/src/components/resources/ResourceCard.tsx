@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { type Resource } from "@types";
 import { useToast } from "@components/common/Toast";
 import {
@@ -231,7 +231,48 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   // Card preview image: an uploaded preview image takes highest precedence.
   // If none is uploaded, fall back to the default type/title-based preview image.
   const defaultPreviewSrc = getPreviewImage(resource);
-  const previewSrc = resource.previewImageUrl || defaultPreviewSrc;
+
+  // Storage buckets are private, so the stored previewImageUrl can't be loaded
+  // directly in an <img> tag. Resolve it to a short-lived signed URL via the API.
+  const [resolvedPreviewSrc, setResolvedPreviewSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!resource.previewImageUrl) {
+      setResolvedPreviewSrc(null);
+      return;
+    }
+
+    const resolvePreviewImage = async () => {
+      try {
+        const baseUrl =
+          import.meta.env.VITE_API_URL ||
+          (window.location.hostname === 'localhost'
+            ? 'http://localhost:5000/api'
+            : 'https://successbridge-tolesa-api.onrender.com/api');
+
+        const res = await fetch(`${baseUrl}/resources/${resource.id}/preview-image`, {
+          headers: { Accept: 'application/json' },
+        });
+        if (!res.ok) throw new Error(`Preview image failed: ${res.status}`);
+
+        const data = await res.json();
+        if (cancelled) return;
+        setResolvedPreviewSrc(data.success && data.url ? data.url : null);
+      } catch (error) {
+        console.error('Failed to resolve preview image:', error);
+        if (!cancelled) setResolvedPreviewSrc(null);
+      }
+    };
+
+    resolvePreviewImage();
+    return () => {
+      cancelled = true;
+    };
+  }, [resource.id, resource.previewImageUrl]);
+
+  const previewSrc = resolvedPreviewSrc || resource.previewImageUrl || defaultPreviewSrc;
 
   const renderThumbnail = () => {
     return (
@@ -242,7 +283,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
           className="w-full h-24 sm:h-28 md:h-32 lg:h-36 object-cover"
           loading="lazy"
           onError={(e) => {
-            // If the uploaded preview image fails to load, fall back to the default
+            // If the resolved preview image fails to load, fall back to the default
             // image instead of showing a broken image. Avoid re-triggering onError.
             if (e.currentTarget.src !== defaultPreviewSrc) {
               e.currentTarget.onerror = null;

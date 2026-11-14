@@ -14,10 +14,13 @@ export const B2_BUCKET = process.env.B2_BUCKET_NAME || 'successbridge-resources'
 export const B2_BUCKET_ID = process.env.B2_BUCKET_ID || '';
 
 // Get public URL for files
+// B2 friendly URL: https://f{regionCode}.backblazeb2.com/file/{bucket}/{filename}
+// Region code comes from B2_REGION/B2_ENDPOINT (NOT the bucket ID).
 export function getB2PublicUrl(filename: string): string {
   const bucketName = B2_BUCKET;
-  const bucketIdPrefix = B2_BUCKET_ID ? B2_BUCKET_ID.substring(0, 4) : 'f004';
-  
-  // B2 public URL format: https://f{bucket_id_prefix}.backblazeb2.com/file/{bucket_name}/{filename}
-  return `https://${bucketIdPrefix}.backblazeb2.com/file/${bucketName}/${filename}`;
+  const region = process.env.B2_REGION || '';
+  const endpoint = process.env.B2_ENDPOINT || 's3.us-west-004.backblazeb2.com';
+  const regionMatch = (region || endpoint).match(/(\d{3})/);
+  const regionCode = regionMatch ? regionMatch[1] : '004';
+  return `https://f${regionCode}.backblazeb2.com/file/${bucketName}/${filename}`;
 }

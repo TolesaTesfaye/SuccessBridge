@@ -31,6 +31,30 @@ export const SuperAdminResources: React.FC<SuperAdminResourcesProps> = ({
     type: '',
     educationLevel: ''
   })
+  // Preview image editing
+  const [previewFile, setPreviewFile] = useState<File | null>(null)
+  const [removePreview, setRemovePreview] = useState(false)
+  const [currentPreviewSrc, setCurrentPreviewSrc] = useState<string | null>(null)
+  const [previewObjectUrl, setPreviewObjectUrl] = useState<string | null>(null)
+  const [updating, setUpdating] = useState(false)
+
+  // Full resource-type list for the edit dropdown. The resource's current type
+  // is always included so the dropdown never renders blank and never forces a
+  // re-selection when the admin only wants to change e.g. the preview image.
+  const resourceTypeOptions = React.useMemo(() => {
+    const base = [
+      'textbook', 'reference_book', 'module', 'professional_module',
+      'video', 'video_tutorial', 'educational_video',
+      'past_exam', 'entrance_exam', 'quiz', 'interactive_quiz', 'remedial_quiz',
+      'worksheet', 'assignment', 'project', 'research', 'career', 'recommendation', 'notes',
+    ];
+    const current = (editFormData.type || '').trim();
+    const values = current && !base.includes(current) ? [current, ...base] : base;
+    return values.map((v) => ({
+      value: v,
+      label: v.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+    }));
+  }, [editFormData.type]);
 
   useEffect(() => {
     fetchResources()
@@ -80,7 +104,24 @@ export const SuperAdminResources: React.FC<SuperAdminResourcesProps> = ({
       type: resource.type || '',
       educationLevel: resource.educationLevel || ''
     })
+    // Reset preview image state
+    setPreviewFile(null)
+    setRemovePreview(false)
+    setPreviewObjectUrl(null)
+    setCurrentPreviewSrc(null)
     setShowEditModal(true)
+
+    // Resolve the current custom preview image (signed URL) for display
+    if ((resource as any).previewImageUrl) {
+      resourceService
+        .getPreviewImageUrl(resource.id)
+        .then((res) => {
+          if (res.success && res.url) setCurrentPreviewSrc(res.url)
+        })
+        .catch(() => {
+          /* card falls back to the default image */
+        })
+    }
   }
 
   const handleDelete = (resource: Resource) => {
@@ -106,9 +147,23 @@ export const SuperAdminResources: React.FC<SuperAdminResourcesProps> = ({
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedResource) return
-    
+
+    setUpdating(true)
     try {
-      await resourceService.updateResource(selectedResource.id, editFormData)
+      // Send multipart only when the preview image is being replaced or removed
+      const files = previewFile
+        ? { previewImage: previewFile }
+        : removePreview
+          ? { removePreviewImage: true }
+          : undefined
+
+      // Type/level are already set at upload time — only send them when the
+      // admin actually picked one. Empty means "keep what's stored".
+      const payload: Record<string, any> = { ...editFormData }
+      if (!payload.type) delete payload.type
+      if (!payload.educationLevel) delete payload.educationLevel
+
+      await resourceService.updateResource(selectedResource.id, payload as any, files)
       await fetchResources()
       setShowEditModal(false)
       setSelectedResource(null)
@@ -116,8 +171,21 @@ export const SuperAdminResources: React.FC<SuperAdminResourcesProps> = ({
     } catch (error) {
       console.error('Failed to update resource:', error)
       alert('Failed to update resource')
+    } finally {
+      setUpdating(false)
     }
   }
+
+  // Local preview of a newly chosen image (object URL lifecycle)
+  useEffect(() => {
+    if (!previewFile) {
+      setPreviewObjectUrl(null)
+      return
+    }
+    const url = URL.createObjectURL(previewFile)
+    setPreviewObjectUrl(url)
+    return () => URL.revokeObjectURL(url)
+  }, [previewFile])
 
   const content = (
       <div className="space-y-6">
@@ -340,40 +408,104 @@ export const SuperAdminResources: React.FC<SuperAdminResourcesProps> = ({
                 onChange={(e) => setEditFormData({ ...editFormData, description: e.target.value })}
               />
             </div>
+            {/* Card Preview Image */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                🖼️ Card Preview Image
+              </label>
+              <div className="flex items-start gap-4">
+                <div className="w-36 h-24 rounded-lg overflow-hidden border border-gray-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 shrink-0">
+                  {removePreview ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center text-[10px] text-slate-500 dark:text-slate-400 text-center px-2">
+                      <span>Default image</span>
+                      <span>will be shown</span>
+                    </div>
+                  ) : (
+                    <img
+                      src={previewObjectUrl || currentPreviewSrc || undefined}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+                <div className="flex-1 space-y-2">
+                  <label className="inline-block cursor-pointer px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors">
+                    {previewFile ? 'Change image' : 'Choose new image'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null
+                        setPreviewFile(file)
+                        if (file) setRemovePreview(false)
+                      }}
+                    />
+                  </label>
+                  {previewFile && (
+                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[180px]">
+                      {previewFile.name}
+                    </p>
+                  )}
+                  {((selectedResource as any)?.previewImageUrl || previewFile) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRemovePreview((prev) => {
+                          if (prev) return false
+                          setPreviewFile(null)
+                          return true
+                        })
+                      }}
+                      className="block text-xs font-semibold text-rose-600 dark:text-rose-400 hover:underline"
+                    >
+                      {removePreview ? '↩ Undo remove' : '🗑️ Remove custom image'}
+                    </button>
+                  )}
+                  {!removePreview && !previewFile && !(selectedResource as any)?.previewImageUrl && (
+                    <p className="text-[11px] text-slate-400">No custom image yet — the default type image is shown on the card.</p>
+                  )}
+                </div>
+              </div>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Type</label>
+                <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                  Type <span className="text-[11px] font-normal text-slate-400">(already set — change only if needed)</span>
+                </label>
                 <select 
                   className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
                   value={editFormData.type}
                   onChange={(e) => setEditFormData({ ...editFormData, type: e.target.value })}
-                  required
                 >
-                  <option value="">Select Type</option>
-                  <option value="textbook">Textbook</option>
-                  <option value="video">Video</option>
-                  <option value="quiz">Quiz</option>
-                  <option value="notes">Notes</option>
-                  <option value="assignment">Assignment</option>
+                  <option value="">Keep current type</option>
+                  {resourceTypeOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">Education Level</label>
+                <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+                  Education Level <span className="text-[11px] font-normal text-slate-400">(already set)</span>
+                </label>
                 <select 
                   className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
                   value={editFormData.educationLevel}
                   onChange={(e) => setEditFormData({ ...editFormData, educationLevel: e.target.value })}
-                  required
                 >
-                  <option value="">Select Level</option>
+                  <option value="">Keep current level</option>
                   <option value="high_school">High School</option>
                   <option value="university">University</option>
                 </select>
               </div>
             </div>
             <div className="flex gap-2 pt-4">
-              <Button variant="primary" fullWidth type="submit">Update Resource</Button>
-              <Button variant="secondary" fullWidth type="button" onClick={() => setShowEditModal(false)}>Cancel</Button>
+              <Button variant="primary" fullWidth type="submit" disabled={updating}>
+                {updating ? 'Updating…' : 'Update Resource'}
+              </Button>
+              <Button variant="secondary" fullWidth type="button" onClick={() => setShowEditModal(false)} disabled={updating}>
+                Cancel
+              </Button>
             </div>
           </form>
         </Modal>
