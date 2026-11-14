@@ -11,10 +11,8 @@ import {
   Trash2,
   Edit,
   Building2,
-  Globe,
   Search,
-  ExternalLink,
-  ShieldCheck,
+  Users,
 } from "lucide-react";
 
 interface UniversitiesTabProps {
@@ -23,6 +21,7 @@ interface UniversitiesTabProps {
 
 export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
   const [universities, setUniversities] = useState<any[]>([]);
+  const [studentCounts, setStudentCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -40,8 +39,14 @@ export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await universityService.getUniversities();
+      // Fetch universities and per-university student counts in parallel —
+      // counts are supplementary, so a failure there must not fail the tab.
+      const [response, counts] = await Promise.all([
+        universityService.getUniversities(),
+        universityService.getStudentCounts(),
+      ]);
       setUniversities(Array.isArray(response.data) ? response.data : []);
+      setStudentCounts(counts);
     } catch (err: any) {
       setError(err?.message || "Failed to load universities.");
       toast.error("Failed to load universities");
@@ -329,7 +334,12 @@ export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
                 <tr>
                   <th className="py-3 px-4">Name</th>
                   <th className="py-3 px-4">Location</th>
-                  <th className="py-3 px-4">Contact</th>
+                  <th className="py-3 px-4">
+                    <span className="inline-flex items-center gap-1">
+                      <Users className="w-3.5 h-3.5" />
+                      Students
+                    </span>
+                  </th>
                   <th className="py-3 px-4">Actions</th>
                 </tr>
               </thead>
@@ -356,18 +366,18 @@ export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
                         <MapPin className="w-4 h-4 text-slate-400" />
                         {uni.location}
                       </td>
-                      <td className="py-3 px-4 text-slate-600 dark:text-slate-300">
-                        {uni.email ? (
-                          <a
-                            href={`mailto:${uni.email}`}
-                            className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
-                          >
-                            <Mail className="w-4 h-4" />
-                            {uni.email}
-                          </a>
-                        ) : (
-                          <span className="text-slate-400">N/A</span>
-                        )}
+                      <td className="py-3 px-4">
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
+                            (studentCounts[uni.id] || 0) > 0
+                              ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                              : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
+                          }`}
+                          title="Students who selected this university"
+                        >
+                          <Users className="w-3.5 h-3.5" />
+                          {studentCounts[uni.id] || 0}
+                        </span>
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex gap-2">

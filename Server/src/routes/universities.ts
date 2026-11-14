@@ -15,6 +15,17 @@ router.get('/', async (req, res) => {
   }
 })
 
+// Students-per-university counts (super admin / admin only)
+router.get('/student-counts', authMiddleware, requireRole('admin', 'super_admin'), async (req, res) => {
+  try {
+    const counts = await UniversityService.getStudentCounts()
+    res.json({ success: true, data: counts })
+  } catch (error) {
+    console.error('University student counts error:', error)
+    res.status(500).json({ success: false, error: 'Failed to count university students' })
+  }
+})
+
 router.post('/', authMiddleware, requireRole('admin', 'super_admin'), async (req, res) => {
   try {
     const uni = await UniversityService.create(req.body)
