@@ -117,7 +117,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <div className="flex flex-col h-full bg-[#0B1121] transition-all duration-300 overflow-hidden w-full">
       {onClose && (
-        <button onClick={onClose} className="lg:hidden absolute top-4 right-4 p-2 text-slate-500 hover:bg-slate-800 rounded-lg transition-colors z-10">
+        <button onClick={onClose} className="absolute top-4 right-4 p-2 text-slate-500 hover:bg-slate-800 rounded-lg transition-colors z-10">
           <X className="w-5 h-5" />
         </button>
       )}

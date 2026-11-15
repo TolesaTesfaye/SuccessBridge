@@ -276,7 +276,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
 
   const renderThumbnail = () => {
     return (
-      <div className="rounded-md overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 relative">
+      <div className="rounded-md overflow-hidden border border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-white/[0.04] relative">
         <img
           src={previewSrc}
           alt={resource.title}
@@ -429,7 +429,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
   };
 
   return (
-    <div className="resource-card relative group bg-white dark:bg-slate-800/80 rounded-lg md:rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col overflow-hidden hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 transition-all duration-300">
+    <div className="resource-card relative group bg-white dark:bg-[#111A2C] rounded-lg md:rounded-xl border border-slate-200 dark:border-white/[0.08] flex flex-col overflow-hidden hover:shadow-lg hover:shadow-blue-500/5 hover:-translate-y-0.5 transition-all duration-300">
       {isNew && (
         <div className="absolute top-0.5 right-0.5 md:top-1 md:right-1 z-10 px-1 py-0.5 md:px-2 md:py-0.5 bg-rose-600 text-white text-[7px] md:text-[9px] font-semibold uppercase tracking-wide rounded shadow-sm">
           New
@@ -437,7 +437,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
       )}
       {/* Card Header - Type Badge */}
       <div
-        className={`px-2 py-1 md:px-1.5 md:py-0.5 flex items-center gap-1 border-b border-slate-100 dark:border-slate-700/50 ${getTypeColor(resource.type)} bg-opacity-50`}
+        className={`px-2 py-1 md:px-1.5 md:py-0.5 flex items-center gap-1 border-b border-slate-100 dark:border-white/[0.06] ${getTypeColor(resource.type)} bg-opacity-50`}
       >
         {getResourceIcon(resource.type)}
         <span className="text-[7px] md:text-[8px] font-bold md:font-semibold uppercase tracking-wider">

@@ -216,6 +216,7 @@ export const UniversityDashboard: React.FC = () => {
     <DashboardLayout
       title=""
       noPadding={activeTab === "learning"}
+      hideSidebar
       showFooter={false}
       mobileNavActiveTab={activeTab}
       onMobileNavTabChange={(tab) => {

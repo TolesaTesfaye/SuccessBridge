@@ -140,6 +140,7 @@ export const HighSchoolDashboard: React.FC = () => {
     <DashboardLayout
       title=""
       noPadding={activeTab === "learning"}
+      hideSidebar
       showFooter={false}
       mobileNavActiveTab={activeTab}
       onMobileNavTabChange={setActiveTab}

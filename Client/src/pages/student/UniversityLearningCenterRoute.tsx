@@ -115,7 +115,7 @@ export const UniversityLearningCenterRoute: React.FC = () => {
   }
 
   return (
-    <DashboardLayout noPadding>
+    <DashboardLayout noPadding hideSidebar>
       <UniversityLearningCenter
         subjects={registeredSubjects}
         learningSubject={learningSubject}

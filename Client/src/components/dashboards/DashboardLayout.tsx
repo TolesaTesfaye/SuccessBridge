@@ -17,6 +17,7 @@ interface DashboardLayoutProps {
   noPadding?: boolean;
   showFooter?: boolean;
   disableTopPadding?: boolean;
+  hideSidebar?: boolean;
   mobileNavActiveTab?: "home" | "learning" | "hub";
   onMobileNavTabChange?: (tab: "home" | "learning" | "hub") => void;
 }
@@ -29,6 +30,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   noPadding = false,
   showFooter = true,
   disableTopPadding = false,
+  hideSidebar = false,
   mobileNavActiveTab = "home",
   onMobileNavTabChange,
 }) => {
@@ -59,6 +61,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         handleMobileMenuOpen,
       );
   }, []);
+
+  useEffect(() => {
+    if (!hideSidebar) setIsSidebarOpen(false);
+  }, [hideSidebar]);
 
   // Handle sidebar resize
   useEffect(() => {
@@ -119,16 +125,26 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f1c] flex flex-col transition-colors duration-300 overflow-hidden h-screen m-0 p-0">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#070A13] flex flex-col transition-colors duration-300 overflow-hidden h-screen m-0 p-0">
       {/* 1. Full-Width Header at the Top */}
       <header className="hidden md:flex h-12 md:h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 items-center justify-between px-0 md:px-3 flex-shrink-0 z-30 transition-colors duration-300 shadow-sm">
         <div className="flex items-center flex-1 gap-1 md:gap-4">
-          {/* Collapse Button - Desktop */}
+          {/* Sidebar Button - Desktop */}
           <button
-            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-            className="hidden lg:flex p-1.5 md:p-2.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg md:rounded-xl transition-all hover:scale-110 active:scale-95 border border-transparent hover:border-slate-200 dark:hover:border-white/10"
+            onClick={() => {
+              if (hideSidebar) {
+                setIsSidebarOpen(true);
+                return;
+              }
+              setIsSidebarCollapsed(!isSidebarCollapsed);
+            }}
+            className={`${hideSidebar ? "flex" : "hidden lg:flex"} p-1.5 md:p-2.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg md:rounded-xl transition-all hover:scale-110 active:scale-95 border border-transparent hover:border-slate-200 dark:hover:border-white/10`}
             title={
-              isSidebarCollapsed ? "Expand Navigation" : "Collapse Navigation"
+              hideSidebar
+                ? "Open Navigation"
+                : isSidebarCollapsed
+                  ? "Expand Navigation"
+                  : "Collapse Navigation"
             }
           >
             <Menu className="w-4 h-4 md:w-5 md:h-5 flex-shrink-0" />
@@ -199,28 +215,30 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
       {/* 2. Container for Sidebar and Main Content - No Gap */}
       <div className="flex flex-1 overflow-hidden m-0 p-0 gap-0 relative">
-        <aside
-          style={{ width: isSidebarCollapsed ? '64px' : `${sidebarWidth}px` }}
-          className={`hidden lg:block flex-shrink-0 z-30 transition-all duration-300 ${
-            isResizing ? '' : 'transition-all'
-          } bg-[#0B1121] overflow-hidden m-0 p-0 relative group`}
-        >
-          <Sidebar collapsed={isSidebarCollapsed} />
-          
-          {/* Resize Handle */}
-          {!isSidebarCollapsed && (
-            <div
-              onMouseDown={() => setIsResizing(true)}
-              className="absolute top-0 right-0 w-1 h-full cursor-ew-resize bg-transparent hover:bg-blue-500/50 transition-colors group-hover:bg-blue-500/20 z-40"
-              title="Drag to resize sidebar"
-            >
-              <div className="absolute top-1/2 -translate-y-1/2 right-0 w-1 h-20 bg-blue-500/50 rounded-l-full opacity-0 group-hover:opacity-100 transition-opacity" />
-            </div>
-          )}
-        </aside>
+        {!hideSidebar && (
+          <aside
+            style={{ width: isSidebarCollapsed ? '64px' : `${sidebarWidth}px` }}
+            className={`hidden lg:block flex-shrink-0 z-30 transition-all duration-300 ${
+              isResizing ? '' : 'transition-all'
+            } bg-[#0B1121] overflow-hidden m-0 p-0 relative group`}
+          >
+            <Sidebar collapsed={isSidebarCollapsed} />
+            
+            {/* Resize Handle */}
+            {!isSidebarCollapsed && (
+              <div
+                onMouseDown={() => setIsResizing(true)}
+                className="absolute top-0 right-0 w-1 h-full cursor-ew-resize bg-transparent hover:bg-blue-500/50 transition-colors group-hover:bg-blue-500/20 z-40"
+                title="Drag to resize sidebar"
+              >
+                <div className="absolute top-1/2 -translate-y-1/2 right-0 w-1 h-20 bg-blue-500/50 rounded-l-full opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+            )}
+          </aside>
+        )}
 
         <div
-          className={`absolute inset-0 z-[100] transition-opacity duration-300 lg:hidden ${isSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+          className={`absolute inset-0 z-[100] transition-opacity duration-300 ${hideSidebar ? "" : "lg:hidden"} ${isSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         >
           <div
             className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
@@ -235,7 +253,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
         <main
           className={
-            `flex-1 w-full m-0 p-0 bg-[#f1f1f1] dark:bg-slate-900 min-h-0 min-w-0 ${showMobileBottomNav ? "pb-16 md:pb-0" : ""} ` +
+            `flex-1 w-full m-0 p-0 bg-[#f1f1f1] dark:bg-[#070A13] min-h-0 min-w-0 ${showMobileBottomNav ? "pb-16 md:pb-0" : ""} ` +
             (noPadding ? "overflow-hidden" : "overflow-y-auto custom-scrollbar")
           }
         >
