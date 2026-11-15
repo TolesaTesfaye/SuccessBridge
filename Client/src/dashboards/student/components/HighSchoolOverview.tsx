@@ -12,6 +12,7 @@ interface HighSchoolOverviewProps {
   selectedStream: Stream;
   homeLoading: boolean;
   homeResources: any[];
+  homeStats?: { materials: number; subjects: number; videos: number } | null;
   setActiveTab: (tab: "home" | "learning" | "hub") => void;
 }
 
@@ -76,15 +77,20 @@ export const HighSchoolOverview: React.FC<HighSchoolOverviewProps> = ({
   selectedStream,
   homeLoading,
   homeResources,
+  homeStats,
   setActiveTab,
 }) => {
   const firstName = user?.name?.split(" ")[0] || "Scholar";
-  const videoCount = homeResources.filter(
-    (r: any) => r?.type === "Video",
-  ).length;
-  const subjectCount = new Set(
-    homeResources.map((r: any) => r?.subject).filter(Boolean),
-  ).size;
+  const videoCount =
+    homeStats?.videos ??
+    homeResources.filter((r: any) =>
+      String(r?.type || "")
+        .toLowerCase()
+        .startsWith("video"),
+    ).length;
+  const subjectCount =
+    homeStats?.subjects ??
+    new Set(homeResources.map((r: any) => r?.subject).filter(Boolean)).size;
 
   const gradeLabel = activeGrade.replace("grade_", "Grade ").toUpperCase();
 
@@ -114,7 +120,7 @@ export const HighSchoolOverview: React.FC<HighSchoolOverviewProps> = ({
 
   const overviewStats: { label: string; value: string | number }[] = [
     { label: "Grade", value: gradeLabel },
-    { label: "Materials", value: homeResources.length },
+    { label: "Materials", value: homeStats?.materials ?? homeResources.length },
     { label: "Subjects", value: subjectCount },
     { label: "Videos", value: videoCount },
   ];

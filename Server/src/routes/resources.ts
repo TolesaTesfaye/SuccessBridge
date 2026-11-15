@@ -5,6 +5,7 @@ import {
   getResources,
   getResourceById,
   getResourceStats,
+  getResourceOverview,
   createResource,
   updateResource,
   deleteResource,
@@ -97,6 +98,9 @@ router.get('/', getResources)
 
 // Get resource statistics
 router.get('/stats', getResourceStats)
+
+// Get scoped overview stats (materials, subjects, videos) for a student level
+router.get('/overview', getResourceOverview)
 
 // Get single resource
 router.get('/:id', getResourceById)

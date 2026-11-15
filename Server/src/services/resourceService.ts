@@ -178,6 +178,40 @@ export class ResourceService {
   }
 
   /**
+   * Get aggregated stats for a student's scope (education level + grade/stream).
+   */
+  static async getOverviewStats(filters: {
+    educationLevel?: string
+    grade?: string
+    stream?: string
+  }) {
+    const where: any = {}
+
+    if (filters.educationLevel) {
+      where.educationLevel = filters.educationLevel.toLowerCase()
+    }
+    if (filters.grade) {
+      where.grade = filters.grade.toLowerCase()
+    }
+    if (filters.stream) {
+      where.stream = filters.stream.toLowerCase()
+    }
+
+    const [materials, subjects, videos] = await Promise.all([
+      Resource.count({ where }),
+      Resource.count({ where, distinct: true, col: 'subjectId' }),
+      Resource.count({
+        where: {
+          ...where,
+          type: { [Op.iLike]: 'video%' },
+        },
+      }),
+    ])
+
+    return { materials, subjects, videos }
+  }
+
+  /**
    * Get resource by ID
    */
   static async getResourceById(id: string) {

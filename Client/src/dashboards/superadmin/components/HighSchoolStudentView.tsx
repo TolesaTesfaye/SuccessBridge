@@ -29,6 +29,11 @@ export const HighSchoolStudentView: React.FC<HighSchoolStudentViewProps> = ({
   const [learningSubject, setLearningSubject] = useState<string>("");
   const [resources, setResources] = useState<any[]>([]);
   const [homeResources, setHomeResources] = useState<any[]>([]);
+  const [homeStats, setHomeStats] = useState<{
+    materials: number;
+    subjects: number;
+    videos: number;
+  } | null>(null);
   const [loading, setLoading] = useState(false);
   const [homeLoading, setHomeLoading] = useState(false);
 
@@ -88,16 +93,27 @@ export const HighSchoolStudentView: React.FC<HighSchoolStudentViewProps> = ({
   const fetchHomeResources = async () => {
     setHomeLoading(true);
     try {
-      const response = await resourceService.getResources({
-        educationLevel: "high_school",
-        grade: grade,
-        stream: selectedStream || undefined,
-        limit: 8,
-      });
+      const [response, statsResponse] = await Promise.all([
+        resourceService.getResources({
+          educationLevel: "high_school",
+          grade: grade,
+          stream: selectedStream || undefined,
+          limit: 8,
+        }),
+        resourceService
+          .getResourceOverview({
+            educationLevel: "high_school",
+            grade: grade,
+            stream: selectedStream || undefined,
+          })
+          .catch(() => null),
+      ]);
       setHomeResources(response.data?.data || []);
+      setHomeStats(statsResponse?.data ?? null);
     } catch (err) {
       console.error("Failed to fetch home resources:", err);
       setHomeResources([]);
+      setHomeStats(null);
     } finally {
       setHomeLoading(false);
     }
@@ -154,6 +170,7 @@ export const HighSchoolStudentView: React.FC<HighSchoolStudentViewProps> = ({
               selectedStream={selectedStream}
               homeLoading={homeLoading}
               homeResources={homeResources}
+              homeStats={homeStats}
               setActiveTab={onActiveTabChange}
             />
           </>

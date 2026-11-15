@@ -65,6 +65,15 @@ export const resourceService = {
     return response.data
   },
 
+  getResourceOverview: async (filters?: {
+    educationLevel?: string
+    grade?: string
+    stream?: string
+  }): Promise<ApiResponse<{ materials: number; subjects: number; videos: number }>> => {
+    const response = await api.get('/resources/overview', { params: filters })
+    return response.data
+  },
+
   getPreviewImageUrl: async (id: string): Promise<{ success: boolean; url: string | null }> => {
     const response = await api.get(`/resources/${id}/preview-image`)
     return response.data

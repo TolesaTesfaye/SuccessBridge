@@ -42,6 +42,11 @@ export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({
   >([]);
   const [resources, setResources] = useState<any[]>([]);
   const [homeResources, setHomeResources] = useState<any[]>([]);
+  const [homeStats, setHomeStats] = useState<{
+    materials: number;
+    subjects: number;
+    videos: number;
+  } | null>(null);
   const [loading, setLoading] = useState(false);
   const [homeLoading, setHomeLoading] = useState(false);
 
@@ -139,12 +144,21 @@ export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({
   const fetchHomeResources = async () => {
     setHomeLoading(true);
     try {
-      const response = await resourceService.getResources({
-        educationLevel: "university",
-        grade: level,
-        limit: 3,
-      });
+      const [response, statsResponse] = await Promise.all([
+        resourceService.getResources({
+          educationLevel: "university",
+          grade: level,
+          limit: 3,
+        }),
+        resourceService
+          .getResourceOverview({
+            educationLevel: "university",
+            grade: level,
+          })
+          .catch(() => null),
+      ]);
       setHomeResources(response.data?.data || []);
+      setHomeStats(statsResponse?.data ?? null);
     } catch (err) {
       console.error("Failed to fetch home resources:", err);
     } finally {
@@ -231,6 +245,7 @@ export const UniversityStudentView: React.FC<UniversityStudentViewProps> = ({
               activeCategory={level}
               homeLoading={homeLoading}
               homeResources={homeResources}
+              homeStats={homeStats}
               setActiveTab={onActiveTabChange}
               handleLearningCenterClick={handleLearningCenterClick}
             />

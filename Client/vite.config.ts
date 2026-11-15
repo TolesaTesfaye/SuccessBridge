@@ -35,11 +35,10 @@ export default defineConfig({
     port: 3000,
     strictPort: false,
     host: "0.0.0.0", // Listen on all network interfaces for local network access
-    hmr: {
-      protocol: "ws",
-      host: "localhost", // Use localhost for the HMR client (browsers cannot connect to 0.0.0.0)
-      port: 3000,
-    },
+    // No hmr.port override: Vite must share the dev server's actual port.
+    // A fixed HMR port opens a standalone WebSocket listener on 3000, which
+    // answers plain HTTP requests (favicon, index) with 426 once Vite falls
+    // back to another port.
 
     proxy: {
       "/api": {

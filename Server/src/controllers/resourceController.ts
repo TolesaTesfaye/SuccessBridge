@@ -38,6 +38,17 @@ export const getResourceStats = async (req: Request, res: Response, next: NextFu
   }
 }
 
+export const getResourceOverview = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { educationLevel, grade, stream } = req.query as any
+    const stats = await ResourceService.getOverviewStats({ educationLevel, grade, stream })
+    res.json({ success: true, data: stats })
+  } catch (error) {
+    console.error('Get resource overview error:', error)
+    next(error)
+  }
+}
+
 export const getResourceById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const resource = await ResourceService.getResourceById(req.params.id)
