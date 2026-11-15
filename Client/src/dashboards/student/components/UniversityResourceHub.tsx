@@ -257,7 +257,7 @@ export const UniversityResourceHub: React.FC<UniversityResourceHubProps> = ({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-3 min-[640px]:grid-cols-3 min-[768px]:grid-cols-4 min-[1024px]:grid-cols-5 min-[1280px]:grid-cols-6 gap-2 md:gap-3 py-2 md:py-3 px-2 md:px-4 bg-slate-50 dark:bg-slate-900/30">
+        <div className="grid grid-cols-2 min-[640px]:grid-cols-3 min-[768px]:grid-cols-4 min-[1024px]:grid-cols-5 min-[1280px]:grid-cols-6 gap-2 md:gap-3 py-2 md:py-3 px-2 md:px-4 bg-slate-50 dark:bg-slate-900/30">
           {filteredResources.map((resource) => (
             <ResourceCard key={resource.id} resource={resource} />
           ))}

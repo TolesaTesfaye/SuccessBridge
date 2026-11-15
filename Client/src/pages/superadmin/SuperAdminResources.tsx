@@ -413,8 +413,8 @@ export const SuperAdminResources: React.FC<SuperAdminResourcesProps> = ({
               <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
                 🖼️ Card Preview Image
               </label>
-              <div className="flex items-start gap-4">
-                <div className="w-36 h-24 rounded-lg overflow-hidden border border-gray-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 shrink-0">
+              <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+                <div className="w-full h-44 sm:w-36 sm:h-24 rounded-lg overflow-hidden border border-gray-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 shrink-0">
                   {removePreview ? (
                     <div className="w-full h-full flex flex-col items-center justify-center text-[10px] text-slate-500 dark:text-slate-400 text-center px-2">
                       <span>Default image</span>

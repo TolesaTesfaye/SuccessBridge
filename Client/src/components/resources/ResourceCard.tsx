@@ -280,7 +280,7 @@ export const ResourceCard: React.FC<ResourceCardProps> = ({
         <img
           src={previewSrc}
           alt={resource.title}
-          className="w-full h-24 sm:h-28 md:h-32 lg:h-36 object-cover"
+          className="w-full aspect-[16/10] object-cover"
           loading="lazy"
           onError={(e) => {
             // If the resolved preview image fails to load, fall back to the default
