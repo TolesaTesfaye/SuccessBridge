@@ -26,12 +26,10 @@ export async function handleProfileSetup(bot: any, msg: any): Promise<void> {
       screen({
         icon: '✅',
         title: 'Profile Already Complete',
-        subtitle: bi('You are all set — nothing else needed here.',
-                     'Kun xumura — waan dabalataan hin jiru!'),
+        subtitle: bi('You are all set — nothing else needed here.'),
         body:
           `🎓 <b>Category:</b> ${categoryName}\n\n` +
-          bi('To change your level, please update it on the website.',
-             'Sadarkaa jijjiiruu baafadhu website\'irratti.'),
+          bi('To change your level, please update it on the website.'),
       }),
       {
         parse_mode: 'HTML',
@@ -52,23 +50,19 @@ export async function handleProfileSetup(bot: any, msg: any): Promise<void> {
     screen({
       icon: '✏️',
       title: 'Profile Setup — Step 1 of 2',
-      subtitle: bi(
-        'Where are you studying right now?',
-        'Amma eessa barattaa?',
-      ),
+      subtitle: bi('Where are you studying right now?'),
       body:
-        `🏫 <b>High School</b> — Kutaa 9 to 12\n` +
+        `🏫 <b>High School</b> — Grade 9 to 12\n` +
         `🎓 <b>University</b> — Freshman or Remedial`,
       tipText: 'You can change this later on the website.',
-      tipOromoo: 'Booda website\'irratti jijjiiruu dandeessu.',
     }),
     {
       parse_mode: 'HTML',
       reply_markup: {
         inline_keyboard: [
-          [{ text: '🏫 High School  •  Mana Barumsaa', callback_data: 'setup_highschool' }],
-          [{ text: '🎓 University  •  Yunivarsitii', callback_data: 'setup_university' }],
-          [{ text: '❌ Cancel  •  Dhiisi', callback_data: 'main_menu' }],
+          [{ text: '🏫 High School', callback_data: 'setup_highschool' }],
+          [{ text: '🎓 University', callback_data: 'setup_university' }],
+          [{ text: '❌ Cancel', callback_data: 'main_menu' }],
         ],
       },
     },
@@ -85,7 +79,7 @@ export async function handleHighSchoolSetup(bot: any, query: any): Promise<void>
     screen({
       icon: '🏫',
       title: 'High School — Step 2 of 2',
-      subtitle: bi('Which grade are you in?', 'Kutaan kee kam?'),
+      subtitle: bi('Which grade are you in?'),
     }),
     {
       chat_id: chatId,
@@ -101,7 +95,7 @@ export async function handleHighSchoolSetup(bot: any, query: any): Promise<void>
             { text: '1️⃣1️⃣ Grade 11', callback_data: 'setup_grade_11' },
             { text: '1️⃣2️⃣ Grade 12', callback_data: 'setup_grade_12' },
           ],
-          [{ text: '⬅️ Back  •  Gara Duubaa', callback_data: 'setup_profile' }],
+          [{ text: '⬅️ Back', callback_data: 'setup_profile' }],
         ],
       },
     },
@@ -118,7 +112,7 @@ export async function handleUniversitySetup(bot: any, query: any): Promise<void>
     screen({
       icon: '🎓',
       title: 'University — Step 2 of 2',
-      subtitle: bi('Which level are you in?', 'Sadarkaa kee kam?'),
+      subtitle: bi('Which level are you in?'),
     }),
     {
       chat_id: chatId,
@@ -128,7 +122,7 @@ export async function handleUniversitySetup(bot: any, query: any): Promise<void>
         inline_keyboard: [
           [{ text: '🔰 Remedial', callback_data: 'setup_remedial' }],
           [{ text: '🎯 Freshman', callback_data: 'setup_freshman' }],
-          [{ text: '⬅️ Back  •  Gara Duubaa', callback_data: 'setup_profile' }],
+          [{ text: '⬅️ Back', callback_data: 'setup_profile' }],
         ],
       },
     },
@@ -145,12 +139,11 @@ async function sendProfileSuccess(bot: any, chatId: number, messageId: number, o
     screen({
       icon: '🎉',
       title: 'Profile Complete!',
-      subtitle: bi('Welcome aboard — your dashboard is ready!',
-                   'Baga gammadde! Dashboard kee qopheeffeera!'),
+      subtitle: bi('Welcome aboard — your dashboard is ready!'),
       body:
         `${opts.icon} <b>Level:</b> ${opts.levelLabel}\n` +
         `🎓 <b>Category:</b> ${opts.categoryName}\n\n` +
-        bi('Now pick what to do next:', 'Amma wanti itti aanu filadhu:'),
+        bi('Now pick what to do next:'),
     }),
     {
       chat_id: chatId,
@@ -158,9 +151,9 @@ async function sendProfileSuccess(bot: any, chatId: number, messageId: number, o
       parse_mode: 'HTML',
       reply_markup: {
         inline_keyboard: [
-          [{ text: '📚 Browse My Subjects  •  Barnoota Ilaali', callback_data: 'browse_all_grades' }],
-          [{ text: '💳 Unlock All Resources  •  Kaffalii Godhi', callback_data: 'unlock_resources' }],
-          [{ text: '🏠 Main Menu  •  Man\'ee', callback_data: 'main_menu' }],
+          [{ text: '📚 Browse My Subjects', callback_data: 'browse_all_grades' }],
+          [{ text: '💳 Unlock All Resources', callback_data: 'unlock_resources' }],
+          [{ text: '🏠 Main Menu', callback_data: 'main_menu' }],
         ],
       },
     },
@@ -173,8 +166,7 @@ async function sendProfileError(bot: any, chatId: number, messageId: number): Pr
     screen({
       icon: '❌',
       title: 'Something Went Wrong',
-      subtitle: bi('Your profile was not saved. Please try again.',
-                   'Odeeffannoon hin kayyadne. Maaloo irra deebi\'i!'),
+      subtitle: bi('Your profile was not saved. Please try again.'),
     }),
     {
       chat_id: chatId,
@@ -222,7 +214,7 @@ export async function handleGradeSelection(bot: any, query: any, grade: string):
       const categoryName = getStudentCategoryDisplayName(category);
       await sendProfileSuccess(bot, chatId, query.message.message_id, {
         categoryName,
-        levelLabel: `Grade ${grade}  •  Kutaa ${grade}`,
+        levelLabel: `Grade ${grade}`,
         icon: '🏫',
       });
     } else {

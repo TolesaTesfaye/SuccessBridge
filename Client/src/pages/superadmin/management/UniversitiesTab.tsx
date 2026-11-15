@@ -13,6 +13,8 @@ import {
   Building2,
   Search,
   Users,
+  Eye,
+  X,
 } from "lucide-react";
 
 interface UniversitiesTabProps {
@@ -25,13 +27,16 @@ export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [showAddForm, setShowAddForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const [formMode, setFormMode] = useState<"add" | "edit">("add");
+  const [viewingUni, setViewingUni] = useState<any | null>(null);
+  const [viewingStudents, setViewingStudents] = useState<any[]>([]);
+  const [viewingLoading, setViewingLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
-    location: "",
     email: "",
   });
 
@@ -65,28 +70,25 @@ export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
     return universities.filter(
       (uni) =>
         uni.name.toLowerCase().includes(query) ||
-        uni.location.toLowerCase().includes(query) ||
         (uni.email && uni.email.toLowerCase().includes(query))
     );
   }, [universities, searchTerm]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.location) {
-      toast.error("Please fill in required fields");
+    if (!formData.name.trim()) {
+      toast.error("Please enter the university name");
       return;
     }
 
     try {
       setSubmitting(true);
-      const newUni = await universityService.createUniversity({
-        name: formData.name,
-        location: formData.location,
+      await universityService.createUniversity({
+        name: formData.name.trim(),
         email: formData.email || undefined,
       });
-      setUniversities((prev) => [...prev, newUni]);
-      setFormData({ name: "", location: "", email: "" });
-      setShowAddForm(false);
+      await loadUniversities();
+      closeForm();
       toast.success("University added successfully");
     } catch (err: any) {
       toast.error(err?.message || "Failed to add university");
@@ -97,23 +99,19 @@ export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingId || !formData.name || !formData.location) {
-      toast.error("Please fill in required fields");
+    if (!editingId || !formData.name.trim()) {
+      toast.error("Please enter the university name");
       return;
     }
 
     try {
       setSubmitting(true);
-      const updated = await universityService.updateUniversity(editingId, {
-        name: formData.name,
-        location: formData.location,
+      await universityService.updateUniversity(editingId, {
+        name: formData.name.trim(),
         email: formData.email || undefined,
       });
-      setUniversities((prev) =>
-        prev.map((uni) => (uni.id === editingId ? updated : uni))
-      );
-      setFormData({ name: "", location: "", email: "" });
-      setEditingId(null);
+      await loadUniversities();
+      closeForm();
       toast.success("University updated successfully");
     } catch (err: any) {
       toast.error(err?.message || "Failed to update university");
@@ -123,24 +121,54 @@ export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!window.confirm(`Delete ${name}?`)) return;
+    const count = studentCounts[id] || 0;
+    const warning =
+      count > 0
+        ? `\n\n${count} student${count === 1 ? "" : "s"} who selected it will be unlinked.`
+        : "";
+    if (!window.confirm(`Delete ${name}?${warning}`)) return;
 
     try {
       await universityService.deleteUniversity(id);
-      setUniversities((prev) => prev.filter((uni) => uni.id !== id));
+      await loadUniversities();
       toast.success("University deleted successfully");
     } catch (err: any) {
       toast.error(err?.message || "Failed to delete university");
     }
   };
 
-  const handleEdit = (uni: any) => {
-    setFormData({
-      name: uni.name,
-      location: uni.location,
-      email: uni.email || "",
-    });
+  const openAddModal = () => {
+    setFormMode("add");
+    setEditingId(null);
+    setFormData({ name: "", email: "" });
+    setFormOpen(true);
+  };
+
+  const openEditModal = (uni: any) => {
+    setFormMode("edit");
     setEditingId(uni.id);
+    setFormData({ name: uni.name, email: uni.email || "" });
+    setFormOpen(true);
+  };
+
+  const closeForm = () => {
+    setFormOpen(false);
+    setEditingId(null);
+    setFormData({ name: "", email: "" });
+  };
+
+  const handleViewStudents = async (uni: any) => {
+    setViewingUni(uni);
+    setViewingStudents([]);
+    setViewingLoading(true);
+    try {
+      const students = await universityService.getUniversityStudents(uni.id);
+      setViewingStudents(students);
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to load students");
+    } finally {
+      setViewingLoading(false);
+    }
   };
 
   const stats = useMemo(
@@ -199,91 +227,6 @@ export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
         ))}
       </div>
 
-      {/* Form */}
-      {(showAddForm || editingId) && (
-        <Card className="border-slate-200/80 shadow-sm dark:border-white/10 bg-white dark:bg-slate-900">
-          <CardHeader className="border-b border-slate-100 dark:border-white/5">
-            <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              {editingId ? "Edit University" : "Add New University"}
-            </h3>
-          </CardHeader>
-          <CardBody>
-            <form
-              onSubmit={editingId ? handleUpdate : handleCreate}
-              className="grid grid-cols-1 md:grid-cols-3 gap-4"
-            >
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  University Name *
-                </label>
-                <input
-                  required
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  placeholder="e.g. Addis Ababa University"
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-sm font-semibold text-slate-900 dark:text-white"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  Location *
-                </label>
-                <input
-                  required
-                  value={formData.location}
-                  onChange={(e) =>
-                    setFormData({ ...formData, location: e.target.value })
-                  }
-                  placeholder="e.g. Addis Ababa, Ethiopia"
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-sm font-semibold text-slate-900 dark:text-white"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                  Contact Email
-                </label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  placeholder="contact@university.edu"
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-sm font-semibold text-slate-900 dark:text-white"
-                />
-              </div>
-              <div className="md:col-span-3 flex justify-end gap-3 pt-2">
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    setShowAddForm(false);
-                    setEditingId(null);
-                    setFormData({ name: "", location: "", email: "" });
-                  }}
-                  disabled={submitting}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  variant="primary"
-                  type="submit"
-                  disabled={submitting}
-                >
-                  {submitting
-                    ? "Saving..."
-                    : editingId
-                    ? "Update"
-                    : "Add University"}
-                </Button>
-              </div>
-            </form>
-          </CardBody>
-        </Card>
-      )}
-
       {/* Universities Table */}
       <Card className="border-slate-200/80 shadow-sm dark:border-white/10">
         <CardHeader className="border-b border-slate-100 dark:border-white/5">
@@ -300,8 +243,8 @@ export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
             <Button
               variant="primary"
               size="sm"
-              onClick={() => setShowAddForm(!showAddForm)}
-              disabled={editingId !== null}
+              onClick={openAddModal}
+              disabled={formOpen}
             >
               <Plus className="w-4 h-4 mr-1" />
               Add
@@ -314,7 +257,7 @@ export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search by name, location, or email..."
+                placeholder="Search by name or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-sm font-semibold text-slate-900 dark:text-white"
@@ -333,7 +276,6 @@ export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
               <thead className="border-b border-slate-200 dark:border-white/10 text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400">
                 <tr>
                   <th className="py-3 px-4">Name</th>
-                  <th className="py-3 px-4">Location</th>
                   <th className="py-3 px-4">
                     <span className="inline-flex items-center gap-1">
                       <Users className="w-3.5 h-3.5" />
@@ -347,7 +289,7 @@ export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
                 {filteredUniversities.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={4}
+                      colSpan={3}
                       className="py-8 px-4 text-center text-slate-500 dark:text-slate-400"
                     >
                       No universities found
@@ -361,10 +303,6 @@ export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
                     >
                       <td className="py-3 px-4 font-semibold text-slate-900 dark:text-white">
                         {uni.name}
-                      </td>
-                      <td className="py-3 px-4 text-slate-600 dark:text-slate-300 flex items-center gap-1">
-                        <MapPin className="w-4 h-4 text-slate-400" />
-                        {uni.location}
                       </td>
                       <td className="py-3 px-4">
                         <span
@@ -382,8 +320,15 @@ export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
                       <td className="py-3 px-4">
                         <div className="flex gap-2">
                           <button
-                            onClick={() => handleEdit(uni)}
-                            disabled={editingId !== null && editingId !== uni.id}
+                            onClick={() => handleViewStudents(uni)}
+                            className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded transition-colors"
+                            title="View students"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => openEditModal(uni)}
+                            disabled={formOpen}
                             className="p-1.5 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-500/10 rounded transition-colors disabled:opacity-50"
                             title="Edit"
                           >
@@ -391,7 +336,7 @@ export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
                           </button>
                           <button
                             onClick={() => handleDelete(uni.id, uni.name)}
-                            disabled={editingId !== null}
+                            disabled={formOpen}
                             className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded transition-colors disabled:opacity-50"
                             title="Delete"
                           >
@@ -407,6 +352,171 @@ export const UniversitiesTab: React.FC<UniversitiesTabProps> = ({ toast }) => {
           </div>
         </CardBody>
       </Card>
+
+      {/* View Students Modal */}
+      {viewingUni && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setViewingUni(null)}
+          />
+          <div className="relative w-full max-w-lg max-h-[80vh] flex flex-col rounded-xl bg-slate-900 border border-slate-700/60 shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between gap-3 p-4 border-b border-slate-700/60">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shrink-0">
+                  <Users className="w-4 h-4 text-white" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="font-bold text-white truncate">
+                    {viewingUni.name}
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    {viewingLoading
+                      ? "Loading…"
+                      : `${viewingStudents.length} student${
+                          viewingStudents.length === 1 ? "" : "s"
+                        } selected this university`}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setViewingUni(null)}
+                className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded transition-colors shrink-0"
+                title="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="overflow-y-auto p-2">
+              {viewingLoading ? (
+                <Loading message="Loading students..." />
+              ) : viewingStudents.length === 0 ? (
+                <div className="py-10 text-center text-sm text-slate-400">
+                  No students have selected this university yet
+                </div>
+              ) : (
+                viewingStudents.map((s: any) => (
+                  <div
+                    key={s.id}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                      {(s.name || "?").charAt(0).toUpperCase()}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-white truncate">
+                        {s.name}
+                      </p>
+                      <p className="text-xs text-slate-400 truncate">
+                        {s.email}
+                      </p>
+                    </div>
+                    {s.department && (
+                      <span className="hidden sm:block text-[11px] text-slate-400 truncate max-w-[120px]">
+                        {s.department}
+                      </span>
+                    )}
+                    <span className="shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/10 text-blue-400">
+                      {s.studentType === "high_school"
+                        ? `Grade ${(s.highSchoolGrade || "").replace("grade_", "")}`
+                        : s.universityLevel
+                        ? s.universityLevel.charAt(0).toUpperCase() +
+                          s.universityLevel.slice(1)
+                        : "Student"}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add/Edit University Modal */}
+      {formOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={closeForm}
+          />
+          <div className="relative w-full max-w-md rounded-xl bg-slate-900 border border-slate-700/60 shadow-2xl">
+            <div className="flex items-center justify-between gap-3 p-4 border-b border-slate-700/60">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shrink-0">
+                  {formMode === "edit" ? (
+                    <Edit className="w-4 h-4 text-white" />
+                  ) : (
+                    <Plus className="w-4 h-4 text-white" />
+                  )}
+                </div>
+                <h3 className="font-bold text-white">
+                  {formMode === "edit"
+                    ? "Edit University"
+                    : "Add New University"}
+                </h3>
+              </div>
+              <button
+                onClick={closeForm}
+                className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded transition-colors shrink-0"
+                title="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form
+              onSubmit={formMode === "edit" ? handleUpdate : handleCreate}
+              className="p-4 space-y-4"
+            >
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  University Name *
+                </label>
+                <input
+                  required
+                  autoFocus
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  placeholder="e.g. Addis Ababa University"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-600/60 bg-slate-800 text-sm font-semibold text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  Contact Email
+                </label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  placeholder="contact@university.edu"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-600/60 bg-slate-800 text-sm font-semibold text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="flex justify-end gap-3 pt-1">
+                <Button
+                  variant="secondary"
+                  type="button"
+                  onClick={closeForm}
+                  disabled={submitting}
+                >
+                  Cancel
+                </Button>
+                <Button variant="primary" type="submit" disabled={submitting}>
+                  {submitting
+                    ? "Saving..."
+                    : formMode === "edit"
+                    ? "Update"
+                    : "Add University"}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

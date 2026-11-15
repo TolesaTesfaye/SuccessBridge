@@ -90,7 +90,6 @@ export async function handleMessage(bot: any, msg: any): Promise<void> {
     const webCard =
       `🌐 <b>SUCCESSBRIDGE WEBSITE</b>\n` +
       `━━━━━━━━━━━━━━━━━━━━\n\n` +
-      `🇪🇹 <i>Website keenya irratti akkaataa gaarii qopheessaa!</i>\n\n` +
       `✨ <b>What you can do there:</b>\n` +
       `• 📖 <b>Interactive Reader</b> — full-screen reading, zoom & bookmarks\n` +
       `• 📝 <b>Practice Quizzes</b> — instant scores & feedback\n` +

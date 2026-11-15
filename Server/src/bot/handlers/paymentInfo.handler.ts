@@ -86,9 +86,7 @@ export async function showPaymentInformation(bot: any, chatId: number, telegramU
         `2️⃣ You receive approval notification\n` +
         `3️⃣ Instant access to all resources\n\n` +
         `${formatDivider()}\n` +
-        `💡 <i>Usually takes 10-30 minutes, maximum 24 hours.</i>\n\n` +
-        `🗣️ <b>Afaan Oromoo:</b>\n` +
-        `<i>Kaffalti kee ilaalama jirti. Daqiiqa 10-30 keessatti approve godhamta.</i>`,
+        `💡 <i>Usually takes 10-30 minutes, maximum 24 hours.</i>`,
         {
           parse_mode: 'HTML',
           reply_markup: {
@@ -138,9 +136,7 @@ export async function showPaymentInformation(bot: any, chatId: number, telegramU
       `   • Access on Telegram Bot & Website\n` +
       `   • Study offline anytime\n\n` +
       `${formatDivider()}\n` +
-      `💡 <b>Pay once, learn forever!</b>\n\n` +
-      `🗣️ <b>Afaan Oromoo:</b>\n` +
-      `<i>Al takka kaffali, bara baraan barnoota.</i>`;
+      `💡 <b>Pay once, learn forever!</b>`;
 
     await bot.sendMessage(chatId, message, {
       parse_mode: 'HTML',

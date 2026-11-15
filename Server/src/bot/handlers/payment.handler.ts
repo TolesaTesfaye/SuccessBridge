@@ -137,10 +137,7 @@ export async function handleBotPayment(bot: any, msg: any): Promise<void> {
       `⚠️ <b>IMPORTANT:</b>\n` +
       `• An administrator will verify your payment within 24 hours\n` +
       `• You will be notified once approved\n` +
-      `• Access will be activated immediately after approval\n\n` +
-      `${formatDivider()}\n` +
-      `🗣️ <b>Afaan Oromoo:</b>\n` +
-      `<i>Qarshii ${price} account armaan olii tokko irratti ergaa. Sanaa booda screen shoot kaafii as ergaa. Admin daqiiqa muraasa keessatti approve siif godha.</i>`;
+      `• Access will be activated immediately after approval`;
 
     await bot.sendMessage(chatId, paymentGuide, {
       parse_mode: 'HTML',
@@ -307,10 +304,7 @@ export async function handlePaymentScreenshot(bot: any, msg: any): Promise<void>
       `${formatDivider()}\n` +
       `💡 <b>Average approval time:</b> 10-30 minutes\n` +
       `⏰ <b>Maximum wait time:</b> 24 hours\n\n` +
-      `🔔 <b>You will receive a notification when approved!</b>\n\n` +
-      `${formatDivider()}\n` +
-      `🗣️ <b>Afaan Oromoo:</b>\n` +
-      `<i>Screen shoot kee argameera! Admin daqiiqa 10-30 keessatti ilaala. Yeroo approve siif godhan, ergaa siif ergama.</i>`,
+      `🔔 <b>You will receive a notification when approved!</b>`,
       {
         parse_mode: 'HTML',
         reply_markup: {
@@ -528,8 +522,6 @@ export async function handleApprovePayment(bot: any, query: any, paymentId: stri
           `• Full access on web platform: ${getWebUrl()}\n` +
           `• Automatic access to new materials added later\n\n` +
           `${formatDivider()}\n` +
-          `🗣️ <b>Afaan Oromoo:</b>\n` +
-          `<i>Baga gammadde! Kaffaltiin kee approve godhameera. Amma material hunda daangaa malee download gochuu dandeessa!</i>\n\n` +
           `🎊 Happy Learning! 📚`,
           {
             parse_mode: 'HTML',

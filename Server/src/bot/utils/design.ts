@@ -3,8 +3,7 @@
  * ─────────────────────────────────────────────────────────────
  * One consistent visual language for every screen:
  *
- *  1. English first (clear + short), Afaan Oromoo 🇪🇹 guidance line
- *     below the key instruction of each screen.
+ *  1. English only — short, clear, easy for every student.
  *  2. Predictable structure: HEADER → BODY → TIP → NAV.
  *  3. Predictable navigation: every inline screen ends with
  *     [⬅️ Back] [🏠 Main Menu] on one row.
@@ -16,9 +15,9 @@ import { escapeHtml } from './ui.js';
 export const DIVIDER = '━━━━━━━━━━━━━━━━━━━━';
 export const THIN_DIVIDER = '─────────────────────';
 
-/** English line + Afaan Oromoo line (italic, flagged). */
-export function bi(en: string, om: string): string {
-  return `${en}\n🇪🇹 <i>${escapeHtml(om)}</i>`;
+/** Text hook for the main instruction line (English only). */
+export function bi(en: string): string {
+  return en;
 }
 
 /** Screen header: icon + bold title + optional subtitle, above a divider. */
@@ -29,10 +28,8 @@ export function header(icon: string, title: string, subtitle?: string): string {
 }
 
 /** Tip / hint footer line. */
-export function tip(en: string, om?: string): string {
-  let out = `💡 <i>${escapeHtml(en)}</i>`;
-  if (om) out += `\n💡 <i>${escapeHtml(om)}</i>`;
-  return out;
+export function tip(en: string): string {
+  return `💡 <i>${escapeHtml(en)}</i>`;
 }
 
 /**
@@ -45,12 +42,11 @@ export function screen(opts: {
   subtitle?: string;
   body?: string;
   tipText?: string;
-  tipOromoo?: string;
 }): string {
   const parts = [header(opts.icon, opts.title, opts.subtitle)];
   if (opts.body) parts.push('', opts.body);
   if (opts.tipText) {
-    parts.push('', THIN_DIVIDER, '', tip(opts.tipText, opts.tipOromoo));
+    parts.push('', THIN_DIVIDER, '', tip(opts.tipText));
   }
   parts.push(DIVIDER);
   return parts.join('\n');

@@ -311,3 +311,9 @@ select:disabled {
 .animate-pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
 }
+
+/* Safe-area padding for the fixed mobile bottom nav — keeps the buttons
+   above the iPhone/Android home indicator so taps always register. */
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}

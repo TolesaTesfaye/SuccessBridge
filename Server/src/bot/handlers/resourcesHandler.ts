@@ -95,10 +95,7 @@ export async function handleViewResources(bot: any, chatId: number, subjectId: s
         `• Pay once (200 Birr)\n` +
         `• Unlimited downloads directly in Telegram\n` +
         `• Full access on web platform\n` +
-        `• Instant approval by Super Admin\n\n` +
-        `${formatDivider()}\n` +
-        `🗣️ <b>Afaan Oromoo:</b>\n` +
-        `<i>Faayilii ${downloadStats.downloadsUsed} bilisaan fayyadamteerta. Itti fufuuf Qarshii 200 kaffaluun gosa barnoota hunda guutummaatti argadhu!</i>`,
+        `• Instant approval by Super Admin`,
         {
           parse_mode: 'HTML',
           reply_markup: {
@@ -249,10 +246,7 @@ export async function handleDownloadResource(bot: any, chatId: number, resourceI
         `• Pay once (200 Birr)\n` +
         `• Download unlimited resources\n` +
         `• Access ALL subjects\n` +
-        `• Instant approval (10-30 minutes)\n\n` +
-        `${formatDivider()}\n` +
-        `🗣️ <b>Afaan Oromoo:</b>\n` +
-        `<i>Faayilii ${downloadStats.downloadsUsed} bilisaan download goote. Itti fufuuf Qarshii 200 kaffali. Sanaa booda faayilii hunda bilisaan argatta!</i>`,
+        `• Instant approval (10-30 minutes)`,
         {
           parse_mode: 'HTML',
           reply_markup: {

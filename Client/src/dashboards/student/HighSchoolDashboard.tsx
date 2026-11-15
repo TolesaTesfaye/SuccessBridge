@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { Footer } from "@components/common/Footer";
 import { resourceService } from "@services/resourceService";
@@ -18,8 +19,14 @@ export const HighSchoolDashboard: React.FC = () => {
   const { user } = useAuthStore();
   const userGrade = (user?.highSchoolGrade as Grade) || "grade_9";
   const userStream = (user?.highSchoolStream as Stream) || null;
+  // Honor a tab requested from another page's mobile bottom nav —
+  // DashboardLayout passes it via router state when navigating to /dashboard.
+  const location = useLocation();
+  const requestedTab = (
+    location.state as { activeTab?: "home" | "learning" | "hub" } | null
+  )?.activeTab;
   const [activeTab, setActiveTab] = useState<"home" | "learning" | "hub">(
-    "home",
+    requestedTab ?? "home",
   );
   const [activeGrade, setActiveGrade] = useState<Grade>(userGrade);
   const [selectedStream, setSelectedStream] = useState<Stream | null>(
@@ -134,6 +141,8 @@ export const HighSchoolDashboard: React.FC = () => {
       title=""
       noPadding={activeTab === "learning"}
       showFooter={false}
+      mobileNavActiveTab={activeTab}
+      onMobileNavTabChange={setActiveTab}
       headerNav={
         <div className="hidden md:flex items-center w-full md:w-auto md:mx-auto gap-0.5 md:gap-1">
           {[

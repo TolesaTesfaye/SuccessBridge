@@ -28,12 +28,17 @@ export const universityService = {
     }
   },
 
-  createUniversity: async (data: { name: string; location: string; email?: string }): Promise<ApiResponse<University>> => {
+  getUniversityStudents: async (id: string): Promise<any[]> => {
+    const response = await api.get(`/universities/${id}/students`)
+    return response.data?.data || []
+  },
+
+  createUniversity: async (data: { name: string; email?: string }): Promise<ApiResponse<University>> => {
     const response = await api.post('/universities', data)
     return response.data
   },
 
-  updateUniversity: async (id: string, data: { name: string; location: string; email?: string }): Promise<ApiResponse<University>> => {
+  updateUniversity: async (id: string, data: { name: string; email?: string }): Promise<ApiResponse<University>> => {
     const response = await api.put(`/universities/${id}`, data)
     return response.data
   },

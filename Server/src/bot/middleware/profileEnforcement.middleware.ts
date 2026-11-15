@@ -72,8 +72,7 @@ export async function sendProfileEnforcementMessage(bot: any, chatId: number, co
   const message =
     `⚠️ <b>One quick step first</b>\n` +
     `━━━━━━━━━━━━━━━━━━━━\n\n` +
-    `Complete your profile (2 taps) so we can show you the right materials and the right price.\n\n` +
-    `🇪🇹 <i>Odeeffannoo kee guuti — kuusa 2 qofa! Maaloo.</i>`;
+    `Complete your profile (2 taps) so we can show you the right materials and the right price.`;
 
   await bot.sendMessage(chatId, message, {
     parse_mode: 'HTML',
@@ -97,8 +96,7 @@ export async function sendProfileEnforcementMessageForCallback(bot: any, query: 
     await bot.editMessageText(
       `⚠️ <b>One quick step first</b>\n` +
       `━━━━━━━━━━━━━━━━━━━━\n\n` +
-      `Complete your profile (2 taps) so we can show you the right materials and the right price.\n\n` +
-      `🇪🇹 <i>Odeeffannoo kee guuti — kuusa 2 qofa! Maaloo.</i>`,
+      `Complete your profile (2 taps) so we can show you the right materials and the right price.`,
       {
         chat_id: chatId,
         message_id: messageId,

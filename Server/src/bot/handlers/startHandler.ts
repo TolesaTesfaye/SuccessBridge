@@ -83,12 +83,10 @@ export async function handleStart(bot: any, msg: any): Promise<void> {
         title: 'SuccessBridge Learning Hub',
         subtitle:
           `👋 Welcome, <b>${escapeHtml(displayName)}</b>!\n` +
-          bi('Your all-in-one study portal — notes, slides and exams for school & university.',
-             'Portal barnootaa kee — yeroon, islaayidii fi qormaannoo!'),
+          bi('Your all-in-one study portal — notes, slides and exams for school & university.'),
         body:
           `⚠️ <b>One quick step before you start</b>\n` +
-          bi('Tell us your level — it takes just 2 taps. This is how we show you the right materials and the right price.',
-             'Sadarkaa kee nu himi — kuusa 2 qofa qofa.'),
+          bi('Tell us your level — it takes just 2 taps. This is how we show you the right materials and the right price.'),
         tipText: 'Your ID is below if an admin ever asks for it.',
       });
 
@@ -98,7 +96,7 @@ export async function handleStart(bot: any, msg: any): Promise<void> {
           // NO keyboard buttons when profile is incomplete
           remove_keyboard: true,
           inline_keyboard: [
-            [{ text: '✏️ Set Up My Profile  •  Oodeeffannoo Guuti', callback_data: 'setup_profile' }],
+            [{ text: '✏️ Set Up My Profile', callback_data: 'setup_profile' }],
             [{ text: '❓ Why is this needed?', callback_data: 'faq_home' }],
           ],
         },
@@ -128,15 +126,13 @@ export async function handleStart(bot: any, msg: any): Promise<void> {
       title: 'SuccessBridge',
       subtitle:
         `👋 Welcome back, <b>${escapeHtml(displayName)}</b>!\n` +
-        bi('Ready to study? Pick an action below.', 'Barnoota jalqabi!'),
+        bi('Ready to study? Pick an action below.'),
       body:
         statusLines.join('   •   ') + '\n' +
         DIVIDER + '\n\n' +
         `⚡ <b>QUICK ACTIONS</b>\n` +
-        bi('Everything you need is one tap away.',
-           'Wanti hunda kuusa tokkon jiraa!'),
+        bi('Everything you need is one tap away.'),
       tipText: 'Tip: just type any topic (e.g. "Biology") to search instantly.',
-      tipOromoo: 'Barreessaa qofa — fakkeenya "Biology" — boti si barbaada!',
     });
 
     // Dashboard + persistent reply keyboard

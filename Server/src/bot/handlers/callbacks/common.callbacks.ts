@@ -58,10 +58,9 @@ export async function handleCommonCallbacks(bot: any, query: any, data: string):
     const menuText = screen({
       icon: '🏠',
       title: 'Main Menu',
-      subtitle: bi('What would you like to do?', 'Maal goduu barbaadda?'),
+      subtitle: bi('What would you like to do?'),
       body: `⚡ <b>QUICK ACTIONS</b>`,
       tipText: 'Tip: you can also use the menu buttons at the bottom of the chat.',
-      tipOromoo: 'Buqqaalee gara jalaattiis fayyadhaa.',
     });
 
     await bot.sendMessage(chatId, menuText, {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { Footer } from "@components/common/Footer";
 import { resourceService } from "@services/resourceService";
@@ -26,8 +26,14 @@ export const UniversityDashboard: React.FC = () => {
   const { user } = useAuthStore();
   const userLevel = (user?.universityLevel as StudentCategory) || "freshman";
 
+  // Honor a tab requested from another page's mobile bottom nav —
+  // DashboardLayout passes it via router state when navigating to /dashboard.
+  const location = useLocation();
+  const requestedTab = (
+    location.state as { activeTab?: "home" | "learning" | "hub" } | null
+  )?.activeTab;
   const [activeTab, setActiveTab] = useState<"home" | "learning" | "hub">(
-    "home",
+    requestedTab ?? "home",
   );
   const activeCategory = userLevel;
   const [selectedSubject, setSelectedSubject] = useState<string>("");
