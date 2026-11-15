@@ -28,22 +28,24 @@ export const chemistryConfig: SubjectConfig = {
   chapters: [
     {
       id: 'chapter1',
-      title: 'Chapter 1: Chemical Kinetics',
+      title: 'Chapter 1: Acid-Base Equilibria',
       subtopics: [
-        '1.1. Reaction Rates',
-        '1.2. Rate Laws and Reaction Order',
-        '1.3. Factors Affecting Reaction Rates',
-        '1.4. Catalysis'
+        '1.1. Acid-Base Concepts',
+        '1.2. Ionic Equilibria of Weak Acids and Bases',
+        '1.3. Common Ion Effect and Buffer Solution',
+        '1.4. Hydrolysis of Salts',
+        '1.5. Acid-Base Indicators and Titrations'
       ]
     },
     {
       id: 'chapter2',
-      title: 'Chapter 2: Chemical Equilibrium',
+      title: 'Chapter 2: Electrochemistry',
       subtopics: [
-        '2.1. Equilibrium Concept',
-        '2.2. Equilibrium Constant',
-        '2.3. Le Chatelier\'s Principle',
-        '2.4. Acid-Base Equilibrium'
+        '2.1. Oxidation-Reduction Reactions',
+        '2.2. Electrolysis of Aqueous Solutions',
+        '2.3. Quantitative Aspects of Electrolysis',
+        '2.4. Industrial Application of Electrolysis',
+        '2.5. Voltaic Cells'
       ]
     },
     {
