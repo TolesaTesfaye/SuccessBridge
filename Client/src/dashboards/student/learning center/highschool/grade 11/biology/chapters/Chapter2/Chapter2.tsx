@@ -1,6 +1,11 @@
 import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import {
+  ProkaryoteVsEukaryoteDiagram,
+  FluidMosaicMembraneDiagram,
+  MitosisStagesDiagram,
+} from "../../components/BioDiagrams";
+import {
   Activity,
   ArrowRight,
   BookOpen,
@@ -50,7 +55,7 @@ interface ExerciseProps {
 }
 
 const Exercise: React.FC<ExerciseProps> = ({ number, question, answer }) => (
-  <div className="bg-slate-50 dark:bg-slate-950/40 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-6 sm:p-8 relative mt-10">
+  <div className="bg-slate-50 dark:bg-slate-950/40 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-4 sm:p-6 md:p-8 relative mt-8 md:mt-10">
     <div className="absolute -top-5 left-8 bg-white dark:bg-slate-900 px-4 py-1 rounded-full border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300">
       <BookOpen size={16} className="text-emerald-500" />
       Inline Exercise {number}
@@ -68,7 +73,7 @@ const Exercise: React.FC<ExerciseProps> = ({ number, question, answer }) => (
             Hide Answer
           </span>
         </summary>
-        <div className="mt-4 p-4 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-900 dark:text-emerald-200 rounded-xl border border-emerald-200 dark:border-emerald-800/50 text-sm leading-relaxed">
+        <div className="mt-4 p-3 md:p-4 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-900 dark:text-emerald-200 rounded-xl border border-emerald-200 dark:border-emerald-800/50 text-sm leading-relaxed">
           {answer}
         </div>
       </details>
@@ -287,12 +292,12 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
   }, [selectedSubtopic]);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-5xl mx-auto px-2 sm:px-4 md:px-6 py-6 md:py-8">
       {/* Hero Section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative mb-12 bg-gradient-to-br from-emerald-600 via-emerald-700 to-lime-700 rounded-3xl p-8 sm:p-12 text-white overflow-hidden shadow-2xl"
+        className="relative mb-8 md:mb-12 bg-gradient-to-br from-emerald-600 via-emerald-700 to-lime-700 rounded-3xl p-4 sm:p-8 md:p-12 text-white overflow-hidden shadow-2xl"
       >
         <div className="absolute -top-10 -right-10 opacity-10">
           <Microscope size={260} />
@@ -325,14 +330,14 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="space-y-10 pb-20"
+        className="space-y-8 md:space-y-10 pb-12 md:pb-20"
       >
         {/* Learning Objectives */}
         <motion.section
           variants={itemVariants}
-          className="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 dark:border-slate-800"
+          className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-800"
         >
-          <div className="flex items-center gap-3 mb-5">
+          <div className="flex items-center gap-3 mb-4 md:mb-5">
             <div className="p-2.5 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl text-emerald-600 dark:text-emerald-400">
               <Target size={22} />
             </div>
@@ -349,7 +354,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
             ].map((objective, i) => (
               <div
                 key={i}
-                className="flex items-start gap-3 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/50"
+                className="flex items-start gap-3 p-3 md:p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/50"
               >
                 <span className="w-6 h-6 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
                   {i + 1}
@@ -368,8 +373,8 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
           variants={itemVariants}
           className="scroll-mt-8"
         >
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
-            <div className="flex items-start gap-3 mb-5">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
+            <div className="flex items-start gap-3 mb-4 md:mb-5">
               <div className="p-2.5 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl text-emerald-600 dark:text-emerald-400">
                 <Microscope size={22} />
               </div>
@@ -383,7 +388,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
               </div>
             </div>
 
-            <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+            <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4 md:mb-6">
               The cell is the smallest structural and functional unit of life.
               Every living organism — from a single bacterium to a blue whale —
               is built from one or more cells. This idea seems obvious today,
@@ -391,8 +396,8 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
             </p>
 
             {/* Timeline */}
-            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 mb-6">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-5">
+            <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-3 sm:p-4 md:p-6 border border-slate-200 dark:border-slate-700 mb-4 md:mb-6">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 md:mb-5">
                 How the cell was discovered
               </h3>
               <div className="space-y-4">
@@ -423,7 +428,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
               The three principles of cell theory
             </h3>
-            <div className="grid md:grid-cols-3 gap-4 mb-6">
+            <div className="grid md:grid-cols-3 gap-4 mb-4 md:mb-6">
               {[
                 {
                   title: "All organisms are made of cells",
@@ -440,7 +445,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
               ].map((tenet, i) => (
                 <div
                   key={i}
-                  className="p-5 bg-gradient-to-br from-emerald-50 to-lime-50 dark:from-emerald-900/20 dark:to-lime-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800"
+                  className="p-3 sm:p-4 md:p-5 bg-gradient-to-br from-emerald-50 to-lime-50 dark:from-emerald-900/20 dark:to-lime-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800"
                 >
                   <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white font-bold flex items-center justify-center mb-3">
                     {i + 1}
@@ -455,7 +460,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
               ))}
             </div>
 
-            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-5 border border-blue-100 dark:border-blue-800 mb-6">
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 sm:p-4 md:p-5 border border-blue-100 dark:border-blue-800 mb-4 md:mb-6">
               <h4 className="font-bold text-blue-900 dark:text-blue-300 mb-2">
                 Modern additions to cell theory
               </h4>
@@ -467,8 +472,8 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
             </div>
 
             {/* Microscopy */}
-            <div className="grid md:grid-cols-2 gap-4 mb-6">
-              <div className="p-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+            <div className="grid md:grid-cols-2 gap-4 mb-4 md:mb-6">
+              <div className="p-3 sm:p-4 md:p-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                 <div className="flex items-center gap-2 mb-2">
                   <Eye size={18} className="text-emerald-600 dark:text-emerald-400" />
                   <h4 className="font-bold text-slate-900 dark:text-white">
@@ -481,7 +486,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
                   to about 200 nm.
                 </p>
               </div>
-              <div className="p-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+              <div className="p-3 sm:p-4 md:p-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                 <div className="flex items-center gap-2 mb-2">
                   <Microscope size={18} className="text-emerald-600 dark:text-emerald-400" />
                   <h4 className="font-bold text-slate-900 dark:text-white">
@@ -496,7 +501,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
               </div>
             </div>
 
-            <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 mb-6">
+            <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-3 sm:p-4 md:p-5 border border-slate-200 dark:border-slate-700 mb-4 md:mb-6">
               <h4 className="font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
                 <Scale size={18} className="text-emerald-600 dark:text-emerald-400" />
                 How small is a cell?
@@ -511,7 +516,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
             </div>
 
             {/* Exam tip */}
-            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-5 border border-amber-200 dark:border-amber-800 mb-6">
+            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-3 sm:p-4 md:p-5 border border-amber-200 dark:border-amber-800 mb-4 md:mb-6">
               <h4 className="font-bold text-amber-900 dark:text-amber-300 mb-2 flex items-center gap-2">
                 <Lightbulb size={18} /> Exam tip
               </h4>
@@ -572,8 +577,8 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
           variants={itemVariants}
           className="scroll-mt-8"
         >
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
-            <div className="flex items-start gap-3 mb-5">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
+            <div className="flex items-start gap-3 mb-4 md:mb-5">
               <div className="p-2.5 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl text-emerald-600 dark:text-emerald-400">
                 <Layers size={22} />
               </div>
@@ -587,7 +592,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
               </div>
             </div>
 
-            <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+            <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4 md:mb-6">
               Despite their huge diversity, almost all cells share three basic
               components: a <strong>cell membrane</strong>,{" "}
               <strong>cytoplasm</strong>, and{" "}
@@ -596,8 +601,8 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
             </p>
 
             {/* Prokaryote vs eukaryote */}
-            <div className="grid md:grid-cols-2 gap-4 mb-6">
-              <div className="p-5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
+            <div className="grid md:grid-cols-2 gap-4 mb-4 md:mb-6">
+              <div className="p-3 sm:p-4 md:p-5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
                 <h4 className="font-bold text-slate-900 dark:text-white mb-3">
                   Prokaryotic cell
                 </h4>
@@ -609,7 +614,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
                   <li>• Usually 0.1–5 µm; examples: bacteria and archaea.</li>
                 </ul>
               </div>
-              <div className="p-5 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800">
+              <div className="p-3 sm:p-4 md:p-5 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-100 dark:border-emerald-800">
                 <h4 className="font-bold text-emerald-900 dark:text-emerald-300 mb-3">
                   Eukaryotic cell
                 </h4>
@@ -622,6 +627,8 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
                 </ul>
               </div>
             </div>
+
+            <ProkaryoteVsEukaryoteDiagram />
 
             {/* Cell membrane */}
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
@@ -644,7 +651,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
                 Hydrophilic phosphate heads (inner surface)
               </div>
             </div>
-            <div className="grid md:grid-cols-3 gap-4 mb-6">
+            <div className="grid md:grid-cols-3 gap-4 mb-4 md:mb-6">
               {[
                 {
                   title: "Phospholipid bilayer",
@@ -661,7 +668,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
               ].map((item, i) => (
                 <div
                   key={i}
-                  className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700"
+                  className="p-3 md:p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700"
                 >
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm mb-1">
                     {item.title}
@@ -673,9 +680,11 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
               ))}
             </div>
 
+            <FluidMosaicMembraneDiagram />
+
             {/* Cytoplasm, wall, nucleus */}
-            <div className="space-y-4 mb-6">
-              <div className="p-5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
+            <div className="space-y-4 mb-4 md:mb-6">
+              <div className="p-3 sm:p-4 md:p-5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
                 <h4 className="font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
                   <Droplets size={18} className="text-emerald-600 dark:text-emerald-400" />
                   Cytoplasm and cytoskeleton
@@ -688,7 +697,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
                   and allows organelles and materials to move.
                 </p>
               </div>
-              <div className="p-5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
+              <div className="p-3 sm:p-4 md:p-5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
                 <h4 className="font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
                   <ShieldAlert size={18} className="text-emerald-600 dark:text-emerald-400" />
                   Cell wall
@@ -727,7 +736,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
                   </table>
                 </div>
               </div>
-              <div className="p-5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
+              <div className="p-3 sm:p-4 md:p-5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700">
                 <h4 className="font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
                   <Dna size={18} className="text-emerald-600 dark:text-emerald-400" />
                   Nucleus
@@ -748,7 +757,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
               Plant cells versus animal cells
             </h3>
-            <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 mb-6">
+            <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 mb-4 md:mb-6">
               <table className="w-full text-sm text-left">
                 <thead className="bg-slate-100 dark:bg-slate-800">
                   <tr className="text-slate-700 dark:text-slate-300">
@@ -786,11 +795,11 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
               How substances cross the membrane
             </h3>
-            <div className="grid md:grid-cols-2 gap-4 mb-6">
+            <div className="grid md:grid-cols-2 gap-4 mb-4 md:mb-6">
               {transportTypes.map((type, i) => (
                 <div
                   key={i}
-                  className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700"
+                  className="p-3 md:p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700"
                 >
                   <h4 className="font-bold text-emerald-600 dark:text-emerald-400 text-sm mb-1">
                     {type.title}
@@ -803,7 +812,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
             </div>
 
             {/* Real-World Example */}
-            <div className="bg-gradient-to-r from-emerald-50 to-lime-50 dark:from-emerald-900/20 dark:to-lime-900/20 rounded-2xl p-6 mb-6 border border-emerald-100 dark:border-emerald-800">
+            <div className="bg-gradient-to-r from-emerald-50 to-lime-50 dark:from-emerald-900/20 dark:to-lime-900/20 rounded-2xl p-3 sm:p-4 md:p-6 mb-4 md:mb-6 border border-emerald-100 dark:border-emerald-800">
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-emerald-100 dark:bg-emerald-800/50 rounded-xl text-emerald-600 dark:text-emerald-400 mt-1">
                   <Droplets size={24} />
@@ -824,7 +833,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
             </div>
 
             {/* Exam tip */}
-            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-5 border border-amber-200 dark:border-amber-800 mb-6">
+            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-3 sm:p-4 md:p-5 border border-amber-200 dark:border-amber-800 mb-4 md:mb-6">
               <h4 className="font-bold text-amber-900 dark:text-amber-300 mb-2 flex items-center gap-2">
                 <Lightbulb size={18} /> Exam tip
               </h4>
@@ -878,8 +887,8 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
           variants={itemVariants}
           className="scroll-mt-8"
         >
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
-            <div className="flex items-start gap-3 mb-5">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
+            <div className="flex items-start gap-3 mb-4 md:mb-5">
               <div className="p-2.5 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl text-emerald-600 dark:text-emerald-400">
                 <Boxes size={22} />
               </div>
@@ -893,7 +902,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
               </div>
             </div>
 
-            <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+            <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4 md:mb-6">
               Eukaryotic cells are divided into compartments called organelles
               (literally “little organs”). Compartmentalization allows many
               different chemical reactions to occur at the same time under the
@@ -901,13 +910,13 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
               function.
             </p>
 
-            <div className="grid md:grid-cols-2 gap-4 mb-6">
+            <div className="grid md:grid-cols-2 gap-4 mb-4 md:mb-6">
               {organelles.map((organelle, i) => {
                 const Icon = organelle.icon;
                 return (
                   <div
                     key={i}
-                    className="p-5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700"
+                    className="p-3 sm:p-4 md:p-5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700"
                   >
                     <div className="flex items-center gap-3 mb-3">
                       <div
@@ -945,7 +954,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
             </div>
 
             {/* Endosymbiotic theory */}
-            <div className="bg-gradient-to-r from-teal-50 to-emerald-50 dark:from-teal-900/20 dark:to-emerald-900/20 rounded-2xl p-6 mb-6 border border-teal-200/60 dark:border-teal-800">
+            <div className="bg-gradient-to-r from-teal-50 to-emerald-50 dark:from-teal-900/20 dark:to-emerald-900/20 rounded-2xl p-3 sm:p-4 md:p-6 mb-4 md:mb-6 border border-teal-200/60 dark:border-teal-800">
               <h4 className="text-lg font-bold text-teal-900 dark:text-teal-300 mb-3 flex items-center gap-2">
                 <Dna size={20} /> The endosymbiotic theory
               </h4>
@@ -967,7 +976,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
               Quick reference: organelle functions
             </h3>
-            <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 mb-6">
+            <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 mb-4 md:mb-6">
               <table className="w-full text-sm text-left">
                 <thead className="bg-slate-100 dark:bg-slate-800">
                   <tr className="text-slate-700 dark:text-slate-300">
@@ -1004,7 +1013,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
             </div>
 
             {/* Exam tip */}
-            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-5 border border-amber-200 dark:border-amber-800 mb-6">
+            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-3 sm:p-4 md:p-5 border border-amber-200 dark:border-amber-800 mb-4 md:mb-6">
               <h4 className="font-bold text-amber-900 dark:text-amber-300 mb-2 flex items-center gap-2">
                 <Lightbulb size={18} /> Exam tip
               </h4>
@@ -1066,8 +1075,8 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
           variants={itemVariants}
           className="scroll-mt-8"
         >
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
-            <div className="flex items-start gap-3 mb-5">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-800">
+            <div className="flex items-start gap-3 mb-4 md:mb-5">
               <div className="p-2.5 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl text-emerald-600 dark:text-emerald-400">
                 <Split size={22} />
               </div>
@@ -1081,7 +1090,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
               </div>
             </div>
 
-            <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+            <p className="text-slate-600 dark:text-slate-300 leading-relaxed mb-4 md:mb-6">
               Cells do not live forever. They divide to allow organisms to grow,
               to replace damaged or worn-out cells, and to produce gametes for
               reproduction. The two main types of cell division are{" "}
@@ -1123,7 +1132,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
               ].map((stage, i) => (
                 <div
                   key={i}
-                  className="relative p-4 bg-gradient-to-b from-emerald-50 to-white dark:from-emerald-900/20 dark:to-slate-900 rounded-xl border border-emerald-100 dark:border-emerald-800"
+                  className="relative p-3 md:p-4 bg-gradient-to-b from-emerald-50 to-white dark:from-emerald-900/20 dark:to-slate-900 rounded-xl border border-emerald-100 dark:border-emerald-800"
                 >
                   <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">
                     {stage.phase}
@@ -1137,7 +1146,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
                 </div>
               ))}
             </div>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 md:mb-6">
               Some cells leave the cycle and enter <strong>G0</strong>, a resting
               state in which they no longer divide — for example, mature nerve
               cells. Interphase makes up about 90% of the cell cycle. In humans,
@@ -1158,7 +1167,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
               {mitosisStages.map((stage, i) => (
                 <div
                   key={i}
-                  className="flex gap-4 p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700"
+                  className="flex gap-4 p-3 md:p-4 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-200 dark:border-slate-700"
                 >
                   <div className="w-8 h-8 rounded-full bg-emerald-600 text-white font-bold text-sm flex items-center justify-center flex-shrink-0">
                     {i + 1}
@@ -1173,7 +1182,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
                   </div>
                 </div>
               ))}
-              <div className="flex gap-4 p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
+              <div className="flex gap-4 p-3 md:p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
                 <div className="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold text-sm flex items-center justify-center flex-shrink-0">
                   5
                 </div>
@@ -1190,6 +1199,8 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
               </div>
             </div>
 
+            <MitosisStagesDiagram />
+
             {/* Meiosis */}
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
               Meiosis
@@ -1201,7 +1212,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
               is halved. In humans, 2n = 46 cells produce gametes with n = 23.
             </p>
             <div className="grid md:grid-cols-2 gap-4 mb-4">
-              <div className="p-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+              <div className="p-3 sm:p-4 md:p-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                 <h4 className="font-bold text-emerald-600 dark:text-emerald-400 text-sm mb-2">
                   Meiosis I — the reduction division
                 </h4>
@@ -1223,7 +1234,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
                   </li>
                 </ul>
               </div>
-              <div className="p-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+              <div className="p-3 sm:p-4 md:p-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
                 <h4 className="font-bold text-emerald-600 dark:text-emerald-400 text-sm mb-2">
                   Meiosis II — like mitosis
                 </h4>
@@ -1245,7 +1256,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
               </div>
             </div>
 
-            <div className="bg-violet-50 dark:bg-violet-900/20 rounded-xl p-5 border border-violet-200 dark:border-violet-800 mb-6">
+            <div className="bg-violet-50 dark:bg-violet-900/20 rounded-xl p-3 sm:p-4 md:p-5 border border-violet-200 dark:border-violet-800 mb-4 md:mb-6">
               <h4 className="font-bold text-violet-900 dark:text-violet-300 mb-2 flex items-center gap-2">
                 <Dna size={18} /> Sources of genetic variation in meiosis
               </h4>
@@ -1270,7 +1281,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
               Mitosis versus meiosis
             </h3>
-            <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 mb-6">
+            <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700 mb-4 md:mb-6">
               <table className="w-full text-sm text-left">
                 <thead className="bg-slate-100 dark:bg-slate-800">
                   <tr className="text-slate-700 dark:text-slate-300">
@@ -1304,7 +1315,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
             </div>
 
             {/* Cancer note */}
-            <div className="bg-rose-50 dark:bg-rose-900/20 rounded-xl p-5 border border-rose-200 dark:border-rose-800 mb-6">
+            <div className="bg-rose-50 dark:bg-rose-900/20 rounded-xl p-3 sm:p-4 md:p-5 border border-rose-200 dark:border-rose-800 mb-4 md:mb-6">
               <h4 className="font-bold text-rose-900 dark:text-rose-300 mb-2 flex items-center gap-2">
                 <ShieldAlert size={18} /> When the cell cycle goes wrong: cancer
               </h4>
@@ -1318,7 +1329,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
             </div>
 
             {/* Exam tip */}
-            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-5 border border-amber-200 dark:border-amber-800 mb-6">
+            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-3 sm:p-4 md:p-5 border border-amber-200 dark:border-amber-800 mb-4 md:mb-6">
               <h4 className="font-bold text-amber-900 dark:text-amber-300 mb-2 flex items-center gap-2">
                 <Lightbulb size={18} /> Exam tip
               </h4>
@@ -1366,9 +1377,9 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
         {/* Chapter Summary */}
         <motion.section
           variants={itemVariants}
-          className="bg-gradient-to-r from-emerald-600 to-lime-700 rounded-3xl p-8 sm:p-10 text-white shadow-xl"
+          className="bg-gradient-to-r from-emerald-600 to-lime-700 rounded-3xl p-4 sm:p-6 md:p-10 text-white shadow-xl"
         >
-          <h3 className="text-2xl font-bold mb-6">📖 Chapter 2 Summary</h3>
+          <h3 className="text-2xl font-bold mb-4 md:mb-6">📖 Chapter 2 Summary</h3>
           <div className="space-y-3 text-emerald-50">
             <p>
               ✓ Cell theory states that organisms are made of cells, the cell is
@@ -1396,7 +1407,7 @@ export const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic }) => {
         {/* Next Chapter */}
         <motion.div
           variants={itemVariants}
-          className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          className="bg-white dark:bg-slate-900 rounded-2xl p-3 sm:p-4 md:p-6 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
         >
           <div>
             <p className="text-xs uppercase tracking-widest font-bold text-slate-400 mb-1">

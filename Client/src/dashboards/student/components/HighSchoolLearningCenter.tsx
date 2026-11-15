@@ -604,7 +604,7 @@ export const HighSchoolLearningCenter: React.FC<
               stream={stream || undefined}
               freeSubjects={freeSubjects}
             >
-              <div className="max-w-4xl mx-auto pl-2 pr-0 md:px-8 py-4 md:py-8">
+              <div className="max-w-4xl mx-auto px-2 sm:px-4 md:px-8 py-4 md:py-8">
                 <div className="flex justify-end mb-4">
                   <BookmarkIcon className="w-6 h-6 text-slate-400 hover:text-blue-600 cursor-pointer transition-colors" />
                 </div>

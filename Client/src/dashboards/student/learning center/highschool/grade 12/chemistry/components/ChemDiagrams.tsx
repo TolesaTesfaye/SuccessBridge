@@ -11,13 +11,13 @@ interface FrameProps {
 }
 
 const DiagramFrame: React.FC<FrameProps> = ({ title, caption, children }) => (
-  <figure className="my-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 md:p-6 shadow-sm">
-    <figcaption className="text-sm md:text-base font-bold text-slate-900 dark:text-white mb-3">
+  <figure className="my-4 md:my-6 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 sm:p-4 md:p-6 shadow-sm">
+    <figcaption className="text-sm md:text-base font-bold text-slate-900 dark:text-white mb-2 md:mb-3">
       {title}
     </figcaption>
     {children}
     {caption && (
-      <p className="mt-3 text-xs md:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+      <p className="mt-2 md:mt-3 text-xs md:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
         {caption}
       </p>
     )}
@@ -316,3 +316,432 @@ export const FaradayLawGraph: React.FC = () => (
     </svg>
   </DiagramFrame>
 );
+
+/* ---------------- Chapter 3 diagrams ---------------- */
+
+export const HaberProcessDiagram: React.FC = () => (
+  <DiagramFrame
+    title="The Haber process: making ammonia from air and gas"
+    caption="Real-world connection: the ammonia from this process becomes the nitrogen fertilizers (urea, DAP) spread on Ethiopian teff and wheat fields — without it, far fewer people could be fed."
+  >
+    <svg viewBox="0 0 700 220" className="w-full h-auto" role="img" aria-label="Haber process flow diagram">
+      {/* inputs */}
+      <rect x="30" y="30" width="150" height="46" rx="8" className="text-blue-100 dark:text-blue-900/40" fill="currentColor" />
+      <rect x="30" y="30" width="150" height="46" rx="8" fill="none" className="text-blue-500" stroke="currentColor" strokeWidth="2" />
+      <text x="105" y="50" textAnchor="middle" className="text-blue-700 dark:text-blue-300" fill="currentColor" fontSize="14" fontWeight="700">N₂ (from air)</text>
+      <text x="105" y="66" textAnchor="middle" className="text-blue-600 dark:text-blue-400" fill="currentColor" fontSize="11">+ 3H₂ (from gas/water)</text>
+
+      {/* reactor */}
+      <rect x="260" y="60" width="180" height="70" rx="10" className="text-purple-100 dark:text-purple-900/40" fill="currentColor" />
+      <rect x="260" y="60" width="180" height="70" rx="10" fill="none" className="text-purple-600" stroke="currentColor" strokeWidth="2" />
+      <text x="350" y="85" textAnchor="middle" className="text-purple-700 dark:text-purple-300" fill="currentColor" fontSize="14" fontWeight="700">Converter</text>
+      <text x="350" y="103" textAnchor="middle" className="text-purple-600 dark:text-purple-400" fill="currentColor" fontSize="11">~450 °C, ~200 atm</text>
+      <text x="350" y="119" textAnchor="middle" className="text-purple-600 dark:text-purple-400" fill="currentColor" fontSize="11">iron (Fe) catalyst</text>
+
+      {/* arrows in */}
+      <line x1="180" y1="53" x2="250" y2="80" className="text-slate-500" stroke="currentColor" strokeWidth="2" />
+      <polygon points="255,82 242,76 244,88" className="text-slate-500" fill="currentColor" />
+
+      {/* product */}
+      <rect x="520" y="70" width="150" height="50" rx="8" className="text-green-100 dark:text-green-900/40" fill="currentColor" />
+      <rect x="520" y="70" width="150" height="50" rx="8" fill="none" className="text-green-600" stroke="currentColor" strokeWidth="2" />
+      <text x="595" y="92" textAnchor="middle" className="text-green-700 dark:text-green-300" fill="currentColor" fontSize="14" fontWeight="700">NH₃ (ammonia)</text>
+      <text x="595" y="108" textAnchor="middle" className="text-green-600 dark:text-green-400" fill="currentColor" fontSize="11">cooled &amp; liquefied</text>
+
+      <line x1="440" y1="95" x2="510" y2="95" className="text-slate-500" stroke="currentColor" strokeWidth="2" />
+      <polygon points="515,95 502,89 502,101" className="text-slate-500" fill="currentColor" />
+
+      {/* recycle */}
+      <path d="M 595 120 C 595 180, 350 190, 350 135" fill="none" className="text-amber-500" stroke="currentColor" strokeWidth="2" strokeDasharray="6 4" />
+      <polygon points="350,132 344,144 356,144" className="text-amber-500" fill="currentColor" />
+      <text x="470" y="185" textAnchor="middle" className="text-amber-600 dark:text-amber-400" fill="currentColor" fontSize="12">unreacted N₂ + H₂ recycled</text>
+
+      <text x="350" y="212" textAnchor="middle" className="text-slate-600 dark:text-slate-400" fill="currentColor" fontSize="13">N₂ + 3H₂ ⇌ 2NH₃  (exothermic, reversible)</text>
+    </svg>
+  </DiagramFrame>
+);
+
+export const EthiopianIndustriesGrid: React.FC = () => {
+  const items = [
+    { name: "Glass", chem: "melting silica (SiO₂) with soda ash & limestone" },
+    { name: "Ceramics", chem: "firing clay (silicates) at high temperature" },
+    { name: "Cement", chem: "heating limestone + clay → clinker (calcium silicates)" },
+    { name: "Sugar", chem: "extracting & crystallising sucrose from cane" },
+    { name: "Paper & pulp", chem: "separating cellulose fibres from lignin" },
+    { name: "Tannery", chem: "treating hides with tannins/chromium salts → leather" },
+    { name: "Food processing", chem: "preservation via acids, salt, fermentation" },
+    { name: "Ethanol", chem: "fermentation of sugars then distillation" },
+    { name: "Soap & detergent", chem: "saponification of fats with NaOH" },
+  ];
+  return (
+    <DiagramFrame
+      title="Ethiopia's manufacturing industries and the chemistry behind each"
+      caption="Real-world connection: from the cement that builds Addis Ababa's skyline to the sugar of Wonji and the leather of the tanneries, each industry is applied chemistry using local raw materials."
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {items.map((it) => (
+          <div key={it.name} className="rounded-lg border-l-4 border-purple-500 bg-purple-50 dark:bg-purple-900/20 p-3">
+            <p className="text-sm font-bold text-purple-800 dark:text-purple-200">{it.name}</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{it.chem}</p>
+          </div>
+        ))}
+      </div>
+    </DiagramFrame>
+  );
+};
+
+export const IndustrialSitingGrid: React.FC = () => {
+  const factors = [
+    { name: "Raw materials", detail: "Locating near limestone, salt, cane or ore keeps transport costs low." },
+    { name: "Energy supply", detail: "Cement kilns, smelters and electrolysis need large, reliable electricity." },
+    { name: "Water", detail: "Cooling and process water — tanneries, paper mills and sugar factories use a lot." },
+    { name: "Transport links", detail: "Roads, rail and ports move bulky raw materials and finished products." },
+    { name: "Labour", detail: "Skilled operators, technicians and engineers must be available nearby." },
+    { name: "Market", detail: "Close customers cut distribution costs for heavy or perishable goods." },
+    { name: "Capital & policy", detail: "Investment, tax incentives and industrial parks attract factories." },
+    { name: "Waste disposal", detail: "Safe treatment of effluent and solid waste protects nearby communities." },
+  ];
+  return (
+    <DiagramFrame
+      title="Choosing where to build a chemical plant"
+      caption="Real-world connection: Ethiopia's industrial parks are sited near roads, power and labour — but often near rivers too, so siting and waste treatment must be planned together."
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {factors.map((f) => (
+          <div key={f.name} className="rounded-lg border border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-900/20 p-3">
+            <p className="text-sm font-bold text-purple-800 dark:text-purple-200">{f.name}</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{f.detail}</p>
+          </div>
+        ))}
+      </div>
+    </DiagramFrame>
+  );
+};
+
+export const ContactProcessDiagram: React.FC = () => (
+  <DiagramFrame
+    title="The contact process: sulfur → sulfur dioxide → sulfur trioxide → sulfuric acid"
+    caption="Real-world connection: sulfuric acid is the most-produced industrial chemical in the world. In Ethiopia it is essential for fertilizer manufacture and lead-acid batteries."
+  >
+    <svg viewBox="0 0 700 230" className="w-full h-auto" role="img" aria-label="Contact process flow diagram">
+      <rect x="20" y="70" width="110" height="56" rx="8" className="text-yellow-100 dark:text-yellow-900/40" fill="currentColor" />
+      <rect x="20" y="70" width="110" height="56" rx="8" fill="none" className="text-yellow-600" stroke="currentColor" strokeWidth="2" />
+      <text x="75" y="92" textAnchor="middle" className="text-yellow-700 dark:text-yellow-300" fill="currentColor" fontSize="13" fontWeight="700">Sulfur (S)</text>
+      <text x="75" y="110" textAnchor="middle" className="text-yellow-600 dark:text-yellow-400" fill="currentColor" fontSize="11">burned in air</text>
+
+      <line x1="130" y1="98" x2="158" y2="98" className="text-slate-500" stroke="currentColor" strokeWidth="2" />
+      <polygon points="163,98 151,92 151,104" className="text-slate-500" fill="currentColor" />
+
+      <rect x="168" y="70" width="126" height="56" rx="8" className="text-orange-100 dark:text-orange-900/40" fill="currentColor" />
+      <rect x="168" y="70" width="126" height="56" rx="8" fill="none" className="text-orange-500" stroke="currentColor" strokeWidth="2" />
+      <text x="231" y="92" textAnchor="middle" className="text-orange-700 dark:text-orange-300" fill="currentColor" fontSize="13" fontWeight="700">Burner</text>
+      <text x="231" y="110" textAnchor="middle" className="text-orange-600 dark:text-orange-400" fill="currentColor" fontSize="11">S + O₂ → SO₂</text>
+
+      <line x1="294" y1="98" x2="324" y2="98" className="text-slate-500" stroke="currentColor" strokeWidth="2" />
+      <polygon points="329,98 317,92 317,104" className="text-slate-500" fill="currentColor" />
+
+      <rect x="334" y="58" width="156" height="80" rx="8" className="text-purple-100 dark:text-purple-900/40" fill="currentColor" />
+      <rect x="334" y="58" width="156" height="80" rx="8" fill="none" className="text-purple-600" stroke="currentColor" strokeWidth="2" />
+      <text x="412" y="80" textAnchor="middle" className="text-purple-700 dark:text-purple-300" fill="currentColor" fontSize="13" fontWeight="700">Converter</text>
+      <text x="412" y="98" textAnchor="middle" className="text-purple-600 dark:text-purple-400" fill="currentColor" fontSize="11">2SO₂ + O₂ ⇌ 2SO₃</text>
+      <text x="412" y="114" textAnchor="middle" className="text-purple-600 dark:text-purple-400" fill="currentColor" fontSize="11">V₂O₅ catalyst</text>
+      <text x="412" y="130" textAnchor="middle" className="text-purple-600 dark:text-purple-400" fill="currentColor" fontSize="11">~450 °C, 1–2 atm</text>
+
+      <line x1="490" y1="98" x2="520" y2="98" className="text-slate-500" stroke="currentColor" strokeWidth="2" />
+      <polygon points="525,98 513,92 513,104" className="text-slate-500" fill="currentColor" />
+
+      <rect x="530" y="70" width="150" height="56" rx="8" className="text-green-100 dark:text-green-900/40" fill="currentColor" />
+      <rect x="530" y="70" width="150" height="56" rx="8" fill="none" className="text-green-600" stroke="currentColor" strokeWidth="2" />
+      <text x="605" y="92" textAnchor="middle" className="text-green-700 dark:text-green-300" fill="currentColor" fontSize="13" fontWeight="700">Absorption tower</text>
+      <text x="605" y="110" textAnchor="middle" className="text-green-600 dark:text-green-400" fill="currentColor" fontSize="11">SO₃ + H₂SO₄ → oleum</text>
+
+      <text x="350" y="175" textAnchor="middle" className="text-slate-600 dark:text-slate-400" fill="currentColor" fontSize="12">
+        Oleum (H₂S₂O₇) is then carefully diluted with water: H₂S₂O₇ + H₂O → 2H₂SO₄
+      </text>
+      <text x="350" y="200" textAnchor="middle" className="text-slate-500 dark:text-slate-400" fill="currentColor" fontSize="12">
+        Adding SO₃ directly to water is avoided — it produces a dangerous acid mist.
+      </text>
+    </svg>
+  </DiagramFrame>
+);
+
+export const CementProductionDiagram: React.FC = () => (
+  <DiagramFrame
+    title="From limestone and clay to cement"
+    caption="Real-world connection: every apartment block, road and dam in Ethiopia depends on this chain. The kiln's CO₂ emissions make cement one of the world's largest industrial sources of greenhouse gases."
+  >
+    <svg viewBox="0 0 700 230" className="w-full h-auto" role="img" aria-label="Cement production flow diagram">
+      <rect x="15" y="60" width="130" height="64" rx="8" className="text-slate-100 dark:text-slate-700" fill="currentColor" />
+      <rect x="15" y="60" width="130" height="64" rx="8" fill="none" className="text-slate-500" stroke="currentColor" strokeWidth="2" />
+      <text x="80" y="84" textAnchor="middle" className="text-slate-700 dark:text-slate-300" fill="currentColor" fontSize="13" fontWeight="700">Limestone + clay</text>
+      <text x="80" y="102" textAnchor="middle" className="text-slate-600 dark:text-slate-400" fill="currentColor" fontSize="11">crushed &amp; ground</text>
+      <text x="80" y="116" textAnchor="middle" className="text-slate-600 dark:text-slate-400" fill="currentColor" fontSize="11">(raw meal)</text>
+
+      <line x1="145" y1="92" x2="176" y2="92" className="text-slate-500" stroke="currentColor" strokeWidth="2" />
+      <polygon points="181,92 169,86 169,98" className="text-slate-500" fill="currentColor" />
+
+      <rect x="186" y="45" width="164" height="94" rx="8" className="text-orange-100 dark:text-orange-900/40" fill="currentColor" />
+      <rect x="186" y="45" width="164" height="94" rx="8" fill="none" className="text-orange-600" stroke="currentColor" strokeWidth="2" />
+      <text x="268" y="68" textAnchor="middle" className="text-orange-700 dark:text-orange-300" fill="currentColor" fontSize="13" fontWeight="700">Rotary kiln</text>
+      <text x="268" y="86" textAnchor="middle" className="text-orange-600 dark:text-orange-400" fill="currentColor" fontSize="11">~1450 °C</text>
+      <text x="268" y="103" textAnchor="middle" className="text-orange-600 dark:text-orange-400" fill="currentColor" fontSize="11">CaCO₃ → CaO + CO₂</text>
+      <text x="268" y="120" textAnchor="middle" className="text-orange-600 dark:text-orange-400" fill="currentColor" fontSize="11">CaO + clay → calcium silicates</text>
+
+      <line x1="350" y1="92" x2="381" y2="92" className="text-slate-500" stroke="currentColor" strokeWidth="2" />
+      <polygon points="386,92 374,86 374,98" className="text-slate-500" fill="currentColor" />
+
+      <rect x="391" y="55" width="150" height="74" rx="8" className="text-blue-100 dark:text-blue-900/40" fill="currentColor" />
+      <rect x="391" y="55" width="150" height="74" rx="8" fill="none" className="text-blue-500" stroke="currentColor" strokeWidth="2" />
+      <text x="466" y="80" textAnchor="middle" className="text-blue-700 dark:text-blue-300" fill="currentColor" fontSize="13" fontWeight="700">Clinker + gypsum</text>
+      <text x="466" y="98" textAnchor="middle" className="text-blue-600 dark:text-blue-400" fill="currentColor" fontSize="11">cooled and ground</text>
+      <text x="466" y="114" textAnchor="middle" className="text-blue-600 dark:text-blue-400" fill="currentColor" fontSize="11">(≈95% clinker, 5% gypsum)</text>
+
+      <line x1="541" y1="92" x2="572" y2="92" className="text-slate-500" stroke="currentColor" strokeWidth="2" />
+      <polygon points="577,92 565,86 565,98" className="text-slate-500" fill="currentColor" />
+
+      <rect x="582" y="62" width="100" height="60" rx="8" className="text-green-100 dark:text-green-900/40" fill="currentColor" />
+      <rect x="582" y="62" width="100" height="60" rx="8" fill="none" className="text-green-600" stroke="currentColor" strokeWidth="2" />
+      <text x="632" y="86" textAnchor="middle" className="text-green-700 dark:text-green-300" fill="currentColor" fontSize="13" fontWeight="700">Cement</text>
+      <text x="632" y="104" textAnchor="middle" className="text-green-600 dark:text-green-400" fill="currentColor" fontSize="11">packed &amp; sold</text>
+
+      <text x="350" y="185" textAnchor="middle" className="text-slate-600 dark:text-slate-400" fill="currentColor" fontSize="12">
+        Cement + sand + gravel + water → concrete (setting is hydration, not drying)
+      </text>
+      <text x="350" y="208" textAnchor="middle" className="text-slate-500 dark:text-slate-400" fill="currentColor" fontSize="12">
+        Gypsum is added to control how fast the concrete sets.
+      </text>
+    </svg>
+  </DiagramFrame>
+);
+
+/* ---------------- Chapter 4 diagrams ---------------- */
+
+export const AdditionPolymerizationDiagram: React.FC = () => (
+  <DiagramFrame
+    title="Addition polymerization: ethene monomers join into polythene"
+    caption="Real-world connection: the same reaction, with different monomers, makes the plastic bags, pipes, jerrycans and water tanks used across Ethiopia — and the litter that pollutes its rivers."
+  >
+    <svg viewBox="0 0 700 230" className="w-full h-auto" role="img" aria-label="Addition polymerization of ethene to polythene">
+      {[70, 270, 470].map((x, i) => (
+        <React.Fragment key={x}>
+          <rect x={x} y="30" width="150" height="48" rx="8" className="text-blue-100 dark:text-blue-900/40" fill="currentColor" />
+          <rect x={x} y="30" width="150" height="48" rx="8" fill="none" className="text-blue-500" stroke="currentColor" strokeWidth="2" />
+          <text x={x + 75} y="52" textAnchor="middle" className="text-blue-700 dark:text-blue-300" fill="currentColor" fontSize="13" fontWeight="700">CH₂=CH₂</text>
+          <text x={x + 75} y="68" textAnchor="middle" className="text-blue-600 dark:text-blue-400" fill="currentColor" fontSize="11">ethene monomer {i + 1}</text>
+        </React.Fragment>
+      ))}
+
+      <line x1="350" y1="88" x2="350" y2="128" className="text-purple-600" stroke="currentColor" strokeWidth="2" />
+      <polygon points="350,134 344,121 356,121" className="text-purple-600" fill="currentColor" />
+      <text x="365" y="112" className="text-purple-600 dark:text-purple-400" fill="currentColor" fontSize="12">radical initiator, heat / pressure</text>
+
+      <rect x="60" y="142" width="580" height="52" rx="10" className="text-green-100 dark:text-green-900/40" fill="currentColor" />
+      <rect x="60" y="142" width="580" height="52" rx="10" fill="none" className="text-green-600" stroke="currentColor" strokeWidth="2" />
+      <text x="350" y="165" textAnchor="middle" className="text-green-700 dark:text-green-300" fill="currentColor" fontSize="14" fontWeight="700">–[ CH₂–CH₂–CH₂–CH₂–CH₂–CH₂ ]ₙ–</text>
+      <text x="350" y="183" textAnchor="middle" className="text-green-600 dark:text-green-400" fill="currentColor" fontSize="12">poly(ethene) = polythene — one long chain of carbon atoms</text>
+
+      <text x="350" y="220" textAnchor="middle" className="text-slate-500 dark:text-slate-400" fill="currentColor" fontSize="12">
+        General form: n CH₂=CH₂ → [–CH₂–CH₂–]ₙ  (no small molecule is eliminated)
+      </text>
+    </svg>
+  </DiagramFrame>
+);
+
+export const CondensationPolymerizationDiagram: React.FC = () => (
+  <DiagramFrame
+    title="Condensation polymerization: nylon-6,6 from two different monomers"
+    caption="Real-world connection: nylon's strength and elasticity make it useful in toothbrushes, ropes, parachutes and clothing — and in Ethiopia's textile industry blends."
+  >
+    <svg viewBox="0 0 700 250" className="w-full h-auto" role="img" aria-label="Condensation polymerization forming nylon-6,6 and water">
+      <rect x="20" y="25" width="250" height="66" rx="8" className="text-blue-100 dark:text-blue-900/40" fill="currentColor" />
+      <rect x="20" y="25" width="250" height="66" rx="8" fill="none" className="text-blue-500" stroke="currentColor" strokeWidth="2" />
+      <text x="145" y="48" textAnchor="middle" className="text-blue-700 dark:text-blue-300" fill="currentColor" fontSize="13" fontWeight="700">Adipic acid</text>
+      <text x="145" y="68" textAnchor="middle" className="text-blue-600 dark:text-blue-400" fill="currentColor" fontSize="12">HOOC–(CH₂)₄–COOH</text>
+      <text x="145" y="84" textAnchor="middle" className="text-blue-600 dark:text-blue-400" fill="currentColor" fontSize="11">two –COOH groups</text>
+
+      <rect x="352" y="25" width="300" height="66" rx="8" className="text-orange-100 dark:text-orange-900/40" fill="currentColor" />
+      <rect x="352" y="25" width="300" height="66" rx="8" fill="none" className="text-orange-500" stroke="currentColor" strokeWidth="2" />
+      <text x="502" y="48" textAnchor="middle" className="text-orange-700 dark:text-orange-300" fill="currentColor" fontSize="13" fontWeight="700">Hexamethylenediamine</text>
+      <text x="502" y="68" textAnchor="middle" className="text-orange-600 dark:text-orange-400" fill="currentColor" fontSize="12">H₂N–(CH₂)₆–NH₂</text>
+      <text x="502" y="84" textAnchor="middle" className="text-orange-600 dark:text-orange-400" fill="currentColor" fontSize="11">two –NH₂ groups</text>
+
+      <line x1="145" y1="91" x2="220" y2="132" className="text-slate-500" stroke="currentColor" strokeWidth="2" />
+      <line x1="502" y1="91" x2="430" y2="132" className="text-slate-500" stroke="currentColor" strokeWidth="2" />
+      <polygon points="426,136 425,123 436,128" className="text-slate-500" fill="currentColor" />
+      <polygon points="224,136 213,128 224,123" className="text-slate-500" fill="currentColor" />
+      <text x="330" y="120" textAnchor="middle" className="text-purple-600 dark:text-purple-400" fill="currentColor" fontSize="12">condensation (loss of water)</text>
+
+      <rect x="55" y="145" width="500" height="60" rx="10" className="text-green-100 dark:text-green-900/40" fill="currentColor" />
+      <rect x="55" y="145" width="500" height="60" rx="10" fill="none" className="text-green-600" stroke="currentColor" strokeWidth="2" />
+      <text x="305" y="169" textAnchor="middle" className="text-green-700 dark:text-green-300" fill="currentColor" fontSize="13" fontWeight="700">Nylon-6,6: [–OC–(CH₂)₄–CO–NH–(CH₂)₆–NH–]ₙ</text>
+      <text x="305" y="190" textAnchor="middle" className="text-green-600 dark:text-green-400" fill="currentColor" fontSize="12">the new amide (–CO–NH–) links are the polymer bonds</text>
+
+      <line x1="555" y1="175" x2="578" y2="175" className="text-slate-500" stroke="currentColor" strokeWidth="2" />
+      <polygon points="583,175 571,169 571,181" className="text-slate-500" fill="currentColor" />
+      <rect x="588" y="152" width="94" height="46" rx="8" className="text-slate-100 dark:text-slate-700" fill="currentColor" />
+      <rect x="588" y="152" width="94" height="46" rx="8" fill="none" className="text-slate-500" stroke="currentColor" strokeWidth="2" />
+      <text x="635" y="172" textAnchor="middle" className="text-slate-700 dark:text-slate-300" fill="currentColor" fontSize="12" fontWeight="700">n H₂O</text>
+      <text x="635" y="188" textAnchor="middle" className="text-slate-600 dark:text-slate-400" fill="currentColor" fontSize="10">by-product</text>
+
+      <text x="350" y="235" textAnchor="middle" className="text-slate-500 dark:text-slate-400" fill="currentColor" fontSize="12">
+        Each monomer must have at least two reactive groups so the chain can keep growing.
+      </text>
+    </svg>
+  </DiagramFrame>
+);
+
+export const PolymerClassificationGrid: React.FC = () => {
+  const groups = [
+    { title: "Natural", tone: "border-green-500 bg-green-50 dark:bg-green-900/20", items: "starch, cellulose, proteins, natural rubber" },
+    { title: "Synthetic", tone: "border-purple-500 bg-purple-50 dark:bg-purple-900/20", items: "polythene, PVC, polystyrene, nylon, PET" },
+    { title: "Addition", tone: "border-blue-500 bg-blue-50 dark:bg-blue-900/20", items: "monomers add with no by-product — polythene, PVC" },
+    { title: "Condensation", tone: "border-orange-500 bg-orange-50 dark:bg-orange-900/20", items: "small molecule eliminated — nylon, PET, bakelite" },
+    { title: "Thermoplastic", tone: "border-cyan-500 bg-cyan-50 dark:bg-cyan-900/20", items: "soften on heating, can be remoulded and recycled — PE, PP, PVC" },
+    { title: "Thermosetting", tone: "border-red-500 bg-red-50 dark:bg-red-900/20", items: "set permanently, char instead of melting — bakelite, melamine" },
+    { title: "Elastomer", tone: "border-amber-500 bg-amber-50 dark:bg-amber-900/20", items: "stretch and snap back — natural rubber, SBR" },
+    { title: "Fibre", tone: "border-violet-500 bg-violet-50 dark:bg-violet-900/20", items: "long thin chains spun into thread — nylon, polyester, cotton" },
+  ];
+  return (
+    <DiagramFrame
+      title="Four useful ways to classify polymers"
+      caption="Real-world connection: recycling bins ask you to sort by plastic type because thermoplastics can be melted and reshaped, while thermosets cannot — the chemistry decides what can be recycled."
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {groups.map((g) => (
+          <div key={g.title} className={`rounded-lg border-l-4 ${g.tone} p-3`}>
+            <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{g.title}</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{g.items}</p>
+          </div>
+        ))}
+      </div>
+    </DiagramFrame>
+  );
+};
+
+/* ---------------- Chapter 5 diagrams ---------------- */
+
+export const GreenhouseEffectDiagram: React.FC = () => (
+  <DiagramFrame
+    title="The greenhouse effect: why Earth stays warm"
+    caption="Real-world connection: without this natural effect Earth would average about −18 °C. Burning more fossil fuel and cutting forests thicken the gas layer, trapping extra heat — the enhanced greenhouse effect behind climate change."
+  >
+    <svg viewBox="0 0 700 300" className="w-full h-auto" role="img" aria-label="Greenhouse effect diagram with sunlight entering and infrared heat trapped">
+      <circle cx="65" cy="45" r="26" className="text-yellow-300" fill="currentColor" />
+      <text x="65" y="51" textAnchor="middle" className="text-yellow-800" fill="currentColor" fontSize="13" fontWeight="700">Sun</text>
+
+      <rect x="20" y="110" width="660" height="100" rx="12" className="text-sky-100 dark:text-sky-900/30" fill="currentColor" />
+      <rect x="20" y="110" width="660" height="100" rx="12" fill="none" className="text-sky-400" stroke="currentColor" strokeWidth="2" strokeDasharray="8 5" />
+      <text x="350" y="134" textAnchor="middle" className="text-sky-700 dark:text-sky-300" fill="currentColor" fontSize="13" fontWeight="700">
+        ATMOSPHERE — CO₂, CH₄, N₂O, water vapour
+      </text>
+
+      <rect x="120" y="250" width="460" height="40" rx="20" className="text-green-200 dark:text-green-900/40" fill="currentColor" />
+      <text x="350" y="276" textAnchor="middle" className="text-green-800 dark:text-green-300" fill="currentColor" fontSize="13" fontWeight="700">Earth's surface</text>
+
+      <line x1="95" y1="62" x2="290" y2="238" className="text-yellow-500" stroke="currentColor" strokeWidth="4" />
+      <polygon points="295,243 278,238 285,228" className="text-yellow-500" fill="currentColor" />
+      <text x="120" y="100" className="text-yellow-700 dark:text-yellow-400" fill="currentColor" fontSize="12" fontWeight="700">incoming sunlight (short waves)</text>
+
+      <line x1="400" y1="240" x2="610" y2="60" className="text-red-500" stroke="currentColor" strokeWidth="4" />
+      <polygon points="614,56 598,62 606,72" className="text-red-500" fill="currentColor" />
+      <text x="520" y="195" className="text-red-700 dark:text-red-400" fill="currentColor" fontSize="12" fontWeight="700">infrared heat escaping</text>
+
+      <path d="M 470 210 C 545 195, 560 160, 500 148" fill="none" className="text-red-500" stroke="currentColor" strokeWidth="3" strokeDasharray="6 4" />
+      <polygon points="497,145 508,141 502,153" className="text-red-500" fill="currentColor" />
+      <text x="470" y="232" textAnchor="middle" className="text-red-700 dark:text-red-400" fill="currentColor" fontSize="11">some heat re-radiated back</text>
+    </svg>
+  </DiagramFrame>
+);
+
+export const PollutionTypesGrid: React.FC = () => {
+  const types = [
+    { title: "Air pollution", tone: "border-slate-500 bg-slate-50 dark:bg-slate-800", pollutants: "SO₂, NOₓ, CO, PM2.5, ozone, lead", effects: "acid rain, smog, asthma and other lung diseases" },
+    { title: "Water pollution", tone: "border-blue-500 bg-blue-50 dark:bg-blue-900/20", pollutants: "sewage, fertilizers, heavy metals, oil, microbes", effects: "BOD rise, eutrophication, unsafe drinking water" },
+    { title: "Soil pollution", tone: "border-amber-600 bg-amber-50 dark:bg-amber-900/20", pollutants: "pesticides, mine waste, plastics, industrial sludge", effects: "contaminated crops, loss of soil fertility" },
+    { title: "Solid waste", tone: "border-red-500 bg-red-50 dark:bg-red-900/20", pollutants: "plastics, food waste, e-waste, batteries", effects: "land and water pollution, methane from dumps" },
+  ];
+  return (
+    <DiagramFrame
+      title="Four kinds of environmental pollution"
+      caption="Real-world connection: a growing city like Addis Ababa faces all four at once — vehicle exhaust, untreated river water, farm chemicals and municipal waste."
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        {types.map((t) => (
+          <div key={t.title} className={`rounded-lg border-l-4 ${t.tone} p-3`}>
+            <p className="text-sm font-bold text-slate-800 dark:text-slate-200">{t.title}</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1"><strong>Main pollutants:</strong> {t.pollutants}</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1"><strong>Effects:</strong> {t.effects}</p>
+          </div>
+        ))}
+      </div>
+    </DiagramFrame>
+  );
+};
+
+export const WaterTreatmentDiagram: React.FC = () => (
+  <DiagramFrame
+    title="How a municipal water-treatment plant cleans water"
+    caption="Real-world connection: Addis Ababa's Legedadi, Gefersa and Dire treatment plants follow these same stages to turn river water into safe tap water."
+  >
+    <svg viewBox="0 0 760 190" className="w-full h-auto" role="img" aria-label="Water treatment stages from intake to distribution">
+      {[
+        { x: 15, w: 120, title: "Intake &", sub1: "screening", sub2: "remove leaves, grit" },
+        { x: 165, w: 140, title: "Coagulation &", sub1: "sedimentation", sub2: "alum clumps fine mud" },
+        { x: 335, w: 110, title: "Filtration", sub1: "sand & gravel", sub2: "traps small particles" },
+        { x: 475, w: 130, title: "Disinfection", sub1: "chlorine / UV", sub2: "kills pathogens" },
+        { x: 635, w: 110, title: "Storage &", sub1: "distribution", sub2: "safe tap water" },
+      ].map((s) => (
+        <React.Fragment key={s.title}>
+          <rect x={s.x} y="45" width={s.w} height="86" rx="8" className="text-sky-100 dark:text-sky-900/40" fill="currentColor" />
+          <rect x={s.x} y="45" width={s.w} height="86" rx="8" fill="none" className="text-sky-600" stroke="currentColor" strokeWidth="2" />
+          <text x={s.x + s.w / 2} y="70" textAnchor="middle" className="text-sky-800 dark:text-sky-200" fill="currentColor" fontSize="12" fontWeight="700">{s.title}</text>
+          <text x={s.x + s.w / 2} y="88" textAnchor="middle" className="text-sky-700 dark:text-sky-300" fill="currentColor" fontSize="12" fontWeight="700">{s.sub1}</text>
+          <text x={s.x + s.w / 2} y="108" textAnchor="middle" className="text-slate-600 dark:text-slate-400" fill="currentColor" fontSize="10">{s.sub2}</text>
+        </React.Fragment>
+      ))}
+
+      {[135, 305, 445, 605].map((x) => (
+        <React.Fragment key={x}>
+          <line x1={x} y1="88" x2={x + 24} y2="88" className="text-slate-500" stroke="currentColor" strokeWidth="2" />
+          <polygon points={`${x + 30},88 ${x + 18},82 ${x + 18},94`} className="text-slate-500" fill="currentColor" />
+        </React.Fragment>
+      ))}
+
+      <text x="380" y="165" textAnchor="middle" className="text-slate-500 dark:text-slate-400" fill="currentColor" fontSize="12">
+        Boiling at home adds a final safety step where piped water is not fully reliable.
+      </text>
+    </svg>
+  </DiagramFrame>
+);
+
+export const GreenChemistryPrinciplesGrid: React.FC = () => {
+  const principles = [
+    { n: 1, name: "Prevent waste", detail: "Design processes so little or no waste is created." },
+    { n: 2, name: "Atom economy", detail: "Maximise the share of reactant atoms that end up in the product." },
+    { n: 3, name: "Less hazardous synthesis", detail: "Choose routes that use and make safer substances." },
+    { n: 4, name: "Safer chemicals", detail: "Design products that do their job with low toxicity." },
+    { n: 5, name: "Safer solvents", detail: "Use water or no solvent where possible." },
+    { n: 6, name: "Energy efficiency", detail: "Run reactions at mild temperature and pressure." },
+    { n: 7, name: "Renewable feedstocks", detail: "Prefer biomass and recycled materials over fossil fuels." },
+    { n: 8, name: "Fewer derivatives", detail: "Avoid unnecessary protecting groups and extra steps." },
+    { n: 9, name: "Catalysis", detail: "Catalysts cut energy needs and improve selectivity." },
+    { n: 10, name: "Design for degradation", detail: "Products should break down safely after use." },
+    { n: 11, name: "Real-time analysis", detail: "Monitor processes to prevent pollution before it forms." },
+    { n: 12, name: "Inherently safer chemistry", detail: "Minimise the chance of explosions, fires and spills." },
+  ];
+  return (
+    <DiagramFrame
+      title="The 12 principles of green chemistry"
+      caption="Real-world connection: Ethiopian cement, textile and tannery plants are adopting cleaner-production ideas such as dust capture, water recycling and chrome recovery — these principles in action."
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {principles.map((p) => (
+          <div key={p.n} className="rounded-lg border-l-4 border-green-500 bg-green-50 dark:bg-green-900/20 p-3">
+            <p className="text-sm font-bold text-green-800 dark:text-green-200">{p.n}. {p.name}</p>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{p.detail}</p>
+          </div>
+        ))}
+      </div>
+    </DiagramFrame>
+  );
+};

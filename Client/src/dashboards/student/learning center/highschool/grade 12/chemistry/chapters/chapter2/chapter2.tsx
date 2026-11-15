@@ -27,11 +27,11 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <div className="relative mb-12 px-4 md:px-8 py-8">
+      <div className="relative mb-8 md:mb-12 px-2 sm:px-4 md:px-8 py-6 md:py-8">
         <span className="inline-block px-4 py-1.5 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-xs font-bold tracking-widest uppercase mb-4">
           Chapter 2
         </span>
-        <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white leading-tight mb-6 tracking-tight">
+        <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white leading-tight mb-4 md:mb-6 tracking-tight">
           ELECTROCHEMISTRY
         </h1>
         <div className="h-1.5 w-24 bg-gradient-to-r from-purple-600 to-violet-600" />
@@ -43,15 +43,15 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
         </p>
       </div>
 
-      <div className="space-y-16 pb-20 px-4 md:px-8">
+      <div className="space-y-10 md:space-y-16 pb-12 md:pb-20 px-2 sm:px-4 md:px-8">
 
         {/* ================= SECTION 2.1 ================= */}
-        <section id="subtopic-2.1" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-purple-600 pl-4">
+        <section id="subtopic-2.1" className="scroll-mt-6 md:mt-8">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6 border-l-4 border-purple-600 pl-4">
             2.1. Oxidation-Reduction Reactions
           </h2>
 
-          <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-600 p-6 mb-6 rounded-r-lg">
+          <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-600 p-3 sm:p-4 md:p-6 mb-4 md:mb-6 rounded-r-lg">
             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
               Oxidation-reduction (<strong>redox</strong>) reactions are reactions in which electrons are transferred from one
               species to another. They are tracked using <strong>oxidation numbers</strong>. Oxidation and reduction always
@@ -60,16 +60,16 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* 2.1.1 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             2.1.1 Oxidation
           </h3>
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               <strong>Oxidation</strong> is the <strong>loss of electrons</strong> by a species. Its oxidation number
               <strong> increases</strong>. The species that is oxidized acts as the <strong>reducing agent</strong> (it causes
               something else to be reduced).
             </p>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 Zn → Zn²⁺ + 2e⁻   (oxidation: loses electrons)
               </p>
@@ -77,15 +77,15 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* 2.1.2 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             2.1.2 Reduction
           </h3>
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               <strong>Reduction</strong> is the <strong>gain of electrons</strong> by a species. Its oxidation number
               <strong> decreases</strong>. The species that is reduced acts as the <strong>oxidizing agent</strong>.
             </p>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 Cu²⁺ + 2e⁻ → Cu   (reduction: gains electrons)
               </p>
@@ -99,15 +99,15 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           <RedoxElectronTransferDiagram />
 
           {/* 2.1.3 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             2.1.3 Balancing Oxidation-Reduction (Redox) Reactions
           </h3>
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               Redox equations must balance both <strong>atoms</strong> and <strong>charge</strong> (electrons lost = electrons
               gained). The <strong>half-reaction (ion-electron) method</strong> in acidic solution:
             </p>
-            <ul className="space-y-2 ml-6 text-slate-700 dark:text-slate-300 mb-4">
+            <ul className="space-y-2 ml-3 sm:ml-4 md:ml-6 text-slate-700 dark:text-slate-300 mb-4">
               <li>• 1. Split into oxidation and reduction half-reactions.</li>
               <li>• 2. Balance all atoms except O and H.</li>
               <li>• 3. Balance O by adding H₂O.</li>
@@ -115,7 +115,7 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
               <li>• 5. Balance charge by adding electrons (e⁻).</li>
               <li>• 6. Multiply half-reactions so electrons lost = electrons gained, then add.</li>
             </ul>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 Example: Zn + Cu²⁺ → Zn²⁺ + Cu<br />
                 (Zn loses 2e⁻; Cu²⁺ gains 2e⁻ — already balanced)
@@ -123,12 +123,12 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
             </div>
           </div>
 
-          <div className="space-y-6 mb-6">
+          <div className="space-y-6 mb-4 md:mb-6">
             <div className="p-6 border-l-4 border-purple-500 bg-white dark:bg-slate-800 rounded-r-lg">
               <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
                 Redox All Around Us
               </h4>
-              <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded mb-4">
+              <div className="bg-purple-50 dark:bg-purple-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-purple-900 dark:text-purple-300 mb-2">Real-World Example: Rusting of Iron in the Highlands</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   During the rainy season, iron roofs and fences across the Ethiopian highlands rust. Rusting is a redox
@@ -141,7 +141,7 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Key Point Reminder */}
-          <div className="mt-8 p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
+          <div className="mt-6 md:mt-8 p-3 sm:p-4 md:p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🔑 Key Point Reminder</h4>
             <ExerciseQuestion
               question="True or False: Oxidation and reduction always occur together in a redox reaction."
@@ -155,8 +155,8 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Practice Exercise */}
-          <div className="mt-10 p-8 border-t-4 border-purple-600">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Redox Reactions</h3>
+          <div className="mt-8 md:mt-10 p-4 md:p-8 border-t-4 border-purple-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6">✏️ Practice Exercise: Redox Reactions</h3>
 
             <div className="space-y-6">
               <ExerciseQuestion
@@ -199,12 +199,12 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
         </section>
 
         {/* ================= SECTION 2.2 ================= */}
-        <section id="subtopic-2.2" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-purple-600 pl-4">
+        <section id="subtopic-2.2" className="scroll-mt-6 md:mt-8">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6 border-l-4 border-purple-600 pl-4">
             2.2. Electrolysis of Aqueous Solutions
           </h2>
 
-          <div className="bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-600 p-6 mb-6 rounded-r-lg">
+          <div className="bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-600 p-3 sm:p-4 md:p-6 mb-4 md:mb-6 rounded-r-lg">
             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
               <strong>Electrolysis</strong> uses electrical energy to force a non-spontaneous chemical reaction to occur. When
               the electrolyte is an aqueous solution, water itself can also react, so we must predict which species actually
@@ -213,20 +213,20 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* 2.2.1 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             2.2.1 Electrolytic Cells
           </h3>
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               An <strong>electrolytic cell</strong> converts electrical energy into chemical energy. Its parts:
             </p>
-            <ul className="space-y-2 ml-6 text-slate-700 dark:text-slate-300 mb-4">
+            <ul className="space-y-2 ml-3 sm:ml-4 md:ml-6 text-slate-700 dark:text-slate-300 mb-4">
               <li>• A <strong>power source</strong> (battery) that pushes electrons.</li>
               <li>• Two <strong>electrodes</strong>: the <strong>anode</strong> (positive, where oxidation occurs) and the
                 <strong> cathode</strong> (negative, where reduction occurs).</li>
               <li>• An <strong>electrolyte</strong> (molten or aqueous) that conducts ions.</li>
             </ul>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 Anode = oxidation (+)   |   Cathode = reduction (−)
               </p>
@@ -236,14 +236,14 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           <ElectrolyticCellDiagram />
 
           {/* 2.2.2 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             2.2.2 Preferential Discharge
           </h3>
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               In aqueous solution several ions (and water) compete to discharge at each electrode. Which one wins depends on:
             </p>
-            <ul className="space-y-2 ml-6 text-slate-700 dark:text-slate-300">
+            <ul className="space-y-2 ml-3 sm:ml-4 md:ml-6 text-slate-700 dark:text-slate-300">
               <li>• <strong>Position in the electrochemical series</strong> — the species easier to discharge goes first.</li>
               <li>• <strong>Concentration</strong> — a more concentrated ion is favoured.</li>
               <li>• <strong>Nature of the electrode</strong> — inert (Pt, graphite) vs. active electrodes behave differently.</li>
@@ -255,25 +255,25 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* 2.2.3 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             2.2.3 Electrolysis of Some Selected Aqueous Solutions
           </h3>
-          <div className="space-y-4 mb-6">
-            <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
+          <div className="space-y-4 mb-4 md:mb-6">
+            <div className="bg-slate-50 dark:bg-slate-800 p-2.5 sm:p-3 md:p-4 rounded-lg">
               <p className="font-bold text-slate-900 dark:text-white mb-2">Dilute / concentrated NaCl (brine)</p>
               <p className="text-sm text-slate-700 dark:text-slate-300">
                 Cathode: H₂ (from water/H⁺) is liberated. Anode: Cl₂ gas (from Cl⁻) in concentrated brine. The remaining
                 solution becomes NaOH — the basis of the chlor-alkali industry.
               </p>
             </div>
-            <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
+            <div className="bg-slate-50 dark:bg-slate-800 p-2.5 sm:p-3 md:p-4 rounded-lg">
               <p className="font-bold text-slate-900 dark:text-white mb-2">Copper(II) sulfate, CuSO₄ (inert electrodes)</p>
               <p className="text-sm text-slate-700 dark:text-slate-300">
                 Cathode: copper metal deposits (Cu²⁺ + 2e⁻ → Cu). Anode: oxygen gas from water. The blue colour fades as
                 Cu²⁺ is removed.
               </p>
             </div>
-            <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
+            <div className="bg-slate-50 dark:bg-slate-800 p-2.5 sm:p-3 md:p-4 rounded-lg">
               <p className="font-bold text-slate-900 dark:text-white mb-2">Dilute sulfuric acid, H₂SO₄ (electrolysis of water)</p>
               <p className="text-sm text-slate-700 dark:text-slate-300">
                 Cathode: H₂ gas. Anode: O₂ gas. Overall this splits water into hydrogen and oxygen in a 2:1 volume ratio.
@@ -281,12 +281,12 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
             </div>
           </div>
 
-          <div className="space-y-6 mb-6">
+          <div className="space-y-6 mb-4 md:mb-6">
             <div className="p-6 border-l-4 border-violet-500 bg-white dark:bg-slate-800 rounded-r-lg">
               <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
                 Electrolysis at Work
               </h4>
-              <div className="bg-violet-50 dark:bg-violet-900/20 p-4 rounded mb-4">
+              <div className="bg-violet-50 dark:bg-violet-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-violet-900 dark:text-violet-300 mb-2">Real-World Example: Electroplating Workshops in Addis Ababa</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   Small metal-finishing workshops electroplate jewellery, buckles, and tools with a thin shiny layer of silver,
@@ -299,7 +299,7 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Key Point Reminder */}
-          <div className="mt-8 p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
+          <div className="mt-6 md:mt-8 p-3 sm:p-4 md:p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🔑 Key Point Reminder</h4>
             <ExerciseQuestion
               question="True or False: In an electrolytic cell, oxidation occurs at the anode."
@@ -313,8 +313,8 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Practice Exercise */}
-          <div className="mt-10 p-8 border-t-4 border-purple-600">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Electrolysis</h3>
+          <div className="mt-8 md:mt-10 p-4 md:p-8 border-t-4 border-purple-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6">✏️ Practice Exercise: Electrolysis</h3>
 
             <div className="space-y-6">
               <ExerciseQuestion
@@ -357,12 +357,12 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
         </section>
 
         {/* ================= SECTION 2.3 ================= */}
-        <section id="subtopic-2.3" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-purple-600 pl-4">
+        <section id="subtopic-2.3" className="scroll-mt-6 md:mt-8">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6 border-l-4 border-purple-600 pl-4">
             2.3. Quantitative Aspects of Electrolysis
           </h2>
 
-          <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-600 p-6 mb-6 rounded-r-lg">
+          <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-600 p-3 sm:p-4 md:p-6 mb-4 md:mb-6 rounded-r-lg">
             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
               Michael Faraday established the quantitative laws that let us calculate exactly how much substance is deposited
               or liberated during electrolysis. These laws connect electricity (charge) to chemistry (moles and mass).
@@ -370,20 +370,20 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* 2.3.1 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             2.3.1 Faraday's First Law of Electrolysis
           </h3>
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               <strong>First Law:</strong> The mass (m) of substance deposited or liberated at an electrode is directly
               proportional to the quantity of electricity (charge, Q) passed through the electrolyte.
             </p>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 m ∝ Q   →   m = Z·Q = Z·I·t
               </p>
             </div>
-            <ul className="space-y-2 ml-6 text-slate-700 dark:text-slate-300">
+            <ul className="space-y-2 ml-3 sm:ml-4 md:ml-6 text-slate-700 dark:text-slate-300">
               <li>• Q = charge in coulombs = current (I, amperes) × time (t, seconds)</li>
               <li>• Z = electrochemical equivalent (mass deposited per coulomb)</li>
               <li>• 1 Faraday (F) = 96,500 C = charge of 1 mole of electrons</li>
@@ -393,16 +393,16 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           <FaradayLawGraph />
 
           {/* 2.3.2 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             2.3.2 Faraday's Second Law of Electrolysis
           </h3>
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               <strong>Second Law:</strong> When the same quantity of electricity is passed through different electrolytes
               connected in series, the masses of substances deposited are proportional to their <strong>equivalent weights</strong>
               (chemical equivalents).
             </p>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 m₁ / m₂ = E₁ / E₂
               </p>
@@ -413,12 +413,12 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
             </p>
           </div>
 
-          <div className="space-y-6 mb-6">
+          <div className="space-y-6 mb-4 md:mb-6">
             <div className="p-6 border-l-4 border-purple-500 bg-white dark:bg-slate-800 rounded-r-lg">
               <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
                 Applying Faraday's Laws
               </h4>
-              <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded mb-4">
+              <div className="bg-purple-50 dark:bg-purple-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-purple-900 dark:text-purple-300 mb-2">Worked Example: Plating a Spoon with Silver</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   Suppose a current of 2.0 A flows for 965 s through a silver solution (Ag⁺ + e⁻ → Ag). Charge Q = I·t = 2.0 ×
@@ -431,7 +431,7 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Key Point Reminder */}
-          <div className="mt-8 p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
+          <div className="mt-6 md:mt-8 p-3 sm:p-4 md:p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🔑 Key Point Reminder</h4>
             <ExerciseQuestion
               question="True or False: One Faraday (96,500 C) corresponds to one mole of electrons."
@@ -445,8 +445,8 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Practice Exercise */}
-          <div className="mt-10 p-8 border-t-4 border-purple-600">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Faraday's Laws</h3>
+          <div className="mt-8 md:mt-10 p-4 md:p-8 border-t-4 border-purple-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6">✏️ Practice Exercise: Faraday's Laws</h3>
 
             <div className="space-y-6">
               <ExerciseQuestion
@@ -489,44 +489,44 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
         </section>
 
         {/* ================= SECTION 2.4 ================= */}
-        <section id="subtopic-2.4" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-purple-600 pl-4">
+        <section id="subtopic-2.4" className="scroll-mt-6 md:mt-8">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6 border-l-4 border-purple-600 pl-4">
             2.4. Industrial Application of Electrolysis
           </h2>
 
-          <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-600 p-6 mb-6 rounded-r-lg">
+          <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-600 p-3 sm:p-4 md:p-6 mb-4 md:mb-6 rounded-r-lg">
             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
               Electrolysis is a workhorse of modern industry. It is used to purify metals, extract reactive metals that cannot
               be obtained by simple heating, coat objects for protection and beauty, and manufacture important chemicals.
             </p>
           </div>
 
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             Major Industrial Uses
           </h3>
-          <div className="space-y-4 mb-6">
-            <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
+          <div className="space-y-4 mb-4 md:mb-6">
+            <div className="bg-slate-50 dark:bg-slate-800 p-2.5 sm:p-3 md:p-4 rounded-lg">
               <p className="font-bold text-slate-900 dark:text-white mb-2">1. Electroplating</p>
               <p className="text-sm text-slate-700 dark:text-slate-300">
                 Coating an object with a thin layer of a protective or decorative metal (chromium, nickel, silver, gold) to
                 prevent corrosion and improve appearance.
               </p>
             </div>
-            <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
+            <div className="bg-slate-50 dark:bg-slate-800 p-2.5 sm:p-3 md:p-4 rounded-lg">
               <p className="font-bold text-slate-900 dark:text-white mb-2">2. Electrorefining (purification of metals)</p>
               <p className="text-sm text-slate-700 dark:text-slate-300">
                 Impure copper is made the anode and pure copper the cathode; copper dissolves from the anode and deposits pure
                 at the cathode, yielding &gt;99.9% pure copper for electrical wiring.
               </p>
             </div>
-            <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
+            <div className="bg-slate-50 dark:bg-slate-800 p-2.5 sm:p-3 md:p-4 rounded-lg">
               <p className="font-bold text-slate-900 dark:text-white mb-2">3. Extraction of reactive metals</p>
               <p className="text-sm text-slate-700 dark:text-slate-300">
                 Highly reactive metals such as aluminium, sodium, and magnesium are extracted by electrolysing their molten
                 compounds (e.g. aluminium from molten alumina in the Hall-Héroult process).
               </p>
             </div>
-            <div className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
+            <div className="bg-slate-50 dark:bg-slate-800 p-2.5 sm:p-3 md:p-4 rounded-lg">
               <p className="font-bold text-slate-900 dark:text-white mb-2">4. Chlor-alkali process</p>
               <p className="text-sm text-slate-700 dark:text-slate-300">
                 Electrolysis of brine produces chlorine gas, hydrogen gas, and sodium hydroxide — key chemicals for water
@@ -535,12 +535,12 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
             </div>
           </div>
 
-          <div className="space-y-6 mb-6">
+          <div className="space-y-6 mb-4 md:mb-6">
             <div className="p-6 border-l-4 border-green-500 bg-white dark:bg-slate-800 rounded-r-lg">
               <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
                 Industry and Daily Life
               </h4>
-              <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded mb-4">
+              <div className="bg-green-50 dark:bg-green-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-green-900 dark:text-green-300 mb-2">Real-World Example: Clean Water and Shiny Metal</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   The chlorine used to disinfect drinking water in Ethiopian towns is largely produced by the chlor-alkali
@@ -552,7 +552,7 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Key Point Reminder */}
-          <div className="mt-8 p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
+          <div className="mt-6 md:mt-8 p-3 sm:p-4 md:p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🔑 Key Point Reminder</h4>
             <ExerciseQuestion
               question="True or False: Highly reactive metals like aluminium are extracted by electrolysis of their molten compounds."
@@ -566,8 +566,8 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Practice Exercise */}
-          <div className="mt-10 p-8 border-t-4 border-purple-600">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Industrial Electrolysis</h3>
+          <div className="mt-8 md:mt-10 p-4 md:p-8 border-t-4 border-purple-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6">✏️ Practice Exercise: Industrial Electrolysis</h3>
 
             <div className="space-y-6">
               <ExerciseQuestion
@@ -598,12 +598,12 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
         </section>
 
         {/* ================= SECTION 2.5 ================= */}
-        <section id="subtopic-2.5" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-purple-600 pl-4">
+        <section id="subtopic-2.5" className="scroll-mt-6 md:mt-8">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6 border-l-4 border-purple-600 pl-4">
             2.5. Voltaic Cells
           </h2>
 
-          <div className="bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-600 p-6 mb-6 rounded-r-lg">
+          <div className="bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-600 p-3 sm:p-4 md:p-6 mb-4 md:mb-6 rounded-r-lg">
             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
               A <strong>voltaic (galvanic) cell</strong> does the reverse of electrolysis: it converts the energy of a
               <strong> spontaneous</strong> redox reaction into electrical energy. Batteries — from torch cells to phone
@@ -611,20 +611,20 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
             </p>
           </div>
 
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             How a Voltaic Cell Works
           </h3>
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               A voltaic cell has two half-cells joined by a wire and a <strong>salt bridge</strong>:
             </p>
-            <ul className="space-y-2 ml-6 text-slate-700 dark:text-slate-300 mb-4">
+            <ul className="space-y-2 ml-3 sm:ml-4 md:ml-6 text-slate-700 dark:text-slate-300 mb-4">
               <li>• <strong>Anode (−):</strong> oxidation occurs; electrons are released and flow out through the wire.</li>
               <li>• <strong>Cathode (+):</strong> reduction occurs; electrons arrive and are consumed.</li>
               <li>• <strong>Salt bridge:</strong> allows ions to migrate, keeping each half-cell electrically neutral and
                 completing the circuit.</li>
             </ul>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 Daniell cell: Zn | Zn²⁺ || Cu²⁺ | Cu<br />
                 Anode: Zn → Zn²⁺ + 2e⁻   Cathode: Cu²⁺ + 2e⁻ → Cu
@@ -638,12 +638,12 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
 
           <VoltaicCellDiagram />
 
-          <div className="space-y-6 mb-6">
+          <div className="space-y-6 mb-4 md:mb-6">
             <div className="p-6 border-l-4 border-orange-500 bg-white dark:bg-slate-800 rounded-r-lg">
               <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
                 Voltaic Cells in Everyday Life
               </h4>
-              <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded mb-4">
+              <div className="bg-orange-50 dark:bg-orange-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-orange-900 dark:text-orange-300 mb-2">Real-World Example: Powering Radios and Torches Off-Grid</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   In rural Ethiopian homes without grid electricity, dry-cell batteries power radios, torches, and phone
@@ -656,7 +656,7 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Key Point Reminder */}
-          <div className="mt-8 p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
+          <div className="mt-6 md:mt-8 p-3 sm:p-4 md:p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🔑 Key Point Reminder</h4>
             <ExerciseQuestion
               question="True or False: In a voltaic cell, the anode is the negative electrode."
@@ -670,8 +670,8 @@ const Chapter2: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Practice Exercise */}
-          <div className="mt-10 p-8 border-t-4 border-purple-600">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Voltaic Cells</h3>
+          <div className="mt-8 md:mt-10 p-4 md:p-8 border-t-4 border-purple-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6">✏️ Practice Exercise: Voltaic Cells</h3>
 
             <div className="space-y-6">
               <ExerciseQuestion

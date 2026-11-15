@@ -1,5 +1,11 @@
 import React, { useEffect } from "react";
 import { ExerciseQuestion } from "../../../../../University/Freshman/components/ExerciseQuestion";
+import {
+  ConservationApproachesGrid,
+  NitrogenFixationDiagram,
+  InsulinProductionDiagram,
+  IndustrialBiotechDiagram,
+} from "../../components/BioDiagrams";
 
 interface ChapterProps {
   selectedSubtopic?: string;
@@ -20,11 +26,11 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <div className="relative mb-12 px-4 md:px-8 py-8">
+      <div className="relative mb-8 md:mb-12 px-2 sm:px-4 md:px-8 py-6 md:py-8">
         <span className="inline-block px-4 py-1.5 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-bold tracking-widest uppercase mb-4">
           Chapter 1
         </span>
-        <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white leading-tight mb-6 tracking-tight">
+        <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white leading-tight mb-4 md:mb-6 tracking-tight">
           APPLICATION OF BIOLOGY
         </h1>
         <div className="h-1.5 w-24 bg-gradient-to-r from-green-600 to-emerald-600" />
@@ -33,31 +39,33 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
         </p>
       </div>
 
-      <div className="space-y-16 pb-20 px-4 md:px-8">
+      <div className="space-y-10 md:space-y-16 pb-12 md:pb-20 px-2 sm:px-4 md:px-8">
         
         {/* SUBTOPIC 1.1: Application in Conservation of Natural Resources */}
         <section id="subtopic-1.1" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-green-600 pl-4">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6 border-l-4 border-green-600 pl-4">
             1.1. Application in Conservation of Natural Resources
           </h2>
 
-          <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-600 p-6 mb-6 rounded-r-lg">
+          <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-600 p-3 sm:p-4 md:p-6 mb-4 md:mb-6 rounded-r-lg">
             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
               Natural resources (water, soil, forests, wildlife, and minerals) are the foundation of life and economic development. 
               Biology provides the scientific understanding needed to conserve these resources sustainably, ensuring they remain available for future generations.
             </p>
           </div>
 
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <ConservationApproachesGrid />
+
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             Why Conservation Matters
           </h3>
 
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               Human activities have dramatically altered natural ecosystems. Deforestation, overfishing, pollution, and climate change threaten biodiversity and ecosystem services. 
               Biology helps us understand:
             </p>
-            <ul className="space-y-2 ml-6">
+            <ul className="space-y-2 ml-3 sm:ml-4 md:ml-6">
               <li className="text-slate-700 dark:text-slate-300">• How ecosystems function and maintain balance</li>
               <li className="text-slate-700 dark:text-slate-300">• The interconnections between species and their environment</li>
               <li className="text-slate-700 dark:text-slate-300">• The impact of human activities on natural systems</li>
@@ -65,11 +73,11 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
             </ul>
           </div>
 
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             Key Applications of Biology in Conservation
           </h3>
 
-          <div className="space-y-6 mb-6">
+          <div className="space-y-4 md:space-y-6 mb-4 md:mb-6">
             {/* Biodiversity Conservation */}
             <div className="p-6 border-l-4 border-green-500 bg-white dark:bg-slate-800 rounded-r-lg">
               <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
@@ -79,7 +87,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
                 Protecting species and habitats to prevent extinction and maintain genetic diversity.
               </p>
               
-              <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded mb-4">
+              <div className="bg-green-50 dark:bg-green-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-green-900 dark:text-green-300 mb-2">Real-World Example: Ethiopian Wolf Conservation</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   The Ethiopian wolf is Africa's most endangered carnivore, with fewer than 500 individuals remaining. 
@@ -90,7 +98,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
               </div>
 
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Methods Used:</p>
-              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-4">
+              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-3 sm:ml-4">
                 <li>• Population monitoring and census</li>
                 <li>• Genetic analysis to track diversity</li>
                 <li>• Habitat mapping and protection</li>
@@ -108,7 +116,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
                 Controlling hunting/poaching, monitoring populations, and protecting breeding areas to maintain healthy wildlife populations.
               </p>
               
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded mb-4">
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-blue-900 dark:text-blue-300 mb-2">Real-World Example: Bale Mountains National Park</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   In Ethiopia's Bale Mountains, biologists use radio collars and camera traps to monitor wildlife populations including 
@@ -119,7 +127,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
               </div>
 
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Techniques Include:</p>
-              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-4">
+              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-3 sm:ml-4">
                 <li>• Radio telemetry and GPS tracking</li>
                 <li>• Camera trap surveys</li>
                 <li>• Population viability analysis</li>
@@ -137,7 +145,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
                 Reforestation, afforestation, and protecting catchment areas to reduce erosion and maintain water supply.
               </p>
               
-              <div className="bg-emerald-50 dark:bg-emerald-900/20 p-4 rounded mb-4">
+              <div className="bg-emerald-50 dark:bg-emerald-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-emerald-900 dark:text-emerald-300 mb-2">Real-World Example: Blue Nile Basin Management</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   The Blue Nile originates in Ethiopia's highlands. Biologists study how deforestation affects water flow, soil erosion, 
@@ -148,7 +156,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
               </div>
 
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Conservation Strategies:</p>
-              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-4">
+              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-3 sm:ml-4">
                 <li>• Reforestation with native species</li>
                 <li>• Riparian buffer zone establishment</li>
                 <li>• Terracing and contour plowing</li>
@@ -166,7 +174,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
                 Preventing soil erosion, improving soil fertility, and reducing land degradation through biological methods.
               </p>
               
-              <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded mb-4">
+              <div className="bg-amber-50 dark:bg-amber-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-amber-900 dark:text-amber-300 mb-2">Real-World Example: Tigray Soil Restoration</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   In Tigray region, severe soil degradation threatened food security. Biologists introduced nitrogen-fixing plants 
@@ -177,7 +185,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
               </div>
 
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Biological Approaches:</p>
-              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-4">
+              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-3 sm:ml-4">
                 <li>• Cover cropping with legumes</li>
                 <li>• Composting and organic matter addition</li>
                 <li>• Mycorrhizal fungi inoculation</li>
@@ -195,7 +203,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
                 Harvesting resources at a rate that allows natural regeneration, ensuring long-term availability.
               </p>
               
-              <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded mb-4">
+              <div className="bg-purple-50 dark:bg-purple-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-purple-900 dark:text-purple-300 mb-2">Real-World Example: Lake Tana Fisheries</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   Lake Tana supports thousands of fishermen. Biologists studied fish reproduction rates, growth patterns, and 
@@ -206,7 +214,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
               </div>
 
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Sustainable Practices:</p>
-              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-4">
+              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-3 sm:ml-4">
                 <li>• Maximum sustainable yield calculations</li>
                 <li>• Seasonal harvesting restrictions</li>
                 <li>• Size and age limits for harvested organisms</li>
@@ -217,7 +225,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Key Point Reminder - True/False */}
-          <div className="mt-8 p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
+          <div className="mt-6 md:mt-8 p-3 sm:p-4 md:p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🔑 Key Point Reminder</h4>
             <ExerciseQuestion 
               question="True or False: Sustainable use means harvesting all available resources as quickly as possible to maximize short-term profits."
@@ -231,10 +239,10 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Main Exercise for Subtopic 1.1 */}
-          <div className="mt-10 p-8 border-t-4 border-green-600">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Conservation of Natural Resources</h3>
+          <div className="mt-8 md:mt-10 p-3 sm:p-4 md:p-8 border-t-4 border-green-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6">✏️ Practice Exercise: Conservation of Natural Resources</h3>
             
-            <div className="space-y-6">
+            <div className="space-y-4 md:space-y-6">
               <ExerciseQuestion 
                 question="Which conservation strategy would be MOST effective for protecting an endangered species with a small, isolated population?"
                 options={[
@@ -264,41 +272,43 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
 
         {/* Section 1.2 */}
         <section id="subtopic-1.2" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-green-600 pl-4">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6 border-l-4 border-green-600 pl-4">
             1.2. Application in Agriculture
           </h2>
 
-          <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-600 p-6 mb-6 rounded-r-lg">
+          <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-600 p-3 sm:p-4 md:p-6 mb-4 md:mb-6 rounded-r-lg">
             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
               Agriculture feeds the world's growing population. Biology plays a crucial role in improving agricultural productivity, 
               sustainability, and food security through scientific understanding of plants, animals, soil, and ecosystems.
             </p>
           </div>
 
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <NitrogenFixationDiagram />
+
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             The Challenge
           </h3>
 
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               By 2050, the world population will reach 9.7 billion people. We need to produce 70% more food while:
             </p>
-            <ul className="space-y-2 ml-6">
+            <ul className="space-y-2 ml-3 sm:ml-4 md:ml-6">
               <li className="text-slate-700 dark:text-slate-300">• Using less water and land</li>
               <li className="text-slate-700 dark:text-slate-300">• Reducing environmental impact</li>
               <li className="text-slate-700 dark:text-slate-300">• Adapting to climate change</li>
               <li className="text-slate-700 dark:text-slate-300">• Maintaining soil health</li>
             </ul>
-            <p className="text-slate-700 dark:text-slate-300 mt-4">
+            <p className="text-slate-700 dark:text-slate-300 mt-3 md:mt-4">
               Biology provides solutions through crop improvement, pest management, soil conservation, and sustainable farming practices.
             </p>
           </div>
 
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             Key Applications in Agriculture
           </h3>
 
-          <div className="space-y-6 mb-6">
+          <div className="space-y-4 md:space-y-6 mb-4 md:mb-6">
             {/* Crop Improvement */}
             <div className="p-6 border-l-4 border-green-500 bg-white dark:bg-slate-800 rounded-r-lg">
               <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
@@ -308,7 +318,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
                 Developing high-yield, disease-resistant, and climate-adapted crop varieties through selective breeding and genetic engineering.
               </p>
               
-              <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded mb-4">
+              <div className="bg-green-50 dark:bg-green-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-green-900 dark:text-green-300 mb-2">Real-World Example: Teff Improvement in Ethiopia</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   Teff is Ethiopia's staple grain, but traditional varieties lodge (fall over) easily, reducing yields. Agricultural biologists 
@@ -319,7 +329,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
               </div>
 
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Techniques Used:</p>
-              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-4">
+              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-3 sm:ml-4">
                 <li>• Selective breeding for desired traits</li>
                 <li>• Hybridization to combine beneficial characteristics</li>
                 <li>• Marker-assisted selection using DNA analysis</li>
@@ -337,7 +347,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
                 Using natural predators, parasites, and pathogens to control agricultural pests, reducing reliance on chemical pesticides.
               </p>
               
-              <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded mb-4">
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-blue-900 dark:text-blue-300 mb-2">Real-World Example: Ladybugs vs. Aphids</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   Aphids are major pests that suck plant sap, weakening crops and spreading diseases. Instead of using chemical pesticides, 
@@ -348,7 +358,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
               </div>
 
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Integrated Pest Management (IPM) Includes:</p>
-              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-4">
+              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-3 sm:ml-4">
                 <li>• Biological control agents (predators, parasitoids)</li>
                 <li>• Pheromone traps for monitoring and mating disruption</li>
                 <li>• Crop rotation to break pest cycles</li>
@@ -366,7 +376,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
                 Understanding nutrient cycles and using biological methods to maintain and improve soil fertility.
               </p>
               
-              <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded mb-4">
+              <div className="bg-amber-50 dark:bg-amber-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-amber-900 dark:text-amber-300 mb-2">Real-World Example: Nitrogen-Fixing Bacteria</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   Nitrogen is essential for plant growth, but atmospheric nitrogen (N₂) is unusable by plants. Rhizobium bacteria form 
@@ -377,7 +387,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
               </div>
 
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Biological Approaches:</p>
-              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-4">
+              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-3 sm:ml-4">
                 <li>• Nitrogen-fixing bacteria inoculation</li>
                 <li>• Mycorrhizal fungi for nutrient uptake</li>
                 <li>• Composting organic matter</li>
@@ -395,7 +405,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
                 Improving livestock breeds, managing animal health, and optimizing production through biological understanding.
               </p>
               
-              <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded mb-4">
+              <div className="bg-purple-50 dark:bg-purple-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-purple-900 dark:text-purple-300 mb-2">Real-World Example: Ethiopian Highland Cattle</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   Ethiopian highland cattle are adapted to high altitudes but have low milk production. Animal scientists crossbred them 
@@ -406,7 +416,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
               </div>
 
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Applications Include:</p>
-              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-4">
+              <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 ml-3 sm:ml-4">
                 <li>• Selective breeding for productivity and disease resistance</li>
                 <li>• Artificial insemination for genetic improvement</li>
                 <li>• Nutritional optimization based on physiology</li>
@@ -417,7 +427,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Key Point Reminder - True/False */}
-          <div className="mt-8 p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
+          <div className="mt-6 md:mt-8 p-3 sm:p-4 md:p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🔑 Key Point Reminder</h4>
             <ExerciseQuestion 
               question="True or False: Biological pest control uses chemical pesticides to kill all insects in a field."
@@ -431,10 +441,10 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Main Exercise for Subtopic 1.2 */}
-          <div className="mt-10 p-8 border-t-4 border-green-600">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Application in Agriculture</h3>
+          <div className="mt-8 md:mt-10 p-3 sm:p-4 md:p-8 border-t-4 border-green-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6">✏️ Practice Exercise: Application in Agriculture</h3>
             
-            <div className="space-y-6">
+            <div className="space-y-4 md:space-y-6">
               <ExerciseQuestion 
                 question="A farmer plants beans between rows of maize. The beans have root nodules containing Rhizobium bacteria. What is the PRIMARY benefit of this practice?"
                 options={[
@@ -464,21 +474,23 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
 
         {/* Section 1.3 */}
         <section id="subtopic-1.3" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-green-600 pl-4">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6 border-l-4 border-green-600 pl-4">
             1.3. Application in Medicine
           </h2>
 
-          <div className="bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-600 p-6 mb-6 rounded-r-lg">
+          <div className="bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-600 p-3 sm:p-4 md:p-6 mb-4 md:mb-6 rounded-r-lg">
             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
               Medical biology has revolutionized healthcare through understanding disease mechanisms, developing treatments, and improving diagnostics.
             </p>
           </div>
 
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <InsulinProductionDiagram />
+
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             Key Applications:
           </h3>
 
-          <div className="space-y-4 mb-6">
+          <div className="space-y-4 mb-4 md:mb-6">
             <div className="flex gap-3">
               <span className="text-green-600 dark:text-green-400 font-bold">•</span>
               <div>
@@ -513,8 +525,8 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Exercise for Subtopic 1.3 */}
-          <div className="mt-10 p-8 border-t-4 border-purple-600">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Application in Medicine</h3>
+          <div className="mt-8 md:mt-10 p-3 sm:p-4 md:p-8 border-t-4 border-purple-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6">✏️ Practice Exercise: Application in Medicine</h3>
             <ExerciseQuestion 
               question="Scientists use genetically modified bacteria to produce human insulin for diabetes treatment. This is an example of:"
               options={[
@@ -531,21 +543,23 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
 
         {/* Section 1.4 */}
         <section id="subtopic-1.4" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-green-600 pl-4">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6 border-l-4 border-green-600 pl-4">
             1.4. Application in Industry
           </h2>
 
-          <div className="bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-600 p-6 mb-6 rounded-r-lg">
+          <div className="bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-600 p-3 sm:p-4 md:p-6 mb-4 md:mb-6 rounded-r-lg">
             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
               Industrial biology (biotechnology) uses living organisms and biological processes to produce valuable products and services.
             </p>
           </div>
 
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <IndustrialBiotechDiagram />
+
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             Key Applications:
           </h3>
 
-          <div className="space-y-4 mb-6">
+          <div className="space-y-4 mb-4 md:mb-6">
             <div className="flex gap-3">
               <span className="text-green-600 dark:text-green-400 font-bold">•</span>
               <div>
@@ -580,8 +594,8 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Exercise for Subtopic 1.4 */}
-          <div className="mt-10 p-8 border-t-4 border-orange-600">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Application in Industry</h3>
+          <div className="mt-8 md:mt-10 p-3 sm:p-4 md:p-8 border-t-4 border-orange-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6">✏️ Practice Exercise: Application in Industry</h3>
             <ExerciseQuestion 
               question="Yeast is used in the production of bread, causing the dough to rise. This process is an example of:"
               options={[
@@ -609,7 +623,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
         </section>
 
         {/* Navigation Buttons */}
-        <div className="flex justify-between items-center pt-8 border-t border-slate-200 dark:border-slate-700">
+        <div className="flex justify-between items-center pt-6 md:pt-8 border-t border-slate-200 dark:border-slate-700">
           <button
             disabled
             className="flex items-center gap-2 px-6 py-3 bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 rounded-lg cursor-not-allowed"

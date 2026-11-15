@@ -71,6 +71,18 @@ const Grade12ChemCh2 = React.lazy(
   () =>
     import("@learningCenter/highschool/grade 12/chemistry/chapters/chapter2/chapter2"),
 );
+const Grade12ChemCh3 = React.lazy(
+  () =>
+    import("@learningCenter/highschool/grade 12/chemistry/chapters/chapter3/chapter3"),
+);
+const Grade12ChemCh4 = React.lazy(
+  () =>
+    import("@learningCenter/highschool/grade 12/chemistry/chapters/chapter4/chapter4"),
+);
+const Grade12ChemCh5 = React.lazy(
+  () =>
+    import("@learningCenter/highschool/grade 12/chemistry/chapters/chapter5/chapter5"),
+);
 
 // Chapter component mapping for high school subjects
 const CHAPTER_COMPONENTS: Record<
@@ -115,6 +127,9 @@ const CHAPTER_COMPONENTS: Record<
     Chemistry: {
       chapter1: Grade12ChemCh1,
       chapter2: Grade12ChemCh2,
+      chapter3: Grade12ChemCh3,
+      chapter4: Grade12ChemCh4,
+      chapter5: Grade12ChemCh5,
     },
   },
 };

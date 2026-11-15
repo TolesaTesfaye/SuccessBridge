@@ -28,11 +28,11 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <div className="relative mb-12 px-4 md:px-8 py-8">
+      <div className="relative mb-8 md:mb-12 px-2 sm:px-4 md:px-8 py-6 md:py-8">
         <span className="inline-block px-4 py-1.5 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 text-xs font-bold tracking-widest uppercase mb-4">
           Chapter 1
         </span>
-        <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white leading-tight mb-6 tracking-tight">
+        <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white leading-tight mb-4 md:mb-6 tracking-tight">
           ACID-BASE EQUILIBRIA
         </h1>
         <div className="h-1.5 w-24 bg-gradient-to-r from-purple-600 to-violet-600" />
@@ -44,15 +44,15 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
         </p>
       </div>
 
-      <div className="space-y-16 pb-20 px-4 md:px-8">
+      <div className="space-y-10 md:space-y-16 pb-12 md:pb-20 px-2 sm:px-4 md:px-8">
 
         {/* ================= SECTION 1.1 ================= */}
-        <section id="subtopic-1.1" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-purple-600 pl-4">
+        <section id="subtopic-1.1" className="scroll-mt-6 md:mt-8">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6 border-l-4 border-purple-600 pl-4">
             1.1. Acid-Base Concepts
           </h2>
 
-          <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-600 p-6 mb-6 rounded-r-lg">
+          <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-600 p-3 sm:p-4 md:p-6 mb-4 md:mb-6 rounded-r-lg">
             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
               Chemists have developed three increasingly general definitions of acids and bases. Each new concept explains
               everything the previous one did, plus more. Knowing all three lets you classify almost any substance and
@@ -61,19 +61,19 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* 1.1.1 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             1.1.1 Arrhenius Concept of Acids and Bases
           </h3>
 
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               Svante Arrhenius (1887) defined acids and bases by what they produce in <strong>water</strong>:
             </p>
-            <ul className="space-y-2 ml-6 text-slate-700 dark:text-slate-300 mb-4">
+            <ul className="space-y-2 ml-3 sm:ml-4 md:ml-6 text-slate-700 dark:text-slate-300 mb-4">
               <li>• An <strong>acid</strong> is a substance that ionizes in water to produce hydrogen ions, H⁺ (hydronium, H₃O⁺).</li>
               <li>• A <strong>base</strong> is a substance that ionizes in water to produce hydroxide ions, OH⁻.</li>
             </ul>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 HCl → H⁺ + Cl⁻  (acid)<br />
                 NaOH → Na⁺ + OH⁻  (base)
@@ -86,20 +86,20 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* 1.1.2 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             1.1.2 Brønsted-Lowry Concept of Acids and Bases
           </h3>
 
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               Brønsted and Lowry (1923) broadened the idea using <strong>proton (H⁺) transfer</strong>, which works in any
               solvent, not just water:
             </p>
-            <ul className="space-y-2 ml-6 text-slate-700 dark:text-slate-300 mb-4">
+            <ul className="space-y-2 ml-3 sm:ml-4 md:ml-6 text-slate-700 dark:text-slate-300 mb-4">
               <li>• An <strong>acid</strong> is a proton (H⁺) <strong>donor</strong>.</li>
               <li>• A <strong>base</strong> is a proton (H⁺) <strong>acceptor</strong>.</li>
             </ul>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 HCl + H₂O → H₃O⁺ + Cl⁻<br />
                 (acid)  (base)
@@ -116,19 +116,19 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           <ProtonTransferDiagram />
 
           {/* 1.1.3 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             1.1.3 Lewis Concept of Acids and Bases
           </h3>
 
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               G. N. Lewis (1923) gave the broadest definition, based on <strong>electron pairs</strong> rather than protons:
             </p>
-            <ul className="space-y-2 ml-6 text-slate-700 dark:text-slate-300 mb-4">
+            <ul className="space-y-2 ml-3 sm:ml-4 md:ml-6 text-slate-700 dark:text-slate-300 mb-4">
               <li>• A <strong>Lewis acid</strong> is an electron-pair <strong>acceptor</strong> (electron-poor, e.g. BF₃, AlCl₃, H⁺).</li>
               <li>• A <strong>Lewis base</strong> is an electron-pair <strong>donor</strong> (has a lone pair, e.g. NH₃, H₂O, OH⁻).</li>
             </ul>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 BF₃ + :NH₃ → F₃B–NH₃<br />
                 (Lewis acid) (Lewis base)
@@ -140,12 +140,12 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
             </p>
           </div>
 
-          <div className="space-y-6 mb-6">
+          <div className="space-y-6 mb-4 md:mb-6">
             <div className="p-6 border-l-4 border-purple-500 bg-white dark:bg-slate-800 rounded-r-lg">
               <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
                 Comparing the Three Concepts
               </h4>
-              <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded mb-4">
+              <div className="bg-purple-50 dark:bg-purple-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-purple-900 dark:text-purple-300 mb-2">Real-World Example: Acids and Bases in an Ethiopian Kitchen</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   <em>Ergo</em> (fermented milk) and <em>tej</em> taste sour because they contain acids (lactic acid, acetic
@@ -164,7 +164,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Key Point Reminder */}
-          <div className="mt-8 p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
+          <div className="mt-6 md:mt-8 p-3 sm:p-4 md:p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🔑 Key Point Reminder</h4>
             <ExerciseQuestion
               question="True or False: In the Brønsted-Lowry concept, a base is a proton (H⁺) acceptor."
@@ -178,8 +178,8 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Practice Exercise */}
-          <div className="mt-10 p-8 border-t-4 border-purple-600">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Acid-Base Concepts</h3>
+          <div className="mt-8 md:mt-10 p-4 md:p-8 border-t-4 border-purple-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6">✏️ Practice Exercise: Acid-Base Concepts</h3>
 
             <div className="space-y-6">
               <ExerciseQuestion
@@ -222,12 +222,12 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
         </section>
 
         {/* ================= SECTION 1.2 ================= */}
-        <section id="subtopic-1.2" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-purple-600 pl-4">
+        <section id="subtopic-1.2" className="scroll-mt-6 md:mt-8">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6 border-l-4 border-purple-600 pl-4">
             1.2. Ionic Equilibria of Weak Acids and Bases
           </h2>
 
-          <div className="bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-600 p-6 mb-6 rounded-r-lg">
+          <div className="bg-purple-50 dark:bg-purple-900/20 border-l-4 border-purple-600 p-3 sm:p-4 md:p-6 mb-4 md:mb-6 rounded-r-lg">
             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
               Strong acids and bases ionize completely, but <strong>weak</strong> acids and bases only partially ionize,
               establishing an equilibrium between the ionized and unionized forms. These equilibria are described by
@@ -236,15 +236,15 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* 1.2.1 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             1.2.1 Ionization of Water
           </h3>
 
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               Pure water ionizes very slightly in a process called <strong>autoionization</strong>:
             </p>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 H₂O ⇌ H⁺ + OH⁻<br />
                 Kw = [H⁺][OH⁻] = 1.0 × 10⁻¹⁴ (at 25 °C)
@@ -255,7 +255,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
               why pure water is neutral with pH = 7. In ANY aqueous solution at 25 °C, the product [H⁺][OH⁻] always equals
               1.0 × 10⁻¹⁴. This leads to the useful relationship:
             </p>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 pH + pOH = 14  (at 25 °C)
               </p>
@@ -263,22 +263,22 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* 1.2.2 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             1.2.2 Measures of the Strength of Acids and Bases in Aqueous Solution
           </h3>
 
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               The strength of a weak acid is measured by its <strong>acid ionization constant, Ka</strong>; the strength of a
               weak base by its <strong>base ionization constant, Kb</strong>:
             </p>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 HA ⇌ H⁺ + A⁻   Ka = [H⁺][A⁻]/[HA]<br />
                 B + H₂O ⇌ BH⁺ + OH⁻   Kb = [BH⁺][OH⁻]/[B]
               </p>
             </div>
-            <ul className="space-y-2 ml-6 text-slate-700 dark:text-slate-300 mb-4">
+            <ul className="space-y-2 ml-3 sm:ml-4 md:ml-6 text-slate-700 dark:text-slate-300 mb-4">
               <li>• A <strong>larger Ka</strong> (or Kb) means a <strong>stronger</strong> acid (or base) — more ionization.</li>
               <li>• pKa = −log Ka and pKb = −log Kb; a <strong>smaller pKa</strong> means a stronger acid.</li>
               <li>• For a conjugate pair: Ka × Kb = Kw = 1.0 × 10⁻¹⁴.</li>
@@ -292,12 +292,12 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
 
           <PhScaleDiagram />
 
-          <div className="space-y-6 mb-6">
+          <div className="space-y-6 mb-4 md:mb-6">
             <div className="p-6 border-l-4 border-violet-500 bg-white dark:bg-slate-800 rounded-r-lg">
               <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
                 Why Weak-Acid Equilibria Matter
               </h4>
-              <div className="bg-violet-50 dark:bg-violet-900/20 p-4 rounded mb-4">
+              <div className="bg-violet-50 dark:bg-violet-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-violet-900 dark:text-violet-300 mb-2">Real-World Example: The Sour Taste of Tej and Ergo</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   The pleasant sourness of <em>tej</em> and <em>ergo</em> comes from weak organic acids (acetic and lactic
@@ -315,7 +315,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Key Point Reminder */}
-          <div className="mt-8 p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
+          <div className="mt-6 md:mt-8 p-3 sm:p-4 md:p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🔑 Key Point Reminder</h4>
             <ExerciseQuestion
               question="True or False: In pure water at 25 °C, the concentration of H⁺ equals the concentration of OH⁻."
@@ -329,8 +329,8 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Practice Exercise */}
-          <div className="mt-10 p-8 border-t-4 border-purple-600">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Ionic Equilibria</h3>
+          <div className="mt-8 md:mt-10 p-4 md:p-8 border-t-4 border-purple-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6">✏️ Practice Exercise: Ionic Equilibria</h3>
 
             <div className="space-y-6">
               <ExerciseQuestion
@@ -373,12 +373,12 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
         </section>
 
         {/* ================= SECTION 1.3 ================= */}
-        <section id="subtopic-1.3" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-purple-600 pl-4">
+        <section id="subtopic-1.3" className="scroll-mt-6 md:mt-8">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6 border-l-4 border-purple-600 pl-4">
             1.3. Common Ion Effect and Buffer Solution
           </h2>
 
-          <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-600 p-6 mb-6 rounded-r-lg">
+          <div className="bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-600 p-3 sm:p-4 md:p-6 mb-4 md:mb-6 rounded-r-lg">
             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
               Adding an ion that is already part of an equilibrium shifts that equilibrium (Le Chatelier's principle). This
               "common ion effect" is the foundation of <strong>buffer solutions</strong>, which resist changes in pH and are
@@ -387,15 +387,15 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* 1.3.1 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             1.3.1 The Common Ion Effect
           </h3>
 
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               Consider the weak-acid equilibrium of acetic acid:
             </p>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 CH₃COOH  H⁺ + CH₃COO⁻
               </p>
@@ -409,11 +409,11 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* 1.3.2 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             1.3.2 Buffer Solutions
           </h3>
 
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               A <strong>buffer</strong> is a solution that resists large changes in pH when small amounts of acid or base are
               added. A buffer is made from a <strong>weak acid plus its conjugate-base salt</strong> (e.g. CH₃COOH +
@@ -424,7 +424,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
               [H⁺] — and therefore pH — stays nearly constant. The pH of a buffer is given by the
               <strong> Henderson–Hasselbalch equation</strong>:
             </p>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 pH = pKa + log([A⁻]/[HA])
               </p>
@@ -433,12 +433,12 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
 
           <BufferActionDiagram />
 
-          <div className="space-y-6 mb-6">
+          <div className="space-y-6 mb-4 md:mb-6">
             <div className="p-6 border-l-4 border-purple-500 bg-white dark:bg-slate-800 rounded-r-lg">
               <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
                 Buffers in Living Systems
               </h4>
-              <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded mb-4">
+              <div className="bg-purple-50 dark:bg-purple-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-purple-900 dark:text-purple-300 mb-2">Real-World Example: Blood — A Life-Saving Buffer</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   Human blood must stay near pH 7.4. It is buffered by the carbonic-acid / bicarbonate pair
@@ -451,7 +451,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Key Point Reminder */}
-          <div className="mt-8 p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
+          <div className="mt-6 md:mt-8 p-3 sm:p-4 md:p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🔑 Key Point Reminder</h4>
             <ExerciseQuestion
               question="True or False: Adding a common ion to a weak-acid solution increases the ionization of the weak acid."
@@ -465,8 +465,8 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Practice Exercise */}
-          <div className="mt-10 p-8 border-t-4 border-purple-600">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Common Ion Effect and Buffers</h3>
+          <div className="mt-8 md:mt-10 p-4 md:p-8 border-t-4 border-purple-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6">✏️ Practice Exercise: Common Ion Effect and Buffers</h3>
 
             <div className="space-y-6">
               <ExerciseQuestion
@@ -497,12 +497,12 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
         </section>
 
         {/* ================= SECTION 1.4 ================= */}
-        <section id="subtopic-1.4" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-purple-600 pl-4">
+        <section id="subtopic-1.4" className="scroll-mt-6 md:mt-8">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6 border-l-4 border-purple-600 pl-4">
             1.4. Hydrolysis of Salts
           </h2>
 
-          <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-600 p-6 mb-6 rounded-r-lg">
+          <div className="bg-green-50 dark:bg-green-900/20 border-l-4 border-green-600 p-3 sm:p-4 md:p-6 mb-4 md:mb-6 rounded-r-lg">
             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
               When a salt dissolves in water, its ions can react with water — a process called <strong>hydrolysis</strong>.
               Depending on whether the salt came from a strong or weak acid and base, the resulting solution can be neutral,
@@ -513,10 +513,10 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           <SaltHydrolysisGrid />
 
           {/* 1.4.1 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             1.4.1 Hydrolysis of Salts of Strong Acids and Strong Bases
           </h3>
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-3">
               Example: NaCl (from HCl + NaOH). Neither Na⁺ nor Cl⁻ reacts with water, because both are the conjugates of
               strong species. The solution stays <strong>neutral, pH = 7</strong>. No hydrolysis occurs.
@@ -524,15 +524,15 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* 1.4.2 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             1.4.2 Hydrolysis of Salts of Weak Acids and Strong Bases
           </h3>
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-3">
               Example: CH₃COONa (sodium acetate, from CH₃COOH + NaOH). The acetate ion is the conjugate base of a weak acid,
               so it hydrolyses:
             </p>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-3">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-3">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 CH₃COO⁻ + H₂O ⇌ CH₃COOH + OH⁻
               </p>
@@ -543,14 +543,14 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* 1.4.3 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             1.4.3 Hydrolysis of Salts of Strong Acids and Weak Bases
           </h3>
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-3">
               Example: NH₄Cl (from HCl + NH₃). The ammonium ion is the conjugate acid of a weak base, so it hydrolyses:
             </p>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-3">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-3">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 NH₄⁺ + H₂O ⇌ NH₃ + H₃O⁺
               </p>
@@ -561,27 +561,27 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* 1.4.4 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             1.4.4 Hydrolysis of Salts of Weak Acids and Weak Bases
           </h3>
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-3">
               Example: CH₃COONH₄ (ammonium acetate). Both ions hydrolyse, so the final pH depends on which is stronger —
               compare Ka of the weak acid with Kb of the weak base:
             </p>
-            <ul className="space-y-2 ml-6 text-slate-700 dark:text-slate-300">
+            <ul className="space-y-2 ml-3 sm:ml-4 md:ml-6 text-slate-700 dark:text-slate-300">
               <li>• If Ka &gt; Kb → acidic solution</li>
               <li>• If Kb &gt; Ka → basic solution</li>
               <li>• If Ka ≈ Kb → nearly neutral (ammonium acetate is close to neutral because Ka ≈ Kb)</li>
             </ul>
           </div>
 
-          <div className="space-y-6 mb-6">
+          <div className="space-y-6 mb-4 md:mb-6">
             <div className="p-6 border-l-4 border-green-500 bg-white dark:bg-slate-800 rounded-r-lg">
               <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
                 Hydrolysis in Agriculture
               </h4>
-              <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded mb-4">
+              <div className="bg-green-50 dark:bg-green-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-green-900 dark:text-green-300 mb-2">Real-World Example: Treating Acidic Ethiopian Soils</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   Some Ethiopian highland soils are too acidic for teff and wheat. Farmers add wood ash or lime, whose
@@ -594,7 +594,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Key Point Reminder */}
-          <div className="mt-8 p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
+          <div className="mt-6 md:mt-8 p-3 sm:p-4 md:p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🔑 Key Point Reminder</h4>
             <ExerciseQuestion
               question="True or False: A salt formed from a weak acid and a strong base gives a basic solution (pH greater than 7)."
@@ -608,8 +608,8 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Practice Exercise */}
-          <div className="mt-10 p-8 border-t-4 border-purple-600">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Hydrolysis of Salts</h3>
+          <div className="mt-8 md:mt-10 p-4 md:p-8 border-t-4 border-purple-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6">✏️ Practice Exercise: Hydrolysis of Salts</h3>
 
             <div className="space-y-6">
               <ExerciseQuestion
@@ -652,12 +652,12 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
         </section>
 
         {/* ================= SECTION 1.5 ================= */}
-        <section id="subtopic-1.5" className="scroll-mt-8">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-6 border-l-4 border-purple-600 pl-4">
+        <section id="subtopic-1.5" className="scroll-mt-6 md:mt-8">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6 border-l-4 border-purple-600 pl-4">
             1.5. Acid-Base Indicators and Titrations
           </h2>
 
-          <div className="bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-600 p-6 mb-6 rounded-r-lg">
+          <div className="bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-600 p-3 sm:p-4 md:p-6 mb-4 md:mb-6 rounded-r-lg">
             <p className="text-slate-700 dark:text-slate-300 leading-relaxed">
               To use acid–base chemistry in the laboratory we must be able to <strong>see</strong> acidity and
               <strong> measure</strong> it precisely. Indicators let us see pH changes with colour, and titration lets us
@@ -666,15 +666,15 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* 1.5.1 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             1.5.1 Acid-Base Indicators
           </h3>
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               An <strong>indicator</strong> is a weak organic acid or base whose colour changes over a specific pH range.
               Common indicators and their ranges:
             </p>
-            <ul className="space-y-2 ml-6 text-slate-700 dark:text-slate-300">
+            <ul className="space-y-2 ml-3 sm:ml-4 md:ml-6 text-slate-700 dark:text-slate-300">
               <li>• <strong>Litmus:</strong> red below pH ~5, blue above pH ~8</li>
               <li>• <strong>Methyl orange:</strong> red in acid (pH &lt; 3.1), yellow in base (pH &gt; 4.4)</li>
               <li>• <strong>Phenolphthalein:</strong> colourless in acid, pink in base (pH ~8.2–10)</li>
@@ -685,19 +685,19 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* 1.5.2 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             1.5.2 Equivalents of Acids and Bases
           </h3>
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               An <strong>equivalent</strong> measures the reactive capacity of an acid or base:
             </p>
-            <ul className="space-y-2 ml-6 text-slate-700 dark:text-slate-300 mb-4">
+            <ul className="space-y-2 ml-3 sm:ml-4 md:ml-6 text-slate-700 dark:text-slate-300 mb-4">
               <li>• One equivalent of an acid supplies <strong>1 mole of H⁺</strong>.</li>
               <li>• One equivalent of a base supplies <strong>1 mole of OH⁻</strong> (or accepts 1 mole of H⁺).</li>
               <li>• Equivalent weight = molar mass ÷ number of H⁺ (or OH⁻) per formula unit.</li>
             </ul>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 H₂SO₄ supplies 2 H⁺ → equivalent weight = molar mass / 2
               </p>
@@ -705,16 +705,16 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* 1.5.3 */}
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-6 md:mt-8 mb-4">
             1.5.3 Acid-Base Titrations
           </h3>
-          <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-lg mb-6">
+          <div className="bg-slate-50 dark:bg-slate-800 p-3 sm:p-4 md:p-6 rounded-lg mb-4 md:mb-6">
             <p className="text-slate-700 dark:text-slate-300 mb-4">
               In a <strong>titration</strong>, a solution of known concentration (the titrant) is added gradually to a solution
               of unknown concentration until the reaction is complete — the <strong>equivalence point</strong>, signalled by
               the indicator's colour change (the <strong>end point</strong>). At the equivalence point:
             </p>
-            <div className="bg-white dark:bg-slate-900 p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
+            <div className="bg-white dark:bg-slate-900 p-2.5 sm:p-3 md:p-4 rounded border-2 border-purple-300 dark:border-purple-700 mb-4">
               <p className="text-center font-mono text-sm md:text-base text-slate-900 dark:text-white">
                 (Mₐ × Vₐ) / nₐ = (M_b × V_b) / n_b
               </p>
@@ -727,12 +727,12 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
 
           <TitrationCurveDiagram />
 
-          <div className="space-y-6 mb-6">
+          <div className="space-y-6 mb-4 md:mb-6">
             <div className="p-6 border-l-4 border-orange-500 bg-white dark:bg-slate-800 rounded-r-lg">
               <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
                 Indicators and Titration in Practice
               </h4>
-              <div className="bg-orange-50 dark:bg-orange-900/20 p-4 rounded mb-4">
+              <div className="bg-orange-50 dark:bg-orange-900/20 p-2.5 sm:p-3 md:p-4 rounded mb-4">
                 <p className="text-sm font-bold text-orange-900 dark:text-orange-300 mb-2">Real-World Example: Testing Soil and Water in Ethiopia</p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                   Agricultural extension workers test soil and irrigation water acidity before planting. A few drops of a
@@ -745,7 +745,7 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Key Point Reminder */}
-          <div className="mt-8 p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
+          <div className="mt-6 md:mt-8 p-3 sm:p-4 md:p-6 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-600">
             <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-4">🔑 Key Point Reminder</h4>
             <ExerciseQuestion
               question="True or False: At the equivalence point of a titration, the moles of acid equal the moles of base in the correct stoichiometric ratio."
@@ -759,8 +759,8 @@ const Chapter1: React.FC<ChapterProps> = ({ selectedSubtopic, onNavigateChapter 
           </div>
 
           {/* Practice Exercise */}
-          <div className="mt-10 p-8 border-t-4 border-purple-600">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">✏️ Practice Exercise: Indicators and Titrations</h3>
+          <div className="mt-8 md:mt-10 p-4 md:p-8 border-t-4 border-purple-600">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4 md:mb-6">✏️ Practice Exercise: Indicators and Titrations</h3>
 
             <div className="space-y-6">
               <ExerciseQuestion

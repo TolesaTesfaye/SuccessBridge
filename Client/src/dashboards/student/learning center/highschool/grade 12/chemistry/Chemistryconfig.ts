@@ -50,22 +50,31 @@ export const chemistryConfig: SubjectConfig = {
     },
     {
       id: 'chapter3',
-      title: 'Chapter 3: Electrochemistry',
+      title: 'Chapter 3: Industrial Chemistry',
       subtopics: [
-        '3.1. Oxidation-Reduction Reactions',
-        '3.2. Electrochemical Cells',
-        '3.3. Standard Electrode Potentials',
-        '3.4. Applications of Electrochemistry'
+        '3.1. Introduction',
+        '3.2. Natural Resources and Industry',
+        '3.3. Manufacturing of Valuable Products/Chemicals',
+        '3.4. Some Manufacturing Industries in Ethiopia'
       ]
     },
     {
       id: 'chapter4',
-      title: 'Chapter 4: Organic Chemistry',
+      title: 'Chapter 4: Polymers',
       subtopics: [
-        '4.1. Hydrocarbons',
-        '4.2. Functional Groups',
-        '4.3. Isomerism',
-        '4.4. Organic Reactions'
+        '4.1. Introduction to Polymers',
+        '4.2. Polymerization Reactions',
+        '4.3. Classification of Polymers'
+      ]
+    },
+    {
+      id: 'chapter5',
+      title: 'Chapter 5: Introduction to Environmental Chemistry',
+      subtopics: [
+        '5.1. Introduction',
+        '5.2. Environmental Pollution',
+        '5.3. Global Warming and Climate Change',
+        '5.4. Green Chemistry and Cleaner Production'
       ]
     }
   ]
