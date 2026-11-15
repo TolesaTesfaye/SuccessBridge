@@ -70,8 +70,17 @@ self.addEventListener('fetch', (event) => {
         return response;
       })
       .catch(() => {
-        // If network fails, try cache
-        return caches.match(event.request);
+        // Network failed — fall back to cache, then to a valid offline Response.
+        return caches.match(event.request).then((cached) => {
+          if (cached) return cached;
+          // Navigations: serve the cached app shell if we have it
+          if (event.request.mode === "navigate") {
+            return caches.match("/");
+          }
+          // Never resolve with undefined — respondWith throws
+          // "Failed to convert value to 'Response'" otherwise.
+          return new Response("", { status: 504, statusText: "Offline" });
+        });
       })
   );
 });

@@ -153,12 +153,12 @@ const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
       process.env.FRONTEND_URL,
+      "https://success-bridge-ten.vercel.app", // Vercel production frontend
       "http://localhost:3000",
       "http://127.0.0.1:3000",
       "http://localhost:5173",
       "http://127.0.0.1:5173",
-      "https://success-bridge-ten.vercel.app",
-      "http://192.168.0.114:3000/",
+      "http://192.168.0.114:3000",
     ].filter(Boolean);
 
     // In development, allow all localhost/127.0.0.1 origins
