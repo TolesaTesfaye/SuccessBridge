@@ -134,9 +134,15 @@ app.use(compression());
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 500, // Increased limit to 500 requests per windowMs
+  // Generous cap: many students share one public IP (school Wi-Fi / mobile
+  // carrier CGNAT), and dashboards fire request bursts on every load.
+  // Tune from the Render dashboard via RATE_LIMIT_MAX without a redeploy.
+  max: parseInt(process.env.RATE_LIMIT_MAX || "2000", 10),
   standardHeaders: true,
   legacyHeaders: false,
+  // Requests that end in an error (incl. 429s) don't count, so a locked-out
+  // IP's window drains naturally instead of being kept full by traffic.
+  skipFailedRequests: true,
   skip: (req) =>
     req.method === "OPTIONS" ||
     req.originalUrl.startsWith("/api/auth/login") ||
@@ -198,14 +204,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options("/api/*", cors(corsOptions));
 
-// Apply rate limiting to API requests after CORS so preflight responses keep the headers
-app.use("/api/", limiter);
-app.use(express.json({ limit: "10mb" }));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-app.use(passport.initialize());
-app.use(auditMiddleware);
-
-// Apply caching middleware for GET requests (5 minute TTL)
+// Serve repeat GET requests from cache BEFORE rate limiting (5 minute TTL):
+// a cache hit never touches the database, so it shouldn't burn rate-limit
+// budget. Keys are per-user (see generateCacheKey), so this is safe. When
+// Redis is unavailable the cache middleware simply passes through.
 app.use(
   "/api/",
   cacheMiddleware({
@@ -213,6 +215,13 @@ app.use(
     exclude: ["/auth", "/notifications", "/payments", "/user/preferences"],
   }),
 );
+
+// Apply rate limiting to API requests after CORS so preflight responses keep the headers
+app.use("/api/", limiter);
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(passport.initialize());
+app.use(auditMiddleware);
 
 // Setup Swagger documentation (only in development)
 if (process.env.NODE_ENV === "development") {

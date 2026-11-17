@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken";
 import redisClient from "../config/redis.js";
 
 export interface CacheOptions {
@@ -101,7 +102,27 @@ export const withCache = (ttl = DEFAULT_TTL) => {
  * Generate cache key from request path and params
  */
 export const generateCacheKey = (req: any): string => {
-  const userId = req.user?.id || "anonymous";
+  // The global cache middleware runs BEFORE route-level auth, so req.user is
+  // not set yet. Derive the user from the Bearer token instead — otherwise
+  // every user shares one "anonymous" bucket and one user's cached response
+  // (e.g. a superadmin's /api/users list) can be served to another user.
+  let userId = "anonymous";
+  const authHeader = req.headers?.authorization;
+  if (typeof authHeader === "string" && authHeader.startsWith("Bearer ")) {
+    try {
+      const decoded: any = jwt.verify(
+        authHeader.slice("Bearer ".length),
+        process.env.JWT_SECRET || "secret",
+      );
+      if (decoded && typeof decoded.userId === "string") {
+        userId = decoded.userId;
+      }
+    } catch {
+      // Invalid/expired token — fall back to the anonymous bucket. The route's
+      // own auth middleware will reject the request anyway, and only 200
+      // responses are ever cached, so nothing leaks into this bucket.
+    }
+  }
   const path = req.path;
   const params = JSON.stringify(req.query);
   return `${userId}:${path}:${params}`;
