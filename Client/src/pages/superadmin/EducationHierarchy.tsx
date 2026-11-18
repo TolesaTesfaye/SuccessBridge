@@ -9,9 +9,9 @@ import { Modal } from '@components/common/Modal'
 import {
   GraduationCap, School, BookOpen, Building2, Layers,
   ChevronRight, Plus, Edit3, Trash2, ChevronDown,
-  Users, FileText, Search, X, Hash, Sparkles,
-  Globe, MapPin, FolderTree, BookMarked, GraduationCap as GradIcon,
-  ArrowLeft, CheckCircle2, AlertCircle, Loader2
+  FileText, Search, X, Hash, Sparkles,
+  MapPin, FolderTree, BookMarked, GraduationCap as GradIcon,
+  AlertCircle, Loader2
 } from 'lucide-react'
 
 type EducationLevel = 'high_school' | 'university'
@@ -275,22 +275,6 @@ export const EducationHierarchy: React.FC = () => {
   const openAddSubject = () => { setFormData({ gradeId: selectedGrade || '', streamId: selectedStream || '' }); setShowAddSubject(true) }
   const openEditSubject = (subject: any) => { setEditingItem(subject); setFormData({ name: subject.name, code: subject.code }); setShowEditSubject(true) }
 
-  const sidebarItem = (label: string, active: boolean, icon: React.ReactNode, badge?: string | number, onClick?: () => void) => (
-    <button onClick={onClick}
-      className={`w-full flex items-center gap-3 px-4 py-3 text-left text-sm transition-all duration-200 group ${
-        active ? 'bg-gradient-to-r from-purple-50 to-fuchsia-50 dark:from-purple-500/10 dark:to-fuchsia-500/5 border-l-[3px] border-purple-600 shadow-sm' : 'hover:bg-slate-50 dark:hover:bg-white/5 border-l-[3px] border-transparent'
-      }`}
-    >
-      <span className={`shrink-0 transition-colors ${active ? 'text-purple-600' : 'text-slate-400 group-hover:text-purple-500'}`}>{icon}</span>
-      <span className={`font-medium truncate ${active ? 'text-purple-800 dark:text-purple-300' : 'text-slate-700 dark:text-slate-300'}`}>{label}</span>
-      {badge !== undefined && (
-        <span className={`ml-auto text-[11px] font-bold px-2 py-0.5 rounded-full ${
-          active ? 'bg-purple-200 dark:bg-purple-500/30 text-purple-700 dark:text-purple-200' : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
-        }`}>{badge}</span>
-      )}
-    </button>
-  )
-
   const sectionHeader = (icon: React.ReactNode, label: string, onAdd?: () => void) => (
     <div className="flex items-center justify-between px-4 py-2.5 border-b border-slate-100 dark:border-white/5">
       <span className="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 flex items-center gap-2">
@@ -304,23 +288,6 @@ export const EducationHierarchy: React.FC = () => {
         </button>
       )}
     </div>
-  )
-
-  const toggleButton = (label: string, active: boolean, icon: React.ReactNode, onClick: () => void) => (
-    <button onClick={onClick}
-      className={`relative flex items-center gap-2.5 px-5 py-2.5 text-sm font-bold transition-all duration-200 rounded-xl ${
-        active
-          ? 'bg-white dark:bg-slate-800 text-purple-700 dark:text-purple-300 shadow-lg shadow-purple-200/30 dark:shadow-purple-900/20 ring-1 ring-purple-200 dark:ring-purple-800'
-          : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-white/50 dark:hover:bg-slate-800/30'
-      }`}
-    >
-      {icon}
-      {label}
-    </button>
-  )
-
-  const badge = (label: string, color: string) => (
-    <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold rounded-lg ${color}`}>{label}</span>
   )
 
   const content = (

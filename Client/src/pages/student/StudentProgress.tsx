@@ -16,16 +16,12 @@ import {
   Rocket,
   TrendingUp,
   ChevronRight,
-  ArrowUpRight,
   Award,
-  GraduationCap,
   CheckCircle2,
   Circle,
-  BarChart3,
   Calendar,
   Crown,
   Activity,
-  Cpu,
 } from "lucide-react";
 
 // ---------- Interfaces ----------

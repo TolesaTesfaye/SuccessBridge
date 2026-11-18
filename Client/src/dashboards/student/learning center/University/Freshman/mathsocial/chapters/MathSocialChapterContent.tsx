@@ -13,7 +13,6 @@ interface MathSocialChapterContentProps {
 
 export const MathSocialChapterContent: React.FC<MathSocialChapterContentProps> = ({ 
   chapterId, 
-  selectedSubtopic,
   setSelectedMathSocialChapter,
   setSelectedSubtopic
 }) => {

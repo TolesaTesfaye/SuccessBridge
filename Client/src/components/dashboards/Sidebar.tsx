@@ -26,11 +26,13 @@ import { useThemeStore } from "@store/themeStore";
 interface SidebarProps {
   onClose?: () => void;
   collapsed?: boolean;
+  onNavigate?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
   onClose,
   collapsed = false,
+  onNavigate,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -72,6 +74,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const handleNav = (path: string, tab?: string) => {
     if (tab) { navigate(path, { state: { activeTab: tab } }); }
     else { navigate(path); }
+    onNavigate?.();
     if (onClose) onClose();
   };
 
@@ -142,13 +145,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       {/* Navigation Items */}
-      <nav className={`flex-1 overflow-y-auto custom-scrollbar ${isAdmin ? "px-2" : ""}`}>
+      <nav className={`flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar ${isAdmin ? "px-2" : ""}`}>
         {isSuperAdmin ? (
           <>
             {superAdminNavItems.filter(i => i.section === "main").map(item => {
               const itemTab = (item as any).tab
-              const activeTab = (location.state as any)?.activeTab
-              const isActive = itemTab ? (location.pathname === item.path && activeTab === itemTab) : (location.pathname === item.path && !activeTab)
+              const rawTab = (location.state as any)?.activeTab
+              const activeTab = rawTab === "overview" ? undefined : rawTab
+              const isDashboardHome = location.pathname === "/superadmin/dashboard" || location.pathname === "/dashboard"
+              const isActive = item.path === "/superadmin/dashboard"
+                ? isDashboardHome && (itemTab ? activeTab === itemTab : activeTab !== "hierarchy")
+                : location.pathname === item.path
               return <NavButton key={item.label} item={item} isActive={isActive} collapsed={collapsed} onClick={() => handleNav(item.path, itemTab)} />;
             })}
             {!collapsed && (

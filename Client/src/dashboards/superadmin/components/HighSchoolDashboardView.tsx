@@ -12,7 +12,7 @@ export const HighSchoolDashboardView: React.FC = () => {
   const { user } = useAuthStore()
   const userGrade = (user?.highSchoolGrade as Grade) || 'grade_9'
   const userStream = (user?.highSchoolStream as Stream) || null
-  const [activeGrade, setActiveGrade] = useState<Grade>(userGrade)
+  const [activeGrade] = useState<Grade>(userGrade)
   const [selectedStream, setSelectedStream] = useState<Stream | null>(userStream)
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null)
   const [selectedResourceType, setSelectedResourceType] = useState<string | null>(null)

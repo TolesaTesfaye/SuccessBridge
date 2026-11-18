@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Card, CardBody, CardHeader } from "@components/common/Card";
 import { Button } from "@components/common/Button";
-import { Loading } from "@components/common/Loading";
 import { universityService } from "@services/universityService";
 import {
   School,
@@ -9,10 +8,7 @@ import {
   Mail,
   Plus,
   Edit,
-  Sparkles,
-  Building2,
   Globe,
-  Search,
   ExternalLink,
   ShieldCheck,
   Building,
@@ -25,8 +21,7 @@ import {
 export const AdminDashboardUniversities: React.FC = () => {
   const [universities, setUniversities] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -39,11 +34,9 @@ export const AdminDashboardUniversities: React.FC = () => {
   const loadUniversities = async () => {
     try {
       setLoading(true);
-      setError(null);
       const response = await universityService.getUniversities();
       setUniversities(Array.isArray(response.data) ? response.data : []);
-    } catch (err: any) {
-      setError(err?.message || "Failed to load universities.");
+    } catch {
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,3 @@
-import { PSYCHOLOGY_CONTENT } from '../dashboards/student/learning center/University/Freshman/Psychology/psychologyContent'
-import { LOGIC_CONTENT } from '../dashboards/student/learning center/University/Freshman/Logic/logicContent'
-
 export interface Topic {
   id: string
   title: string

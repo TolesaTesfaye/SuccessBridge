@@ -9,24 +9,12 @@ interface OAuthData {
   provider: 'google'
 }
 
-interface University {
-  id: string
-  name: string
-}
-
-interface Department {
-  id: string
-  name: string
-  universityId: string
-}
-
 export const OAuthRegister: React.FC = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const toast = useToast()
   
   const [oauthData, setOAuthData] = useState<OAuthData | null>(null)
-  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     // Get OAuth data from URL params
@@ -141,7 +129,6 @@ export const OAuthRegister: React.FC = () => {
             {/* Next Button */}
             <button
               onClick={handleContinue}
-              disabled={loading}
               className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium transition-all shadow-lg mt-6"
             >
               Next: Complete Profile →

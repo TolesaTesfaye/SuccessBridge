@@ -28,14 +28,12 @@ export const AdminDashboardResources: React.FC = () => {
   const [resources, setResources] = useState<Resource[]>([]);
   const [resourceStats, setResourceStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const loadResources = async () => {
     try {
       setLoading(true);
-      setError(null);
       const response = await resourceService.getResources({
         page: currentPage,
         limit: 8,
@@ -51,9 +49,8 @@ export const AdminDashboardResources: React.FC = () => {
           ? Math.max(1, Math.ceil(payload.total / payload.limit))
           : 1,
       );
-    } catch (err: any) {
+    } catch {
       setResources([]);
-      setError(err?.message || "Failed to load resources.");
     } finally {
       setLoading(false);
     }

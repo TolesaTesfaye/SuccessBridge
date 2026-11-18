@@ -4,6 +4,7 @@ import {
   Search,
   Edit,
   Trash2,
+  Eye,
   CheckCircle,
   XCircle,
   Loader2,
@@ -26,6 +27,7 @@ export const UsersTab: React.FC<{ toast: any }> = ({ toast }) => {
   const [roleFilter, setRoleFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [editing, setEditing] = useState<User | null>(null);
+  const [viewing, setViewing] = useState<User | null>(null);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -77,6 +79,20 @@ export const UsersTab: React.FC<{ toast: any }> = ({ toast }) => {
     student: "bg-blue-100 text-blue-700",
     admin: "bg-purple-100 text-purple-700",
     super_admin: "bg-red-100 text-red-700",
+  };
+
+  const getLevel = (user: User): string | null => {
+    if (user.studentType === "university") {
+      return user.universityLevel
+        ? user.universityLevel.replace("_", " ")
+        : null;
+    }
+    if (user.studentType === "high_school") {
+      return user.highSchoolGrade
+        ? user.highSchoolGrade.replace("grade_", "Grade ")
+        : null;
+    }
+    return null;
   };
 
   return (
@@ -146,13 +162,13 @@ export const UsersTab: React.FC<{ toast: any }> = ({ toast }) => {
                       User
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-400 uppercase">
+                      Type
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-400 uppercase">
+                      Level
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-400 uppercase">
                       Role
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-400 uppercase">
-                      Status
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-400 uppercase">
-                      Email Verified
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-400 uppercase">
                       Joined
@@ -177,6 +193,34 @@ export const UsersTab: React.FC<{ toast: any }> = ({ toast }) => {
                         </div>
                       </td>
                       <td className="px-4 py-3">
+                        {user.role === "student" ? (
+                          <StyledBadge
+                            className={
+                              user.studentType === "university"
+                                ? "bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300"
+                                : user.studentType === "high_school"
+                                  ? "bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300"
+                                  : "bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-slate-300"
+                            }
+                          >
+                            {user.studentType === "university"
+                              ? "🎓 University"
+                              : user.studentType === "high_school"
+                                ? "🏫 High School"
+                                : "—"}
+                          </StyledBadge>
+                        ) : (
+                          <span className="text-sm text-gray-400">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="text-sm font-medium text-gray-700 dark:text-slate-300">
+                          {user.role === "student"
+                            ? getLevel(user) || "N/A"
+                            : "—"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
                         <StyledBadge
                           className={
                             roleColors[user.role] || "bg-gray-100 text-gray-600"
@@ -185,31 +229,18 @@ export const UsersTab: React.FC<{ toast: any }> = ({ toast }) => {
                           {user.role.replace("_", " ")}
                         </StyledBadge>
                       </td>
-                      <td className="px-4 py-3">
-                        <StyledBadge
-                          className={
-                            user.approvalStatus === "approved"
-                              ? "bg-green-100 text-green-700"
-                              : user.approvalStatus === "pending"
-                                ? "bg-yellow-100 text-yellow-700"
-                                : "bg-red-100 text-red-700"
-                          }
-                        >
-                          {user.approvalStatus || "Unknown"}
-                        </StyledBadge>
-                      </td>
-                      <td className="px-4 py-3">
-                        {user.isEmailVerified ? (
-                          <CheckCircle size={16} className="text-green-500" />
-                        ) : (
-                          <XCircle size={16} className="text-gray-400" />
-                        )}
-                      </td>
                       <td className="px-4 py-3 text-sm text-gray-500">
                         {new Date(user.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-4 py-3 text-right">
                         <div className="flex items-center justify-end gap-2">
+                          <StyledBtn
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setViewing(user)}
+                          >
+                            <Eye size={14} />
+                          </StyledBtn>
                           <StyledBtn
                             size="sm"
                             variant="ghost"
@@ -320,6 +351,97 @@ export const UsersTab: React.FC<{ toast: any }> = ({ toast }) => {
                 }}
               >
                 Save Changes
+              </StyledBtn>
+            </div>
+          </div>
+        )}
+      </StyledModal>
+
+      {/* Details Modal */}
+      <StyledModal
+        isOpen={!!viewing}
+        onClose={() => setViewing(null)}
+        title="User Details"
+        size="md"
+      >
+        {viewing && (
+          <div className="space-y-5">
+            <div className="flex items-center gap-4 p-4 rounded-xl bg-gray-50 dark:bg-slate-700/30 border border-gray-100 dark:border-slate-700/40">
+              <div className="w-14 h-14 rounded-full bg-white dark:bg-slate-700 flex items-center justify-center text-2xl shrink-0">
+                {viewing.role !== "student"
+                  ? "👨‍💼"
+                  : viewing.studentType === "university"
+                    ? "🎓"
+                    : viewing.studentType === "high_school"
+                      ? "🏫"
+                      : "🎓"}
+              </div>
+              <div className="min-w-0">
+                <p className="font-semibold text-gray-900 dark:text-white truncate">
+                  {viewing.name}
+                </p>
+                <p className="text-sm text-gray-500 dark:text-slate-400 truncate">
+                  {viewing.email}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 rounded-xl border border-gray-100 dark:border-slate-700/40">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
+                  Role
+                </p>
+                <p className="text-sm font-medium text-gray-800 dark:text-white capitalize">
+                  {viewing.role.replace("_", " ")}
+                </p>
+              </div>
+              <div className="p-3 rounded-xl border border-gray-100 dark:border-slate-700/40">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
+                  Status
+                </p>
+                <StyledBadge
+                  className={
+                    viewing.approvalStatus === "approved"
+                      ? "bg-green-100 text-green-700"
+                      : viewing.approvalStatus === "pending"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-red-100 text-red-700"
+                  }
+                >
+                  {viewing.approvalStatus || "Unknown"}
+                </StyledBadge>
+              </div>
+              <div className="p-3 rounded-xl border border-gray-100 dark:border-slate-700/40">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
+                  Email Verified
+                </p>
+                <p className="flex items-center gap-1.5 text-sm font-medium text-gray-800 dark:text-white">
+                  {viewing.isEmailVerified ? (
+                    <>
+                      <CheckCircle size={15} className="text-green-500" />
+                      Verified
+                    </>
+                  ) : (
+                    <>
+                      <XCircle size={15} className="text-gray-400" />
+                      Not verified
+                    </>
+                  )}
+                </p>
+              </div>
+              <div className="p-3 rounded-xl border border-gray-100 dark:border-slate-700/40">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1">
+                  Joined
+                </p>
+                <p className="text-sm font-medium text-gray-800 dark:text-white">
+                  {new Date(viewing.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <StyledBtn variant="secondary" onClick={() => setViewing(null)}>
+                Close
               </StyledBtn>
             </div>
           </div>

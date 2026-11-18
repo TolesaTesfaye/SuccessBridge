@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
   BookOpen,
@@ -10,11 +10,8 @@ import {
   GraduationCap,
   Globe2,
   Lightbulb,
-  Award,
   TrendingUp,
-  Clock,
   Target,
-  Zap,
   Star,
   ArrowRight,
 } from "lucide-react";
@@ -40,16 +37,6 @@ const VideoPlayer: React.FC = () => {
 
 export const Home: React.FC = () => {
   const navigate = useNavigate();
-  const [activeFeature, setActiveFeature] = useState(0);
-
-  // Auto-rotate features
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveFeature((prev) => (prev + 1) % 3);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
-
   const stats = [
     { value: "10,000+", label: "Active Students", icon: Users },
     { value: "500+", label: "Study Resources", icon: BookOpen },

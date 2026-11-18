@@ -14,7 +14,7 @@ type Stream = 'natural' | 'social' | null;
  * 1. Component-based subjects (from grade-specific registries)
  * 2. Data-driven subjects (from constants)
  */
-export const getAvailableSubjects = (grade: Grade, stream: Stream): string[] => {
+export const getAvailableSubjects = (grade: Grade, _stream: Stream): string[] => {
   // For Grade 9 and 10 (no streams)
   if (grade === 'grade_9' || grade === 'grade_10') {
     return HIGH_SCHOOL.GRADES_9_10.subjects;

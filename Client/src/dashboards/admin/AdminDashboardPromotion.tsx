@@ -11,7 +11,6 @@ import {
   BookOpen,
   Youtube,
   Twitter,
-  Sparkles,
   Award,
   Users,
   Rocket,

@@ -100,8 +100,8 @@ export const SUBJECT_PRICES = {
  */
 export const getSubjectId = (
   subjectName: string,
-  educationLevel: 'high_school' | 'university',
-  grade?: string
+  _educationLevel: 'high_school' | 'university',
+  _grade?: string
 ): string | null => {
   const normalizedName = subjectName.toLowerCase().replace(/\s+/g, '_')
 

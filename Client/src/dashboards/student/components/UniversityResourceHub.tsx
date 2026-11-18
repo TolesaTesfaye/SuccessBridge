@@ -37,11 +37,9 @@ export const UniversityResourceHub: React.FC<UniversityResourceHubProps> = ({
   subjects,
   loading,
   resources,
-  activeCategory,
   onRefresh,
 }) => {
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [showFilters, setShowFilters] = React.useState(false);
 
   const filteredResources = React.useMemo(() => {
     if (!searchQuery.trim()) return resources;
@@ -54,13 +52,6 @@ export const UniversityResourceHub: React.FC<UniversityResourceHubProps> = ({
         resource.tags?.some((tag: string) => tag.toLowerCase().includes(query)),
     );
   }, [resources, searchQuery]);
-
-  const activeFiltersCount = [
-    selectedUniversity,
-    selectedStream,
-    selectedResourceType,
-    selectedSubject,
-  ].filter(Boolean).length;
 
   return (
     <div className="w-full">

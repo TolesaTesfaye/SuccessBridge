@@ -35,7 +35,6 @@ export const HighSchoolResourceHub: React.FC<HighSchoolResourceHubProps> = ({
   onRefresh,
 }) => {
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [showFilters, setShowFilters] = React.useState(false);
 
   const filteredResources = React.useMemo(() => {
     if (!searchQuery.trim()) return resources;
@@ -48,12 +47,6 @@ export const HighSchoolResourceHub: React.FC<HighSchoolResourceHubProps> = ({
         resource.tags?.some((tag: string) => tag.toLowerCase().includes(query)),
     );
   }, [resources, searchQuery]);
-
-  const activeFiltersCount = [
-    selectedStream,
-    selectedSubject,
-    selectedResourceType,
-  ].filter(Boolean).length;
 
   return (
     <div className="w-full">

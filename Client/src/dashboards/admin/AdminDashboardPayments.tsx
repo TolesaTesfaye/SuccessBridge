@@ -4,7 +4,6 @@ import { useToast } from '@components/common/Toast'
 import { Pagination } from '@components/common/Pagination'
 import { Button } from '@components/common/Button'
 import { FormSelect } from '@components/forms/FormSelect'
-import { Card, CardBody } from '@components/common/Card'
 import {
   CreditCard,
   CheckCircle,

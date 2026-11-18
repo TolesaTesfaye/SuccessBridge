@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Card, CardBody, CardHeader } from '@components/common/Card'
+import { Card, CardBody } from '@components/common/Card'
 import { Button } from '@components/common/Button'
 import { 
   Users, 
@@ -203,7 +203,7 @@ export const ApprovalsTab: React.FC = () => {
           
           {loading && (
             <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400 mx-auto"></div>
               <p className="text-slate-600 dark:text-slate-400 mt-2">Loading requests...</p>
             </div>
           )}

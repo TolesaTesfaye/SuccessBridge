@@ -4,7 +4,6 @@ import { Button } from "@components/common/Button";
 import { analyticsService, AnalyticsData } from "@services/analyticsService";
 import {
   TrendingUp,
-  TrendingDown,
   Users,
   FileText,
   GraduationCap,
@@ -12,8 +11,6 @@ import {
   Globe,
   Zap,
   BarChart3,
-  Calendar,
-  ChevronDown,
   ArrowUpRight,
   ArrowDownRight,
   Clock,

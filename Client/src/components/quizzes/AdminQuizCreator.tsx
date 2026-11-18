@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useMemo, ChangeEvent } from "react";
-import { Card, CardBody, CardHeader } from "@components/common/Card";
+import React, { useState, useEffect, useMemo } from "react";
 import { Button } from "@components/common/Button";
-import { Input, Textarea, Label, Badge, Progress, Slider, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Collapsible, CollapsibleContent, CollapsibleTrigger, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@components/common";
+import { Input, Textarea, Label, Badge, Progress, Slider, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Collapsible, CollapsibleContent, CollapsibleTrigger } from "@components/common";
 import { cn } from "@/lib/utils";
 import { quizService, Quiz } from "@services/quizService";
 import { subjectService } from "@services/subjectService";
 import type { Subject } from "@types";
-import { Plus, Trash2, Save, X, ChevronDown, BookOpen, Clock, Target, Layers, Trophy, Hash, Pencil, ListChecks, AlignLeft, FileText, Settings2, CheckCircle2, Circle, GraduationCap, Search } from "lucide-react";
+import { Plus, Trash2, Save, X, ChevronDown, BookOpen, Clock, Target, Layers, Trophy, Hash, Pencil, ListChecks, AlignLeft, FileText, Settings2, CheckCircle2, Circle, GraduationCap } from "lucide-react";
 import { UNIVERSITIES, UNIVERSITY_CATEGORIES } from "@utils/constants";
 import { useAuth } from "@hooks/useAuth";
 

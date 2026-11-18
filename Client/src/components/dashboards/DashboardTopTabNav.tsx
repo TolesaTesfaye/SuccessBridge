@@ -73,7 +73,7 @@ export const DashboardTopTabNav: React.FC<DashboardTopTabNavProps> = ({
               type="button"
               onClick={() => handleClick(tab.id)}
               aria-current={isActive ? "page" : undefined}
-              className={`group relative inline-flex h-11 md:h-12 ${fill ? "shrink-0 min-w-[88px] md:min-w-0 md:shrink md:flex-1 md:basis-0 md:justify-center text-center overflow-hidden" : "shrink-0"} items-center gap-1.5 md:gap-2 whitespace-nowrap border-b-2 px-2 md:px-4 text-left text-xs md:text-sm font-semibold leading-none transition-all duration-300 ${
+              className={`group relative inline-flex h-11 md:h-12 ${fill ? "shrink-0 min-w-[88px] md:min-w-[112px] md:grow md:justify-center text-center overflow-hidden" : "shrink-0"} items-center gap-1.5 md:gap-2 whitespace-nowrap border-b-2 px-2 md:px-4 text-left text-xs md:text-sm font-semibold leading-none transition-all duration-300 ${
                 isActive
                   ? `${accentClass.active} -mb-0.5 bg-gray-50 shadow-sm dark:bg-slate-800/80`
                   : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"

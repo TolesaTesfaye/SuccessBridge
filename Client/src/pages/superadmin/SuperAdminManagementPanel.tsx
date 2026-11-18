@@ -3,7 +3,7 @@ import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { DashboardTopTabNav } from "@components/dashboards/DashboardTopTabNav";
 import { useToast } from "@components/common/Toast";
 import { OverviewTab } from "./management/OverviewTab";
-import { UsersTab } from "./management/UsersTab";
+import { SuperAdminAnalytics } from "./SuperAdminAnalytics";
 import { ContentTab } from "./management/ContentTab";
 import { AnnouncementsTab } from "./management/AnnouncementsTab";
 import { PermissionsTab } from "./management/PermissionsTab";
@@ -15,7 +15,7 @@ import { UniversitiesTab } from "./management/UniversitiesTab";
 
 type TabType =
   | "overview"
-  | "users"
+  | "analytics"
   | "content"
   | "announcements"
   | "permissions"
@@ -27,7 +27,7 @@ type TabType =
 
 const TABS: { id: TabType; label: string }[] = [
   { id: "overview", label: "Overview" },
-  { id: "users", label: "Users" },
+  { id: "analytics", label: "Analytics" },
   { id: "content", label: "Content" },
   { id: "announcements", label: "Announcements" },
   { id: "permissions", label: "Permissions" },
@@ -58,7 +58,7 @@ export const SuperAdminManagementPanel: React.FC = () => {
 
         <div className="animate-fadeIn">
           {activeTab === "overview" && <OverviewTab toast={toast} />}
-          {activeTab === "users" && <UsersTab toast={toast} />}
+          {activeTab === "analytics" && <SuperAdminAnalytics embedded />}
           {activeTab === "content" && <ContentTab toast={toast} />}
           {activeTab === "announcements" && <AnnouncementsTab toast={toast} />}
           {activeTab === "permissions" && <PermissionsTab toast={toast} />}

@@ -14,7 +14,6 @@ export const SecurityHeadersPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const toast = useToast();
-  const [loading, setLoading] = useState(true);
   const [headersData, setHeadersData] = useState<any>({
     headers: {},
     overallStatus: "secure",
@@ -33,14 +32,11 @@ export const SecurityHeadersPage: React.FC = () => {
 
   const fetchHeaders = async () => {
     try {
-      setLoading(true);
       const data = await adminSecurityService.getSecurityHeaders();
       setHeadersData(data);
     } catch (error) {
       console.error("Failed to fetch security headers:", error);
       toast.error("Failed to load security headers");
-    } finally {
-      setLoading(false);
     }
   };
 

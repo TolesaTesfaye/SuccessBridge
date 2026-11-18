@@ -393,27 +393,6 @@ export const ResourceUploadForm: React.FC<ResourceUploadFormProps> = ({
 
   const selectedTypeName = resourceTypes.find((r) => r.id === formData.type)?.name || "";
 
-  const getTargetStudentInfo = () => {
-    if (formData.educationLevel === "high_school") {
-      const selectedGrade = grades.find((g) => g.id === formData.grade);
-      if (!selectedGrade) return "";
-      let info = `High School - ${selectedGrade.name}`;
-      if (formData.stream) {
-        const streamData = streams.find((s) => s.id === formData.stream);
-        if (streamData) info += ` (${streamData.name})`;
-      }
-      return info;
-    }
-
-    const selectedUni = universities.find((u) => u.id === formData.universityId);
-    let info = `University - ${selectedUni?.name || formData.universityId}`;
-    if (formData.category) {
-      const selectedGrade = grades.find((g) => g.id === formData.grade);
-      info += ` - ${selectedGrade?.name || formData.category}`;
-    }
-    return info;
-  };
-
   const selectedGrade = grades.find((g) => g.id === formData.grade);
   const isHighSchoolStreamRequired = (() => {
     if (formData.educationLevel !== "high_school") return false;

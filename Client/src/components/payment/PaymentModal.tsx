@@ -2,8 +2,6 @@ import React, { useState } from 'react'
 import { Modal } from '@components/common/Modal'
 import { Button } from '@components/common/Button'
 import { FormInput } from '@components/forms/FormInput'
-import { FormSelect } from '@components/forms/FormSelect'
-import { FormTextarea } from '@components/forms/FormTextarea'
 import { paymentService, CreatePaymentData } from '@services/paymentService'
 import { useToast } from '@components/common/Toast'
 import { Upload, CreditCard, Loader, Copy, Check, CheckCircle, Smartphone, Building2, AlertTriangle } from 'lucide-react'
@@ -25,7 +23,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   isOpen,
   onClose,
   subjectId,
-  subjectName,
   educationLevel,
   grade,
   stream,
@@ -38,7 +35,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const [screenshot, setScreenshot] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [copiedAccount, setCopiedAccount] = useState<string | null>(null)
-  const [expandedCard, setExpandedCard] = useState<string | null>(null)
   const [errors, setErrors] = useState<{
     amount?: string
     screenshot?: string
@@ -206,14 +202,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     }
   }
 
-  const paymentMethods = [
-    { value: 'bank_transfer', label: 'Bank Transfer' },
-    { value: 'telebirr', label: 'TeleBirr' },
-    { value: 'cbe_birr', label: 'CBE Birr' },
-    { value: 'mpesa', label: 'M-Pesa' },
-    { value: 'other', label: 'Other' },
-  ]
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
@@ -349,7 +337,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       setPreviewUrl(null)
       setErrors({})
       setCopiedAccount(null)
-      setExpandedCard(null)
       onClose()
     }
   }
@@ -393,7 +380,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             {paymentAccounts.map((account) => {
               const Icon = account.icon
               const isCopied = copiedAccount === account.id
-              const isExpanded = expandedCard === account.id
               
               return (
                 <div

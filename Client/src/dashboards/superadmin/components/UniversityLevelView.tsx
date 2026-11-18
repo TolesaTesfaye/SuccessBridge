@@ -270,7 +270,7 @@ export const UniversityLevelView: React.FC<UniversityLevelViewProps> = ({
         <CardBody>
           {loading ? (
             <div className="text-center py-12">
-              <div className="animate-spin w-8 h-8 border-4 border-indigo-600/20 border-t-indigo-600 rounded-full mx-auto mb-4"></div>
+              <div className="animate-spin w-8 h-8 border-4 border-indigo-600/20 dark:border-indigo-400/20 border-t-indigo-600 dark:border-t-indigo-400 rounded-full mx-auto mb-4"></div>
               <p className="text-slate-600 dark:text-slate-400">
                 Loading resources...
               </p>

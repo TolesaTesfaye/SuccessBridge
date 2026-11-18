@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { getSubjectConfig as getFreshmanSubjectConfig } from "@learningCenter/University/Freshman/subjectRegistry";
-import { getSubjectConfig as getSeniorSubjectConfig } from "@learningCenter/University/Senior/subjectRegistry";
 import { getSubjectConfig as getRemedialSubjectConfig } from "@learningCenter/University/Remedial/subjectRegistry";
 import { SubjectChapterSidebar } from "./SubjectChapterSidebar";
 import { SubjectChapterRenderer } from "./SubjectChapterRenderer";
@@ -23,7 +22,6 @@ export const UniversityLearningCenter: React.FC<
   subjects,
   learningSubject,
   setLearningSubject,
-  setActiveTab,
   initialChapterId,
   category = "freshman",
 }) => {

@@ -3,7 +3,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { authService } from "@services/authService";
 import { FormInput } from "@components/forms/FormInput";
-import { FormSelect } from "@components/forms/FormSelect";
 import { AppLogo } from "@components/common/AppLogo";
 import { ThemeToggle } from "@components/common/ThemeToggle";
 import { Spinner } from "@components/common/Spinner";
@@ -14,7 +13,6 @@ import {
   ArrowRight,
   GraduationCap,
   School,
-  AlertTriangle,
 } from "lucide-react";
 
 type StudentType = "high_school" | "university" | null;
@@ -36,70 +34,6 @@ interface FormDataType {
 }
 
 import { UNIVERSITIES } from "@utils/constants";
-
-const DEPARTMENTS: Record<string, string[]> = {
-  Health: [
-    "Medicine",
-    "Nursing",
-    "Pharmacy",
-    "Public Health",
-    "Midwifery",
-    "Medical Laboratory Science",
-    "Anesthesia",
-  ],
-  Engineering: [
-    "Civil Engineering",
-    "Mechanical Engineering",
-    "Electrical Engineering",
-    "Software Engineering",
-    "Computer Science",
-    "Information Technology",
-    "Chemical Engineering",
-    "Industrial Engineering",
-  ],
-  Agriculture: [
-    "Agricultural Economics",
-    "Plant Science",
-    "Animal Science",
-    "Natural Resource Management",
-    "Forestry",
-    "Agricultural Engineering",
-  ],
-  Business: [
-    "Accounting",
-    "Management",
-    "Marketing",
-    "Economics",
-    "Finance",
-    "Business Administration",
-  ],
-  "Social Sciences": [
-    "Law",
-    "Political Science",
-    "Sociology",
-    "International Relations",
-    "Psychology",
-    "Social Work",
-  ],
-  Education: [
-    "Education Planning & Management",
-    "Curriculum Studies",
-    "Educational Psychology",
-    "Special Needs Education",
-  ],
-  "Natural Science": [
-    "Mathematics",
-    "Physics",
-    "Chemistry",
-    "Biology",
-    "Statistics",
-  ],
-  Architecture: [
-    "Architecture",
-    "Urban & Regional Planning",
-    "Construction Technology & Management",
-  ],
-};
 
 export const Register: React.FC = () => {
   const navigate = useNavigate();

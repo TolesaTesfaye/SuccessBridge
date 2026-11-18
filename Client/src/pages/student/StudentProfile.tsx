@@ -1,4 +1,3 @@
-import React from 'react'
 import { DashboardLayout } from '@components/dashboards/DashboardLayout'
 import { useAuthStore } from '@store/authStore'
 import {
@@ -11,14 +10,11 @@ import {
   Building2,
   GraduationCap,
   Sparkles,
-  ChevronRight,
-  Trophy,
   Star,
   User,
   Activity,
   Code,
   Lightbulb,
-  Gamepad2,
   CheckCircle2,
 } from 'lucide-react'
 

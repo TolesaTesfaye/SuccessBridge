@@ -1,9 +1,8 @@
 import React from 'react'
 import { type Resource } from '@types'
-import { Button } from '@components/common/Button'
 import { Pagination } from '@components/common/Pagination'
 import { Loading } from '@components/common/Loading'
-import { Eye, Edit2, Trash2, File, BookOpen, FileText } from 'lucide-react'
+import { Eye, Edit2, Trash2 } from 'lucide-react'
 
 interface ResourceListProps {
   resources: Resource[]
@@ -88,7 +87,7 @@ export const ResourceList: React.FC<ResourceListProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-700/50">
-              {resources.map((resource, idx) => (
+              {resources.map((resource) => (
                 <tr key={resource.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-200">
                   {/* Resource Title & Description */}
                   <td className="px-6 py-5">

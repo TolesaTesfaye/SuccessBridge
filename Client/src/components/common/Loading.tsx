@@ -12,7 +12,7 @@ export const Loading: React.FC<LoadingProps> = ({ fullScreen = false, message = 
         fullScreen ? 'fixed inset-0 bg-white dark:bg-gray-900 bg-opacity-90 z-50' : ''
       }`}
     >
-      <div className="w-10 h-10 border-4 border-gray-200 dark:border-gray-700 border-t-blue-500 rounded-full animate-spin"></div>
+      <div className="w-10 h-10 border-4 border-gray-200 dark:border-gray-700 border-t-blue-500 dark:border-t-blue-400 rounded-full animate-spin"></div>
       <p className="text-gray-600 dark:text-gray-400 text-sm">{message}</p>
     </div>
   )

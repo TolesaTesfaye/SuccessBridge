@@ -5,10 +5,12 @@ import NotificationDropdown from './NotificationDropdown'
 
 interface NotificationBellProps {
   dropdownPlacement?: 'below' | 'top'
+  onDark?: boolean
 }
 
 const NotificationBell: React.FC<NotificationBellProps> = ({
   dropdownPlacement = 'below',
+  onDark = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -78,7 +80,11 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
       <button
         ref={buttonRef}
         onClick={toggleDropdown}
-        className="relative p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className={`relative p-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+          onDark
+            ? 'text-slate-300 hover:bg-white/10 hover:text-white'
+            : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+        }`}
         aria-label="Notifications"
       >
         {/* Bell Icon */}

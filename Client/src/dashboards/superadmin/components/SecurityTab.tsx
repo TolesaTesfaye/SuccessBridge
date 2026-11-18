@@ -92,7 +92,7 @@ export const SecurityTab: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-purple-600 rounded-full"></div>
+        <div className="animate-spin inline-block w-8 h-8 border-4 border-current border-t-transparent text-purple-600 dark:text-purple-400 rounded-full"></div>
       </div>
     );
   }

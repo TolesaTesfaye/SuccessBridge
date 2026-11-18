@@ -64,13 +64,6 @@ export const SecurityAlertsPage: React.FC = () => {
     }
   };
 
-  const severityColors: Record<string, string> = {
-    critical: "bg-red-50 border-red-400",
-    high: "bg-orange-50 border-orange-400",
-    medium: "bg-yellow-50 border-yellow-400",
-    low: "bg-blue-50 border-blue-400",
-  };
-
   const severityBadgeColors: Record<string, string> = {
     critical: "bg-red-600",
     high: "bg-orange-600",

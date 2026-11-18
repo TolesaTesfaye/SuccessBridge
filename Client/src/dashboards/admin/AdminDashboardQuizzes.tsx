@@ -5,9 +5,7 @@ type QuizTabProps = {
   onNavigateToTab: (tab: string) => void;
 };
 
-export const AdminDashboardQuizzes: React.FC<QuizTabProps> = ({
-  onNavigateToTab,
-}) => {
+export const AdminDashboardQuizzes: React.FC<QuizTabProps> = () => {
   return (
     <AdminQuizCreator
       onClose={() => {}}

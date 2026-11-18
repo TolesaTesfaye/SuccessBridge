@@ -36,7 +36,7 @@ html.dark {
 }
 
 html {
-  background-color: #f8fafc;
+  background-color: #d6e7ff;
   color-scheme: light;
   scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
@@ -44,19 +44,19 @@ html {
 }
 
 html.dark {
-  background-color: #020617;
+  background-color: #0b1428;
   color-scheme: dark;
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: #f8fafc;
+  background-color: #d6e7ff;
   overflow-x: hidden;
   @apply transition-colors duration-300;
 }
 
 html.dark body {
-  background-color: #020617;
+  background-color: #0b1428;
 }
 
 #root {

@@ -4,7 +4,6 @@ import {
   Users,
   GraduationCap,
   BookOpen,
-  Hourglass,
   ArrowUpRight,
   BarChart3,
   Zap,
@@ -25,7 +24,7 @@ import {
 } from "recharts";
 import { userService } from "@services/userService";
 import { resourceService } from "@services/resourceService";
-import api from "@services/api";
+
 
 interface OverviewTabProps {
   stats: {
@@ -221,9 +220,6 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
   const [recentUsers, setRecentUsers] = useState<any[]>([]);
   const [allUsers, setAllUsers] = useState<any[]>([]);
   const [resourcesByType, setResourcesByType] = useState<Record<string, number>>({});
-  const [pendingApprovals, setPendingApprovals] = useState(
-    stats.pendingApprovals ?? 0,
-  );
   const [telegramUsers, setTelegramUsers] = useState(0);
   const [loading, setLoading] = useState(true);
   const [chartRange, setChartRange] = useState<ChartRange>("7D");
@@ -239,10 +235,9 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
   useEffect(() => {
     const fetchActivityData = async () => {
       try {
-        const [usersRes, resourcesRes, approvalsRes] = await Promise.all([
+        const [usersRes, resourcesRes] = await Promise.all([
           userService.getAllUsers(),
           resourceService.getResources({ limit: 1000 }),
-          api.get("/auth/admin-requests").catch(() => ({ data: { requests: [] } })),
         ]);
 
         const users = Array.isArray(usersRes) ? usersRes : usersRes.data || [];
@@ -270,11 +265,6 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
           typeCount[type] = (typeCount[type] || 0) + 1;
         });
         setResourcesByType(typeCount);
-
-        const requests = approvalsRes?.data?.requests || [];
-        setPendingApprovals(
-          requests.filter((r: any) => r.status === "pending").length,
-        );
       } catch (error) {
         console.error("Failed to fetch activity data:", error);
       } finally {
@@ -386,7 +376,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
           <div className="h-64 md:h-72 w-full">
             {loading ? (
               <div className="flex h-full items-center justify-center">
-                <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+                <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-blue-600 dark:border-blue-400 border-t-transparent" />
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
@@ -467,7 +457,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
 
           {loading ? (
             <div className="flex h-64 items-center justify-center">
-              <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-purple-600 border-t-transparent" />
+              <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-purple-600 dark:border-purple-400 border-t-transparent" />
             </div>
           ) : resourceData.length === 0 ? (
             <div className="flex h-64 items-center justify-center text-sm text-slate-400">
@@ -555,7 +545,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
 
         {loading ? (
           <div className="flex justify-center py-10">
-            <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+            <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-blue-600 dark:border-blue-400 border-t-transparent" />
           </div>
         ) : activityItems.length === 0 ? (
           <div className="py-10 text-center text-sm text-slate-400">
@@ -596,10 +586,6 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
           </div>
         )}
       </section>
-
-      <footer className="pt-2 text-center text-xs text-slate-400 dark:text-[#7f91ad]">
-        © {new Date().getFullYear()} SuccessBridge. All rights reserved.
-      </footer>
     </div>
   );
 };

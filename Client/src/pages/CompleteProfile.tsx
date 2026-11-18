@@ -19,7 +19,7 @@ interface University {
 export const CompleteProfile: React.FC = () => {
   const navigate = useNavigate()
   const toast = useToast()
-  const { setToken, setUser, initialize } = useAuthStore()
+  const { setToken, setUser } = useAuthStore()
   const [currentStep, setCurrentStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [universities, setUniversities] = useState<University[]>([])

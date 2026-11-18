@@ -28,7 +28,7 @@ export const HighSchoolDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"home" | "learning" | "hub">(
     requestedTab ?? "home",
   );
-  const [activeGrade, setActiveGrade] = useState<Grade>(userGrade);
+  const [activeGrade] = useState<Grade>(userGrade);
   const [selectedStream, setSelectedStream] = useState<Stream | null>(
     userStream,
   );

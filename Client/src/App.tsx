@@ -7,7 +7,6 @@ import {
 } from "react-router-dom";
 import { useAuthStore } from "@store/authStore";
 import { Layout } from "@components/Layout";
-import { LoadingOverlay } from "@components/common/Spinner";
 import { PerformanceMonitor } from "@components/common/PerformanceMonitor";
 import { ToastProvider, useToast } from "@components/common/Toast";
 import { useApiErrorHandler } from "@utils/apiErrorHandler";
@@ -54,11 +53,6 @@ const SuperAdminDashboard = lazy(() =>
 const StudentResources = lazy(() =>
   import("@pages/student/StudentResources").then((m) => ({
     default: m.StudentResources,
-  })),
-);
-const StudentAICompanion = lazy(() =>
-  import("@pages/student/StudentAICompanion").then((m) => ({
-    default: m.StudentAICompanion,
   })),
 );
 const StudentQuizzes = lazy(() =>
@@ -184,22 +178,6 @@ const SecurityHeadersPage = lazy(() =>
 );
 
 // Lazy load super admin pages
-const SuperAdminResources = lazy(() =>
-  import("@pages/superadmin/SuperAdminResources").then((m) => ({
-    default: m.SuperAdminResources,
-  })),
-);
-// DEPRECATED: Admin approval process removed
-// const SuperAdminApprovals = lazy(() =>
-//   import("@pages/superadmin/SuperAdminApprovals").then((m) => ({
-//     default: m.SuperAdminApprovals,
-//   })),
-// );
-const SuperAdminUniversities = lazy(() =>
-  import("@pages/superadmin/SuperAdminUniversities").then((m) => ({
-    default: m.SuperAdminUniversities,
-  })),
-);
 const SuperAdminAdmins = lazy(() =>
   import("@pages/superadmin/SuperAdminAdmins").then((m) => ({
     default: m.SuperAdminAdmins,
@@ -208,11 +186,6 @@ const SuperAdminAdmins = lazy(() =>
 const SuperAdminUsers = lazy(() =>
   import("@pages/superadmin/SuperAdminUsers").then((m) => ({
     default: m.SuperAdminUsers,
-  })),
-);
-const SuperAdminAnalytics = lazy(() =>
-  import("@pages/superadmin/SuperAdminAnalytics").then((m) => ({
-    default: m.SuperAdminAnalytics,
   })),
 );
 const SuperAdminSystem = lazy(() =>

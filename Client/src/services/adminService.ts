@@ -32,6 +32,9 @@ export interface User {
   name: string;
   role: string;
   studentType?: string;
+  highSchoolGrade?: string;
+  highSchoolStream?: string;
+  universityLevel?: string;
   university?: string;
   department?: string;
   isApproved?: boolean;

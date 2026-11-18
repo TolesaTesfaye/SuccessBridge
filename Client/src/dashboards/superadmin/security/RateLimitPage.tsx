@@ -89,7 +89,7 @@ export const RateLimitPage: React.FC = () => {
     {
       key: "limit",
       label: "Rate Limit",
-      render: (value: string) => (
+      render: (value: number) => (
         <span className="font-semibold text-gray-900">{value}</span>
       ),
     },
@@ -152,7 +152,7 @@ export const RateLimitPage: React.FC = () => {
     {
       key: "status",
       label: "Result",
-      render: (value: string) => (
+      render: () => (
         <span className="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs font-semibold">
           🚫 Blocked
         </span>

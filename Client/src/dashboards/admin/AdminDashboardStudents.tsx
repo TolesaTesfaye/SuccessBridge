@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Card, CardBody, CardHeader } from "@components/common/Card";
-import { Button } from "@components/common/Button";
 import { Pagination } from "@components/common/Pagination";
 import { Loading } from "@components/common/Loading";
 import { userService } from "@services/userService";
@@ -8,10 +7,8 @@ import type { User } from "@types";
 import {
   BookOpen,
   Check,
-  Filter,
   GraduationCap,
   Mail,
-  Sparkles,
   Users,
   X,
 } from "lucide-react";
@@ -31,15 +28,12 @@ const formatDate = (value: string | Date) =>
     year: "numeric",
   });
 
-export const AdminDashboardStudents: React.FC<StudentTabProps> = ({
-  onNavigateToTab,
-}) => {
+export const AdminDashboardStudents: React.FC<StudentTabProps> = () => {
   const [students, setStudents] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [filter, setFilter] = useState({
+  const [filter] = useState({
     studentType: "all",
     verificationStatus: "all",
   });
@@ -48,12 +42,10 @@ export const AdminDashboardStudents: React.FC<StudentTabProps> = ({
   const loadStudents = async () => {
     try {
       setLoading(true);
-      setError(null);
       const response = await userService.getAllUsers(1, 1000, "student");
       setStudents(response.data || []);
-    } catch (err: any) {
+    } catch {
       setStudents([]);
-      setError(err?.message || "Failed to load students.");
     } finally {
       setLoading(false);
     }

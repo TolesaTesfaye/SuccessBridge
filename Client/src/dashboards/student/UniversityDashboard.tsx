@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { Footer } from "@components/common/Footer";
 import { resourceService } from "@services/resourceService";
@@ -22,7 +22,6 @@ interface UniversityWithResources {
 }
 
 export const UniversityDashboard: React.FC = () => {
-  const navigate = useNavigate();
   const { user } = useAuthStore();
   const userLevel = (user?.universityLevel as StudentCategory) || "freshman";
 

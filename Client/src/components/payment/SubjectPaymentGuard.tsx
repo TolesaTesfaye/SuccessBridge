@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { paymentService } from '@services/paymentService'
 import { PaymentModal } from './PaymentModal'
 import { Lock, CheckCircle, Clock, Loader } from 'lucide-react'

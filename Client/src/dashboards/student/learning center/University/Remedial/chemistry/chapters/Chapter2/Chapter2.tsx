@@ -7,7 +7,7 @@ interface Chapter2Props {
   currentChapterId?: string;
 }
 
-const Chapter2: React.FC<Chapter2Props> = ({ selectedSubtopic, onNavigateChapter }) => {
+const Chapter2: React.FC<Chapter2Props> = ({ selectedSubtopic }) => {
   useEffect(() => {
     if (selectedSubtopic) {
       const subtopicId = selectedSubtopic.split('.').slice(0, 2).join('.').trim();

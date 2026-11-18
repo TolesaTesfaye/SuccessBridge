@@ -16,7 +16,6 @@ interface HistoryChapterContentProps {
 
 export const HistoryChapterContent: React.FC<HistoryChapterContentProps> = ({ 
   chapterId, 
-  selectedSubtopic,
   setSelectedHistoryChapter,
   setSelectedSubtopic
 }) => {

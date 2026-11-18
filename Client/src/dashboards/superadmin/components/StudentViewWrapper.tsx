@@ -65,7 +65,7 @@ export const StudentViewWrapper: React.FC<StudentViewWrapperProps> = ({
   if (!viewUser) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin w-8 h-8 border-4 border-blue-600/20 border-t-blue-600 rounded-full"></div>
+        <div className="animate-spin w-8 h-8 border-4 border-blue-600/20 dark:border-blue-400/20 border-t-blue-600 dark:border-t-blue-400 rounded-full"></div>
       </div>
     );
   }

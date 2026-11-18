@@ -21,12 +21,9 @@ const formatDate = (value: string | Date) =>
     year: "numeric",
   });
 
-export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
-  onNavigateToTab,
-}) => {
+export const AdminDashboardSubjects: React.FC<SubjectTabProps> = () => {
   const [subjects, setSubjects] = useState<Subject[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,7 +31,6 @@ export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
   const loadData = async () => {
     try {
       setLoading(true);
-      setError(null);
 
       // Load subjects
       const subjectsResponse = await subjectService.getAll();
@@ -44,9 +40,8 @@ export const AdminDashboardSubjects: React.FC<SubjectTabProps> = ({
 
       setSubjects(subjectsList);
       setTotalPages(Math.max(1, Math.ceil(subjectsList.length / 8)));
-    } catch (err: any) {
+    } catch {
       setSubjects([]);
-      setError(err?.message || "Failed to load subjects.");
     } finally {
       setLoading(false);
     }

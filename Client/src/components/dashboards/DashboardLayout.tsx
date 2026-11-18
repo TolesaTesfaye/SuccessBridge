@@ -24,8 +24,6 @@ interface DashboardLayoutProps {
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
-  title,
-  subtitle,
   headerNav,
   noPadding = false,
   showFooter = true,
@@ -44,10 +42,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const mobileProfilePath =
     user?.role === "super_admin" ? "/superadmin/profile" : "/admin/profile";
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(
+    () => localStorage.getItem('superadmin-sidebar-collapsed') === 'true',
+  );
   const [sidebarWidth, setSidebarWidth] = useState(() => {
-    const saved = localStorage.getItem('superadmin-sidebar-width');
-    return saved ? parseInt(saved, 10) : 192; // Default 192px (w-48)
+    const saved = Number(localStorage.getItem('superadmin-sidebar-width'));
+    return saved >= 160 && saved <= 600 ? saved : 192; // Default 192px (w-48)
   });
   const [isResizing, setIsResizing] = useState(false);
   const { isDark, toggleTheme } = useThemeStore();
@@ -65,6 +65,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   useEffect(() => {
     if (!hideSidebar) setIsSidebarOpen(false);
   }, [hideSidebar]);
+
+  // Keep collapse/expand state across route changes (each page mounts its own layout)
+  useEffect(() => {
+    localStorage.setItem('superadmin-sidebar-collapsed', String(isSidebarCollapsed));
+  }, [isSidebarCollapsed]);
 
   // Handle sidebar resize
   useEffect(() => {
@@ -125,9 +130,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#070A13] flex flex-col transition-colors duration-300 overflow-hidden h-screen m-0 p-0">
+    <div className="min-h-screen bg-[#D6E7FF] dark:bg-[#0B1428] flex flex-col transition-colors duration-300 overflow-hidden h-screen m-0 p-0">
       {/* 1. Full-Width Header at the Top */}
-      <header className="hidden md:flex h-12 md:h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 items-center justify-between px-0 md:px-3 flex-shrink-0 z-30 transition-colors duration-300 shadow-sm">
+      <header className="hidden md:flex h-12 md:h-16 bg-[#0B1121]/95 backdrop-blur-md border-b border-white/10 items-center justify-between px-0 md:px-3 flex-shrink-0 z-30 shadow-[0_8px_24px_-12px_rgba(0,0,0,0.6)]">
         <div className="flex items-center flex-1 gap-1 md:gap-4">
           {/* Sidebar Button - Desktop */}
           <button
@@ -136,9 +141,12 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 setIsSidebarOpen(true);
                 return;
               }
+              if (isSidebarCollapsed && sidebarWidth < 160) {
+                setSidebarWidth(192);
+              }
               setIsSidebarCollapsed(!isSidebarCollapsed);
             }}
-            className={`${hideSidebar ? "flex" : "hidden lg:flex"} p-1.5 md:p-2.5 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg md:rounded-xl transition-all hover:scale-110 active:scale-95 border border-transparent hover:border-slate-200 dark:hover:border-white/10`}
+            className={`${hideSidebar ? "flex" : "hidden lg:flex"} p-1.5 md:p-2.5 text-slate-300 hover:text-white hover:bg-white/10 rounded-lg md:rounded-xl transition-all hover:scale-110 active:scale-95 border border-transparent hover:border-white/10`}
             title={
               hideSidebar
                 ? "Open Navigation"
@@ -170,14 +178,14 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         <div className="flex items-center gap-1 md:gap-2">
           {/* Notifications - Desktop header */}
           <div className="hidden md:flex items-center">
-            <NotificationBell />
+            <NotificationBell onDark />
           </div>
 
           {/* Theme Toggle - Desktop header */}
           <div className="hidden md:flex items-center">
             <button
               onClick={toggleTheme}
-              className="p-1.5 md:p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-yellow-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors active:scale-95"
+              className="p-1.5 md:p-2 rounded-lg bg-white/10 text-slate-200 hover:bg-white/15 hover:text-white transition-colors active:scale-95"
               aria-label="Toggle theme"
             >
               {isDark ? (
@@ -203,7 +211,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           <div className="hidden md:flex items-center">
             <button
               onClick={handleLogout}
-              className="px-1.5 md:px-3 py-1 md:py-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg transition-all duration-300 font-semibold text-[9px] md:text-xs normal-case tracking-normal border border-rose-500/20 hover:border-rose-500 h-7 md:h-auto"
+              className="px-1.5 md:px-3 py-1 md:py-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-400 hover:text-white rounded-lg transition-all duration-300 font-semibold text-[9px] md:text-xs normal-case tracking-normal border border-rose-500/20 hover:border-rose-500 h-7 md:h-auto"
               title="Sign Out"
             >
               <span>Logout</span>
@@ -215,25 +223,23 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
       {/* 2. Container for Sidebar and Main Content - No Gap */}
       <div className="flex flex-1 overflow-hidden m-0 p-0 gap-0 relative">
-        {!hideSidebar && (
+        {!hideSidebar && !isSidebarCollapsed && (
           <aside
-            style={{ width: isSidebarCollapsed ? '64px' : `${sidebarWidth}px` }}
-            className={`hidden lg:block flex-shrink-0 z-30 transition-all duration-300 ${
+            style={{ width: `${sidebarWidth}px` }}
+            className={`hidden lg:block absolute inset-y-0 left-0 z-50 transition-all duration-300 ${
               isResizing ? '' : 'transition-all'
-            } bg-[#0B1121] overflow-hidden m-0 p-0 relative group`}
+            } bg-[#0B1121] overflow-hidden m-0 p-0 group shadow-[10px_0_40px_-12px_rgba(0,0,0,0.55)]`}
           >
-            <Sidebar collapsed={isSidebarCollapsed} />
+            <Sidebar collapsed={false} onNavigate={() => setIsSidebarCollapsed(true)} />
             
             {/* Resize Handle */}
-            {!isSidebarCollapsed && (
-              <div
-                onMouseDown={() => setIsResizing(true)}
-                className="absolute top-0 right-0 w-1 h-full cursor-ew-resize bg-transparent hover:bg-blue-500/50 transition-colors group-hover:bg-blue-500/20 z-40"
-                title="Drag to resize sidebar"
-              >
-                <div className="absolute top-1/2 -translate-y-1/2 right-0 w-1 h-20 bg-blue-500/50 rounded-l-full opacity-0 group-hover:opacity-100 transition-opacity" />
-              </div>
-            )}
+            <div
+              onMouseDown={() => setIsResizing(true)}
+              className="absolute top-0 right-0 w-1 h-full cursor-ew-resize bg-transparent hover:bg-blue-500/50 transition-colors group-hover:bg-blue-500/20 z-40"
+              title="Drag to resize sidebar"
+            >
+              <div className="absolute top-1/2 -translate-y-1/2 right-0 w-1 h-20 bg-blue-500/50 rounded-l-full opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
           </aside>
         )}
 
@@ -253,8 +259,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
         <main
           className={
-            `flex-1 w-full m-0 p-0 bg-[#f1f1f1] dark:bg-[#070A13] min-h-0 min-w-0 ${showMobileBottomNav ? "pb-16 md:pb-0" : ""} ` +
-            (noPadding ? "overflow-hidden" : "overflow-y-auto custom-scrollbar")
+            `flex-1 w-full max-w-full m-0 p-0 bg-[#D6E7FF] dark:bg-[#0B1428] min-h-0 min-w-0 ${showMobileBottomNav ? "pb-16 md:pb-0" : ""} ` +
+            (noPadding ? "overflow-hidden" : "overflow-y-auto overflow-x-hidden custom-scrollbar")
           }
         >
           {noPadding ? (

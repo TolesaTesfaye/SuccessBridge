@@ -17,7 +17,6 @@ interface GeographyChapterContentProps {
 
 export const GeographyChapterContent: React.FC<GeographyChapterContentProps> = ({ 
   chapterId, 
-  selectedSubtopic,
   setSelectedGeographyChapter,
   setSelectedSubtopic
 }) => {

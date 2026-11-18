@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { Card, CardBody, CardHeader } from "@components/common/Card";
-import { Button } from "@components/common/Button";
 import { Modal } from "@components/common/Modal";
 import { useToast } from "@components/common/Toast";
 import { userService } from "@services/userService";
@@ -14,11 +13,11 @@ import {
 import { SuperAdminAddQuiz } from "@pages/superadmin/SuperAdminAddQuiz";
 import { SuperAdminResources } from "@pages/superadmin/SuperAdminResources";
 import { EducationHierarchy } from "@pages/superadmin/EducationHierarchy";
-import { SuperAdminAnalytics } from "@pages/superadmin/SuperAdminAnalytics";
 import { PromotionPage } from "@pages/PromotionPage";
 import { StudentAICompanion } from "@pages/student/StudentAICompanion";
 import { AdminDashboardPayments } from "@dashboards/admin/AdminDashboardPayments";
 import { UniversitiesTab } from "@pages/superadmin/management/UniversitiesTab";
+import { UsersTab } from "@pages/superadmin/management/UsersTab";
 import { useNavigate } from "react-router-dom";
 import {
   SuperAdminTopTabNav,
@@ -27,7 +26,7 @@ import {
 import {
   LayoutDashboard,
   Layers,
-  BarChart3,
+  Users,
   Send,
   Bot,
   Upload,
@@ -49,7 +48,7 @@ const UNIVERSITY_LEVELS = ["freshman", "remedial"] as const;
 const PLATFORM_TABS: SuperAdminTabItem[] = [
   { id: "overview", label: "Overview", shortLabel: "Overview", icon: LayoutDashboard },
   { id: "resources", label: "Resources", shortLabel: "Resources", icon: Layers },
-  { id: "analytics", label: "Analytics", shortLabel: "Analytics", icon: BarChart3 },
+  { id: "users", label: "Users", shortLabel: "Users", icon: Users },
   { id: "promotion", label: "Promotion", shortLabel: "Promotion", icon: Send },
   { id: "ai-companion", label: "AI Companion", shortLabel: "AI Companion", icon: Bot },
   { id: "upload", label: "Upload", shortLabel: "Upload", icon: Upload },
@@ -63,17 +62,16 @@ export const SuperAdminDashboard: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [activeTab, setActiveTab] = useState("overview");
-  const [selectedStudent, setSelectedStudent] = useState<any>(null);
-  const [selectedAdmin, setSelectedAdmin] = useState<any>(null);
-  const [showStudentModal, setShowStudentModal] = useState(false);
-  const [showAdminModal, setShowAdminModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
   // Legacy tab state → dedicated view routes
   useEffect(() => {
     const tab = location.state?.activeTab;
-    if (!tab) return;
+    if (!tab || tab === "overview") {
+      setActiveTab("overview");
+      return;
+    }
 
     if (tab === "admin-view") {
       navigate("/superadmin/admin-view", { replace: true });
@@ -102,7 +100,8 @@ export const SuperAdminDashboard: React.FC = () => {
       return;
     }
 
-    setActiveTab(tab);
+    const isValidTab = PLATFORM_TABS.some((item) => item.id === tab) || tab === "hierarchy";
+    setActiveTab(isValidTab ? tab : "overview");
   }, [location.state, navigate]);
 
   // Real data from database
@@ -205,7 +204,7 @@ export const SuperAdminDashboard: React.FC = () => {
           )}
 
           {activeTab === "resources" && <SuperAdminResources embedded />}
-          {activeTab === "analytics" && <SuperAdminAnalytics embedded />}
+          {activeTab === "users" && <UsersTab toast={toast} />}
           {activeTab === "promotion" && <PromotionPage embedded />}
           {activeTab === "ai-companion" && <StudentAICompanion embedded />}
 
@@ -240,161 +239,6 @@ export const SuperAdminDashboard: React.FC = () => {
           />
         </Modal>
 
-        {/* Student/Admin Detail Modal */}
-        <Modal
-          isOpen={showStudentModal || showAdminModal}
-          onClose={() => {
-            setShowStudentModal(false);
-            setShowAdminModal(false);
-          }}
-          title={
-            selectedStudent?.isAdmin || selectedAdmin
-              ? "Admin Detailed Profile"
-              : "Student Detailed Profile"
-          }
-          size="lg"
-          fullScreenOnMobile={true}
-        >
-          {(selectedStudent || selectedAdmin) && (
-            <div className="space-y-6">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-[20px] border border-slate-100 dark:border-white/5">
-                <div className="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-2xl">
-                  {selectedStudent?.isAdmin || selectedAdmin ? "👨‍💼" : "🎓"}
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white m-0">
-                    {(selectedAdmin || selectedStudent)?.name}
-                  </h3>
-                  <p className="text-slate-500 dark:text-slate-400 m-0">
-                    {(selectedAdmin || selectedStudent)?.email}
-                  </p>
-                </div>
-                <div className="ml-auto">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-bold ${
-                      (selectedAdmin || selectedStudent)?.status === "Active"
-                        ? "bg-emerald-100 text-emerald-700"
-                        : "bg-slate-100 text-slate-700"
-                    }`}
-                  >
-                    {(selectedAdmin || selectedStudent)?.status}
-                  </span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-6">
-                <div className="space-y-4">
-                  <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider">
-                    Academic Information
-                  </h4>
-                  <div className="grid grid-cols-1 gap-3">
-                    <div className="p-3 bg-white dark:bg-slate-800/20 rounded-xl border border-slate-100 dark:border-white/5">
-                      <label className="text-xs font-semibold text-slate-400 block mb-1">
-                        Education Level
-                      </label>
-                      <p className="text-slate-900 dark:text-white font-bold m-0">
-                        {(selectedAdmin || selectedStudent)?.educationLevel}
-                      </p>
-                    </div>
-                    {(selectedAdmin || selectedStudent)?.educationLevel ===
-                    "University" ? (
-                      <>
-                        <div className="p-3 bg-white dark:bg-slate-800/20 rounded-xl border border-slate-100 dark:border-white/5">
-                          <label className="text-xs font-semibold text-slate-400 block mb-1">
-                            University
-                          </label>
-                          <p className="text-slate-900 dark:text-white font-bold m-0">
-                            {(selectedAdmin || selectedStudent)?.university}
-                          </p>
-                        </div>
-                        <div className="p-3 bg-white dark:bg-slate-800/20 rounded-xl border border-slate-100 dark:border-white/5">
-                          <label className="text-xs font-semibold text-slate-400 block mb-1">
-                            University
-                          </label>
-                          <p className="text-slate-900 dark:text-white font-bold m-0">
-                            {(selectedAdmin || selectedStudent)?.university}
-                          </p>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="p-3 bg-white dark:bg-slate-800/20 rounded-xl border border-slate-100 dark:border-white/5">
-                        <label className="text-xs font-semibold text-slate-400 block mb-1">
-                          Grade Level
-                        </label>
-                        <p className="text-slate-900 dark:text-white font-bold m-0">
-                          {(selectedAdmin || selectedStudent)?.grade}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider">
-                    Account Details
-                  </h4>
-                  <div className="grid grid-cols-1 gap-3">
-                    <div className="p-3 bg-white dark:bg-slate-800/20 rounded-xl border border-slate-100 dark:border-white/5">
-                      <label className="text-xs font-semibold text-slate-400 block mb-1">
-                        Database ID
-                      </label>
-                      <p className="text-slate-900 dark:text-white font-mono text-xs m-0">
-                        {(selectedAdmin || selectedStudent)?.id}
-                      </p>
-                    </div>
-                    <div className="p-3 bg-white dark:bg-slate-800/20 rounded-xl border border-slate-100 dark:border-white/5">
-                      <label className="text-xs font-semibold text-slate-400 block mb-1">
-                        Join Date
-                      </label>
-                      <p className="text-slate-900 dark:text-white font-bold m-0">
-                        {(selectedAdmin || selectedStudent)?.joinedDate}
-                      </p>
-                    </div>
-                    <div className="p-3 bg-white dark:bg-slate-800/20 rounded-xl border border-slate-100 dark:border-white/5">
-                      <label className="text-xs font-semibold text-slate-400 block mb-1">
-                        Role Type
-                      </label>
-                      <p className="text-slate-900 dark:text-white font-bold m-0">
-                        {selectedStudent?.isAdmin || selectedAdmin
-                          ? "Platform Administrator"
-                          : "Student User"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t dark:border-white/5">
-                <Button
-                  variant="secondary"
-                  fullWidth
-                  onClick={() => {
-                    setShowStudentModal(false);
-                    setShowAdminModal(false);
-                  }}
-                >
-                  Close Profile
-                </Button>
-                <Button
-                  variant="danger"
-                  fullWidth
-                  onClick={() => {
-                    if (
-                      confirm(
-                        `Are you sure you want to delete ${(selectedAdmin || selectedStudent)?.name}?`,
-                      )
-                    ) {
-                      setShowStudentModal(false);
-                      setShowAdminModal(false);
-                    }
-                  }}
-                >
-                  Deactivate Account
-                </Button>
-              </div>
-            </div>
-          )}
-        </Modal>
       </div>
     </DashboardLayout>
   );

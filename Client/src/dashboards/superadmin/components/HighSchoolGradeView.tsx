@@ -207,7 +207,7 @@ export const HighSchoolGradeView: React.FC<HighSchoolGradeViewProps> = ({
         <CardBody>
           {loading ? (
             <div className="text-center py-12">
-              <div className="animate-spin w-8 h-8 border-4 border-blue-600/20 border-t-blue-600 rounded-full mx-auto mb-4"></div>
+              <div className="animate-spin w-8 h-8 border-4 border-blue-600/20 dark:border-blue-400/20 border-t-blue-600 dark:border-t-blue-400 rounded-full mx-auto mb-4"></div>
               <p className="text-slate-600 dark:text-slate-400">
                 Loading resources...
               </p>

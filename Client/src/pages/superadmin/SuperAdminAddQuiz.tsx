@@ -213,59 +213,6 @@ export function SuperAdminAddQuiz() {
     toast.success("Quiz loaded for editing — update and re‑publish to save");
   };
 
-  const handleUpdateQuiz = async (quizId: string) => {
-    if (!title.trim()) {
-      toast.error("A title is required");
-      return;
-    }
-    if (questions.length === 0) {
-      toast.error("Please add at least one question");
-      return;
-    }
-    try {
-      setLoading(true);
-      const formatted = questions.map((q) => {
-        let answer = "";
-        if (q.type === "mcq") {
-          answer = q.options.find((o) => o.id === q.correctId)?.text || "";
-        } else {
-          answer = q.explanation || "";
-        }
-        return {
-          id: q.id,
-          text: q.text,
-          type:
-            q.type === "mcq"
-              ? "multiple_choice"
-              : q.type === "short"
-                ? "short_answer"
-                : "essay",
-          options:
-            q.type === "mcq"
-              ? q.options.map((o) => o.text).filter(Boolean)
-              : [],
-          correctAnswer: answer,
-          points: q.points || 5,
-        };
-      });
-      await quizService.update(quizId, {
-        title: title.trim(),
-        description: description.trim(),
-        questions: formatted as any,
-        timeLimit,
-        passingScore: passing,
-      } as any);
-      toast.success("Quiz updated successfully");
-      setTitle("Untitled assessment");
-      setDescription("");
-      setQuestions([]);
-      fetchExistingQuizzes();
-    } catch (err: any) {
-      toast.error(err?.message || "Failed to update quiz");
-    } finally {
-      setLoading(false);
-    }
-  };
   const [description, setDescription] = useState("");
 
   // SuccessBridge targeting state

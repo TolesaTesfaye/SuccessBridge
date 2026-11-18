@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { paymentService } from '@services/paymentService'
-import { useAuthStore } from '@store/authStore'
 import { Spinner } from '@components/common/Spinner'
 import { formatDistanceToNow } from '@utils/dateUtils'
 import { 
@@ -10,7 +9,6 @@ import {
   XCircle, 
   CreditCard, 
   Calendar,
-  DollarSign,
   FileText,
   ExternalLink,
   AlertCircle
@@ -34,7 +32,6 @@ interface Payment {
 }
 
 export const PaymentTracking: React.FC = () => {
-  const { user } = useAuthStore()
   const [searchParams, setSearchParams] = useSearchParams()
   const [payments, setPayments] = useState<Payment[]>([])
   const [loading, setLoading] = useState(true)
