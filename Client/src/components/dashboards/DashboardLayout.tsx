@@ -43,7 +43,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     user?.role === "super_admin" ? "/superadmin/profile" : "/admin/profile";
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(
-    () => localStorage.getItem('superadmin-sidebar-collapsed') === 'true',
+    () => localStorage.getItem('successbridge-sidebar-collapsed') !== 'false',
   );
   const [sidebarWidth, setSidebarWidth] = useState(() => {
     const saved = Number(localStorage.getItem('superadmin-sidebar-width'));
@@ -68,7 +68,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   // Keep collapse/expand state across route changes (each page mounts its own layout)
   useEffect(() => {
-    localStorage.setItem('superadmin-sidebar-collapsed', String(isSidebarCollapsed));
+    localStorage.setItem('successbridge-sidebar-collapsed', String(isSidebarCollapsed));
   }, [isSidebarCollapsed]);
 
   // Handle sidebar resize

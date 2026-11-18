@@ -11,7 +11,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
     toggleTheme: () =>
         set((state) => {
             const newIsDark = !state.isDark;
-            localStorage.setItem('theme', newIsDark ? 'dark' : 'light');
+            localStorage.setItem('successbridge-theme', newIsDark ? 'dark' : 'light');
             if (newIsDark) {
                 document.documentElement.classList.add('dark');
             } else {
@@ -20,7 +20,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
             return { isDark: newIsDark };
         }),
     setTheme: (isDark) => {
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        localStorage.setItem('successbridge-theme', isDark ? 'dark' : 'light');
         if (isDark) {
             document.documentElement.classList.add('dark');
         } else {
@@ -30,10 +30,9 @@ export const useThemeStore = create<ThemeState>((set) => ({
     },
 }));
 
-// Initialize theme from localStorage if available
-const savedTheme = localStorage.getItem('theme');
-const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-const initialIsDark = savedTheme === 'dark' || (!savedTheme && systemDark);
+// Initialize theme from localStorage; dark mode is the default
+const savedTheme = localStorage.getItem('successbridge-theme');
+const initialIsDark = savedTheme ? savedTheme === 'dark' : true;
 
 if (initialIsDark) {
     document.documentElement.classList.add('dark');

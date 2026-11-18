@@ -8,8 +8,8 @@ import { warmUpApi } from '@services/api'
 // Initialize theme before rendering
 const initializeTheme = () => {
   try {
-    const saved = localStorage.getItem('theme')
-    const isDark = saved === 'dark'
+    const saved = localStorage.getItem('successbridge-theme')
+    const isDark = saved ? saved === 'dark' : true
     
     if (isDark) {
       document.documentElement.classList.add('dark')
