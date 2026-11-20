@@ -30,8 +30,14 @@ export const initSocket = (server: HttpServer) => {
   const isDevelopment =
     process.env.NODE_ENV === 'development' || !process.env.NODE_ENV
 
+  const extraOrigins = (process.env.FRONTEND_URLS || '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean)
+
   const allowedOrigins = [
     process.env.FRONTEND_URL,
+    ...extraOrigins,
     'https://success-bridge-ten.vercel.app',
     'http://localhost:3000',
     'http://127.0.0.1:3000',
@@ -46,8 +52,6 @@ export const initSocket = (server: HttpServer) => {
           !origin ||
           allowedOrigins.includes(origin) ||
           origin.endsWith('.vercel.app') ||
-          origin === 'https://successbridge.pages.dev' ||
-          origin.endsWith('.successbridge.pages.dev') ||
           (isDevelopment &&
             (origin.includes('localhost') || origin.includes('127.0.0.1')))
         callback(allowed ? null : new Error('Not allowed by CORS'), allowed)

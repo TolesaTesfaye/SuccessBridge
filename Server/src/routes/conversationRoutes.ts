@@ -75,6 +75,30 @@ router.post('/', requireRole('admin', 'super_admin'), async (req, res, next) => 
 })
 
 /**
+ * @route   POST /api/conversations/owner
+ * @desc    Open (or reuse) a direct conversation with the system owner
+ * @access  Private
+ */
+router.post('/owner', async (req, res, next) => {
+  try {
+    const conversation = await ConversationService.getOrCreateOwnerConversation(
+      req.user!.id,
+    )
+
+    conversation.participants
+      .map((participant) => participant.id)
+      .filter((userId) => userId !== req.user!.id)
+      .forEach((userId) =>
+        emitToUser(userId, 'conversation:new', conversation),
+      )
+
+    res.status(201).json({ success: true, data: conversation })
+  } catch (error) {
+    next(error)
+  }
+})
+
+/**
  * @route   GET /api/conversations/search
  * @desc    Search messages across the current user's conversations
  * @access  Private

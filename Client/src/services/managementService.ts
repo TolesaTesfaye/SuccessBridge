@@ -9,6 +9,7 @@ export interface Announcement {
   type: string;
   targetRoles?: string[];
   targetEducationLevels?: string[];
+  targetPaymentStatus?: "paid" | "unpaid" | null;
   isActive: boolean;
   createdBy?: string;
   scheduledAt?: string;

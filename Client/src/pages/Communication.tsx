@@ -4,6 +4,7 @@ import { DashboardLayout } from "@components/dashboards/DashboardLayout";
 import { Modal } from "@components/common/Modal";
 import { AnnouncementsPanel } from "@components/communication/AnnouncementsPanel";
 import { TicketsPanel } from "@components/communication/TicketsPanel";
+import { ContactPanel } from "@components/communication/ContactPanel";
 import { useAuthStore } from "@store/authStore";
 import { userService } from "@services/userService";
 import {
@@ -14,12 +15,14 @@ import {
   type MessageSearchResult,
 } from "@services/conversationService";
 import { connectSocket, disconnectSocket, getSocket } from "@services/socket";
+import { refreshNotifications } from "@hooks/useNotifications";
 import {
   AlertCircle,
   ArrowLeft,
   Check,
   CheckCheck,
   FileText,
+  Inbox,
   LifeBuoy,
   Loader2,
   Megaphone,
@@ -27,11 +30,12 @@ import {
   RefreshCw,
   Search,
   Send,
+  ShieldCheck,
   SquarePen,
   Users,
 } from "lucide-react";
 
-type CommunicationTab = "chats" | "announcements" | "support";
+type CommunicationTab = "chats" | "announcements" | "support" | "contact";
 
 const TABS: {
   id: CommunicationTab;
@@ -41,6 +45,7 @@ const TABS: {
   { id: "chats", label: "Chats", icon: SquarePen },
   { id: "announcements", label: "Announcements", icon: Megaphone },
   { id: "support", label: "Support", icon: LifeBuoy },
+  { id: "contact", label: "Contact", icon: Inbox },
 ];
 
 const ROLE_LABEL: Record<string, string> = {
@@ -159,7 +164,10 @@ export const Communication: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<CommunicationTab>(() => {
     const tab = searchParams.get("tab");
-    return tab === "announcements" || tab === "support" ? tab : "chats";
+    if (tab === "contact" && me?.role !== "super_admin") return "chats";
+    return tab === "announcements" || tab === "support" || tab === "contact"
+      ? tab
+      : "chats";
   });
   const [announcementTick, setAnnouncementTick] = useState(0);
   const [ticketTick, setTicketTick] = useState(0);
@@ -196,12 +204,18 @@ export const Communication: React.FC = () => {
 
   const [pickerOpen, setPickerOpen] = useState(false);
   const [directory, setDirectory] = useState<ConversationUser[]>([]);
+  const [directoryQuery, setDirectoryQuery] = useState("");
   const [directoryLoading, setDirectoryLoading] = useState(false);
   const [directoryError, setDirectoryError] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [groupTitle, setGroupTitle] = useState("");
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+  const [ownerStarting, setOwnerStarting] = useState(false);
+  const [ownerChatError, setOwnerChatError] = useState<string | null>(null);
+
+  const canStartConversation =
+    me?.role === "admin" || me?.role === "super_admin";
 
   const [onlineIds, setOnlineIds] = useState<Set<string>>(() => new Set());
   const [typingBy, setTypingBy] = useState<
@@ -301,7 +315,21 @@ export const Communication: React.FC = () => {
     };
   }, [trimmedQuery]);
 
+  const visibleTabs = useMemo(
+    () => TABS.filter((tab) => tab.id !== "contact" || me?.role === "super_admin"),
+    [me?.role],
+  );
+
+  const filteredDirectory = useMemo(() => {
+    const term = directoryQuery.trim().toLowerCase();
+    if (!term) return directory;
+    return directory.filter((person) =>
+      person.name.toLowerCase().includes(term),
+    );
+  }, [directory, directoryQuery]);
+
   const selectTab = (tab: CommunicationTab) => {
+    if (tab === "contact" && me?.role !== "super_admin") return;
     setActiveTab(tab);
     const next = new URLSearchParams(searchParams);
     if (tab === "chats") next.delete("tab");
@@ -468,10 +496,12 @@ export const Communication: React.FC = () => {
 
     const handleAnnouncement = () => {
       setAnnouncementTick((value) => value + 1);
+      void refreshNotifications();
     };
 
     const handleTicketEvent = () => {
       setTicketTick((value) => value + 1);
+      void refreshNotifications();
     };
 
     socket.on("message:new", handleMessage);
@@ -482,6 +512,7 @@ export const Communication: React.FC = () => {
     socket.on("presence:state", handlePresenceState);
     socket.on("conversation:new", handleConversationNew);
     socket.on("announcement:new", handleAnnouncement);
+    socket.on("announcement:update", handleAnnouncement);
     socket.on("ticket:new", handleTicketEvent);
     socket.on("ticket:message", handleTicketEvent);
     socket.on("ticket:status", handleTicketEvent);
@@ -495,6 +526,7 @@ export const Communication: React.FC = () => {
       socket.off("presence:state", handlePresenceState);
       socket.off("conversation:new", handleConversationNew);
       socket.off("announcement:new", handleAnnouncement);
+      socket.off("announcement:update", handleAnnouncement);
       socket.off("ticket:new", handleTicketEvent);
       socket.off("ticket:message", handleTicketEvent);
       socket.off("ticket:status", handleTicketEvent);
@@ -759,29 +791,54 @@ export const Communication: React.FC = () => {
     setSelectedIds([]);
     setGroupTitle("");
     setCreateError(null);
+    setDirectoryQuery("");
 
     if (directory.length > 0 || directoryLoading) return;
 
     setDirectoryLoading(true);
     setDirectoryError(null);
     try {
-      const [superAdmins, admins] = await Promise.all([
-        userService.getAllUsers(1, 100, "super_admin"),
-        userService.getAllUsers(1, 100, "admin"),
+      const [superAdmins, admins, students] = await Promise.all([
+        userService.getAllUsers(1, 200, "super_admin"),
+        userService.getAllUsers(1, 200, "admin"),
+        userService.getAllUsers(1, 200, "student"),
       ]);
 
       const seen = new Set<string>();
       const people: ConversationUser[] = [];
-      [...superAdmins.data, ...admins.data].forEach((user) => {
+      [...superAdmins.data, ...admins.data, ...students.data].forEach((user) => {
         if (!user.id || user.id === me?.id || seen.has(user.id)) return;
         seen.add(user.id);
         people.push({ id: user.id, name: user.name, role: user.role });
       });
       setDirectory(people);
     } catch (error) {
-      setDirectoryError(errorText(error, "Couldn't load the team directory."));
+      setDirectoryError(errorText(error, "Couldn't load the people directory."));
     } finally {
       setDirectoryLoading(false);
+    }
+  };
+
+  const handleStartOwnerChat = async () => {
+    if (ownerStarting) return;
+
+    setOwnerStarting(true);
+    setOwnerChatError(null);
+    try {
+      const conversation = await conversationService.startOwnerConversation();
+      setConversations((previous) =>
+        previous.some((item) => item.id === conversation.id)
+          ? previous
+          : [conversation, ...previous],
+      );
+      setActiveId(conversation.id);
+      setMobileThreadOpen(true);
+    } catch (error) {
+      setOwnerChatError(
+        errorText(error, "Couldn't reach the system owner. Please try again."),
+      );
+    } finally {
+      setOwnerStarting(false);
     }
   };
 
@@ -859,13 +916,13 @@ export const Communication: React.FC = () => {
     <DashboardLayout noPadding showFooter={false}>
       <div className="flex h-full w-full overflow-hidden p-2 md:p-4">
         <div className="flex h-full w-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm dark:border-[#263653] dark:bg-[#0B1428]/80">
-          <div className="flex shrink-0 items-center gap-1 border-b border-slate-200/80 bg-white/70 px-2 py-2 dark:border-[#263653] dark:bg-[#0B1121]/40">
-            {TABS.map(({ id, label, icon: Icon }) => (
+          <div className="flex shrink-0 items-center gap-1 overflow-x-auto border-b border-slate-200/80 bg-white/70 px-2 py-2 custom-scrollbar dark:border-[#263653] dark:bg-[#0B1121]/40">
+            {visibleTabs.map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
                 type="button"
                 onClick={() => selectTab(id)}
-                className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-colors ${
+                className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-bold transition-colors ${
                   activeTab === id
                     ? "bg-blue-600 text-white shadow-sm shadow-blue-500/25"
                     : "text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/5"
@@ -895,14 +952,16 @@ export const Communication: React.FC = () => {
                   Messages & announcements
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={openPicker}
-                title="New conversation"
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition-colors hover:bg-slate-200 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10"
-              >
-                <SquarePen className="h-4 w-4" />
-              </button>
+              {canStartConversation && (
+                <button
+                  type="button"
+                  onClick={openPicker}
+                  title="New conversation"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition-colors hover:bg-slate-200 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10"
+                >
+                  <SquarePen className="h-4 w-4" />
+                </button>
+              )}
             </div>
 
             <div className="px-3 pb-3">
@@ -983,17 +1042,49 @@ export const Communication: React.FC = () => {
                 </div>
               ) : conversations.length === 0 ? (
                 <div className="px-3 py-10 text-center">
-                  <Users className="mx-auto mb-2 h-6 w-6 text-slate-300 dark:text-slate-600" />
+                  {canStartConversation ? (
+                    <Users className="mx-auto mb-2 h-6 w-6 text-slate-300 dark:text-slate-600" />
+                  ) : (
+                    <ShieldCheck className="mx-auto mb-2 h-6 w-6 text-slate-300 dark:text-slate-600" />
+                  )}
                   <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
                     No conversations yet.
                   </p>
-                  <button
-                    type="button"
-                    onClick={openPicker}
-                    className="mt-2 text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
-                  >
-                    Start one
-                  </button>
+                  {canStartConversation ? (
+                    <button
+                      type="button"
+                      onClick={openPicker}
+                      className="mt-2 text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                    >
+                      Start one
+                    </button>
+                  ) : (
+                    <>
+                      <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                        You can communicate directly with the system owner.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => void handleStartOwnerChat()}
+                        disabled={ownerStarting}
+                        className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-blue-500/10 px-2.5 py-1.5 text-[11px] font-semibold text-blue-700 transition-colors hover:bg-blue-500/20 disabled:opacity-60 dark:text-blue-300"
+                      >
+                        {ownerStarting ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <ShieldCheck className="h-3 w-3" />
+                        )}
+                        {ownerStarting
+                          ? "Opening…"
+                          : "Message the system owner"}
+                      </button>
+                      {ownerChatError && (
+                        <p className="mt-2 text-[10px] text-rose-600 dark:text-rose-400">
+                          {ownerChatError}
+                        </p>
+                      )}
+                    </>
+                  )}
                 </div>
               ) : visibleConversations.length === 0 ? (
                 <p className="px-3 py-8 text-center text-xs text-slate-400">
@@ -1075,7 +1166,9 @@ export const Communication: React.FC = () => {
             </div>
 
             <p className="border-t border-slate-200/70 px-4 py-2.5 text-[10px] font-medium text-slate-400 dark:border-[#263653] dark:text-slate-500">
-              Messages are saved to your account.
+              {canStartConversation
+                ? "Messages are saved to your account."
+                : "You can communicate with the system owner here."}
             </p>
           </aside>
 
@@ -1092,19 +1185,48 @@ export const Communication: React.FC = () => {
                 </div>
                 <div>
                   <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                    No conversation selected
+                    {canStartConversation
+                      ? "No conversation selected"
+                      : "Talk to the system owner"}
                   </h2>
                   <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                    Pick a conversation or start a new one.
+                    {canStartConversation
+                      ? "Pick a conversation or start a new one."
+                      : "You can communicate directly with the system owner."}
                   </p>
                 </div>
-                <button
-                  type="button"
-                  onClick={openPicker}
-                  className="rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-sm shadow-blue-500/25 transition-all hover:brightness-110 active:scale-95"
-                >
-                  New conversation
-                </button>
+                {canStartConversation ? (
+                  <button
+                    type="button"
+                    onClick={openPicker}
+                    className="rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-sm shadow-blue-500/25 transition-all hover:brightness-110 active:scale-95"
+                  >
+                    New conversation
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => void handleStartOwnerChat()}
+                      disabled={ownerStarting}
+                      className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-sm shadow-blue-500/25 transition-all hover:brightness-110 active:scale-95 disabled:opacity-60"
+                    >
+                      {ownerStarting ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                      )}
+                      {ownerStarting
+                        ? "Opening…"
+                        : "Message the system owner"}
+                    </button>
+                    {ownerChatError && (
+                      <p className="text-[11px] text-rose-600 dark:text-rose-400">
+                        {ownerChatError}
+                      </p>
+                    )}
+                  </>
+                )}
               </div>
             ) : (
               <>
@@ -1382,6 +1504,10 @@ export const Communication: React.FC = () => {
               <div className="min-h-0 flex-1">
                 <AnnouncementsPanel refreshKey={announcementTick} />
               </div>
+            ) : activeTab === "contact" ? (
+              <div className="min-h-0 flex-1">
+                <ContactPanel />
+              </div>
             ) : (
               <div className="min-h-0 flex-1">
                 <TicketsPanel refreshKey={ticketTick} />
@@ -1424,7 +1550,18 @@ export const Communication: React.FC = () => {
         <div className="space-y-3">
           <p className="text-xs text-slate-500 dark:text-slate-400">
             Select one person for a direct message, or several to start a group.
+            Students can be messaged directly too.
           </p>
+
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input
+              value={directoryQuery}
+              onChange={(event) => setDirectoryQuery(event.target.value)}
+              placeholder="Search people"
+              className={inputClass}
+            />
+          </div>
 
           {selectedIds.length > 1 && (
             <input
@@ -1454,10 +1591,14 @@ export const Communication: React.FC = () => {
               </p>
             ) : directory.length === 0 ? (
               <p className="py-8 text-center text-xs text-slate-400">
-                No other admins are registered yet.
+                No people are registered yet.
+              </p>
+            ) : filteredDirectory.length === 0 ? (
+              <p className="py-8 text-center text-xs text-slate-400">
+                No one matches “{directoryQuery.trim()}”.
               </p>
             ) : (
-              directory.map((person) => {
+              filteredDirectory.map((person) => {
                 const selected = selectedIds.includes(person.id);
                 return (
                   <button

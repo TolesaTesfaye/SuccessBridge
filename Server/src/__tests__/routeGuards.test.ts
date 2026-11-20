@@ -48,6 +48,7 @@ const call = (method: string, path: string, token?: string) =>
 test('communication routes require authentication', async () => {
   for (const [method, path] of [
     ['GET', '/api/conversations'],
+    ['POST', '/api/conversations/owner'],
     ['GET', '/api/announcements'],
     ['GET', '/api/tickets'],
     ['POST', '/api/tickets/ticket-1/messages'],

@@ -1,112 +1,162 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
 import {
   getNotifications,
   getUnreadCount,
-  markAsRead,
-  markAllAsRead,
-  Notification,
+  markAsRead as apiMarkAsRead,
+  markAllAsRead as apiMarkAllAsRead,
+  type Notification,
 } from '../services/notificationService'
 
+interface NotificationState {
+  notifications: Notification[]
+  unreadCount: number
+  loading: boolean
+}
+
+const initialState: NotificationState = {
+  notifications: [],
+  unreadCount: 0,
+  loading: true,
+}
+
+let state: NotificationState = initialState
+const listeners = new Set<() => void>()
+
+let subscribers = 0
+let pollTimer: ReturnType<typeof setInterval> | null = null
+let refreshPromise: Promise<void> | null = null
+
+const setState = (patch: Partial<NotificationState>) => {
+  state = { ...state, ...patch }
+  listeners.forEach((listener) => listener())
+}
+
+const subscribe = (listener: () => void) => {
+  listeners.add(listener)
+  return () => {
+    listeners.delete(listener)
+  }
+}
+
+const getSnapshot = () => state
+
+export const refreshNotifications = async () => {
+  if (refreshPromise) return refreshPromise
+
+  refreshPromise = (async () => {
+    try {
+      const [notifications, unreadCount] = await Promise.all([
+        getNotifications(20),
+        getUnreadCount(),
+      ])
+      setState({ notifications, unreadCount, loading: false })
+    } catch (error) {
+      console.error('Failed to fetch notifications:', error)
+      setState({ loading: false })
+    }
+  })()
+
+  try {
+    await refreshPromise
+  } finally {
+    refreshPromise = null
+  }
+}
+
+export const markNotificationRead = async (notificationId: string) => {
+  const wasUnread = state.notifications.some(
+    (notification) => notification.id === notificationId && !notification.isRead,
+  )
+
+  setState({
+    notifications: state.notifications.map((notification) =>
+      notification.id === notificationId
+        ? { ...notification, isRead: true }
+        : notification,
+    ),
+    unreadCount: wasUnread ? Math.max(0, state.unreadCount - 1) : state.unreadCount,
+  })
+
+  try {
+    await apiMarkAsRead(notificationId)
+  } catch (error) {
+    console.error('Failed to mark notification as read:', error)
+    void refreshNotifications()
+  }
+}
+
+export const markAllNotificationsRead = async () => {
+  if (state.unreadCount === 0) return
+
+  setState({
+    notifications: state.notifications.map((notification) => ({
+      ...notification,
+      isRead: true,
+    })),
+    unreadCount: 0,
+  })
+
+  try {
+    await apiMarkAllAsRead()
+  } catch (error) {
+    console.error('Failed to mark all notifications as read:', error)
+    void refreshNotifications()
+  }
+}
+
+const handleFocus = () => {
+  void refreshNotifications()
+}
+
+const handleVisibility = () => {
+  if (!document.hidden) void refreshNotifications()
+}
+
+const startPolling = (interval: number) => {
+  if (interval <= 0 || pollTimer) return
+  pollTimer = setInterval(() => void refreshNotifications(), interval)
+  window.addEventListener('focus', handleFocus)
+  document.addEventListener('visibilitychange', handleVisibility)
+}
+
+const stopPolling = () => {
+  if (!pollTimer) return
+  clearInterval(pollTimer)
+  pollTimer = null
+  window.removeEventListener('focus', handleFocus)
+  document.removeEventListener('visibilitychange', handleVisibility)
+}
+
+/**
+ * Shared notification state so every bell instance shows the same unread
+ * count and updates immediately when one of them marks items as read.
+ */
 export const useNotifications = (pollingInterval: number = 60000) => {
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [unreadCount, setUnreadCount] = useState<number>(0)
-  const [loading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
+  const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
 
-  // Fetch notifications
-  const fetchNotifications = useCallback(async () => {
-    try {
-      const data = await getNotifications(20)
-      setNotifications(data)
-      setError(null)
-    } catch (err: any) {
-      console.error('Failed to fetch notifications:', err)
-      // Don't show error for aborted requests or network errors on initial load
-      if (err.code !== 'ERR_CANCELED' && err.code !== 'ECONNABORTED') {
-        setError(err.response?.data?.message || 'Failed to load notifications')
-      }
-    } finally {
-      setLoading(false)
+  useEffect(() => {
+    subscribers += 1
+    if (subscribers === 1) {
+      void refreshNotifications()
+      startPolling(pollingInterval)
     }
-  }, [])
 
-  // Fetch unread count
-  const fetchUnreadCount = useCallback(async () => {
-    try {
-      const count = await getUnreadCount()
-      setUnreadCount(count)
-    } catch (err: any) {
-      // Silently fail for unread count - not critical
-      if (err.code !== 'ERR_CANCELED' && err.code !== 'ECONNABORTED') {
-        console.error('Failed to fetch unread count:', err)
+    return () => {
+      subscribers -= 1
+      if (subscribers === 0) {
+        stopPolling()
+        state = initialState
       }
     }
-  }, [])
-
-  // Mark notification as read
-  const handleMarkAsRead = useCallback(async (notificationId: string) => {
-    try {
-      await markAsRead(notificationId)
-      
-      // Update local state
-      setNotifications((prev) =>
-        prev.map((notif) =>
-          notif.id === notificationId ? { ...notif, isRead: true } : notif
-        )
-      )
-      
-      // Update unread count
-      setUnreadCount((prev) => Math.max(0, prev - 1))
-    } catch (err: any) {
-      console.error('Failed to mark notification as read:', err)
-    }
-  }, [])
-
-  // Mark all as read
-  const handleMarkAllAsRead = useCallback(async () => {
-    try {
-      await markAllAsRead()
-      
-      // Update local state
-      setNotifications((prev) =>
-        prev.map((notif) => ({ ...notif, isRead: true }))
-      )
-      
-      // Reset unread count
-      setUnreadCount(0)
-    } catch (err: any) {
-      console.error('Failed to mark all as read:', err)
-    }
-  }, [])
-
-  // Refresh notifications and count
-  const refresh = useCallback(async () => {
-    await Promise.all([fetchNotifications(), fetchUnreadCount()])
-  }, [fetchNotifications, fetchUnreadCount])
-
-  // Initial fetch
-  useEffect(() => {
-    refresh()
-  }, [refresh])
-
-  // Polling for new notifications
-  useEffect(() => {
-    if (pollingInterval <= 0) return
-
-    const interval = setInterval(() => {
-      fetchUnreadCount()
-    }, pollingInterval)
-
-    return () => clearInterval(interval)
-  }, [pollingInterval, fetchUnreadCount])
+  }, [pollingInterval])
 
   return {
-    notifications,
-    unreadCount,
-    loading,
-    error,
-    markAsRead: handleMarkAsRead,
-    markAllAsRead: handleMarkAllAsRead,
-    refresh,
+    notifications: snapshot.notifications,
+    unreadCount: snapshot.unreadCount,
+    loading: snapshot.loading,
+    error: null as string | null,
+    markAsRead: markNotificationRead,
+    markAllAsRead: markAllNotificationsRead,
+    refresh: refreshNotifications,
   }
 }

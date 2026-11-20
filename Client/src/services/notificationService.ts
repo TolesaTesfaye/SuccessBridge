@@ -35,7 +35,9 @@ export interface UnreadCountResponse {
  * Get user's notifications
  */
 export const getNotifications = async (limit: number = 20): Promise<Notification[]> => {
-  const response = await api.get<NotificationResponse>(`/notifications?limit=${limit}`)
+  const response = await api.get<NotificationResponse>(`/notifications?limit=${limit}`, {
+    skipCache: true,
+  } as any)
   return response.data.data
 }
 
@@ -43,7 +45,9 @@ export const getNotifications = async (limit: number = 20): Promise<Notification
  * Get unread notification count
  */
 export const getUnreadCount = async (): Promise<number> => {
-  const response = await api.get<UnreadCountResponse>('/notifications/unread-count')
+  const response = await api.get<UnreadCountResponse>('/notifications/unread-count', {
+    skipCache: true,
+  } as any)
   return response.data.data.count
 }
 

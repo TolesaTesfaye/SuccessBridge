@@ -69,6 +69,9 @@ export const conversationService = {
       await api.post("/conversations", { participantIds, title }),
     ),
 
+  startOwnerConversation: async (): Promise<Conversation> =>
+    unwrap(await api.post("/conversations/owner", {})),
+
   listMessages: async (
     id: string,
     page = 1,

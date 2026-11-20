@@ -5,22 +5,38 @@ import ConversationParticipant from '../models/ConversationParticipant.js'
 import Message from '../models/Message.js'
 import User from '../models/User.js'
 import { AppError } from '../middleware/errorHandler.js'
+import { extractB2Key, getB2SignedUrl } from '../middleware/b2Upload.js'
 
 const userAttributes = ['id', 'name', 'role']
 const MAX_MESSAGE_LENGTH = 5000
+const ATTACHMENT_URL_TTL_SECONDS = 24 * 60 * 60
 
 const serializeUser = (user: any) =>
   user
     ? { id: user.id, name: user.name, role: user.role }
     : null
 
-const serializeMessage = (message: any) => ({
+// The B2 bucket is private, so the stored public URL returns 401/403. Sign it
+// on read (same pattern as resource previews and payment screenshots).
+const signAttachmentUrl = async (url: string | null | undefined) => {
+  if (!url) return null
+  const key = extractB2Key(url)
+  if (!key) return url
+  try {
+    return await getB2SignedUrl(key, ATTACHMENT_URL_TTL_SECONDS, false)
+  } catch (error) {
+    console.error('❌ Failed to sign attachment URL:', error)
+    return url
+  }
+}
+
+const serializeMessage = async (message: any) => ({
   id: message.id,
   conversationId: message.conversationId,
   senderId: message.senderId,
   content: message.content,
   messageType: message.messageType,
-  attachmentUrl: message.attachmentUrl ?? null,
+  attachmentUrl: await signAttachmentUrl(message.attachmentUrl),
   attachmentName: message.attachmentName ?? null,
   attachmentType: message.attachmentType ?? null,
   attachmentSize: message.attachmentSize ?? null,
@@ -35,7 +51,7 @@ export interface MessageAttachment {
   size?: number | null
 }
 
-const serializeConversation = (
+const serializeConversation = async (
   conversation: any,
   unreadCount: number,
   lastMessage: any,
@@ -52,7 +68,7 @@ const serializeConversation = (
     user: serializeUser(participant.user),
   })),
   unreadCount,
-  lastMessage: lastMessage ? serializeMessage(lastMessage) : null,
+  lastMessage: lastMessage ? await serializeMessage(lastMessage) : null,
 })
 
 export class ConversationService {
@@ -156,11 +172,13 @@ export class ConversationService {
       }),
     )
 
-    return conversations.map((conversation, index) =>
-      serializeConversation(
-        conversation,
-        unreadCounts[index],
-        (conversation as any).messages?.[0],
+    return Promise.all(
+      conversations.map((conversation, index) =>
+        serializeConversation(
+          conversation,
+          unreadCounts[index],
+          (conversation as any).messages?.[0],
+        ),
       ),
     )
   }
@@ -187,6 +205,19 @@ export class ConversationService {
     return Conversation.findOne({
       where: { id: (shared as any).conversationId, type: 'direct' },
     })
+  }
+
+  static async getOrCreateOwnerConversation(userId: string) {
+    const owner = await User.findOne({
+      where: { role: 'super_admin', id: { [Op.ne]: userId } },
+      order: [['createdAt', 'ASC']],
+      attributes: ['id'],
+    })
+    if (!owner) {
+      throw new AppError(404, 'No system owner is available right now')
+    }
+
+    return this.createConversation(userId, [owner.id])
   }
 
   static async createConversation(
@@ -283,7 +314,7 @@ export class ConversationService {
         })
         const total = await Message.count({ where: { conversationId } })
         return {
-          messages: rows.reverse().map(serializeMessage),
+          messages: await Promise.all(rows.reverse().map(serializeMessage)),
           total,
           page: 1,
           limit: safeLimit,
@@ -301,7 +332,7 @@ export class ConversationService {
     })
 
     return {
-      messages: rows.reverse().map(serializeMessage),
+      messages: await Promise.all(rows.reverse().map(serializeMessage)),
       total: count,
       page: safePage,
       limit: safeLimit,
@@ -341,16 +372,18 @@ export class ConversationService {
       limit: Math.min(100, Math.max(1, limit)),
     })
 
-    return messages.map((message: any) => ({
-      ...serializeMessage(message),
-      conversation: message.conversation
-        ? {
-            id: message.conversation.id,
-            title: message.conversation.title,
-            type: message.conversation.type,
-          }
-        : null,
-    }))
+    return Promise.all(
+      messages.map(async (message: any) => ({
+        ...(await serializeMessage(message)),
+        conversation: message.conversation
+          ? {
+              id: message.conversation.id,
+              title: message.conversation.title,
+              type: message.conversation.type,
+            }
+          : null,
+      })),
+    )
   }
 
   static async sendMessage(

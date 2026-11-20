@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { adminService, Announcement } from "@services/adminService";
 import { Plus, Megaphone, Loader2 } from "lucide-react";
+import { AnnouncementCard, LEVEL_OPTIONS } from "@components/communication/AnnouncementCard";
 import {
-  StyledBadge,
   StyledInput,
   StyledSelect,
   StyledBtn,
@@ -18,6 +18,8 @@ export const AnnouncementsTab: React.FC<{ toast: any }> = ({ toast }) => {
     content: "",
     type: "info",
     targetRoles: [] as string[],
+    targetEducationLevels: [] as string[],
+    targetPaymentStatus: "" as "" | "paid" | "unpaid",
   });
 
   const fetch = useCallback(async () => {
@@ -43,7 +45,10 @@ export const AnnouncementsTab: React.FC<{ toast: any }> = ({ toast }) => {
     }
     try {
       const { managementService } = await import("@services/managementService");
-      await managementService.createAnnouncement(form);
+      await managementService.createAnnouncement({
+        ...form,
+        targetPaymentStatus: form.targetPaymentStatus || null,
+      });
       toast.success("Created");
       setShowCreate(false);
       fetch();
@@ -74,39 +79,7 @@ export const AnnouncementsTab: React.FC<{ toast: any }> = ({ toast }) => {
       ) : (
         <div className="space-y-4">
           {list.map((a) => (
-            <div
-              key={a.id}
-              className={`bg-white dark:bg-slate-800/60 rounded-xl border p-5 ${a.isActive ? "" : "opacity-60"}`}
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-2">
-                    <StyledBadge
-                      className={
-                        a.type === "info"
-                          ? "bg-blue-100 text-blue-700"
-                          : a.type === "warning"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : "bg-red-100 text-red-700"
-                      }
-                    >
-                      {a.type}
-                    </StyledBadge>
-                    {!a.isActive && (
-                      <StyledBadge className="bg-gray-100 text-gray-500">
-                        Inactive
-                      </StyledBadge>
-                    )}
-                  </div>
-                  <h4 className="font-bold text-gray-900 dark:text-white text-lg">
-                    {a.title}
-                  </h4>
-                  <p className="text-sm text-gray-600 dark:text-slate-400 mt-2 whitespace-pre-wrap">
-                    {a.content}
-                  </p>
-                </div>
-              </div>
-            </div>
+            <AnnouncementCard key={a.id} announcement={a} />
           ))}
         </div>
       )}
@@ -129,9 +102,60 @@ export const AnnouncementsTab: React.FC<{ toast: any }> = ({ toast }) => {
             options={[
               { value: "info", label: "Info" },
               { value: "warning", label: "Warning" },
-              { value: "important", label: "Important" },
+              { value: "success", label: "Success" },
+              { value: "update", label: "Update" },
             ]}
           />
+          <StyledSelect
+            label="Student payment status"
+            value={form.targetPaymentStatus}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                targetPaymentStatus: e.target.value as "" | "paid" | "unpaid",
+              })
+            }
+            options={[
+              { value: "", label: "Everyone" },
+              { value: "paid", label: "Paid students" },
+              { value: "unpaid", label: "Unpaid students" },
+            ]}
+          />
+          <div>
+            <label className="block text-sm font-medium mb-1.5 text-gray-700 dark:text-slate-300">
+              Grade / level (optional)
+            </label>
+            <div className="flex flex-wrap gap-1.5">
+              {LEVEL_OPTIONS.map((option) => {
+                const selected = form.targetEducationLevels.includes(
+                  option.value,
+                );
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() =>
+                      setForm({
+                        ...form,
+                        targetEducationLevels: selected
+                          ? form.targetEducationLevels.filter(
+                              (value) => value !== option.value,
+                            )
+                          : [...form.targetEducationLevels, option.value],
+                      })
+                    }
+                    className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+                      selected
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
           <div>
             <label className="block text-sm font-medium mb-1.5 text-gray-700 dark:text-slate-300">
               Content

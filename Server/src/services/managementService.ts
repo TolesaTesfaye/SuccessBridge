@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import Permission from "../models/Permission.js";
 import SystemSetting from "../models/SystemSetting.js";
 import Announcement from "../models/Announcement.js";
+import { AnnouncementService } from "./announcementService.js";
 import AuditLog from "../models/AuditLog.js";
 import UserPermission from "../models/UserPermission.js";
 import RolePermission from "../models/RolePermission.js";
@@ -250,12 +251,14 @@ class ManagementService {
     type?: string;
     targetRoles?: string[];
     targetEducationLevels?: string[];
+    targetPaymentStatus?: string | null;
     createdBy?: string;
     scheduledAt?: Date;
     expiresAt?: Date;
-  }): Promise<Announcement> {
+  }): Promise<any> {
     try {
-      return await Announcement.create(data);
+      const { createdBy, ...payload } = data;
+      return await AnnouncementService.create(createdBy, payload);
     } catch (error) {
       logger.error("Error creating announcement:", error);
       throw error;
@@ -270,16 +273,19 @@ class ManagementService {
       type: string;
       targetRoles: string[];
       targetEducationLevels: string[];
+      targetPaymentStatus: string | null;
       isActive: boolean;
       scheduledAt: Date;
       expiresAt: Date;
     }>,
-  ): Promise<Announcement> {
+    actorId?: string,
+  ): Promise<any> {
     try {
-      const announcement = await Announcement.findByPk(id);
-      if (!announcement) throw new Error("Announcement not found");
-      await announcement.update(data);
-      return announcement;
+      return await AnnouncementService.update(
+        id,
+        { id: actorId || "", role: "super_admin" },
+        data,
+      );
     } catch (error) {
       logger.error("Error updating announcement:", error);
       throw error;
@@ -296,12 +302,15 @@ class ManagementService {
     }
   }
 
-  async toggleAnnouncement(id: string): Promise<Announcement> {
+  async toggleAnnouncement(id: string): Promise<any> {
     try {
       const announcement = await Announcement.findByPk(id);
       if (!announcement) throw new Error("Announcement not found");
-      await announcement.update({ isActive: !announcement.isActive });
-      return announcement;
+      return await AnnouncementService.update(
+        id,
+        { id: "", role: "super_admin" },
+        { isActive: !announcement.isActive },
+      );
     } catch (error) {
       logger.error("Error toggling announcement:", error);
       throw error;

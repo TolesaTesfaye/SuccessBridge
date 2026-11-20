@@ -45,6 +45,7 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import conversationRoutes from "./routes/conversationRoutes.js";
 import announcementRoutes from "./routes/announcementRoutes.js";
 import ticketRoutes from "./routes/ticketRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 import diagnosticRoutes from "./routes/diagnostic.js";
 import auditRoutes from "./routes/audit.js";
 import securityRoutes from "./routes/securityRoutes.js";
@@ -72,6 +73,7 @@ import SubjectAccess from "./models/SubjectAccess.js";
 import Notification from "./models/Notification.js";
 import AuditLog from "./models/AuditLog.js";
 import ResourceType from "./models/ResourceType.js";
+import ContactMessage from "./models/ContactMessage.js";
 import { setupAssociations } from "./models/index.js";
 import { cacheMiddleware } from "./middleware/cacheMiddleware.js";
 import { initSocket, getSocketServer } from "./socket/index.js";
@@ -159,10 +161,18 @@ const limiter = rateLimit({
 
 // Middleware
 
+// Additional exact origins, comma-separated (e.g. custom domains or
+// alternate deployments), configured from the environment.
+const extraCorsOrigins = (process.env.FRONTEND_URLS || "")
+  .split(",")
+  .map((value) => value.trim())
+  .filter(Boolean);
+
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
       process.env.FRONTEND_URL,
+      ...extraCorsOrigins,
       "https://success-bridge-ten.vercel.app", // Vercel production frontend
       "http://localhost:3000",
       "http://127.0.0.1:3000",
@@ -178,12 +188,8 @@ const corsOptions = {
       origin && (origin.includes("localhost") || origin.includes("127.0.0.1"));
 
     // Allow requests with no origin (like mobile apps, curl) or if origin is in allowed list
-    // Allow Vercel deployments and Cloudflare Pages (production + preview subdomains).
-    const isAllowedDomain =
-      !!origin &&
-      (origin.endsWith(".vercel.app") ||
-        origin === "https://successbridge.pages.dev" ||
-        origin.endsWith(".successbridge.pages.dev"));
+    // Allow Vercel deployments, including preview deployments.
+    const isAllowedDomain = !!origin && origin.endsWith(".vercel.app");
 
     if (
       !origin ||
@@ -226,6 +232,7 @@ app.use(
       "/conversations",
       "/announcements",
       "/tickets",
+      "/contact",
     ],
   }),
 );
@@ -294,6 +301,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/conversations", conversationRoutes);
 app.use("/api/announcements", announcementRoutes);
 app.use("/api/tickets", ticketRoutes);
+app.use("/api/contact", contactRoutes);
 app.use("/api/diagnostic", diagnosticRoutes);
 app.use("/api/admin", auditRoutes);
 app.use("/api/admin/security", securityRoutes);

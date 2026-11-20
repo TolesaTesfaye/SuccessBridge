@@ -8,6 +8,7 @@ interface IAnnouncement {
   type: string;
   targetRoles?: string[];
   targetEducationLevels?: string[];
+  targetPaymentStatus?: string | null;
   isActive: boolean;
   createdBy?: string;
   scheduledAt?: Date;
@@ -23,6 +24,7 @@ class Announcement extends Model<IAnnouncement> implements IAnnouncement {
   public type!: string;
   public targetRoles?: string[];
   public targetEducationLevels?: string[];
+  public targetPaymentStatus?: string | null;
   public isActive!: boolean;
   public createdBy?: string;
   public scheduledAt?: Date;
@@ -56,6 +58,10 @@ Announcement.init(
     },
     targetEducationLevels: {
       type: DataTypes.ARRAY(DataTypes.STRING(50)),
+      allowNull: true,
+    },
+    targetPaymentStatus: {
+      type: DataTypes.STRING(20),
       allowNull: true,
     },
     isActive: {

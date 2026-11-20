@@ -42,6 +42,28 @@ router.post('/', requireRole('admin', 'super_admin'), async (req, res, next) => 
 })
 
 /**
+ * @route   PUT /api/announcements/:id
+ * @desc    Edit an announcement (creator or super admin)
+ * @access  Private (admin, super_admin)
+ */
+router.put(
+  '/:id',
+  requireRole('admin', 'super_admin'),
+  async (req, res, next) => {
+    try {
+      const announcement = await AnnouncementService.update(
+        req.params.id,
+        req.user!,
+        req.body || {},
+      )
+      res.json({ success: true, data: announcement })
+    } catch (error) {
+      next(error)
+    }
+  },
+)
+
+/**
  * @route   DELETE /api/announcements/:id
  * @desc    Delete an announcement (creator or super admin)
  * @access  Private (admin, super_admin)

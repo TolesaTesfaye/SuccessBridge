@@ -60,6 +60,13 @@ export async function autoMigrate() {
     `);
     console.log('✅ Added/verified notification types for announcements and tickets');
 
+    // Announcement audience by payment status (paid = has active category access)
+    await sequelize.query(`
+      ALTER TABLE announcements
+      ADD COLUMN IF NOT EXISTS target_payment_status VARCHAR(20)
+    `);
+    console.log('✅ Added/verified announcement payment audience column');
+
     // Communication support tickets (separate from the legacy management
     // support_tickets table, which has a different schema)
     await sequelize.query(`

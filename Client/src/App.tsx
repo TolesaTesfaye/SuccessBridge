@@ -80,6 +80,11 @@ const StudentPayments = lazy(() =>
     default: m.PaymentTrackingPage,
   })),
 );
+const StudentHelp = lazy(() =>
+  import("@pages/student/StudentHelp").then((m) => ({
+    default: m.StudentHelp,
+  })),
+);
 const UniversityCourseViewer = lazy(() =>
   import("@pages/student/UniversityCourseViewer").then((m) => ({
     default: m.UniversityCourseViewer,
@@ -464,6 +469,14 @@ const AppContent: React.FC = () => {
                 element={
                   <ProtectedRoute requiredRole="student">
                     <StudentPayments />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/student/help"
+                element={
+                  <ProtectedRoute requiredRole="student">
+                    <StudentHelp />
                   </ProtectedRoute>
                 }
               />

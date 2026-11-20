@@ -13,7 +13,9 @@ import {
   ChevronDown,
   ExternalLink,
   ArrowRight,
+  Loader2,
 } from "lucide-react";
+import { contactService, type ContactCategory } from "@services/contactService";
 
 /* ── Reveal ── */
 function useReveal(rootRef: React.RefObject<HTMLDivElement>) {
@@ -86,6 +88,8 @@ export const Contact: React.FC = () => {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState("general");
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -96,14 +100,32 @@ export const Contact: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    setSubmitted(true);
-    setTimeout(() => {
+    if (sending) return;
+
+    setSending(true);
+    setSubmitError(null);
+    try {
+      await contactService.send({
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        subject: formData.subject.trim(),
+        category: activeCategory as ContactCategory,
+        message: formData.message.trim(),
+      });
+      setSubmitted(true);
       setFormData({ name: "", email: "", subject: "", message: "" });
-      setSubmitted(false);
-    }, 4000);
+      window.setTimeout(() => setSubmitted(false), 6000);
+    } catch (error: any) {
+      setSubmitError(
+        error?.response?.data?.error ||
+          error?.response?.data?.message ||
+          "Your message didn't send. Please try again.",
+      );
+    } finally {
+      setSending(false);
+    }
   };
 
   /* ── Data ── */
@@ -407,6 +429,17 @@ export const Contact: React.FC = () => {
                     </div>
                   )}
 
+                  {submitError && (
+                    <div className="mb-6 p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-2xl flex items-start gap-3">
+                      <span className="text-rose-600 dark:text-rose-400 text-lg">
+                        !
+                      </span>
+                      <p className="text-sm text-rose-800 dark:text-rose-300 font-medium leading-relaxed">
+                        {submitError}
+                      </p>
+                    </div>
+                  )}
+
                   <form onSubmit={handleSubmit}>
                     <div className="grid sm:grid-cols-2 gap-4 md:gap-5 mb-4">
                       <div>
@@ -487,10 +520,20 @@ export const Contact: React.FC = () => {
 
                     <button
                       type="submit"
-                      className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-sm md:text-base"
+                      disabled={sending}
+                      className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all active:scale-[0.98] flex items-center justify-center gap-2 text-sm md:text-base disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      Send Message
-                      <ArrowRight className="w-4 h-4" />
+                      {sending ? (
+                        <>
+                          Sending…
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        </>
+                      ) : (
+                        <>
+                          Send Message
+                          <ArrowRight className="w-4 h-4" />
+                        </>
+                      )}
                     </button>
                   </form>
                 </div>

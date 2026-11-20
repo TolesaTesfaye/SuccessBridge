@@ -6,6 +6,8 @@ export interface AnnouncementAuthor {
   role: "student" | "admin" | "super_admin";
 }
 
+export type PaymentAudience = "paid" | "unpaid";
+
 export interface Announcement {
   id: string;
   title: string;
@@ -13,6 +15,7 @@ export interface Announcement {
   type: string;
   targetRoles: string[] | null;
   targetEducationLevels: string[] | null;
+  targetPaymentStatus: PaymentAudience | null;
   isActive: boolean;
   createdBy: string | null;
   scheduledAt: string | null;
@@ -26,7 +29,17 @@ export interface CreateAnnouncementInput {
   content: string;
   type?: string;
   targetRoles?: string[];
+  targetEducationLevels?: string[];
+  targetPaymentStatus?: PaymentAudience | null;
+  scheduledAt?: string | null;
+  expiresAt?: string | null;
 }
+
+export type UpdateAnnouncementInput = Partial<CreateAnnouncementInput> & {
+  targetRoles?: string[] | null;
+  targetEducationLevels?: string[] | null;
+  isActive?: boolean;
+};
 
 const unwrap = <T>(response: { data: { data: T } }): T => response.data.data;
 
@@ -41,6 +54,12 @@ export const announcementService = {
 
   create: async (input: CreateAnnouncementInput): Promise<Announcement> =>
     unwrap(await api.post("/announcements", input)),
+
+  update: async (
+    id: string,
+    input: UpdateAnnouncementInput,
+  ): Promise<Announcement> =>
+    unwrap(await api.put(`/announcements/${id}`, input)),
 
   remove: async (id: string): Promise<void> => {
     await api.delete(`/announcements/${id}`);

@@ -68,10 +68,17 @@ const NotificationBell: React.FC<NotificationBellProps> = ({
   }, [isOpen])
 
   const toggleDropdown = () => {
-    setIsOpen(!isOpen)
-    if (!isOpen) {
-      refresh() // Refresh when opening
+    if (isOpen) {
+      setIsOpen(false)
+      return
     }
+
+    setIsOpen(true)
+    void (async () => {
+      await refresh()
+      // Seeing the list counts as reading it, so the badge clears right away.
+      await markAllAsRead()
+    })()
   }
 
   return (

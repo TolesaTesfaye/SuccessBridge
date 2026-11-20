@@ -5,7 +5,6 @@ import {
   Megaphone,
   Plus,
   RefreshCw,
-  Trash2,
 } from "lucide-react";
 import { Modal } from "@components/common/Modal";
 import { useAuthStore } from "@store/authStore";
@@ -13,26 +12,24 @@ import {
   announcementService,
   type Announcement,
 } from "@services/announcementService";
-import { formatDistanceToNow } from "@utils/dateUtils";
-
-const TYPE_STYLES: Record<string, string> = {
-  info: "bg-blue-500/10 text-blue-700 dark:text-blue-300",
-  warning: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
-  success: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-  update: "bg-violet-500/10 text-violet-700 dark:text-violet-300",
-};
-
-const ROLE_OPTIONS = [
-  { value: "student", label: "Students" },
-  { value: "admin", label: "Admins" },
-  { value: "super_admin", label: "Super admins" },
-];
+import {
+  AnnouncementCard,
+  LEVEL_OPTIONS,
+  ROLE_OPTIONS,
+  TYPE_STYLES,
+} from "@components/communication/AnnouncementCard";
 
 const errorText = (error: any, fallback: string) =>
   error?.response?.data?.error ||
   error?.response?.data?.message ||
   error?.userFriendlyError?.message ||
   fallback;
+
+const PAYMENT_OPTIONS = [
+  { value: "", label: "Everyone" },
+  { value: "paid", label: "Paid" },
+  { value: "unpaid", label: "Unpaid" },
+] as const;
 
 interface AnnouncementsPanelProps {
   refreshKey?: number;
@@ -49,11 +46,15 @@ export const AnnouncementsPanel: React.FC<AnnouncementsPanelProps> = ({
   const [loadError, setLoadError] = useState<string | null>(null);
 
   const [createOpen, setCreateOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({
     title: "",
     content: "",
     type: "info",
     targetRoles: [] as string[],
+    targetEducationLevels: [] as string[],
+    targetPaymentStatus: "" as "" | "paid" | "unpaid",
+    isActive: true,
   });
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
@@ -76,7 +77,31 @@ export const AnnouncementsPanel: React.FC<AnnouncementsPanelProps> = ({
   }, [load, refreshKey]);
 
   const openCreate = () => {
-    setForm({ title: "", content: "", type: "info", targetRoles: [] });
+    setEditingId(null);
+    setForm({
+      title: "",
+      content: "",
+      type: "info",
+      targetRoles: [],
+      targetEducationLevels: [],
+      targetPaymentStatus: "",
+      isActive: true,
+    });
+    setCreateError(null);
+    setCreateOpen(true);
+  };
+
+  const openEdit = (announcement: Announcement) => {
+    setEditingId(announcement.id);
+    setForm({
+      title: announcement.title,
+      content: announcement.content,
+      type: announcement.type || "info",
+      targetRoles: announcement.targetRoles || [],
+      targetEducationLevels: announcement.targetEducationLevels || [],
+      targetPaymentStatus: announcement.targetPaymentStatus || "",
+      isActive: announcement.isActive,
+    });
     setCreateError(null);
     setCreateOpen(true);
   };
@@ -90,6 +115,15 @@ export const AnnouncementsPanel: React.FC<AnnouncementsPanelProps> = ({
     }));
   };
 
+  const toggleLevel = (level: string) => {
+    setForm((previous) => ({
+      ...previous,
+      targetEducationLevels: previous.targetEducationLevels.includes(level)
+        ? previous.targetEducationLevels.filter((value) => value !== level)
+        : [...previous.targetEducationLevels, level],
+    }));
+  };
+
   const handleCreate = async () => {
     if (creating) return;
     if (!form.title.trim() || !form.content.trim()) {
@@ -100,20 +134,45 @@ export const AnnouncementsPanel: React.FC<AnnouncementsPanelProps> = ({
     setCreating(true);
     setCreateError(null);
     try {
-      const created = await announcementService.create({
-        title: form.title.trim(),
-        content: form.content.trim(),
-        type: form.type,
-        targetRoles: form.targetRoles,
-      });
-      setAnnouncements((previous) =>
-        previous.some((item) => item.id === created.id)
-          ? previous
-          : [created, ...previous],
-      );
+      if (editingId) {
+        const updated = await announcementService.update(editingId, {
+          title: form.title.trim(),
+          content: form.content.trim(),
+          type: form.type,
+          targetRoles: form.targetRoles,
+          targetEducationLevels: form.targetEducationLevels,
+          targetPaymentStatus: form.targetPaymentStatus || null,
+          isActive: form.isActive,
+        });
+        setAnnouncements((previous) =>
+          previous.map((item) => (item.id === updated.id ? updated : item)),
+        );
+      } else {
+        const created = await announcementService.create({
+          title: form.title.trim(),
+          content: form.content.trim(),
+          type: form.type,
+          targetRoles: form.targetRoles,
+          targetEducationLevels: form.targetEducationLevels,
+          targetPaymentStatus: form.targetPaymentStatus || null,
+        });
+        setAnnouncements((previous) =>
+          previous.some((item) => item.id === created.id)
+            ? previous
+            : [created, ...previous],
+        );
+      }
       setCreateOpen(false);
+      setEditingId(null);
     } catch (error) {
-      setCreateError(errorText(error, "Couldn't publish the announcement."));
+      setCreateError(
+        errorText(
+          error,
+          editingId
+            ? "Couldn't save the announcement."
+            : "Couldn't publish the announcement.",
+        ),
+      );
     } finally {
       setCreating(false);
     }
@@ -134,7 +193,7 @@ export const AnnouncementsPanel: React.FC<AnnouncementsPanelProps> = ({
     }
   };
 
-  const canDelete = (announcement: Announcement) =>
+  const canManage = (announcement: Announcement) =>
     me?.role === "super_admin" ||
     (Boolean(me?.id) && announcement.createdBy === me?.id);
 
@@ -206,62 +265,17 @@ export const AnnouncementsPanel: React.FC<AnnouncementsPanelProps> = ({
         ) : (
           <div className="mx-auto flex max-w-3xl flex-col gap-3">
             {announcements.map((announcement) => (
-              <article
+              <AnnouncementCard
                 key={announcement.id}
-                className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-[#263653] dark:bg-[#101A32]/70"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-                          TYPE_STYLES[announcement.type] || TYPE_STYLES.info
-                        }`}
-                      >
-                        {announcement.type}
-                      </span>
-                      {announcement.targetRoles &&
-                        announcement.targetRoles.length > 0 && (
-                          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500 dark:bg-white/5 dark:text-slate-400">
-                            {announcement.targetRoles
-                              .map(
-                                (role) =>
-                                  ROLE_OPTIONS.find(
-                                    (option) => option.value === role,
-                                  )?.label || role,
-                              )
-                              .join(" · ")}
-                          </span>
-                        )}
-                    </div>
-                    <h3 className="mt-2 text-sm font-bold text-slate-900 dark:text-white">
-                      {announcement.title}
-                    </h3>
-                  </div>
-                  {canDelete(announcement) && (
-                    <button
-                      type="button"
-                      onClick={() => void handleDelete(announcement)}
-                      disabled={deletingId === announcement.id}
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-rose-500/10 hover:text-rose-600 disabled:opacity-50 dark:hover:text-rose-400"
-                      aria-label="Delete announcement"
-                    >
-                      {deletingId === announcement.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Trash2 className="h-4 w-4" />
-                      )}
-                    </button>
-                  )}
-                </div>
-                <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-600 dark:text-slate-300">
-                  {announcement.content}
-                </p>
-                <p className="mt-3 text-[11px] font-medium text-slate-400 dark:text-slate-500">
-                  {announcement.creator?.name || "SuccessBridge"} ·{" "}
-                  {formatDistanceToNow(announcement.createdAt)}
-                </p>
-              </article>
+                announcement={announcement}
+                deleting={deletingId === announcement.id}
+                onEdit={canManage(announcement) ? openEdit : undefined}
+                onDelete={
+                  canManage(announcement)
+                    ? (item) => void handleDelete(item)
+                    : undefined
+                }
+              />
             ))}
           </div>
         )}
@@ -270,16 +284,22 @@ export const AnnouncementsPanel: React.FC<AnnouncementsPanelProps> = ({
       <Modal
         isOpen={createOpen}
         onClose={() => {
-          if (!creating) setCreateOpen(false);
+          if (!creating) {
+            setCreateOpen(false);
+            setEditingId(null);
+          }
         }}
-        title="New announcement"
+        title={editingId ? "Edit announcement" : "New announcement"}
         size="md"
         fullScreenOnMobile
         footer={
           <div className="flex items-center justify-end gap-2">
             <button
               type="button"
-              onClick={() => setCreateOpen(false)}
+              onClick={() => {
+                setCreateOpen(false);
+                setEditingId(null);
+              }}
               disabled={creating}
               className="rounded-xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-50 disabled:opacity-50 dark:border-[#263653] dark:text-slate-300 dark:hover:bg-white/5"
             >
@@ -292,7 +312,13 @@ export const AnnouncementsPanel: React.FC<AnnouncementsPanelProps> = ({
               className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-sm shadow-blue-500/25 transition-all hover:brightness-110 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {creating && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-              {creating ? "Publishing…" : "Publish"}
+              {creating
+                ? editingId
+                  ? "Saving…"
+                  : "Publishing…"
+                : editingId
+                  ? "Save changes"
+                  : "Publish"}
             </button>
           </div>
         }
@@ -372,6 +398,101 @@ export const AnnouncementsPanel: React.FC<AnnouncementsPanelProps> = ({
               Leave empty to reach everyone.
             </p>
           </div>
+          <div>
+            <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-slate-400">
+              Grade / level
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {LEVEL_OPTIONS.map((option) => {
+                const selected = form.targetEducationLevels.includes(
+                  option.value,
+                );
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => toggleLevel(option.value)}
+                    className={`rounded-full px-3 py-1 text-[11px] font-bold transition-colors ${
+                      selected
+                        ? "bg-blue-600 text-white"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="mt-1.5 text-[10px] text-slate-400">
+              Leave empty for all grades and levels. Applies to students.
+            </p>
+          </div>
+          <div>
+            <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-slate-400">
+              Payment status
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {PAYMENT_OPTIONS.map((option) => (
+                <button
+                  key={option.value || "all"}
+                  type="button"
+                  onClick={() =>
+                    setForm((previous) => ({
+                      ...previous,
+                      targetPaymentStatus: option.value,
+                    }))
+                  }
+                  className={`rounded-full px-3 py-1 text-[11px] font-bold transition-colors ${
+                    form.targetPaymentStatus === option.value
+                      ? "bg-blue-600 text-white"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-1.5 text-[10px] text-slate-400">
+              Target students who have paid or not paid. Applies to the student
+              audience only.
+            </p>
+          </div>
+          {editingId && (
+            <button
+              type="button"
+              onClick={() =>
+                setForm((previous) => ({
+                  ...previous,
+                  isActive: !previous.isActive,
+                }))
+              }
+              className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-left dark:border-[#263653] dark:bg-white/5"
+            >
+              <span>
+                <span className="block text-xs font-semibold text-slate-700 dark:text-slate-200">
+                  Visible to audience
+                </span>
+                <span className="block text-[10px] text-slate-400">
+                  {form.isActive
+                    ? "Currently shown to the selected audience."
+                    : "Hidden from everyone until you turn it back on."}
+                </span>
+              </span>
+              <span
+                className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${
+                  form.isActive
+                    ? "bg-emerald-500"
+                    : "bg-slate-300 dark:bg-slate-600"
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-all ${
+                    form.isActive ? "left-[18px]" : "left-0.5"
+                  }`}
+                />
+              </span>
+            </button>
+          )}
         </div>
       </Modal>
     </div>

@@ -50,15 +50,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { label: "Payments", path: "/student/payments", icon: <CreditCard className="w-5 h-5" />, emoji: "💳" },
     { label: "Promotions", path: "/student/promotions", icon: <Megaphone className="w-5 h-5" />, emoji: "📢" },
     { label: "Communication", path: "/student/communication", icon: <MessageSquare className="w-5 h-5" />, emoji: "💬" },
+    { label: "Help", path: "/student/help", icon: <HelpCircle className="w-5 h-5" />, emoji: "❓" },
   ];
 
   const adminNavItems = [
-    { label: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard, desc: "Overview & stats" },
-    { label: "Reports", path: "/admin/reports", icon: FileText, desc: "Data & exports" },
-    { label: "Promotion", path: "/admin/promotion", icon: Megaphone, desc: "Student promotions" },
-    { label: "Communication", path: "/admin/communication", icon: MessageSquare, desc: "Messages & announcements" },
-    { label: "Settings", path: "/admin/settings", icon: Settings, desc: "Configure platform" },
-    { label: "Help", path: "/admin/dashboard", icon: HelpCircle, desc: "Guides & support", tab: "help" },
+    { label: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
+    { label: "Reports", path: "/admin/reports", icon: FileText },
+    { label: "Promotion", path: "/admin/promotion", icon: Megaphone },
+    { label: "Communication", path: "/admin/communication", icon: MessageSquare },
+    { label: "Settings", path: "/admin/settings", icon: Settings },
+    { label: "Help", path: "/admin/dashboard", icon: HelpCircle, tab: "help" },
   ];
 
   const superAdminNavItems = [
@@ -142,7 +143,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
             <div className="min-w-0">
               <p className="text-sm font-semibold text-white truncate">{user?.name || "Admin"}</p>
-              <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Administrator</p>
             </div>
           </div>
         </div>
@@ -203,7 +203,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       <span className={`text-sm font-semibold tracking-tight transition-colors duration-200 ${isActive ? "text-white" : "text-slate-300 group-hover:text-white"}`}>
                         {item.label}
                       </span>
-                      <span className="text-[10px] text-slate-500 font-medium">{item.desc}</span>
                     </div>
                   )}
                   {isActive && !collapsed && (

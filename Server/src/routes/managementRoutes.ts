@@ -241,6 +241,7 @@ router.put("/announcements/:id", async (req: AuditRequest, res: Response) => {
     const announcement = await managementService.updateAnnouncement(
       req.params.id,
       req.body,
+      req.audit?.userId,
     );
     res.json({
       success: true,
