@@ -1,10 +1,14 @@
 import { Router, Request, Response } from 'express';
+import { authMiddleware, requireRole } from '../middleware/auth.js';
 
 const router = Router();
 
+// Diagnostic endpoints expose infrastructure configuration and trigger emails,
+// so they are restricted to super admins.
+router.use(authMiddleware, requireRole('super_admin'));
+
 /**
  * Diagnostic endpoint to check email configuration
- * Access: https://successbridge-tolesa-api.onrender.com/api/diagnostic/email-config
  */
 router.get('/email-config', (req: Request, res: Response) => {
   const config = {

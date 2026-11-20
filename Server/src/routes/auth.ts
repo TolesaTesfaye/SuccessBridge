@@ -568,7 +568,12 @@ router.post("/reset-password", resetPassword);
  *       500:
  *         description: Server error
  */
-router.post("/cleanup-expired-pending", cleanupExpiredPendingUsers);
+router.post(
+  "/cleanup-expired-pending",
+  authMiddleware,
+  requireRole("super_admin"),
+  cleanupExpiredPendingUsers,
+);
 
 /**
  * @swagger
@@ -582,7 +587,12 @@ router.post("/cleanup-expired-pending", cleanupExpiredPendingUsers);
  *       500:
  *         description: Server error
  */
-router.get("/pending-users", getPendingUsers);
+router.get(
+  "/pending-users",
+  authMiddleware,
+  requireRole("super_admin"),
+  getPendingUsers,
+);
 
 // Google OAuth - Register (create new users)
 router.get(

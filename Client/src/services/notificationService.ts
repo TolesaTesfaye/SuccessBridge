@@ -1,9 +1,16 @@
 import api from './api'
 
+export type NotificationType =
+  | 'payment_request'
+  | 'payment_approved'
+  | 'payment_rejected'
+  | 'announcement'
+  | 'ticket'
+
 export interface Notification {
   id: string
   userId: string
-  type: 'payment_request' | 'payment_approved' | 'payment_rejected'
+  type: NotificationType
   title: string
   message: string
   data?: any

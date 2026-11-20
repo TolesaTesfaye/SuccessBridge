@@ -4,7 +4,12 @@ import { Op } from 'sequelize'
 
 interface CreateNotificationData {
   userId: string
-  type: 'payment_request' | 'payment_approved' | 'payment_rejected'
+  type:
+    | 'payment_request'
+    | 'payment_approved'
+    | 'payment_rejected'
+    | 'announcement'
+    | 'ticket'
   title: string
   message: string
   data?: any
@@ -74,6 +79,93 @@ export class NotificationService {
       message: `Your payment was rejected. Reason: ${rejectionReason}`,
       data: { paymentId, rejectionReason },
     })
+  }
+
+  /**
+   * Notify a set of users about a published announcement
+   */
+  static async notifyAnnouncement(
+    userIds: string[],
+    announcement: { id: string; title: string; content: string },
+  ) {
+    if (userIds.length === 0) return []
+
+    const preview =
+      announcement.content.length > 140
+        ? `${announcement.content.slice(0, 140)}…`
+        : announcement.content
+
+    const rows = userIds.slice(0, 1000).map((userId) => ({
+      userId,
+      type: 'announcement' as const,
+      title: announcement.title,
+      message: preview,
+      data: { announcementId: announcement.id },
+    }))
+
+    return Notification.bulkCreate(rows)
+  }
+
+  /**
+   * Notify all super admins about a new support ticket
+   */
+  static async notifySuperAdminsNewTicket(
+    ticketId: string,
+    subject: string,
+    userName: string,
+  ) {
+    const superAdmins = await User.findAll({
+      where: { role: 'super_admin' },
+      attributes: ['id'],
+    })
+
+    return Promise.all(
+      superAdmins.map((admin) =>
+        this.createNotification({
+          userId: admin.id,
+          type: 'ticket',
+          title: 'New Support Ticket',
+          message: `${userName} opened a ticket: ${subject}`,
+          data: { ticketId },
+        }),
+      ),
+    )
+  }
+
+  /**
+   * Notify the other side of a ticket thread about a new reply
+   */
+  static async notifyTicketReply(
+    ticket: { id: string; subject: string; userId: string },
+    actorName: string,
+    isStaffReply: boolean,
+  ) {
+    if (isStaffReply) {
+      return this.createNotification({
+        userId: ticket.userId,
+        type: 'ticket',
+        title: 'Support replied to your ticket',
+        message: `${actorName} replied to "${ticket.subject}"`,
+        data: { ticketId: ticket.id },
+      })
+    }
+
+    const superAdmins = await User.findAll({
+      where: { role: 'super_admin' },
+      attributes: ['id'],
+    })
+
+    return Promise.all(
+      superAdmins.map((admin) =>
+        this.createNotification({
+          userId: admin.id,
+          type: 'ticket',
+          title: 'New reply on a support ticket',
+          message: `${actorName} replied to "${ticket.subject}"`,
+          data: { ticketId: ticket.id },
+        }),
+      ),
+    )
   }
 
   /**

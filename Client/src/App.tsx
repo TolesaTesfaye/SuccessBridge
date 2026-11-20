@@ -129,6 +129,11 @@ const AdminReports = lazy(() =>
     default: m.AdminReports,
   })),
 );
+const Communication = lazy(() =>
+  import("@pages/Communication").then((m) => ({
+    default: m.Communication,
+  })),
+);
 
 // Lazy load security dashboard pages (superadmin only)
 const SecurityDashboard = lazy(() =>
@@ -439,6 +444,14 @@ const AppContent: React.FC = () => {
                 }
               />
               <Route
+                path="/student/communication"
+                element={
+                  <ProtectedRoute requiredRole="student">
+                    <Communication />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/student/profile"
                 element={
                   <ProtectedRoute requiredRole="student">
@@ -546,6 +559,14 @@ const AppContent: React.FC = () => {
                 element={
                   <ProtectedRoute requiredRole="admin">
                     <AdminReports />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/communication"
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <Communication />
                   </ProtectedRoute>
                 }
               />
@@ -681,6 +702,14 @@ const AppContent: React.FC = () => {
                 element={
                   <ProtectedRoute requiredRole="super_admin">
                     <SuperAdminManagementPanel />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/superadmin/communication"
+                element={
+                  <ProtectedRoute requiredRole="super_admin">
+                    <Communication />
                   </ProtectedRoute>
                 }
               />

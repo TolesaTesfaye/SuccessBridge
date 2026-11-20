@@ -8,6 +8,7 @@
     "build:server": "cd Server && npm run build",
     "build:client": "cd Client && npm run build",
     "build": "npm run build:server && npm run build:client",
+    "test": "cd Server && npm test",
     "start": "cd Server && npm start"
   },
   "engines": {

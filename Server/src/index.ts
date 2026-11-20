@@ -42,6 +42,9 @@ import streamsRoutes from "./routes/streams.js";
 import systemRoutes from "./routes/system.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import conversationRoutes from "./routes/conversationRoutes.js";
+import announcementRoutes from "./routes/announcementRoutes.js";
+import ticketRoutes from "./routes/ticketRoutes.js";
 import diagnosticRoutes from "./routes/diagnostic.js";
 import auditRoutes from "./routes/audit.js";
 import securityRoutes from "./routes/securityRoutes.js";
@@ -71,6 +74,7 @@ import AuditLog from "./models/AuditLog.js";
 import ResourceType from "./models/ResourceType.js";
 import { setupAssociations } from "./models/index.js";
 import { cacheMiddleware } from "./middleware/cacheMiddleware.js";
+import { initSocket, getSocketServer } from "./socket/index.js";
 import TelegramBotService from "./bot/index.js";
 
 dotenv.config();
@@ -174,10 +178,12 @@ const corsOptions = {
       origin && (origin.includes("localhost") || origin.includes("127.0.0.1"));
 
     // Allow requests with no origin (like mobile apps, curl) or if origin is in allowed list
-    // Allow Vercel deployments, including preview deployments.
+    // Allow Vercel deployments and Cloudflare Pages (production + preview subdomains).
     const isAllowedDomain =
-      origin &&
-      origin.endsWith(".vercel.app");
+      !!origin &&
+      (origin.endsWith(".vercel.app") ||
+        origin === "https://successbridge.pages.dev" ||
+        origin.endsWith(".successbridge.pages.dev"));
 
     if (
       !origin ||
@@ -212,7 +218,15 @@ app.use(
   "/api/",
   cacheMiddleware({
     ttl: 300,
-    exclude: ["/auth", "/notifications", "/payments", "/user/preferences"],
+    exclude: [
+      "/auth",
+      "/notifications",
+      "/payments",
+      "/user/preferences",
+      "/conversations",
+      "/announcements",
+      "/tickets",
+    ],
   }),
 );
 
@@ -277,6 +291,9 @@ app.use("/api/streams", streamsRoutes);
 app.use("/api/system", systemRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/conversations", conversationRoutes);
+app.use("/api/announcements", announcementRoutes);
+app.use("/api/tickets", ticketRoutes);
 app.use("/api/diagnostic", diagnosticRoutes);
 app.use("/api/admin", auditRoutes);
 app.use("/api/admin/security", securityRoutes);
@@ -328,6 +345,9 @@ const server = app.listen(PORT, () => {
   }
   logger.info(`🔍 Health check: http://localhost:${PORT}/health`);
 });
+
+// Attach Socket.IO to the same HTTP server for real-time messaging.
+initSocket(server);
 
 // Database connection and server start
 const startServer = async () => {
@@ -505,6 +525,7 @@ process.on("SIGTERM", async () => {
     } catch {
       // Ignore if bot was not initialized
     }
+    getSocketServer()?.close();
     await sequelize.close();
     await new Promise<void>((resolve, reject) => {
       server.close((error) => (error ? reject(error) : resolve()));
@@ -525,6 +546,7 @@ process.on("SIGINT", async () => {
     } catch {
       // Ignore if bot was not initialized
     }
+    getSocketServer()?.close();
     await sequelize.close();
     await new Promise<void>((resolve, reject) => {
       server.close((error) => (error ? reject(error) : resolve()));

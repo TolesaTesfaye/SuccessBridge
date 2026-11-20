@@ -78,7 +78,67 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
             </svg>
           </div>
         )
+      case 'announcement':
+        return (
+          <div className="flex-shrink-0 w-10 h-10 rounded-full bg-violet-100 dark:bg-violet-900 flex items-center justify-center">
+            <svg
+              className="w-5 h-5 text-violet-600 dark:text-violet-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
+              />
+            </svg>
+          </div>
+        )
+      case 'ticket':
+        return (
+          <div className="flex-shrink-0 w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900 flex items-center justify-center">
+            <svg
+              className="w-5 h-5 text-amber-600 dark:text-amber-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M18.364 5.636a9 9 0 010 12.728M5.636 18.364a9 9 0 010-12.728M15.536 8.464a5 5 0 010 7.072M8.464 15.536a5 5 0 010-7.072M12 12h.01"
+              />
+            </svg>
+          </div>
+        )
+      default:
+        return (
+          <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+            <svg
+              className="w-5 h-5 text-gray-500 dark:text-gray-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+              />
+            </svg>
+          </div>
+        )
     }
+  }
+
+  const communicationPath = () => {
+    if (user?.role === 'super_admin') return '/superadmin/communication'
+    if (user?.role === 'admin') return '/admin/communication'
+    return '/student/communication'
   }
 
   const handleNotificationClick = (notification: Notification) => {
@@ -109,6 +169,12 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
         // Navigate to admin dashboard (if they have payment access)
         navigate('/dashboard')
       }
+      onClose()
+    } else if (notification.type === 'announcement') {
+      navigate(`${communicationPath()}?tab=announcements`)
+      onClose()
+    } else if (notification.type === 'ticket') {
+      navigate(`${communicationPath()}?tab=support`)
       onClose()
     }
   }

@@ -113,6 +113,15 @@ export const b2Upload = multer({
   },
 });
 
+// Dedicated uploader for chat attachments: broader file support than resource
+// uploads (archives, audio, plain text) while keeping the same size cap.
+export const chatUpload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 25 * 1024 * 1024, // 25MB limit for chat attachments
+  },
+});
+
 // Middleware to upload file to B2 after multer processes it
 // Supports two signatures for backward compatibility:
 // 1. uploadToB2(req, file) - for routes with multer

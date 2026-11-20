@@ -17,6 +17,7 @@ import {
   HelpCircle,
   Layers,
   LogOut,
+  MessageSquare,
   Moon,
   Sun,
 } from "lucide-react";
@@ -48,12 +49,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { label: "Progress", path: "/student/progress", icon: <BarChart3 className="w-5 h-5" />, emoji: "📈" },
     { label: "Payments", path: "/student/payments", icon: <CreditCard className="w-5 h-5" />, emoji: "💳" },
     { label: "Promotions", path: "/student/promotions", icon: <Megaphone className="w-5 h-5" />, emoji: "📢" },
+    { label: "Communication", path: "/student/communication", icon: <MessageSquare className="w-5 h-5" />, emoji: "💬" },
   ];
 
   const adminNavItems = [
     { label: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard, desc: "Overview & stats" },
     { label: "Reports", path: "/admin/reports", icon: FileText, desc: "Data & exports" },
     { label: "Promotion", path: "/admin/promotion", icon: Megaphone, desc: "Student promotions" },
+    { label: "Communication", path: "/admin/communication", icon: MessageSquare, desc: "Messages & announcements" },
     { label: "Settings", path: "/admin/settings", icon: Settings, desc: "Configure platform" },
     { label: "Help", path: "/admin/dashboard", icon: HelpCircle, desc: "Guides & support", tab: "help" },
   ];
@@ -65,6 +68,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { label: "University View", path: "/superadmin/university-view", icon: <GraduationCap className="w-5 h-5" />, emoji: "🎓", section: "dashboard" },
     { label: "Admin View", path: "/superadmin/admin-view", icon: <LayoutDashboard className="w-5 h-5" />, emoji: "📊", section: "dashboard" },
     { label: "Security", path: "/superadmin/security", icon: <ShieldCheck className="w-5 h-5" />, emoji: "🔒", section: "dashboard" },
+    { label: "Communication", path: "/superadmin/communication", icon: <MessageSquare className="w-5 h-5" />, emoji: "💬", section: "dashboard" },
     { label: "Management", path: "/superadmin/management", icon: <Settings className="w-5 h-5" />, emoji: "⚙️", section: "dashboard" },
   ];
 

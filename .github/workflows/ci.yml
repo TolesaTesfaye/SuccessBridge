@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  server:
+    name: Server
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Server
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgres://test:test@127.0.0.1:5432/successbridge_test
+      JWT_SECRET: test-secret
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: Server/package-lock.json
+
+      - run: npm ci --no-audit --no-fund
+      - run: npm run type-check
+      - run: npm test
+      - run: npm run build
+
+  client:
+    name: Client
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Client
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: Client/package-lock.json
+
+      - run: npm ci --no-audit --no-fund
+      # `npm run type-check` still reports pre-existing errors, so the
+      # production build is the gate until those are resolved.
+      - run: npm run build

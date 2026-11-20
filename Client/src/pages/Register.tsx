@@ -34,6 +34,44 @@ interface FormDataType {
 }
 
 import { UNIVERSITIES } from "@utils/constants";
+import { validateEmail } from "@utils/validation";
+
+const PASSWORD_MIN_LENGTH = 8;
+
+const validatePersonName = (label: string, value: string) => {
+  const trimmed = value.trim();
+  if (!trimmed) return `${label} is required`;
+  if (trimmed.length < 2) return `${label} must be at least 2 characters`;
+  if (trimmed.length > 100) return `${label} is too long`;
+  if (!/^[\p{L}\s'-]+$/u.test(trimmed)) {
+    return `${label} can only contain letters, spaces, hyphens, and apostrophes`;
+  }
+  return "";
+};
+
+const validateEmailValue = (value: string) => {
+  const trimmed = value.trim();
+  if (!trimmed) return "Email is required";
+  const result = validateEmail(trimmed);
+  return result.isValid ? "" : result.error || "Enter a valid email address";
+};
+
+const validateNewPassword = (value: string) => {
+  if (!value) return "Password is required";
+  if (value.length < PASSWORD_MIN_LENGTH) {
+    return `Password must be at least ${PASSWORD_MIN_LENGTH} characters`;
+  }
+  if (!/[A-Z]/.test(value)) return "Password needs an uppercase letter";
+  if (!/[a-z]/.test(value)) return "Password needs a lowercase letter";
+  if (!/[0-9]/.test(value)) return "Password needs a number";
+  return "";
+};
+
+const validateConfirmPassword = (value: string, password: string) => {
+  if (!value) return "Please confirm your password";
+  if (value !== password) return "Passwords do not match";
+  return "";
+};
 
 export const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -47,6 +85,9 @@ export const Register: React.FC = () => {
     confirmPassword: "",
   });
   const [formError, setFormError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<
+    Partial<Record<keyof FormDataType, string>>
+  >({});
   const [requireVerification, setRequireVerification] = useState<boolean | null>(null);
 
   React.useEffect(() => {
@@ -74,35 +115,75 @@ export const Register: React.FC = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setFormError(null);
+
+    setFieldErrors((prev) => {
+      const next = { ...prev };
+      if (name === "password") {
+        if (next.password) next.password = validateNewPassword(value);
+        if (next.confirmPassword) {
+          next.confirmPassword = validateConfirmPassword(
+            formData.confirmPassword,
+            value,
+          );
+        }
+      } else if (name === "confirmPassword") {
+        if (next.confirmPassword) {
+          next.confirmPassword = validateConfirmPassword(
+            value,
+            formData.password,
+          );
+        }
+      } else if (name in next) {
+        delete next[name as keyof FormDataType];
+      }
+      return next;
+    });
+  };
+
+  const handleFieldBlur = (field: keyof FormDataType) => {
+    const validators: Partial<Record<keyof FormDataType, () => string>> = {
+      firstName: () => validatePersonName("First name", formData.firstName),
+      lastName: () => validatePersonName("Last name", formData.lastName),
+      email: () => validateEmailValue(formData.email),
+      password: () => validateNewPassword(formData.password),
+      confirmPassword: () =>
+        validateConfirmPassword(formData.confirmPassword, formData.password),
+    };
+
+    const validate = validators[field];
+    if (!validate) return;
+
+    const error = validate();
+    setFieldErrors((prev) => {
+      const next = { ...prev };
+      if (error) next[field] = error;
+      else delete next[field];
+      return next;
+    });
   };
 
   const validateStep = (): boolean => {
     setFormError(null);
 
     if (step === 1) {
-      if (
-        !formData.firstName ||
-        !formData.lastName ||
-        !formData.email ||
-        !formData.password ||
-        !formData.confirmPassword
-      ) {
-        setFormError("Please fill in all fields");
-        return false;
-      }
-      if (!formData.email.includes("@")) {
-        setFormError("Please enter a valid email address");
-        return false;
-      }
-      if (formData.password !== formData.confirmPassword) {
-        setFormError("Passwords do not match");
-        return false;
-      }
-      if (formData.password.length < 6) {
-        setFormError("Password must be at least 6 characters");
-        return false;
-      }
-      return true;
+      const errors: Partial<Record<keyof FormDataType, string>> = {
+        firstName: validatePersonName("First name", formData.firstName),
+        lastName: validatePersonName("Last name", formData.lastName),
+        email: validateEmailValue(formData.email),
+        password: validateNewPassword(formData.password),
+        confirmPassword: validateConfirmPassword(
+          formData.confirmPassword,
+          formData.password,
+        ),
+      };
+
+      const active: Partial<Record<keyof FormDataType, string>> = {};
+      (Object.keys(errors) as (keyof FormDataType)[]).forEach((key) => {
+        const message = errors[key];
+        if (message) active[key] = message;
+      });
+      setFieldErrors(active);
+      return Object.keys(active).length === 0;
     }
 
     if (step === 2) {
@@ -170,7 +251,7 @@ export const Register: React.FC = () => {
       // Build clean payload - only include defined values
       const payload: any = {
         name: fullName,
-        email: formData.email,
+        email: formData.email.trim(),
         password: formData.password,
         role: "student", // Always student for public registration
       };
@@ -260,6 +341,39 @@ export const Register: React.FC = () => {
 
   const totalSteps = formData.studentType === "high_school" ? 3 : 4;
 
+  const passwordRules = [
+    {
+      label: `${PASSWORD_MIN_LENGTH}+ characters`,
+      met: formData.password.length >= PASSWORD_MIN_LENGTH,
+    },
+    { label: "Uppercase", met: /[A-Z]/.test(formData.password) },
+    { label: "Lowercase", met: /[a-z]/.test(formData.password) },
+    { label: "Number", met: /[0-9]/.test(formData.password) },
+  ];
+  const metRules = passwordRules.filter((rule) => rule.met).length;
+  const passwordStrength =
+    metRules <= 1
+      ? {
+          label: "Weak",
+          barClass: "bg-rose-500",
+          textClass: "text-rose-600 dark:text-rose-400",
+        }
+      : metRules <= 3
+        ? {
+            label: "Fair",
+            barClass: "bg-amber-500",
+            textClass: "text-amber-600 dark:text-amber-400",
+          }
+        : {
+            label: "Strong",
+            barClass: "bg-emerald-500",
+            textClass: "text-emerald-600 dark:text-emerald-400",
+          };
+  const passwordStrengthPercent = Math.max(
+    12,
+    (metRules / passwordRules.length) * 100,
+  );
+
   return (
     <div className="min-h-screen relative overflow-hidden flex flex-col justify-center py-6 md:py-12 bg-slate-50 dark:bg-[#0a0f1c]">
       {/* Background Decorative Elements - Same as Home Page */}
@@ -325,7 +439,11 @@ export const Register: React.FC = () => {
             )}
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="space-y-4 md:space-y-6"
+          >
             {formError && (
               <div className="bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 px-3 py-2.5 md:px-4 md:py-3 rounded-lg md:rounded-xl border border-red-200 dark:border-red-500/20 flex items-center gap-2 md:gap-3 text-xs md:text-sm transition-colors">
                 <AlertCircle className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
@@ -344,7 +462,10 @@ export const Register: React.FC = () => {
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleChange}
+                      onBlur={() => handleFieldBlur("firstName")}
+                      error={fieldErrors.firstName}
                       placeholder="e.g. Abebe"
+                      autoComplete="given-name"
                       required
                     />
 
@@ -354,7 +475,10 @@ export const Register: React.FC = () => {
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleChange}
+                      onBlur={() => handleFieldBlur("lastName")}
+                      error={fieldErrors.lastName}
                       placeholder="e.g. Bekele"
+                      autoComplete="family-name"
                       required
                     />
                   </div>
@@ -365,7 +489,10 @@ export const Register: React.FC = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
+                    onBlur={() => handleFieldBlur("email")}
+                    error={fieldErrors.email}
                     placeholder="e.g. abebe@example.com"
+                    autoComplete="email"
                     required
                   />
 
@@ -376,7 +503,10 @@ export const Register: React.FC = () => {
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
+                      onBlur={() => handleFieldBlur("password")}
+                      error={fieldErrors.password}
                       placeholder="••••••••"
+                      autoComplete="new-password"
                       showPasswordToggle={true}
                       required
                     />
@@ -387,11 +517,53 @@ export const Register: React.FC = () => {
                       name="confirmPassword"
                       value={formData.confirmPassword}
                       onChange={handleChange}
+                      onBlur={() => handleFieldBlur("confirmPassword")}
+                      error={fieldErrors.confirmPassword}
                       placeholder="••••••••"
+                      autoComplete="new-password"
                       showPasswordToggle={true}
                       required
                     />
                   </div>
+
+                  {formData.password.length > 0 && (
+                    <div className="rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-800/50">
+                      <div className="flex items-center gap-2">
+                        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                          <div
+                            className={`h-full rounded-full transition-all duration-300 ${passwordStrength.barClass}`}
+                            style={{ width: `${passwordStrengthPercent}%` }}
+                          />
+                        </div>
+                        <span
+                          className={`text-[10px] font-bold uppercase tracking-wider ${passwordStrength.textClass}`}
+                        >
+                          {passwordStrength.label}
+                        </span>
+                      </div>
+                      <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1">
+                        {passwordRules.map((rule) => (
+                          <span
+                            key={rule.label}
+                            className={`flex items-center gap-1 text-[10px] font-semibold ${
+                              rule.met
+                                ? "text-emerald-600 dark:text-emerald-400"
+                                : "text-slate-400 dark:text-slate-500"
+                            }`}
+                          >
+                            <span
+                              className={`h-1 w-1 rounded-full ${
+                                rule.met
+                                  ? "bg-emerald-500"
+                                  : "bg-slate-300 dark:bg-slate-600"
+                              }`}
+                            />
+                            {rule.label}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   <button
                     type="button"
@@ -783,18 +955,19 @@ export const Register: React.FC = () => {
                         Finish & Register
                       </button>
                     </div>
-                    {loading && (
-                      <div className="flex justify-center items-center gap-2 py-3">
-                        <Spinner size="md" />
-                        <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-                          Creating your account...
-                        </span>
-                      </div>
-                    )}
                   </div>
                 </div>
               )}
             </div>
+
+            {loading && (
+              <div className="flex justify-center items-center gap-2 py-3">
+                <Spinner size="md" />
+                <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                  Creating your account...
+                </span>
+              </div>
+            )}
           </form>
 
           <div className="mt-4 md:mt-8 pt-4 md:pt-6 border-t border-slate-200 dark:border-slate-600 text-center transition-colors">

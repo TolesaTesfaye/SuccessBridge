@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useToast } from '../components/common/Toast'
+import { Spinner } from '../components/common/Spinner'
 
 interface OAuthData {
   email: string
@@ -50,7 +51,7 @@ export const OAuthRegister: React.FC = () => {
   if (!oauthData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <Spinner size="lg" />
       </div>
     )
   }

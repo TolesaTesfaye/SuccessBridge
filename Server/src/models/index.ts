@@ -15,6 +15,12 @@ import Notification from "./Notification.js";
 import AuditLog from "./AuditLog.js";
 import StudentCategoryAccess from "./StudentCategoryAccess.js";
 import AccessPackage from "./AccessPackage.js";
+import Conversation from "./Conversation.js";
+import ConversationParticipant from "./ConversationParticipant.js";
+import Message from "./Message.js";
+import Announcement from "./Announcement.js";
+import SupportTicket from "./SupportTicket.js";
+import TicketMessage from "./TicketMessage.js";
 
 // Define relationships
 export const setupAssociations = () => {
@@ -169,6 +175,57 @@ export const setupAssociations = () => {
 
   // AuditLog relationships
   AuditLog.belongsTo(User, { foreignKey: "userId", as: "user" });
+
+  // Communication relationships
+  Conversation.belongsTo(User, { foreignKey: "createdBy", as: "creator" });
+  Conversation.hasMany(ConversationParticipant, {
+    foreignKey: "conversationId",
+    as: "participants",
+    onDelete: "CASCADE",
+  });
+  Conversation.hasMany(Message, {
+    foreignKey: "conversationId",
+    as: "messages",
+    onDelete: "CASCADE",
+  });
+  ConversationParticipant.belongsTo(Conversation, {
+    foreignKey: "conversationId",
+    as: "conversation",
+    onDelete: "CASCADE",
+  });
+  ConversationParticipant.belongsTo(User, {
+    foreignKey: "userId",
+    as: "user",
+  });
+  Message.belongsTo(Conversation, {
+    foreignKey: "conversationId",
+    as: "conversation",
+    onDelete: "CASCADE",
+  });
+  Message.belongsTo(User, { foreignKey: "senderId", as: "sender" });
+  User.hasMany(ConversationParticipant, {
+    foreignKey: "userId",
+    as: "conversationMemberships",
+  });
+
+  // Announcement relationships
+  Announcement.belongsTo(User, { foreignKey: "createdBy", as: "creator" });
+  User.hasMany(Announcement, { foreignKey: "createdBy", as: "announcements" });
+
+  // Support ticket relationships
+  SupportTicket.belongsTo(User, { foreignKey: "userId", as: "user" });
+  User.hasMany(SupportTicket, { foreignKey: "userId", as: "supportTickets" });
+  SupportTicket.hasMany(TicketMessage, {
+    foreignKey: "ticketId",
+    as: "messages",
+    onDelete: "CASCADE",
+  });
+  TicketMessage.belongsTo(SupportTicket, {
+    foreignKey: "ticketId",
+    as: "ticket",
+    onDelete: "CASCADE",
+  });
+  TicketMessage.belongsTo(User, { foreignKey: "senderId", as: "sender" });
 };
 
 export {
@@ -189,4 +246,10 @@ export {
   AccessPackage,
   Notification,
   AuditLog,
+  Conversation,
+  ConversationParticipant,
+  Message,
+  Announcement,
+  SupportTicket,
+  TicketMessage,
 };

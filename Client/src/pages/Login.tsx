@@ -11,6 +11,7 @@ import { AppLogo } from "@components/common/AppLogo";
 import { ThemeToggle } from "@components/common/ThemeToggle";
 import { useToast } from "@components/common/Toast";
 import { Spinner } from "@components/common/Spinner";
+import { validateEmail } from "@utils/validation";
 import { LogIn, AlertCircle } from "lucide-react";
 
 const OAUTH_ERR_DEDUPE_KEY = "sb_login_oauth_err";
@@ -27,6 +28,7 @@ export const Login: React.FC = () => {
     password: "",
   });
   const [formError, setFormError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState({ email: "", password: "" });
 
   // Show message from navigation state (e.g., from registration)
   useEffect(() => {
@@ -100,27 +102,40 @@ export const Login: React.FC = () => {
     clearQuery();
   }, [searchParams, navigate, location.pathname, toast]);
 
+  const validateEmailField = (value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) return "Email is required";
+    const result = validateEmail(trimmed);
+    return result.isValid ? "" : result.error || "Enter a valid email address";
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setFormError(null);
+    setFieldErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  const handleBlur = (field: "email" | "password") => {
+    const error =
+      field === "email"
+        ? validateEmailField(formData.email)
+        : formData.password
+          ? ""
+          : "Password is required";
+    setFieldErrors((prev) => ({ ...prev, [field]: error }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.email || !formData.password) {
-      setFormError("Please fill in all fields");
-      return;
-    }
-
-    if (!formData.email.includes("@")) {
-      setFormError("Please enter a valid email address");
-      return;
-    }
+    const emailError = validateEmailField(formData.email);
+    const passwordError = formData.password ? "" : "Password is required";
+    setFieldErrors({ email: emailError, password: passwordError });
+    if (emailError || passwordError) return;
 
     try {
-      await login(formData.email, formData.password);
+      await login(formData.email.trim(), formData.password);
       navigate("/dashboard");
     } catch (err) {
       // Error handling is now done in useAuth hook with toast notifications
@@ -155,7 +170,11 @@ export const Login: React.FC = () => {
 
       <div className="mt-4 md:mt-8 w-full mx-auto max-w-md relative z-10 px-3 md:px-0 animate-fade-in-up delay-200">
         <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl py-4 md:py-8 px-3 md:px-10 shadow-2xl border border-slate-200/50 dark:border-slate-700/50 rounded-2xl md:rounded-3xl transition-all hover:shadow-3xl shadow-blue-500/20 dark:shadow-blue-500/30 hover:shadow-blue-500/40 dark:hover:shadow-blue-500/50">
-          <form onSubmit={handleSubmit} className="space-y-5 md:space-y-6">
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="space-y-5 md:space-y-6"
+          >
             {formError && (
               <div className="bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 px-3 py-2.5 md:px-4 md:py-3 rounded-lg md:rounded-xl border border-red-200 dark:border-red-500/20 flex items-center gap-2 md:gap-3 text-xs md:text-sm">
                 <AlertCircle className="w-4 h-4 md:w-5 md:h-5 shrink-0" />
@@ -170,7 +189,10 @@ export const Login: React.FC = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
+                onBlur={() => handleBlur("email")}
+                error={fieldErrors.email}
                 placeholder="Enter your email"
+                autoComplete="email"
                 required
               />
 
@@ -181,7 +203,10 @@ export const Login: React.FC = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
+                  onBlur={() => handleBlur("password")}
+                  error={fieldErrors.password}
                   placeholder="Enter your password"
+                  autoComplete="current-password"
                   showPasswordToggle={true}
                   required
                 />

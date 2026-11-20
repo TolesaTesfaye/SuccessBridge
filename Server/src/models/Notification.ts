@@ -1,10 +1,17 @@
 import { DataTypes, Model } from 'sequelize'
 import sequelize from '../config/database.js'
 
+export type NotificationType =
+  | 'payment_request'
+  | 'payment_approved'
+  | 'payment_rejected'
+  | 'announcement'
+  | 'ticket'
+
 export interface INotification {
   id: string
   userId: string
-  type: 'payment_request' | 'payment_approved' | 'payment_rejected'
+  type: NotificationType
   title: string
   message: string
   data?: any // Additional data (payment ID, etc.)
@@ -16,7 +23,7 @@ export interface INotification {
 class Notification extends Model<INotification> implements INotification {
   public id!: string
   public userId!: string
-  public type!: 'payment_request' | 'payment_approved' | 'payment_rejected'
+  public type!: NotificationType
   public title!: string
   public message!: string
   public data?: any
@@ -41,7 +48,13 @@ Notification.init(
       },
     },
     type: {
-      type: DataTypes.ENUM('payment_request', 'payment_approved', 'payment_rejected'),
+      type: DataTypes.ENUM(
+        'payment_request',
+        'payment_approved',
+        'payment_rejected',
+        'announcement',
+        'ticket',
+      ),
       allowNull: false,
     },
     title: {

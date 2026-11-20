@@ -37,6 +37,63 @@ export async function autoMigrate() {
     `);
     console.log('✅ Added/verified preview_image_url column');
 
+    // Message attachments (communication file sharing)
+    await sequelize.query(`
+      ALTER TABLE messages
+      ADD COLUMN IF NOT EXISTS "attachmentUrl" VARCHAR(1024),
+      ADD COLUMN IF NOT EXISTS "attachmentName" VARCHAR(255),
+      ADD COLUMN IF NOT EXISTS "attachmentType" VARCHAR(100),
+      ADD COLUMN IF NOT EXISTS "attachmentSize" INTEGER
+    `);
+    console.log('✅ Added/verified message attachment columns');
+
+    // Allow announcement/ticket notifications (Postgres enum values can't be
+    // removed, so guard against duplicate_object on repeated runs)
+    await sequelize.query(`
+      DO $$
+      BEGIN
+        ALTER TYPE enum_notifications_type ADD VALUE IF NOT EXISTS 'announcement';
+        ALTER TYPE enum_notifications_type ADD VALUE IF NOT EXISTS 'ticket';
+      EXCEPTION
+        WHEN undefined_object THEN NULL;
+      END $$;
+    `);
+    console.log('✅ Added/verified notification types for announcements and tickets');
+
+    // Communication support tickets (separate from the legacy management
+    // support_tickets table, which has a different schema)
+    await sequelize.query(`
+      CREATE TABLE IF NOT EXISTS communication_tickets (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        "userId" UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        subject VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
+        category VARCHAR(100),
+        priority VARCHAR(20) NOT NULL DEFAULT 'medium',
+        status VARCHAR(30) NOT NULL DEFAULT 'open',
+        "lastReplyAt" TIMESTAMP WITH TIME ZONE,
+        "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+        "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+      )
+    `);
+    await sequelize.query(`
+      CREATE TABLE IF NOT EXISTS communication_ticket_messages (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        "ticketId" UUID NOT NULL REFERENCES communication_tickets(id) ON DELETE CASCADE,
+        "senderId" UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        content TEXT NOT NULL,
+        "isStaff" BOOLEAN NOT NULL DEFAULT false,
+        "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+        "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+      )
+    `);
+    await sequelize.query(`
+      CREATE INDEX IF NOT EXISTS idx_communication_tickets_user ON communication_tickets("userId");
+      CREATE INDEX IF NOT EXISTS idx_communication_tickets_status ON communication_tickets(status);
+      CREATE INDEX IF NOT EXISTS idx_communication_ticket_messages_ticket ON communication_ticket_messages("ticketId", "createdAt");
+    `);
+    console.log('✅ Created/verified communication ticket tables');
+
     // Create download_history table
     await sequelize.query(`
       CREATE TABLE IF NOT EXISTS download_history (

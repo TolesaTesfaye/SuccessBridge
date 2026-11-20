@@ -33,9 +33,39 @@ export const getUserById = async (req: Request, res: Response, next: NextFunctio
   }
 }
 
+const ROLES = ['student', 'admin', 'super_admin']
+
 export const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { password, ...updateData } = req.body
+    const actor = (req as any).user
+    const target = await UserService.getUserById(req.params.id)
+
+    if (target.role === 'super_admin' && actor?.role !== 'super_admin') {
+      return res.status(403).json({
+        success: false,
+        error: 'Only super admins can modify a super admin account',
+      })
+    }
+
+    if (updateData.role !== undefined) {
+      if (actor?.role !== 'super_admin') {
+        return res.status(403).json({
+          success: false,
+          error: 'Only super admins can change user roles',
+        })
+      }
+      if (!ROLES.includes(updateData.role)) {
+        return res.status(400).json({ success: false, error: 'Invalid role' })
+      }
+      if (req.params.id === actor?.id && updateData.role !== 'super_admin') {
+        return res.status(400).json({
+          success: false,
+          error: 'Super admins cannot change their own role',
+        })
+      }
+    }
+
     const user = await UserService.updateUser(req.params.id, updateData)
 
     res.json({

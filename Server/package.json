@@ -12,6 +12,7 @@
     "postbuild": "echo 'Build completed successfully'",
     "lint": "eslint src --ext .ts",
     "type-check": "tsc --noEmit",
+    "test": "node --import tsx --import ./src/__tests__/setup-env.ts --test src/__tests__/authMiddleware.test.ts src/__tests__/validation.test.ts src/__tests__/routeGuards.test.ts",
     "cleanup:pending-users": "tsx src/scripts/cleanupExpiredPendingUsers.ts",
     "cleanup:duplicates": "tsx src/scripts/removeDuplicateSubjects.ts",
     "cleanup:legacy-freshman": "tsx src/scripts/cleanupLegacyFreshmanSubjects.ts",
@@ -58,6 +59,7 @@
     "pg": "^8.11.0",
     "redis": "^4.6.0",
     "sequelize": "^6.35.0",
+    "socket.io": "^4.8.4",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "typescript": "^5.3.0"
