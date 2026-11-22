@@ -36,8 +36,6 @@ interface FormDataType {
 import { UNIVERSITIES } from "@utils/constants";
 import { validateEmail } from "@utils/validation";
 
-const PASSWORD_MIN_LENGTH = 8;
-
 const validatePersonName = (label: string, value: string) => {
   const trimmed = value.trim();
   if (!trimmed) return `${label} is required`;
@@ -58,12 +56,6 @@ const validateEmailValue = (value: string) => {
 
 const validateNewPassword = (value: string) => {
   if (!value) return "Password is required";
-  if (value.length < PASSWORD_MIN_LENGTH) {
-    return `Password must be at least ${PASSWORD_MIN_LENGTH} characters`;
-  }
-  if (!/[A-Z]/.test(value)) return "Password needs an uppercase letter";
-  if (!/[a-z]/.test(value)) return "Password needs a lowercase letter";
-  if (!/[0-9]/.test(value)) return "Password needs a number";
   return "";
 };
 
@@ -341,39 +333,6 @@ export const Register: React.FC = () => {
 
   const totalSteps = formData.studentType === "high_school" ? 3 : 4;
 
-  const passwordRules = [
-    {
-      label: `${PASSWORD_MIN_LENGTH}+ characters`,
-      met: formData.password.length >= PASSWORD_MIN_LENGTH,
-    },
-    { label: "Uppercase", met: /[A-Z]/.test(formData.password) },
-    { label: "Lowercase", met: /[a-z]/.test(formData.password) },
-    { label: "Number", met: /[0-9]/.test(formData.password) },
-  ];
-  const metRules = passwordRules.filter((rule) => rule.met).length;
-  const passwordStrength =
-    metRules <= 1
-      ? {
-          label: "Weak",
-          barClass: "bg-rose-500",
-          textClass: "text-rose-600 dark:text-rose-400",
-        }
-      : metRules <= 3
-        ? {
-            label: "Fair",
-            barClass: "bg-amber-500",
-            textClass: "text-amber-600 dark:text-amber-400",
-          }
-        : {
-            label: "Strong",
-            barClass: "bg-emerald-500",
-            textClass: "text-emerald-600 dark:text-emerald-400",
-          };
-  const passwordStrengthPercent = Math.max(
-    12,
-    (metRules / passwordRules.length) * 100,
-  );
-
   return (
     <div className="min-h-screen relative overflow-hidden flex flex-col justify-center py-6 md:py-12 bg-slate-50 dark:bg-[#0a0f1c]">
       {/* Background Decorative Elements - Same as Home Page */}
@@ -525,45 +484,6 @@ export const Register: React.FC = () => {
                       required
                     />
                   </div>
-
-                  {formData.password.length > 0 && (
-                    <div className="rounded-xl border border-slate-200 bg-slate-50/70 px-3 py-2.5 dark:border-slate-700 dark:bg-slate-800/50">
-                      <div className="flex items-center gap-2">
-                        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-                          <div
-                            className={`h-full rounded-full transition-all duration-300 ${passwordStrength.barClass}`}
-                            style={{ width: `${passwordStrengthPercent}%` }}
-                          />
-                        </div>
-                        <span
-                          className={`text-[10px] font-bold uppercase tracking-wider ${passwordStrength.textClass}`}
-                        >
-                          {passwordStrength.label}
-                        </span>
-                      </div>
-                      <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1">
-                        {passwordRules.map((rule) => (
-                          <span
-                            key={rule.label}
-                            className={`flex items-center gap-1 text-[10px] font-semibold ${
-                              rule.met
-                                ? "text-emerald-600 dark:text-emerald-400"
-                                : "text-slate-400 dark:text-slate-500"
-                            }`}
-                          >
-                            <span
-                              className={`h-1 w-1 rounded-full ${
-                                rule.met
-                                  ? "bg-emerald-500"
-                                  : "bg-slate-300 dark:bg-slate-600"
-                              }`}
-                            />
-                            {rule.label}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
                   <button
                     type="button"
