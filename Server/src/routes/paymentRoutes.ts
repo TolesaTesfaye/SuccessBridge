@@ -3,6 +3,8 @@ import { PaymentService } from '../services/paymentService.js'
 import { authMiddleware, requireRole } from '../middleware/auth.js'
 import { uploadToB2 } from '../middleware/b2Upload.js'
 import multer from 'multer'
+import User from '../models/User.js'
+import { deriveStudentCategory } from '../services/studentCategoryService.js'
 
 const router = express.Router()
 const upload = multer({ 
@@ -52,6 +54,18 @@ router.post('/', authMiddleware, upload.single('screenshot'), async (req, res, n
       return res.status(400).json({ success: false, error: 'Payment screenshot is required' })
     }
 
+    // Derive this on the server from the authenticated profile. The web form
+    // supplies education context for display, but it must not be trusted to
+    // choose the payment category required by the Payment model.
+    const student = await User.findByPk(req.user.id)
+    const studentCategory = student ? deriveStudentCategory(student.toJSON() as any) : null
+    if (!studentCategory) {
+      return res.status(400).json({
+        success: false,
+        error: 'Complete your student profile before submitting a payment',
+      })
+    }
+
     console.log('📸 File details:', {
       fieldname: req.file.fieldname,
       originalname: req.file.originalname,
@@ -65,6 +79,7 @@ router.post('/', authMiddleware, upload.single('screenshot'), async (req, res, n
 
     const paymentData = {
       userId: req.user.id,
+      studentCategory,
       subjectId: req.body.subjectId,
       amount: parseFloat(req.body.amount),
       currency: req.body.currency || 'ETB',

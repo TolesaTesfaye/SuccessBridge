@@ -8,6 +8,7 @@ import { NotificationService } from './notificationService.js'
 
 interface CreatePaymentData {
   userId: string
+  studentCategory: 'GRADE_9' | 'GRADE_10' | 'GRADE_11' | 'GRADE_12' | 'REMEDIAL' | 'FRESHMAN'
   subjectId: string
   amount: number
   currency?: string

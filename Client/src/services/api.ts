@@ -166,6 +166,10 @@ const RETRY_DELAY = 2000; // 2 seconds
 
 // Helper function to check if error is retryable
 const isRetryableError = (error: AxiosError): boolean => {
+  // Retrying writes can duplicate payments, uploads, messages, and other
+  // side effects. Only retry idempotent GET requests automatically.
+  if (error.config?.method?.toUpperCase() !== "GET") return false;
+
   // Retry on network errors, timeouts, and 5xx server errors
   return (
     !error.response || // Network error

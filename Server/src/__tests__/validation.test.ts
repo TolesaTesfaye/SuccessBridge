@@ -4,6 +4,7 @@ import { AppError } from '../middleware/errorHandler.js'
 import { ConversationService } from '../services/conversationService.js'
 import { TicketService } from '../services/ticketService.js'
 import { AnnouncementService } from '../services/announcementService.js'
+import { deriveStudentCategory } from '../services/studentCategoryService.js'
 
 const student = { id: 'user-1', role: 'student', name: 'Student' }
 
@@ -80,5 +81,16 @@ test('AnnouncementService.create requires a title and content', async () => {
   await expectBadRequest(
     () => AnnouncementService.create('admin-1', { title: 'Notice' }),
     /content is required/i,
+  )
+})
+
+test('payment category derives from the authenticated student profile', () => {
+  assert.equal(
+    deriveStudentCategory({ studentType: 'high_school', highSchoolGrade: 'grade_11' } as any),
+    'GRADE_11',
+  )
+  assert.equal(
+    deriveStudentCategory({ studentType: 'university', universityLevel: 'freshman' } as any),
+    'FRESHMAN',
   )
 })
