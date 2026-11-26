@@ -181,11 +181,12 @@ const corsOptions = {
       "http://192.168.0.114:3000",
     ].filter(Boolean);
 
-    // In development, allow all localhost/127.0.0.1 origins
-    const isDevelopment =
-      process.env.NODE_ENV === "development" || !process.env.NODE_ENV;
+    // Flutter Web uses a dynamically assigned localhost port (for example
+    // http://localhost:64727), so fixed-port allowlists are insufficient.
+    // Localhost is safe to allow here because it cannot match a public host.
     const isLocalhost =
-      origin && (origin.includes("localhost") || origin.includes("127.0.0.1"));
+      !!origin &&
+      /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
 
     // Allow requests with no origin (like mobile apps, curl) or if origin is in allowed list
     // Allow Vercel deployments, including preview deployments.
@@ -195,7 +196,7 @@ const corsOptions = {
       !origin ||
       allowedOrigins.includes(origin) ||
       isAllowedDomain ||
-      (isDevelopment && isLocalhost)
+      isLocalhost
     ) {
       callback(null, true);
     } else {
